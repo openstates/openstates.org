@@ -1,0 +1,15 @@
+[uwsgi]
+uid = openstates
+gid = openstates
+logto2 = /home/openstates/logs/uwsgi.log
+socket = /home/openstates/data/uwsgi.sock
+stats = /home/openstates/data/stats.sock
+virtualenv = /home/openstates/virt/
+master = true
+vacuum = true
+chmod-socket = 666
+processes = 4
+module = openstates.wsgi:application
+{% for key, val in django_environment.items() %}
+env = {{key}}={{val}}
+{% endfor %}

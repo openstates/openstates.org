@@ -1,0 +1,3 @@
+{% for key, val in django_environment.items() %}
+export {{key}}="{{val}}"
+{% endfor %}

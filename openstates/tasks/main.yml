@@ -1,0 +1,83 @@
+---
+#- name: nginx key
+#  apt_key: url=http://nginx.org/keys/nginx_signing.key
+#- name: nginx repo
+#  apt_repository: repo="deb http://nginx.org/packages/ubuntu/ xenial nginx"
+- name: install system packages
+  apt: pkg={{item}} update_cache=yes
+  with_items:
+      - build-essential
+      - git
+      - mercurial
+      - python-pycurl
+      - python-boto
+      - libpq-dev
+      - unzip
+      - gdal-bin
+      - python
+      - python-dev
+      - virtualenv
+      - uwsgi
+      - nginx
+      - uwsgi-plugin-python
+      - libxslt-dev
+- name: make project dir
+  file: path=/home/openstates state=directory
+- name: add project user
+  user: name=openstates home=/home/openstates shell=/bin/bash state=present
+- name: chown user directory
+  file: path=/home/openstates owner=openstates
+- name: add user subdirectories
+  file: path=/home/openstates/{{item}} owner=openstates state=directory
+  with_items:
+    - logs
+    - data
+  sudo_user: "openstates"
+- name: add env_vars for project user
+  template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
+  sudo_user: "openstates"
+- name: create virtualenv
+  command: virtualenv -p python2.7 /home/openstates/virt{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}
+  sudo_user: "openstates"
+  notify:
+    - restart django-application
+- name: checkout project directories
+  git: repo=git@github.com:openstates/openstates.org-tmp-private.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=read-only
+  sudo_user: "openstates"
+  notify:
+    - restart django-application
+- name: add checkouts to python path
+  lineinfile: dest=/home/openstates/virt{{ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}/lib/python2.7/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
+  sudo_user: "openstates"
+- name: install requirements
+  pip: requirements=/home/openstates/src/openstates.org/requirements.txt virtualenv=/home/openstates/virt{{ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}
+  sudo_user: "openstates"
+  notify:
+    - restart django-application
+- name: link virtualenv
+  file: src=/home/openstates/virt{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }} dest=/home/openstates/virt state=link
+- name: write uwsgi template
+  template: src=uwsgi.j2 dest=/etc/uwsgi/apps-enabled/openstates.ini
+  notify:
+    - restart django-application
+- name: make certs dir
+  file: path=/etc/nginx/certs/ state=directory
+#- name: copy ssl cert over
+#  copy: src=ec2/openstates.crt dest=/etc/nginx/certs/openstates.crt mode=0644
+#- name: copy ssl key over
+#  copy: src=ec2/openstates.key dest=/etc/nginx/certs/openstates.key mode=0644
+- name: remove nginx default config
+  file: path=/etc/nginx/sites-enabled/default state=absent
+- name: generate dh params
+  command: openssl dhparam -out /etc/nginx/certs/dhparams.pem 2048 creates=/etc/nginx/certs/dhparams.pem
+- name: write nginx template
+  template: src=nginx.j2 dest=/etc/nginx/sites-enabled/openstates
+  notify:
+    - restart nginx
+- name: ensure nginx is running and starts on boot
+  service: name=nginx state=restarted enabled=yes
+- name: start uwsgi
+  service: name=uwsgi state=started args=openstates
+- name: collectstatic
+  command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
+  environment: django_environment
