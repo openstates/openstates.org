@@ -1,0 +1,7 @@
+---
+- name: MongoDB
+  hosts: mongo
+  user: ubuntu
+  sudo: yes
+  roles:
+    - mongo

@@ -1,0 +1,25 @@
+---
+- name: mongo key
+  apt_key: url=https://www.mongodb.org/static/pgp/server-3.2.asc?_ga=1.5100019.1530496039.1474829372 
+- name: mongo repo
+  apt_repository: repo="deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"
+- name: install packages
+  apt: pkg={{item}} update_cache=yes
+  with_items:
+      - python-boto
+      - xfsprogs
+      - mongodb-org
+- name: gather EC2 facts
+  action: ec2_facts
+- name: create EC2 volume
+  ec2_vol: device_name=/dev/sdf volume_size=50 region={{ansible_ec2_placement_region}} zone={{ansible_ec2_placement_availability_zone}} instance={{ansible_ec2_instance_id}} aws_access_key={{aws_key}} aws_secret_key={{aws_secret}}
+- name: format volume
+  filesystem: fstype=xfs dev=/dev/xvdf
+- name: mount volume
+  mount: fstype=xfs name=/var/lib/mongodb src=/dev/xvdf state=mounted opts=noatime
+- name: chown user directory
+  file: path=/var/lib/mongodb owner=mongodb
+- name: write ulimits
+  template: src=90-mongod.conf dest=/etc/security/limits.d/90-mongodb.conf
+- name: write ebs readhead
+  template: src=85-ebs.rules dest=/etc/udev/rules.d/85-ebs.rules
