@@ -42,7 +42,7 @@
   notify:
     - restart django-application
 - name: checkout project directories
-  git: repo=git@github.com:openstates/openstates.org-tmp-private.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=read-only
+  git: repo=https://github.com/openstates/openstates.org-tmp.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=read-only
   sudo_user: "openstates"
   notify:
     - restart django-application

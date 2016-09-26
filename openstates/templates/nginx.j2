@@ -1,3 +1,5 @@
+uwsgi_cache_path /var/lib/nginx/cache levels=1:2 keys_zone=my_cache:10m max_size=2g inactive=60m use_temp_path=off;
+
 {% if server_name  %}
 server {
     listen 80;
@@ -22,9 +24,15 @@ server {
     ssl_dhparam /etc/nginx/certs/dhparams.pem;
 {% endif %}
 
+
     location / {
         uwsgi_pass unix:///home/openstates/data/uwsgi.sock;
         include uwsgi_params;
+        uwsgi_cache_key $request_uri;
+        uwsgi_cache_valid any 30m;
+        uwsgi_cache my_cache;
+        add_header X-Cache-Status $upstream_cache_status;
+        expires 2h;
     }
 
     access_log /home/openstates/logs/access.log combined;
