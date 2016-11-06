@@ -1,0 +1,7 @@
+---
+- name: Install old OCD API
+  hosts: geo.openstates.org
+  user: ubuntu
+  sudo: yes
+  roles:
+    - role: ocdapi

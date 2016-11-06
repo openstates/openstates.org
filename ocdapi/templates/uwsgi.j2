@@ -1,0 +1,15 @@
+[uwsgi]
+uid = ocdapi
+gid = ocdapi
+logto2 = /home/ocdapi/logs/uwsgi.log
+socket = /home/ocdapi/data/uwsgi.sock
+stats = /home/ocdapi/data/stats.sock
+virtualenv = /home/ocdapi/virt/
+master = true
+vacuum = true
+chmod-socket = 666
+processes = 4
+module = ocdapi.wsgi:application
+{% for key, val in django_environment.items() %}
+env = {{key}}={{val}}
+{% endfor %}
