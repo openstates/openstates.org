@@ -42,7 +42,7 @@
   notify:
     - restart django-application
 - name: checkout project directories
-  git: repo=https://github.com/openstates/openstates.org-tmp.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=read-only
+  git: repo=https://github.com/openstates/openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=master
   sudo_user: "openstates"
   notify:
     - restart django-application
@@ -76,6 +76,8 @@
     - restart nginx
 - name: ensure nginx is running and starts on boot
   service: name=nginx state=restarted enabled=yes
+- name: generate new relic config
+  command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
 - name: start uwsgi
   service: name=uwsgi state=started args=openstates
 - name: collectstatic

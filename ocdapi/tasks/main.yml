@@ -84,6 +84,8 @@
   template: src=nginx.j2 dest=/etc/nginx/sites-enabled/ocdapi
   notify:
     - restart nginx
+- name: generate new relic config
+  command: /home/ocdapi/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/ocdapi/newrelic.ini creates=/home/ocdapi/newrelic.ini nginx is running and starts on boot
 - name: ensure nginx is running and starts on boot
   service: name=nginx state=restarted enabled=yes
 - name: start uwsgi
