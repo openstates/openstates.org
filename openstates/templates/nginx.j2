@@ -35,6 +35,13 @@ server {
         expires 2h;
     }
 
+    location /robots.txt {
+        root /home/openstates/src/openstates.org/;
+    }
+    location /favicon.ico {
+        root /home/openstates/src/openstates.org/media/images/;
+    }
+
     access_log /home/openstates/logs/access.log combined;
     error_log /home/openstates/logs/error.log;
 }
