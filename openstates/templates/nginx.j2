@@ -14,8 +14,8 @@ server {
 {% endif %}
 {% if ssl_cert %}
     listen 443 ssl http2;
-    ssl_certificate /etc/nginx/certs/{{ssl_cert}};
-    ssl_certificate_key /etc/nginx/certs/{{ssl_key}};
+    ssl_certificate {{ssl_cert}};
+    ssl_certificate_key {{ssl_key}};
     ssl_prefer_server_ciphers on;
     ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
@@ -42,5 +42,8 @@ server {
     }
     location /favicon.ico {
         root /home/openstates/src/openstates.org/media/images/;
+    }
+    location /.well-known/ {
+        root /home/openstates/letsencrypt/;
     }
 }
