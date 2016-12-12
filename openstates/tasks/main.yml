@@ -33,7 +33,6 @@
   with_items:
     - logs
     - data
-    - letsencrypt
   sudo_user: "openstates"
 - name: add env_vars for project user
   template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
