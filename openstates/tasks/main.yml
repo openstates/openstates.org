@@ -77,8 +77,11 @@
   command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
 - name: rename new relic app
   replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='openstates.org'
-- name: start uwsgi
-  service: name=uwsgi state=started args=openstates
 - name: collectstatic
   command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: django_environment
+- name: syncdb
+  command: /home/openstates/virt/bin/python manage.py syncdb --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
+  environment: django_environment
+- name: start uwsgi
+  service: name=uwsgi state=started args=openstates
