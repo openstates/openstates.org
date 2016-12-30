@@ -45,6 +45,13 @@ server {
         expires 2h;
     }
 
+    location /admin {
+        uwsgi_pass unix:///home/openstates/data/uwsgi.sock;
+        include uwsgi_params;
+        auth_basic "Administrator Login";
+        auth_basic_user_file /home/openstates/htpasswd;
+    }
+
     location /robots.txt {
         root /home/openstates/src/openstates.org/;
     }
