@@ -37,8 +37,9 @@ server {
         uwsgi_pass unix:///home/openstates/data/uwsgi.sock;
         include uwsgi_params;
         uwsgi_cache_key $request_uri;
-        uwsgi_cache_valid 200 302 2h;
-        uwsgi_cache_valid 301 404 2h;
+        uwsgi_cache_methods GET;
+        uwsgi_cache_valid 200 10m;
+        uwsgi_cache_valid 301 302 404 2h;
         uwsgi_cache_valid any     1m;
         uwsgi_cache my_cache;
         add_header X-Cache-Status $upstream_cache_status;
