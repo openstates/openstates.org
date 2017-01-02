@@ -36,7 +36,7 @@ server {
     location / {
         uwsgi_pass unix:///home/openstates/data/uwsgi.sock;
         include uwsgi_params;
-        uwsgi_cache_key $request_uri;
+        uwsgi_cache_key $request_method$request_uri;
         uwsgi_cache_methods GET;
         uwsgi_cache_valid 200 10m;
         uwsgi_cache_valid 301 302 404 2h;
