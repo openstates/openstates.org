@@ -33,6 +33,8 @@
 - name: add env_vars for project user
   template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
   sudo_user: "openstates"
+
+# virtualenv
 - name: create virtualenv
   command: virtualenv -p python2.7 /home/openstates/virt{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}
   sudo_user: "openstates"
@@ -53,37 +55,41 @@
     - restart django-application
 - name: link virtualenv
   file: src=/home/openstates/virt{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }} dest=/home/openstates/virt state=link
-- name: write uwsgi template
-  template: src=uwsgi.j2 dest=/etc/uwsgi/apps-enabled/openstates.ini
-  notify:
-    - restart django-application
+
+# nginx
 - name: make certs dir
   file: path=/etc/nginx/certs/ state=directory
-#- name: copy ssl cert over
-#  copy: src=ec2/openstates.crt dest=/etc/nginx/certs/openstates.crt mode=0644
-#- name: copy ssl key over
-#  copy: src=ec2/openstates.key dest=/etc/nginx/certs/openstates.key mode=0644
-- name: remove nginx default config
-  file: path=/etc/nginx/sites-enabled/default state=absent
 - name: generate dh params
   command: openssl dhparam -out /etc/nginx/certs/dhparams.pem 2048 creates=/etc/nginx/certs/dhparams.pem
+- name: remove nginx default config
+  file: path=/etc/nginx/sites-enabled/default state=absent
 - name: copy over htpasswd
-  copy: src=ec2/htpasswd dest=/home/openstates/htpasswd
+  copy: src=../secrets/htpasswd dest=/home/openstates/htpasswd
 - name: write nginx template
   template: src=nginx.j2 dest=/etc/nginx/sites-enabled/openstates
   notify:
     - restart nginx
 - name: ensure nginx is running and starts on boot
   service: name=nginx state=restarted enabled=yes
+
+# new relic
 - name: generate new relic config
   command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
 - name: rename new relic app
   replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='openstates.org'
+
+# django
 - name: collectstatic
   command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: django_environment
 - name: syncdb
   command: /home/openstates/virt/bin/python manage.py syncdb --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: django_environment
+
+# uwsgi
+- name: write uwsgi template
+  template: src=uwsgi.j2 dest=/etc/uwsgi/apps-enabled/openstates.ini
+  notify:
+    - restart django-application
 - name: start uwsgi
   service: name=uwsgi state=started args=openstates
