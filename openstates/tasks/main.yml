@@ -34,6 +34,10 @@
   template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
   sudo_user: "openstates"
 
+# letsencrypt
+- name: add letsencrypt renewal crontab
+  cron: job="letsencrypt renew" special_time="daily"
+
 # virtualenv
 - name: create virtualenv
   command: virtualenv -p python2.7 /home/openstates/virt{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}
