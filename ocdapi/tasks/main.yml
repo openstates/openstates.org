@@ -1,8 +1,4 @@
 ---
-#- name: nginx key
-#  apt_key: url=http://nginx.org/keys/nginx_signing.key
-#- name: nginx repo
-#  apt_repository: repo="deb http://nginx.org/packages/ubuntu/ xenial nginx"
 - name: install system packages
   apt: pkg={{item}} update_cache=yes
   with_items:
@@ -86,10 +82,6 @@
     - restart django-application
 - name: make certs dir
   file: path=/etc/nginx/certs/ state=directory
-#- name: copy ssl cert over
-#  copy: src=ec2/openstates.crt dest=/etc/nginx/certs/openstates.crt mode=0644
-#- name: copy ssl key over
-#  copy: src=ec2/openstates.key dest=/etc/nginx/certs/openstates.key mode=0644
 - name: remove nginx default config
   file: path=/etc/nginx/sites-enabled/default state=absent
 - name: generate dh params
@@ -99,7 +91,7 @@
   notify:
     - restart nginx
 - name: generate new relic config
-  command: /home/ocdapi/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/ocdapi/newrelic.ini creates=/home/ocdapi/newrelic.ini nginx is running and starts on boot
+  command: /home/ocdapi/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/ocdapi/newrelic.ini creates=/home/ocdapi/newrelic.ini
 - name: rename new relic app
   replace: dest=/home/ocdapi/newrelic.ini regexp='Python Application' replace='geo.openstates.org'
 - name: ensure nginx is running and starts on boot
