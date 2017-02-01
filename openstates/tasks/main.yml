@@ -18,6 +18,10 @@
       - uwsgi-plugin-python
       - libxslt-dev
       - letsencrypt
+- name: add localhost alias
+  lineinfile: dest=/etc/hosts line='127.0.0.1 openstates.org'
+- name: add geo.openstates.org alias
+  lineinfile: dest=/etc/hosts line='{{internal_geo_ip}} geo.openstates.org'
 - name: make project dir
   file: path=/home/openstates state=directory
 - name: add project user
