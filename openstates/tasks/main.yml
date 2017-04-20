@@ -90,8 +90,8 @@
 - name: collectstatic
   command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: django_environment
-- name: syncdb
-  command: /home/openstates/virt/bin/python manage.py syncdb --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
+- name: migrate
+  command: /home/openstates/virt/bin/python manage.py migrate --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: django_environment
 - name: create Site
   command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=openstates.settings chdir=/home/openstates/src/openstates.org
