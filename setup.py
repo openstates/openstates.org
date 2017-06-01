@@ -10,7 +10,7 @@ setup(name="admintools",
       packages=find_packages(),
       include_package_data=True,
       install_requires=[
-      	  'Django==1.11',	
+      	  'Django>=1.11',	
       ],
       classifiers=["Intended Audience :: Developers",
                    "License :: OSI Approved :: MIT License",
