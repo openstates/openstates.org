@@ -7,7 +7,7 @@ from .common import ALERT_CHOICES, ISSUE_CHOICES
 class DataQualityIssues(models.Model):
     content_type = models.ForeignKey(ContentType,
                                      related_name="dataquality_issues")
-    object_id = models.PositiveIntegerField()
+    object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     alert = models.CharField(max_length=50, choices=ALERT_CHOICES)
