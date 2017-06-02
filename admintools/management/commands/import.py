@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from ...importers.people import person_issues
 from ...importers.orgs import orgs_issues
 from ...importers.vote_events import vote_event_issues
+from ...importers.bills import bills_issues
 
 
 class Command(BaseCommand):
@@ -36,7 +37,16 @@ class Command(BaseCommand):
             help='import Vote Event Related Issues',
         )
 
+        parser.add_argument(
+            '--bills',
+            action='store_true',
+            dest='bills',
+            default=False,
+            help='import Bill Related Issues',
+        )
+
     def handle(self, *args, **options):
+
         if options['people']:
             person_issues()
             self.stdout.write(self.style.SUCCESS('Successfully Imported People'
@@ -50,4 +60,9 @@ class Command(BaseCommand):
         if options['vote_event']:
             vote_event_issues()
             self.stdout.write(self.style.SUCCESS('Successfully Imported VoteEvent'
+                                                 ' DataQualityIssues into DB'))
+
+        if options['bills']:
+            bills_issues()
+            self.stdout.write(self.style.SUCCESS('Successfully Imported Bill'
                                                  ' DataQualityIssues into DB'))
