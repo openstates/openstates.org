@@ -20,6 +20,6 @@ class DataQualityIssues(models.Model):
         ]
 
     def __str__(self):
-        return '{} to {} - {}'.format(self.get_name_display(),
+        return '{} to {} - {}'.format(self.get_issue_display(),
                                       type(self.content_object).__name__,
                                       self.get_alert_display())
