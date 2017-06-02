@@ -1,18 +1,18 @@
 from collections import defaultdict
 from opencivicdata.core.models import Person
 from admintools.models import DataQualityIssues
-from django.contrib.contenttypes.models import ContentType
 
 
 def create_person_issues(queryset, issue):
+    obj_list = []
     for query_obj in queryset:
-        # TODO any way to use bulk_create with get ?
-        contenttype_obj = ContentType.objects.get_for_model(query_obj)
-        if not DataQualityIssues.objects.filter(object_id=query_obj.id, content_type=contenttype_obj):
-            DataQualityIssues.objects.create(content_object=query_obj,
-                                             alert='warning',
-                                             issue=issue
-                                             )
+        obj_list.append(
+            DataQualityIssues(content_object=query_obj,
+                              alert='warning',
+                              issue=issue
+                              )
+        )
+    DataQualityIssues.objects.bulk_create(obj_list)
 
 
 def person_issues():
