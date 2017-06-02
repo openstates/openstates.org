@@ -22,5 +22,5 @@ class DataQualityIssues(models.Model):
 
     def __str__(self):
         return '{} issue related to {} - {}'.format(self.get_issue_display(),
-                                      type(self.content_object).__name__,
-                                      self.get_alert_display())
+                                              type(self.content_object).__name__,
+                                              self.get_alert_display())
