@@ -19,9 +19,11 @@ def person_issues():
     for issue in issues:
         if issue in ['email', 'address', 'voice']:
             print("importing person with missing %s..." % issue)
+
             queryset = Person.objects.exclude(contact_details__type=issue)
             create_person_issues(queryset, issue)
         else:
             print("importing person with missing %s..." % issue)
+            
             queryset = Person.objects.filter(image__exact='')
             create_person_issues(queryset, issue)

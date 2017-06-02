@@ -1,8 +1,6 @@
 from django.core.management.base import BaseCommand
-from ...importers.people import person_issues
-from ...importers.orgs import orgs_issues
-from ...importers.vote_events import vote_event_issues
-from ...importers.bills import bills_issues
+from ...importers import (person_issues, bills_issues,
+                          vote_event_issues, orgs_issues)
 
 
 class Command(BaseCommand):

@@ -24,21 +24,29 @@ def bills_issues():
     for issue in issues:
         if issue == 'no_actions':
             print("importing bills with no actions...")
+
             queryset = Bill.objects.filter(actions__isnull=True)
             create_bill_issues(queryset, issue, alert='error')
+
         elif issue == 'no_sponsors':
             print("importing bills with no sponsors...")
+
             queryset = Bill.objects.filter(sponsorships__isnull=True)
             create_bill_issues(queryset, issue, alert='warning')
+
         elif issue == 'unmatched_person_sponsor':
             print("importing bills with unmatched person sponsors...")
+
             queryset = Bill.objects.filter(sponsorships__person__isnull=True).distinct()
             create_bill_issues(queryset, issue, alert='warning')
+
         elif issue == 'unmatched_org_sponsor':
             print("importing bills with unmatched org sponsors...")
+
             queryset = Bill.objects.filter(sponsorships__organization__isnull=True).distinct()
             create_bill_issues(queryset, issue, alert='warning')
         else:
             print("importing bills with no version..")
+
             queryset = Bill.objects.filter(versions__isnull=True)
             create_bill_issues(queryset, issue, alert='error')
