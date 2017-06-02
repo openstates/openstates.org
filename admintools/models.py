@@ -12,6 +12,7 @@ class DataQualityIssues(models.Model):
 
     alert = models.CharField(max_length=50, choices=ALERT_CHOICES)
     issue = models.CharField(max_length=50, choices=ISSUE_CHOICES)
+    reporter = models.CharField(max_length=300, blank=True)
 
     class Meta:
         db_table = 'opencivicdata_dataqualityissues'
@@ -20,6 +21,6 @@ class DataQualityIssues(models.Model):
         ]
 
     def __str__(self):
-        return '{} to {} - {}'.format(self.get_issue_display(),
+        return '{} issue related to {} - {}'.format(self.get_issue_display(),
                                       type(self.content_object).__name__,
                                       self.get_alert_display())
