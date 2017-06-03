@@ -21,7 +21,6 @@ def create_vote_event_issues(queryset, issue, alert):
     DataQualityIssues.objects.bulk_create(obj_list)
 
 
-
 def vote_event_issues():
     issues = ['voteevent_missing_bill',
               'unmatched_voter',

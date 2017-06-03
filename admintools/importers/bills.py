@@ -20,7 +20,6 @@ def create_bill_issues(queryset, issue, alert):
     DataQualityIssues.objects.bulk_create(obj_list)
 
 
-
 def bills_issues():
     issues = ['no_actions',
               'no_sponsors',
@@ -44,13 +43,15 @@ def bills_issues():
         elif issue == 'unmatched_person_sponsor':
             print("importing bills with unmatched person sponsors...")
 
-            queryset = Bill.objects.filter(sponsorships__person__isnull=True).distinct()
+            queryset = Bill.objects.filter(sponsorships__person__isnull=True,
+                                           sponsorships__entity_type='person').distinct()
             create_bill_issues(queryset, issue, alert='warning')
 
         elif issue == 'unmatched_org_sponsor':
             print("importing bills with unmatched org sponsors...")
 
-            queryset = Bill.objects.filter(sponsorships__organization__isnull=True).distinct()
+            queryset = Bill.objects.filter(sponsorships__organization__isnull=True,
+                                           sponsorships__entity_type='organization').distinct()
             create_bill_issues(queryset, issue, alert='warning')
         else:
             print("importing bills with no version..")

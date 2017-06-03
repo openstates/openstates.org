@@ -20,7 +20,6 @@ def create_person_issues(queryset, issue, alert):
     DataQualityIssues.objects.bulk_create(obj_list)
 
 
-
 def person_issues():
     issues = ['email', 'address', 'voice', 'image']
     for issue in issues:

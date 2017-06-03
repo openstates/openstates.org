@@ -54,16 +54,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['importall']:
             person_issues()
-            self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported People'
-                                                 ' DataQualityIssues into DB'))
+            self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported'
+                                                     ' People DataQualityIssues'
+                                                     ' into DB'))
 
             orgs_issues()
             self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported Organization'
-                                                 ' DataQualityIssues into DB'))
+                                                     ' DataQualityIssues into DB'))
 
             vote_event_issues()
             self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported VoteEvent'
-                                                 ' DataQualityIssues into DB'))
+                                                     ' DataQualityIssues into DB'))
 
             bills_issues()
             self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported Bill'
