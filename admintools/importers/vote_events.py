@@ -60,5 +60,5 @@ def vote_event_issues():
         else:
             print("importing vote event with bad votes...")
 
-            queryset = VoteEvent.objects.filter(counts__option='other')
+            queryset = VoteEvent.objects.filter(counts__option='other', counts__value__gt=0)
             create_vote_event_issues(queryset, issue, alert='warning')
