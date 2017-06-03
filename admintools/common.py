@@ -27,7 +27,7 @@ ISSUE_CHOICES = (
     # Bills
     ('no_actions', 'Bill with no action'),
     ('no_sponsors', 'Bill with no sponsor'),
-    ('unmatched_person_sponsor', 'Bill has sponsor with unmatched sponsor'),
+    ('unmatched_person_sponsor', 'Bill has sponsor with unmatched person'),
     ('no_versions', 'Bill with no version'),
     ('unmatched_org_sponsor', 'Bill has sponsor with unmatched organization'),
 

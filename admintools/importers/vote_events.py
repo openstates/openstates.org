@@ -38,7 +38,7 @@ def vote_event_issues():
         elif issue == 'unmatched_voter':
             print("importing vote event with unmatched voter...")
 
-            queryset = VoteEvent.objects.filter(votes__voter__isnull=True).distinct()
+            queryset = VoteEvent.objects.filter(votes__isnull=False, votes__voter__isnull=True).distinct()
             create_vote_event_issues(queryset, issue, alert='warning')
 
         elif issue == 'missing_voters':
