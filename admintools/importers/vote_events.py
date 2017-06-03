@@ -1,18 +1,25 @@
 from admintools.models import DataQualityIssues
 from opencivicdata.legislative.models import VoteEvent
 from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
 
 
 def create_vote_event_issues(queryset, issue, alert):
     obj_list = []
     for query_obj in queryset:
-        obj_list.append(
-            DataQualityIssues(content_object=query_obj,
-                              alert=alert,
-                              issue=issue
-                              )
-        )
+        contenttype_obj = ContentType.objects.get_for_model(query_obj)
+        if not DataQualityIssues.objects.filter(object_id=query_obj.id,
+                                                content_type=contenttype_obj,
+                                                alert=alert, issue=issue):
+            obj_list.append(
+                DataQualityIssues(content_object=query_obj,
+                                  alert=alert,
+                                  issue=issue
+                                  )
+            )
+    print("Found New Issues: {}".format(len(obj_list)))
     DataQualityIssues.objects.bulk_create(obj_list)
+
 
 
 def vote_event_issues():
@@ -44,10 +51,11 @@ def vote_event_issues():
         elif issue == 'missing_votes':
             print("importing vote event with missing yes & no votes...")
 
-            queryset = VoteEvent.objects.filter(Q(counts__option='yes') &
-                                                Q(counts__value=0)) \
-                                                .filter(Q(counts__option='no')
-                                                        & Q(counts__value=0))
+            queryset = VoteEvent.objects.filter(Q(counts__option='yes',
+                                                  counts__value=0)
+                                                & Q(counts__option='no',
+                                                    counts__value=0))
+
             create_vote_event_issues(queryset, issue, alert='error')
 
         else:

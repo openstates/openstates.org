@@ -1,17 +1,24 @@
 from opencivicdata.legislative.models import Bill
 from admintools.models import DataQualityIssues
+from django.contrib.contenttypes.models import ContentType
 
 
 def create_bill_issues(queryset, issue, alert):
     obj_list = []
     for query_obj in queryset:
-        obj_list.append(
-            DataQualityIssues(content_object=query_obj,
-                              alert=alert,
-                              issue=issue
-                              )
-        )
+        contenttype_obj = ContentType.objects.get_for_model(query_obj)
+        if not DataQualityIssues.objects.filter(object_id=query_obj.id,
+                                                content_type=contenttype_obj,
+                                                alert=alert, issue=issue):
+            obj_list.append(
+                DataQualityIssues(content_object=query_obj,
+                                  alert=alert,
+                                  issue=issue
+                                  )
+            )
+    print("Found New Issues: {}".format(len(obj_list)))
     DataQualityIssues.objects.bulk_create(obj_list)
+
 
 
 def bills_issues():
