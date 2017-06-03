@@ -8,8 +8,13 @@ Compatible with
 
 Commands:-
 
-    - python manage.py import all --all
+    - python manage.py import all
     - python manage.py import all --people
     - python manage.py import all --bills
     - python manage.py import all --vote_events
     - python manage.py import all --orgs
+
+
+## TODO
+
+    - any way to use `bulk_create` with `get` object to improve sql queries?

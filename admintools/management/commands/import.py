@@ -12,14 +12,6 @@ class Command(BaseCommand):
 
         # Optional arguments
         parser.add_argument(
-            '--all',
-            action='store_true',
-            dest='importall',
-            default=False,
-            help='import all Issues',
-        )
-
-        parser.add_argument(
             '--people',
             action='store_true',
             dest='people',
@@ -52,27 +44,12 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if options['importall']:
-            person_issues()
-            self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported'
-                                                     ' People DataQualityIssues'
-                                                     ' into DB'))
-
-            orgs_issues()
-            self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported Organization'
-                                                     ' DataQualityIssues into DB'))
-
-            vote_event_issues()
-            self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported VoteEvent'
-                                                     ' DataQualityIssues into DB'))
-
-            bills_issues()
-            self.stdout.write(self.style.SQL_KEYWORD('Successfully Imported Bill'
-                                                 ' DataQualityIssues into DB'))
-
-
-            self.stdout.write(self.style.SUCCESS('Successfully Imported All'
-                                                 ' DataQualityIssues into DB'))
+        if True not in [options['people'], options['organization'], options['vote_event'],
+                        options['bills']]:
+                options['people'] = True
+                options['organization'] = True
+                options['vote_event'] = True
+                options['bills'] = True
 
         if options['people']:
             person_issues()
