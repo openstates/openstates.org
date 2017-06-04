@@ -1,15 +1,18 @@
 from admintools.models import DataQualityIssues
 from opencivicdata.legislative.models import VoteEvent
 from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
 
 
 def create_vote_event_issues(queryset, issue, alert):
     obj_list = []
     for query_obj in queryset:
-        if not DataQualityIssues.objects.filter(related_ids__contains=[query_obj.id],
+        contenttype_obj = ContentType.objects.get_for_model(query_obj)
+        if not DataQualityIssues.objects.filter(object_id=query_obj.id,
+                                                content_type=contenttype_obj,
                                                 alert=alert, issue=issue):
             obj_list.append(
-                DataQualityIssues(related_ids=[query_obj.id],
+                DataQualityIssues(content_object=query_obj,
                                   alert=alert,
                                   issue=issue
                                   )
