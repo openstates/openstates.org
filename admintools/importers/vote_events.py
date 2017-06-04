@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 def create_vote_event_issues(queryset, issue):
     obj_list = []
     alert = IssueType.level_for(issue)
-    issue = IssueType.class_for(issue) + ' - ' + issue
+    issue = IssueType.class_for(issue) + '-' + issue
     for query_obj in queryset:
         contenttype_obj = ContentType.objects.get_for_model(query_obj)
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
