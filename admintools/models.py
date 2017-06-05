@@ -10,8 +10,8 @@ class DataQualityIssue(models.Model):
     object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    alert = models.CharField(max_length=50, choices=issues.IssueType.choices())
-    issue = models.CharField(max_length=100)
+    alert = models.CharField(max_length=50)
+    issue = models.CharField(max_length=150, choices=issues.IssueType.choices())
     reporter = models.CharField(max_length=300, blank=True)
 
     class Meta:
