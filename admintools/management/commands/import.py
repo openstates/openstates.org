@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from ...importers import (person_issues, bills_issues,
                           vote_event_issues, orgs_issues)
-from ...reports import (people_report, orgs_report)
+from ...reports import (people_report, orgs_report, bill_report,
+                        voteevent_report)
 
 
 class Command(BaseCommand):
@@ -72,8 +73,14 @@ class Command(BaseCommand):
             vote_event_issues()
             self.stdout.write(self.style.SUCCESS('Successfully Imported VoteEvent'
                                                  ' DataQualityIssues into DB'))
+            voteevent_report()
+            self.stdout.write(self.style.SUCCESS('Successfully Created VoteEvent'
+                                                 ' Reports'))
 
         if options['bills']:
             bills_issues()
             self.stdout.write(self.style.SUCCESS('Successfully Imported Bill'
                                                  ' DataQualityIssues into DB'))
+            bill_report()
+            self.stdout.write(self.style.SUCCESS('Successfully Created Bill'
+                                                 ' Reports'))

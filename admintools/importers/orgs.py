@@ -33,4 +33,4 @@ def orgs_issues():
                 queryset = Membership.objects.filter(organization__jurisdiction=jur,
                                                      person__isnull=True)
                 count += create_org_issues(queryset, issue, jur)
-        print("Imported Organization {} Issues for {}".format(count, jur.name))
+        print("Imported Organization Related {} Issues for {}".format(count, jur.name))

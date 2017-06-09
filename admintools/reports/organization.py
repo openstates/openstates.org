@@ -15,7 +15,7 @@ def generate_count_report(jur):
         else:
             counts['unmatched_person_count'] = count
     OrganizationReport.objects.update_or_create(jurisdiction=jur, defaults=counts)
-    print("Updated People Report for %s" % jur.name)
+    print("Updated Organization Report for %s" % jur.name)
 
 
 def orgs_report():

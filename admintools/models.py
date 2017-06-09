@@ -52,11 +52,46 @@ class OrganizationReport(models.Model):
     def _get_total_warnings(self):
         return self.unmatched_person_count
 
-    def _get_total_errors(self):
-        return self.no_memberships_count
-
-    errors_count = property(_get_total_errors)
     warnings_count = property(_get_total_warnings)
 
     class Meta:
         db_table = 'admintools_org_report'
+
+
+class BillReport(models.Model):
+    jurisdiction = models.ForeignKey(Jurisdiction, related_name='bill_report')
+    updated_at = models.DateTimeField(auto_now=True)
+    no_actions_count = models.PositiveIntegerField(default=0)
+    no_sponsors_count = models.PositiveIntegerField(default=0)
+    no_versions_count = models.PositiveIntegerField(default=0)
+    unmatched_person_sponsor_count = models.PositiveIntegerField(default=0)
+    unmatched_org_sponsor_count = models.PositiveIntegerField(default=0)
+
+    def _get_total_warnings(self):
+        return (self.no_sponsors_count + self.no_versions_count +
+                self.unmatched_person_sponsor_count +
+                self.unmatched_org_sponsor_count)
+
+    warnings_count = property(_get_total_warnings)
+
+    class Meta:
+        db_table = 'admintools_bill_report'
+
+
+class VoteEventReport(models.Model):
+    jurisdiction = models.ForeignKey(Jurisdiction, related_name='voteevent_report')
+    updated_at = models.DateTimeField(auto_now=True)
+    missing_bill_count = models.PositiveIntegerField(default=0)
+    missing_voters_count = models.PositiveIntegerField(default=0)
+    missing_counts_count = models.PositiveIntegerField(default=0)
+    bad_counts_count = models.PositiveIntegerField(default=0)
+    unmatched_voter_count = models.PositiveIntegerField(default=0)
+
+    def _get_total_warnings(self):
+        return (self.missing_voters_count + self.bad_counts_count +
+                self.unmatched_voter_count)
+
+    warnings_count = property(_get_total_warnings)
+
+    class Meta:
+        db_table = 'admintools_voteevent_report'

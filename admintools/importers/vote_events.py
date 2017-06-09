@@ -1,59 +1,53 @@
 from admintools.issues import IssueType
 from admintools.models import DataQualityIssue
+from opencivicdata.core.models import Jurisdiction
 from opencivicdata.legislative.models import VoteEvent
 from django.db.models import Q
-from django.contrib.contenttypes.models import ContentType
 
 
-def create_vote_event_issues(queryset, issue):
+def create_vote_event_issues(queryset, issue, jur):
     obj_list = []
     alert = IssueType.level_for(issue)
     issue = IssueType.class_for(issue) + '-' + issue
     for query_obj in queryset:
-        contenttype_obj = ContentType.objects.get_for_model(query_obj)
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
-                                               content_type=contenttype_obj,
-                                               alert=alert, issue=issue):
+                                               alert=alert, issue=issue,
+                                               jurisdiction=jur):
             obj_list.append(
                 DataQualityIssue(content_object=query_obj, alert=alert,
-                                 issue=issue)
+                                 issue=issue, jurisdiction=jur)
             )
-    print("Found New Issues: {}".format(len(obj_list)))
     DataQualityIssue.objects.bulk_create(obj_list)
+    return len(obj_list)
 
 
 def vote_event_issues():
-    for issue in IssueType.get_issues_for('voteevent'):
-        if issue == 'missing-bill':
-            print("importing vote event with missing bills...")
+    all_jurs = Jurisdiction.objects.order_by('name')
+    for jur in all_jurs:
+        voteevents = VoteEvent.objects.filter(legislative_session__jurisdiction=jur)
+        count = 0
+        for issue in IssueType.get_issues_for('voteevent'):
+            if issue == 'missing-bill':
+                queryset = voteevents.filter(bill__isnull=True)
+                count += create_vote_event_issues(queryset, issue, jur)
 
-            queryset = VoteEvent.objects.filter(bill__isnull=True)
-            create_vote_event_issues(queryset, issue)
+            elif issue == 'unmatched-voter':
+                queryset = voteevents.filter(votes__isnull=False, votes__voter__isnull=True).distinct()
+                count += create_vote_event_issues(queryset, issue, jur)
 
-        elif issue == 'unmatched-voter':
-            print("importing vote event with unmatched voter...")
+            elif issue == 'missing-voters':
+                queryset = voteevents.filter(votes__isnull=True)
+                count += create_vote_event_issues(queryset, issue, jur)
 
-            queryset = VoteEvent.objects.filter(votes__isnull=False, votes__voter__isnull=True).distinct()
-            create_vote_event_issues(queryset, issue)
+            elif issue == 'missing-counts':
+                queryset = voteevents.filter(Q(counts__option='yes',
+                                                      counts__value=0)
+                                                    & Q(counts__option='no',
+                                                        counts__value=0))
 
-        elif issue == 'missing-voters':
-            print("importing vote event with missing voters...")
+                count += create_vote_event_issues(queryset, issue, jur)
 
-            queryset = VoteEvent.objects.filter(votes__isnull=True)
-            create_vote_event_issues(queryset, issue)
-
-        elif issue == 'missing-counts':
-            print("importing vote event with missing yes & no votes...")
-
-            queryset = VoteEvent.objects.filter(Q(counts__option='yes',
-                                                  counts__value=0)
-                                                & Q(counts__option='no',
-                                                    counts__value=0))
-
-            create_vote_event_issues(queryset, issue)
-
-        else:
-            print("importing vote event with bad votes...")
-
-            queryset = VoteEvent.objects.filter(counts__option='other', counts__value__gt=0)
-            create_vote_event_issues(queryset, issue)
+            else:
+                queryset = voteevents.filter(counts__option='other', counts__value__gt=0)
+                count += create_vote_event_issues(queryset, issue, jur)
+        print("Imported VoteEvents Related {} Issues for {}".format(count, jur.name))

@@ -34,4 +34,4 @@ def person_issues():
             else:
                 queryset = people.exclude(contact_details__type=issue[8:])
                 count += create_person_issues(queryset, issue, jur)
-        print("Imported People {} Issues for {}".format(count, jur.name))
+        print("Imported People Related {} Issues for {}".format(count, jur.name))
