@@ -1,0 +1,76 @@
+{% extends 'admintools/base.html' %}
+{% load staticfiles %}
+{% block navclass %}{% endblock %}
+{% block custom_css %}
+<style>
+.thead-default th{
+  background-color: #CCCC99;
+}
+.good {
+  color: green;
+}
+.bad {
+  color: #ff5050;
+}
+.warning {
+  color: #ffcc00;
+}
+
+</style>
+{% endblock %}
+{% block body %}
+<div class="table-responsive">
+  <table class="table table-bordered table-striped table-sm">
+  <thead class="thead-default">
+    <tr>
+      <th style="width:15%"><center>Jurisdiction</center></th>
+      <th style="width:10%"><center>Last Run</center></th>
+      <th style="width:10%"><center>People</center></th>
+      <th style="width:20%"><center>Organization</center></th>
+      <th style="width:20%"><center>Bill</center></th>
+      <th style="width:25%"><center>VoteEvent</center></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+      <tr class="hoverable">
+        <th><a href="#">{{ row.name}}</a></th>
+        <td align="center">
+          <i  class="fa fa-lg {{ row.run.status|yesno:"fa-check-circle good,fa-close bad"}}"></i>
+          {{ row.run.date }}
+        </td>
+        <td align="center">
+          <i class="fa fa-lg {{ row.people.warning|yesno:"fa-warning warning,fa-check-square-o good "}}"></i>
+           {{ row.people.warning|default:"" }}
+        </td>
+          <td align="center" >
+              {% if row.orgs.error %}
+              <i id="tool" data-placement="bottom" title="No Members" class="fa fa-lg fa-user-times bad"></i>
+                  {{ row.orgs.error}}
+              {% endif %}
+              {% if row.orgs.warning %}
+                <i class="fa fa-lg fa-warning warning"></i>
+                 {{ row.orgs.warning }}
+            {% endif %}
+            {% if row.orgs.error == 0 and row.orgs.warning == 0 %}
+                <i class="fa fa-lg fa-check-square-o good"></i>
+            {% endif %}
+         </td>
+
+      </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+      </div>
+{%endblock%}
+
+{% block custom_scripts %}
+<script>
+// Tooltips Initialization
+$(function () {
+  $('#tool').tooltip('toggle')
+})
+
+</script>
+{% endblock %}
