@@ -37,30 +37,30 @@ class IssueType:
                 issues.append(i.slug)
         return issues
 
-
+    
 def main():
     # Person Related Issues
-    IssueType('missing-phone', 'Missing Phone Number', 'person', 'warning')
-    IssueType('missing-email', 'Missing Email', 'person', 'warning')
-    IssueType('missing-address', 'Missing Postal Address', 'person', 'warning')
-    IssueType('missing-photo', 'Missing Photo', 'person', 'warning')
+    IssueType('missing_phone', 'Missing Phone Number', 'person', 'warning')
+    IssueType('missing_email', 'Missing Email', 'person', 'warning')
+    IssueType('missing_address', 'Missing Postal Address', 'person', 'warning')
+    IssueType('missing_photo', 'Missing Photo', 'person', 'warning')
 
     # Organization Related Issues
-    IssueType('no-memberships', 'No Memberships', 'organization', 'error')
-    IssueType('unmatched-person', 'Unmatched Person', 'organization', 'warning')
+    IssueType('no_memberships', 'No Memberships', 'organization', 'error')
+    IssueType('unmatched_person', 'Unmatched Person', 'organization', 'warning')
 
     # Bill Related Issues
-    IssueType('no-actions', 'Missing Actions', 'bill', 'error')
-    IssueType('no-sponsors', 'Missing Sponsors', 'bill', 'warning')
-    IssueType('no-versions', 'Missing Versions', 'bill', 'warning')
-    IssueType('unmatched-person-sponsor', 'Sponsor With Unmatched Person',
+    IssueType('no_actions', 'Missing Actions', 'bill', 'error')
+    IssueType('no_sponsors', 'Missing Sponsors', 'bill', 'warning')
+    IssueType('no_versions', 'Missing Versions', 'bill', 'warning')
+    IssueType('unmatched_person_sponsor', 'Sponsor With Unmatched Person',
               'bill', 'warning')
-    IssueType('unmatched-org-sponsor', 'Sponsor With Unmatched Organization',
+    IssueType('unmatched_org_sponsor', 'Sponsor With Unmatched Organization',
               'bill', 'warning')
 
     # VoteEvent Related Issues
-    IssueType('missing-bill', 'Missing Bill', 'voteevent', 'error')
-    IssueType('missing-voters', 'Missing Voters', 'voteevent', 'warning')
-    IssueType('missing-counts', 'Missing Counts', 'voteevent', 'error')
-    IssueType('bad-counts', 'Bad Counts', 'voteevent', 'warning')
-    IssueType('unmatched-voter', 'Unmatched Voter', 'voteevent', 'warning')
+    IssueType('missing_bill', 'Missing Bill', 'voteevent', 'error')
+    IssueType('missing_voters', 'Missing Voters', 'voteevent', 'warning')
+    IssueType('missing_counts', 'Missing Counts', 'voteevent', 'error')
+    IssueType('bad_counts', 'Bad Counts', 'voteevent', 'warning')
+    IssueType('unmatched_voter', 'Unmatched Voter', 'voteevent', 'warning')

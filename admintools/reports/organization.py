@@ -8,9 +8,9 @@ def generate_count_report(jur):
     counts = {'unmatched_person_count': 0,
               'no_memberships_count': 0}
     for issue in issues:
-        issue = IssueType.class_for(issue) + '-' + issue
+        issue = IssueType.class_for(issue) + '_' + issue
         count = DataQualityIssue.objects.filter(jurisdiction=jur, issue=issue).count()
-        if issue == 'organization-no-memberships':
+        if issue == 'organization_no_memberships':
             counts['no_memberships_count'] = count
         else:
             counts['unmatched_person_count'] = count

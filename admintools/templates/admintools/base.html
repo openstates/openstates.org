@@ -23,19 +23,51 @@
     <!--Navigation-->
 <nav class="navbar {% block navclass %}fixed-top{% endblock %} navbar-toggleable-md navbar-dark scrolling-navbar mdb-color lighten-3">
     <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="https://openstates.org/media/images/logo.1ebcbdb5b9ac.png" style="height: 30px" class="d-inline-block align-top" alt="Open:States">
-        </a>
+        {% block navbar_header %}
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="#">
+                            <strong>{{ jur_name }}</strong>
+                        </a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a href="{% url 'jurisdiction_intro' jur_name %}" class="nav-link">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">Legislators</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">Organizations</a>
+                        </li>
+                        <li class="nav-item btn-group">
+                            <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Bills</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <a class="dropdown-item">Action</a>
+                                <a class="dropdown-item">Another action</a>
+                                <a class="dropdown-item">Something else here</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">Run Detail</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ">
+                        <li class="nav-item">
+                            <a href="{% url 'overview' %}" class="nav-link">Status Page</i></a>
+                        </li>
+                    </ul>
+                </div>
+         {% endblock %}
     </div>
 </nav>
 <!--/.Navigation-->
 <!-- Main -->
 <main>
-    <div class="container-fluid">
-        <div class="row">
+
             {% block body%} {%endblock%}
-        </div>
-    </div>
+
 </main>
 <!-- /.Main -->
 

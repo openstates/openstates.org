@@ -12,15 +12,15 @@ def generate_count_report(jur):
               'unmatched_voter_count': 0
               }
     for issue in issues:
-        issue = IssueType.class_for(issue) + '-' + issue
+        issue = IssueType.class_for(issue) + '_' + issue
         count = DataQualityIssue.objects.filter(jurisdiction=jur, issue=issue).count()
-        if 'missing-bill' in issue:
+        if 'missing_bill' in issue:
             counts['missing_bill_count'] = count
-        elif 'missing-voters' in issue:
+        elif 'missing_voters' in issue:
             counts['missing_voters_count'] = count
-        elif 'missing-counts' in issue:
+        elif 'missing_counts' in issue:
             counts['missing_counts_count'] = count
-        elif 'bad-counts' in issue:
+        elif 'bad_counts' in issue:
             counts['bad_counts_count'] = count
         else:
             counts['unmatched_voter_count'] = count
