@@ -23,7 +23,8 @@ def orgs_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
         count = 0
-        for issue in IssueType.get_issues_for('organization'):
+        issues = IssueType.get_issues_for('organization') + IssueType.get_issues_for('membership')
+        for issue in issues:
             if issue == 'no_memberships':
                 queryset = Organization.objects.filter(jurisdiction=jur,
                                                        memberships__isnull=True)

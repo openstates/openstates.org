@@ -37,7 +37,7 @@ class IssueType:
                 issues.append(i.slug)
         return issues
 
-    
+
 def main():
     # Person Related Issues
     IssueType('missing_phone', 'Missing Phone Number', 'person', 'warning')
@@ -47,7 +47,7 @@ def main():
 
     # Organization Related Issues
     IssueType('no_memberships', 'No Memberships', 'organization', 'error')
-    IssueType('unmatched_person', 'Unmatched Person', 'organization', 'warning')
+    IssueType('unmatched_person', 'Unmatched Person', 'membership', 'warning')
 
     # Bill Related Issues
     IssueType('no_actions', 'Missing Actions', 'bill', 'error')

@@ -4,7 +4,7 @@ from admintools.issues import IssueType
 
 
 def generate_count_report(jur):
-    issues = IssueType.get_issues_for('organization')
+    issues = IssueType.get_issues_for('organization') + IssueType.get_issues_for('membership')
     counts = {'unmatched_person_count': 0,
               'no_memberships_count': 0}
     for issue in issues:

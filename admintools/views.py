@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from pupa.models import RunPlan
-from opencivicdata.core.models import Jurisdiction
+from opencivicdata.core.models import (Jurisdiction, Person, Organization,
+                                       Membership)
+from opencivicdata.legislative.models import Bill, VoteEvent
 from admintools.models import (PeopleReport, OrganizationReport,
                                BillReport, VoteEventReport)
 from admintools.issues import IssueType
@@ -34,6 +36,7 @@ def jur_dataquality_issues(jur_name):
     cards = defaultdict(dict)
     l = {'person': PeopleReport,
          'organization': OrganizationReport,
+         'membership': OrganizationReport,
          'bill': BillReport,
          'voteevent': VoteEventReport}
     issues = IssueType.choices()
@@ -51,3 +54,12 @@ def jurisdiction_intro(request, jur_name):
     issues = jur_dataquality_issues(jur_name)
     return render(request, 'admintools/jurisdiction_intro.html', {'jur_name': jur_name,
                                                                   'cards': issues})
+
+
+def list_issue_objects(request, jur_name, issue_slug):
+    l = {'person': Person,
+         'organization': Organization,
+         'membership': Membership,
+         'bill': Bill,
+         'voteevent': VoteEvent}
+    related_class = IssueType.class_for(issue_slug)
