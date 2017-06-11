@@ -8,7 +8,7 @@ from django.db.models import Q
 def create_vote_event_issues(queryset, issue, jur):
     obj_list = []
     alert = IssueType.level_for(issue)
-    issue = IssueType.class_for(issue) + '_' + issue
+    issue = IssueType.class_for(issue) + '-' + issue
     for query_obj in queryset:
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
                                                alert=alert, issue=issue,
@@ -27,19 +27,19 @@ def vote_event_issues():
         voteevents = VoteEvent.objects.filter(legislative_session__jurisdiction=jur)
         count = 0
         for issue in IssueType.get_issues_for('voteevent'):
-            if issue == 'missing_bill':
+            if issue == 'missing-bill':
                 queryset = voteevents.filter(bill__isnull=True)
                 count += create_vote_event_issues(queryset, issue, jur)
 
-            elif issue == 'unmatched_voter':
+            elif issue == 'unmatched-voter':
                 queryset = voteevents.filter(votes__isnull=False, votes__voter__isnull=True).distinct()
                 count += create_vote_event_issues(queryset, issue, jur)
 
-            elif issue == 'missing_voters':
+            elif issue == 'missing-voters':
                 queryset = voteevents.filter(votes__isnull=True)
                 count += create_vote_event_issues(queryset, issue, jur)
 
-            elif issue == 'missing_counts':
+            elif issue == 'missing-counts':
                 queryset = voteevents.filter(Q(counts__option='yes',
                                                       counts__value=0)
                                                     & Q(counts__option='no',

@@ -6,7 +6,7 @@ from admintools.models import DataQualityIssue
 def create_person_issues(queryset, issue, jur):
     obj_list = []
     alert = IssueType.level_for(issue)
-    issue = IssueType.class_for(issue) + '_' + issue
+    issue = IssueType.class_for(issue) + '-' + issue
     for query_obj in queryset:
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
                                                alert=alert, issue=issue,
@@ -25,10 +25,10 @@ def person_issues():
         count = 0
         people = Person.objects.filter(memberships__organization__jurisdiction=jur).distinct()
         for issue in IssueType.get_issues_for('person'):
-            if issue == 'missing_photo':
+            if issue == 'missing-photo':
                 queryset = people.filter(image__exact='')
                 count += create_person_issues(queryset, issue, jur)
-            elif issue == 'missing_phone':
+            elif issue == 'missing-phone':
                 queryset = people.exclude(contact_details__type='voice')
                 count += create_person_issues(queryset, issue, jur)
             else:

@@ -12,15 +12,15 @@ def generate_count_report(jur):
               'unmatched_org_sponsor_count': 0
               }
     for issue in issues:
-        issue = IssueType.class_for(issue) + '_' + issue
+        issue = IssueType.class_for(issue) + '-' + issue
         count = DataQualityIssue.objects.filter(jurisdiction=jur, issue=issue).count()
-        if 'no_actions' in issue:
+        if 'no-actions' in issue:
             counts['no_actions_count'] = count
-        elif 'no_sponsors' in issue:
+        elif 'no-sponsors' in issue:
             counts['no_sponsors_count'] = count
-        elif 'no_versions' in issue:
+        elif 'no-versions' in issue:
             counts['no_versions_count'] = count
-        elif 'unmatched_person_sponsor' in issue:
+        elif 'unmatched-person-sponsor' in issue:
             counts['unmatched_person_sponsor_count'] = count
         else:
             counts['unmatched_org_sponsor_count'] = count

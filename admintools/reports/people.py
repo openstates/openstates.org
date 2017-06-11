@@ -11,7 +11,7 @@ def generate_count_report(jur):
               'missing_address_count': 0
               }
     for issue in issues:
-        issue = IssueType.class_for(issue) + '_' + issue
+        issue = IssueType.class_for(issue) + '-' + issue
         count = DataQualityIssue.objects.filter(jurisdiction=jur, issue=issue).count()
         if 'phone' in issue:
             counts['missing_phone_count'] = count

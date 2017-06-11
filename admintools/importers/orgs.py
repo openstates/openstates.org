@@ -6,7 +6,7 @@ from admintools.models import DataQualityIssue
 def create_org_issues(queryset, issue, jur):
     obj_list = []
     alert = IssueType.level_for(issue)
-    issue = IssueType.class_for(issue) + '_' + issue
+    issue = IssueType.class_for(issue) + '-' + issue
     for query_obj in queryset:
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
                                                alert=alert, issue=issue,
@@ -25,7 +25,7 @@ def orgs_issues():
         count = 0
         issues = IssueType.get_issues_for('organization') + IssueType.get_issues_for('membership')
         for issue in issues:
-            if issue == 'no_memberships':
+            if issue == 'no-memberships':
                 queryset = Organization.objects.filter(jurisdiction=jur,
                                                        memberships__isnull=True)
                 count += create_org_issues(queryset, issue, jur)
