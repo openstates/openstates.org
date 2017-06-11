@@ -31,11 +31,11 @@
 
             <div class="col-lg-6">
                 <div class="card">
-                   <h3 class="card-header default-color white-text">Data Quality Issues</h3>
+                   <h3 class="card-header default-color white-text">Legislators</h3>
                    <div class="card-block">
                        <h4 class="card-title">Special title treatment</h4>
                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                       <a class="btn btn-primary">Go somewhere</a>
+                       <a class="btn btn-primary" href="{% url 'admin:core_person_changelist' %}?memberships__organization__jurisdiction__name={{jur_name}}">View All</a>
                    </div>
                </div>
            </div>
