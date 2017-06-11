@@ -77,7 +77,7 @@ def list_issue_objects(request, jur_name, related_class, issue_slug=None):
     elif related_class in ['bill', 'voteevent']:
         url_slug = 'legislative_' + related_class + '_change'
     else:
-        url_slug = None 
+        url_slug = None
     return render(request, 'admintools/list_issues.html', {'jur_name': jur_name,
                                                            'cards': cards,
                                                            'url_slug': url_slug})

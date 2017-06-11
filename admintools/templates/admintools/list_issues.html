@@ -6,16 +6,16 @@
          <br /><br /><br />
     <!--/.Page padding-->
     {% for card, values in cards.items %}
-    <a href="#" class="list-group-item active">
+    <a href="#" class="list-group-item active teal lighten-1">
       {{card}}
   </a><br />
 
           {% for value in values %}
           {% if url_slug %}
     <a class="btn btn-secondary btn-rounded col-xl-2" href="{% url 'admin:'|add:url_slug value.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{value.motion_text}}</a>
-        {% else %}
-    <a class="btn btn-secondary btn-rounded col-xl-2" href="{% url 'admin:core_organization_change' value.organization.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{value.motion_text}}</a>
-        {% endif %}
+          {% else %}
+    <a class="btn btn-secondary btn-rounded col-xl-2" href="{% url 'admin:core_organization_change' value.organization.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{value.motion_text}}</a>      
+          {% endif %}
         {% endfor %}<br /><br />
         {% endfor %}
 

@@ -15,7 +15,7 @@
                          <p>
                          <a data-toggle="collapse" href="#{{name}}" aria-expanded="false" aria-controls="collapseExample">
                           {{name|title }} Related</a>
-                          <a href="{% url 'list_issue_objects' jur_name name  %}">   (View all)</a>
+                            <a class="text-success" href="{% url 'list_issue_objects' jur_name name  %}">(View all)</a>
                          </p>
                           <div class="collapse" id="{{ name }}">
                               <div class="card card-block">
