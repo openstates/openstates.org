@@ -48,6 +48,7 @@ else:
     DEBUG = True
     SECRET_KEY = os.environ.get('SECRET_KEY', 'debug-secret-key')
     ALLOWED_HOSTS = ['*']
+    INTERNAL_IPS = ['127.0.0.1']
     DOMAIN = 'http://localhost:8000'
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     REGISTRATION_DEFAULT_FROM_EMAIL = 'contact@openstates.org'
@@ -65,13 +66,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'django.contrib.sites',
-    #'django.contrib.flatpages',
+    'debug_toolbar',
     'opencivicdata.core.apps.BaseConfig',
     'opencivicdata.legislative.apps.BaseConfig',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
