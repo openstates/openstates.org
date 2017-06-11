@@ -16,10 +16,16 @@
     <!-- Your custom styles (optional) -->
     <link href={% static "css/style.css" %} rel="stylesheet">
     <!-- Custom CSS -->
-    {% block custom_css %}{% endblock %}
+    {% block custom_css %}
+    <style>
+    body {
+        background-image: url({% static 'img/background.jpg' %})
+    }
+    </style>
+    {% endblock %}
 </head>
 
-<body>
+<body >
     <!--Navigation-->
 <nav class="navbar {% block navclass %}fixed-top{% endblock %} navbar-toggleable-md navbar-dark scrolling-navbar mdb-color lighten-3">
     <div class="container">

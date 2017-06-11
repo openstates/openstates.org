@@ -1,7 +1,8 @@
 {% extends 'admintools/base.html' %}
+{% load staticfiles %}
 {% block navbar_header %}
     <a class="navbar-brand" href="#">
-        <img src="https://openstates.org/media/images/logo.1ebcbdb5b9ac.png" style="height: 30px" class="d-inline-block align-top" alt="Open:States">
+        <img src="{% static 'img/openstates_logo.png' %}" style="height: 30px" class="d-inline-block align-top" alt="Open:States">
     </a>
 {% endblock %}
 {% block navclass %}{% endblock %}
