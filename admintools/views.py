@@ -3,50 +3,57 @@ from pupa.models import RunPlan
 from opencivicdata.core.models import (Jurisdiction, Person, Organization,
                                        Membership)
 from opencivicdata.legislative.models import Bill, VoteEvent
-from admintools.models import (PeopleReport, OrganizationReport,
-                               BillReport, VoteEventReport, DataQualityIssue)
 from admintools.issues import IssueType
+from admintools.models import DataQualityIssue
+from django.db.models import Count
+from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
 
 
 def overview(request):
-    rows = []
-    all_jurs = Jurisdiction.objects.order_by('name')
-    for jur in all_jurs:
-        reports = {}
-        reports['name'] = jur.name
-        reports['people'] = {'warning': PeopleReport.objects.get(jurisdiction=jur).warnings_count}
-        reports['orgs'] = {'warning': OrganizationReport.objects.get(jurisdiction=jur).warnings_count,
-                           'error': OrganizationReport.objects.get(jurisdiction=jur).no_memberships_count}
-        reports['bills'] = {'warning': BillReport.objects.get(jurisdiction=jur).warnings_count,
-                            'action_error': BillReport.objects.get(jurisdiction=jur).no_actions_count}
-        reports['voteevents'] = {'warning': VoteEventReport.objects.get(jurisdiction=jur).warnings_count,
-                                 'bill_error': VoteEventReport.objects.get(jurisdiction=jur).missing_bill_count,
-                                 'counts_error': VoteEventReport.objects.get(jurisdiction=jur).missing_counts_count}
+    rows = {}
+    all_counts = DataQualityIssue.objects.values('jurisdiction', 'issue', 'alert').annotate(Count('issue'))
+    for counts in all_counts:
+        jur = Jurisdiction.objects.filter(id=counts['jurisdiction']).first()
+        counts['jurisdiction'] = jur.name
+        rows.setdefault(counts['jurisdiction'], {}).setdefault(counts['issue'].split('-')[0], {})
+        try:
+            rows[counts['jurisdiction']][counts['issue'].split('-')[0]][counts['alert']] += counts['issue__count']
+        except:
+            rows[counts['jurisdiction']][counts['issue'].split('-')[0]][counts['alert']] = counts['issue__count']
 
-        run = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time').first()
-        reports['run'] = {'status': run.success,
-                          'date': run.end_time.date()}
-        rows.append(reports)
-
+        try:
+            rows[counts['jurisdiction']]['run']
+        except:
+            run = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time').first()
+            rows[counts['jurisdiction']]['run'] = {'status': run.success,
+                                                   'date': run.end_time.date()}
+    rows = sorted(rows.items())
     return render(request, 'admintools/index.html', {'rows': rows})
 
 
 def jur_dataquality_issues(jur_name):
     cards = defaultdict(dict)
-    l = {'person': PeopleReport,
-         'organization': OrganizationReport,
-         'membership': OrganizationReport,
-         'bill': BillReport,
-         'voteevent': VoteEventReport}
+    l = {'person': Person,
+         'organization': Organization,
+         'membership': Membership,
+         'bill': Bill,
+         'voteevent': VoteEvent}
     issues = IssueType.choices()
     for issue, description in issues:
         related_class = IssueType.class_for(issue)
         cards[related_class][issue] = {}
-        cards[related_class][issue]['alert'] = True if IssueType.level_for(issue) == 'error' else False
+        issue_type = IssueType.class_for(issue) + '-' + issue
+        alert = IssueType.level_for(issue)
+        cards[related_class][issue]['alert'] = True if alert == 'error' else False
         cards[related_class][issue]['description'] = description
-        label = issue.replace("-", "_") + '_count'
-        cards[related_class][issue]['count'] = l[related_class].objects.filter(jurisdiction__name__exact=jur_name).values_list(label, flat=True).first()
+        ct_obj = ContentType.objects.get_for_model(l[related_class])
+        j = Jurisdiction.objects.filter(name__exact=jur_name, dataquality_issues__content_type=ct_obj,
+                                        dataquality_issues__issue=issue_type).annotate(_issues=Count('dataquality_issues'))
+        if j:
+            cards[related_class][issue]['count'] = j[0]._issues
+        else:
+            cards[related_class][issue]['count'] = 0
     return dict(cards)
 
 
