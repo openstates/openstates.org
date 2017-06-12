@@ -28,6 +28,15 @@ def overview(request):
             run = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time').first()
             rows[counts['jurisdiction']]['run'] = {'status': run.success,
                                                    'date': run.end_time.date()}
+
+    # Calculating RunPlan For those who don't have any type of dataquality_issues
+    rest_jurs = Jurisdiction.objects.exclude(name__in=rows.keys())
+    for jur in rest_jurs:
+        run = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time').first()
+        rows[jur.name] = {}
+        rows[jur.name]['run'] = {'status': run.success,
+                                'date': run.end_time.date()}
+
     rows = sorted(rows.items())
     return render(request, 'admintools/index.html', {'rows': rows})
 
