@@ -9,7 +9,15 @@ from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
 
+# Basic Classes with their Identifiers.
+upstream = {'person': Person,
+            'organization': Organization,
+            'membership': Membership,
+            'bill': Bill,
+            'voteevent': VoteEvent}
 
+
+# Status Page
 def overview(request):
     rows = {}
     all_counts = DataQualityIssue.objects.values('jurisdiction', 'issue', 'alert').annotate(Count('issue'))
@@ -17,14 +25,10 @@ def overview(request):
         jur = Jurisdiction.objects.filter(id=counts['jurisdiction']).first()
         counts['jurisdiction'] = jur.name
         rows.setdefault(counts['jurisdiction'], {}).setdefault(counts['issue'].split('-')[0], {})
-        try:
-            rows[counts['jurisdiction']][counts['issue'].split('-')[0]][counts['alert']] += counts['issue__count']
-        except:
-            rows[counts['jurisdiction']][counts['issue'].split('-')[0]][counts['alert']] = counts['issue__count']
+        rows[counts['jurisdiction']][counts['issue'].split('-')[0]][counts['alert']] = \
+            rows[counts['jurisdiction']][counts['issue'].split('-')[0]].get(counts['alert'], 0) + counts['issue__count']
 
-        try:
-            rows[counts['jurisdiction']]['run']
-        except:
+        if not rows[counts['jurisdiction']].get('run'):
             run = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time').first()
             rows[counts['jurisdiction']]['run'] = {'status': run.success,
                                                    'date': run.end_time.date()}
@@ -41,13 +45,9 @@ def overview(request):
     return render(request, 'admintools/index.html', {'rows': rows})
 
 
+# Calculates all dataquality_issues in given jurisdiction
 def jur_dataquality_issues(jur_name):
     cards = defaultdict(dict)
-    l = {'person': Person,
-         'organization': Organization,
-         'membership': Membership,
-         'bill': Bill,
-         'voteevent': VoteEvent}
     issues = IssueType.choices()
     for issue, description in issues:
         related_class = IssueType.class_for(issue)
@@ -56,28 +56,22 @@ def jur_dataquality_issues(jur_name):
         alert = IssueType.level_for(issue)
         cards[related_class][issue]['alert'] = True if alert == 'error' else False
         cards[related_class][issue]['description'] = description
-        ct_obj = ContentType.objects.get_for_model(l[related_class])
+        ct_obj = ContentType.objects.get_for_model(upstream[related_class])
         j = Jurisdiction.objects.filter(name__exact=jur_name, dataquality_issues__content_type=ct_obj,
                                         dataquality_issues__issue=issue_type).annotate(_issues=Count('dataquality_issues'))
-        if j:
-            cards[related_class][issue]['count'] = j[0]._issues
-        else:
-            cards[related_class][issue]['count'] = 0
+        cards[related_class][issue]['count'] = j[0]._issues if j else 0
     return dict(cards)
 
 
+# Jurisdiction Specific Page
 def jurisdiction_intro(request, jur_name):
     issues = jur_dataquality_issues(jur_name)
-    return render(request, 'admintools/jurisdiction_intro.html', {'jur_name': jur_name,
-                                                                  'cards': issues})
+    context = {'jur_name': jur_name, 'cards': issues}
+    return render(request, 'admintools/jurisdiction_intro.html', context)
 
 
+# Lists given issue(s) related objetcs
 def list_issue_objects(request, jur_name, related_class, issue_slug=None):
-    l = {'person': Person,
-         'organization': Organization,
-         'membership': Membership,
-         'bill': Bill,
-         'voteevent': VoteEvent}
     issues = [issue_slug] if issue_slug is not None else IssueType.get_issues_for(related_class)
     cards = defaultdict(list)
     for issue in issues:
@@ -86,14 +80,18 @@ def list_issue_objects(request, jur_name, related_class, issue_slug=None):
         objects_list = DataQualityIssue.objects.filter(jurisdiction__name__exact=jur_name,
                                                        issue=issue).values_list('object_id',
                                                                                 flat=True)
-        cards[description] = list(l[related_class].objects.in_bulk(objects_list).values())
+        cards[description] = list(upstream[related_class].objects.in_bulk(objects_list).values())
     cards = dict(cards)
+
+    # url_slug used to address the Django-admin page
     if related_class in ['person', 'organization']:
         url_slug = 'core_' + related_class + '_change'
     elif related_class in ['bill', 'voteevent']:
         url_slug = 'legislative_' + related_class + '_change'
     else:
         url_slug = None
-    return render(request, 'admintools/list_issues.html', {'jur_name': jur_name,
-                                                           'cards': cards,
-                                                           'url_slug': url_slug})
+
+    context = {'jur_name': jur_name,
+               'cards': cards,
+               'url_slug': url_slug}
+    return render(request, 'admintools/list_issues.html', context)
