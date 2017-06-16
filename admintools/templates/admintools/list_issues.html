@@ -43,8 +43,10 @@
               {% else %}
               <th style="text-align: center;" >
                 <input style="text-align:center;" type="text" name="membership" placeholder="{{ request.GET.membership|default:"UNMATCHED NAME" }}" /></th>
-              <th style="text-align: center;" >ORGANIZATION</th>
-              <th style="text-align: center;" >MEMBERSHIP ID</th>
+              <th style="text-align: center;" >
+                  <input style="text-align:center;" type="text" name="membership_org" placeholder="{{ request.GET.membership_org|default:"ORGANIZATION" }}" /></th>
+              <th style="text-align: center;" >
+                <input style="text-align:center;" type="text" name="membership_id" placeholder="{{ request.GET.membership_id|default:"MEMBERSHIP ID" }}" /></th>
               {% endif %}
           </form>
         </tr>

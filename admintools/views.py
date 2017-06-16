@@ -76,7 +76,7 @@ def jurisdiction_intro(request, jur_name):
 def filter_results(request):
     query = Q()
     if request.GET.get('person'):
-        query &= Q(name__istartswith=request.GET.get('person'))
+        query = Q(name__istartswith=request.GET.get('person'))
     if request.GET.get('organization'):
         query &= Q(name__istartswith=request.GET.get('organization'))
     if request.GET.get('org_classification'):
@@ -88,9 +88,13 @@ def filter_results(request):
     if request.GET.get('voteevent_bill'):
         query &= Q(bill__identifier__icontains=request.GET.get('voteevent_bill'))
     if request.GET.get('voteevent_org'):
-        query &= Q(organization__name__istartswith=request.GET.get('voteevent_org'))
+        query &= Q(organization__name__icontains=request.GET.get('voteevent_org'))
     if request.GET.get('membership'):
         query &= Q(person_name__istartswith=request.GET.get('membership'))
+    if request.GET.get('membership_org'):
+        query &= Q(organization__name__icontains=request.GET.get('membership_org'))
+    if request.GET.get('membership_id'):
+        query &= Q(id=request.GET.get('membership_id'))
     return query
 
 
