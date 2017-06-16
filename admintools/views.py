@@ -101,8 +101,9 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     objects_list = DataQualityIssue.objects.filter(jurisdiction__name__exact=jur_name,
                                                    issue=issue).values_list('object_id',
                                                                             flat=True)
-    cards = upstream[related_class].objects.filter(id__in=list(objects_list))
-    cards = cards.filter(filter_results(request))
+    cards = upstream[related_class].objects.filter(id__in=objects_list)
+    if request.GET:
+        cards = cards.filter(filter_results(request))
 
     # pagination of results
     # order_by because of 'UnorderedObjectListWarning'
