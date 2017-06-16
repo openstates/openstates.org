@@ -82,11 +82,11 @@ def filter_results(request):
     if request.GET.get('org_classification'):
         query &= Q(classification__istartswith=request.GET.get('org_classification'))
     if request.GET.get('bill_identifier'):
-        query &= Q(identifier__istartswith=request.GET.get('bill_identifier'))
+        query &= Q(identifier__icontains=request.GET.get('bill_identifier'))
     if request.GET.get('bill_session'):
         query &= Q(legislative_session__name__icontains=request.GET.get('bill_session'))
     if request.GET.get('voteevent_bill'):
-        query &= Q(bill__identifier__istartswith=request.GET.get('voteevent_bill'))
+        query &= Q(bill__identifier__icontains=request.GET.get('voteevent_bill'))
     if request.GET.get('voteevent_org'):
         query &= Q(organization__name__istartswith=request.GET.get('voteevent_org'))
     if request.GET.get('membership'):
