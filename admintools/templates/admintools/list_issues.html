@@ -5,19 +5,93 @@
     <!--Page padding-->
          <br /><br /><br />
     <!--/.Page padding-->
-    {% for card, values in cards.items %}
+
     <a href="#" class="list-group-item active teal lighten-1">
-      {{card}}
-  </a><br />
+      {{description}}
+  </a>
+      <table class="table table-bordered table-striped">
+        <thead class="thead-default">
+          <tr>
+            <th style="width:2%" ></th>
+            {% if related_class == 'person' %}
+            <th style="text-align: center;" >NAME</th>
+            <th style="text-align: center;" >PERSON ID</th>
+            {% elif related_class == 'organization' %}
+            <th style="text-align: center;" >NAME</th>
+            <th style="text-align: center;" >CLASSIFICATION</th>
+            {% elif related_class == 'bill' %}
+              <th style="text-align: center;" >IDENTIFIER</th>
+              <th style="text-align: center;" >SESSION</th>
+              <th style="text-align: center;" >TITLE</th>
+            {% elif related_class == 'voteevent' %}
+              <th style="text-align: center;" >MOTION TEXT</th>
+              <th style="text-align: center;" >BILL</th>
+              <th style="text-align: center;" >ORGANIZATION</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for value in objects %}
+            <tr>
+              <th scope="row">{{forloop.counter}}</th>
+              <td align="center">
+                {% if url_slug %}
+            <a  href="{% url 'admin:'|add:url_slug value.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{ value.motion_text }}</a>
+                  {% else %}
+            <a href="{% url 'admin:core_organization_change' value.organization.id %}">{{value.person_name}}</a>
+                  {% endif %}
+              </td>
+                {% if related_class == 'person'  %}
+                    <td align="center">{{ value.id }}</td>
+                {% elif related_class == 'organization' %}
+                  <td align="center">{{ value.classification|title }}</td>
+                {% elif related_class == 'bill' %}
+                    <td align="center">{{ value.legislative_session }}</td>
+                    <td align="center">{{ value.title }}</td>
+                {% elif related_class == 'voteevent' %}
+                  <td align="center">{{ value.bill.identifier }} in {{ value.bill.legislative_session }}</td>
+                  <td align="center">{{ value.organization}}</td>
+                {% endif %}
 
-          {% for value in values %}
-          {% if url_slug %}
-    <a class="btn btn-secondary btn-rounded col-xl-2" href="{% url 'admin:'|add:url_slug value.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{value.motion_text}}</a>
-          {% else %}
-    <a class="btn btn-secondary btn-rounded col-xl-2" href="{% url 'admin:core_organization_change' value.organization.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{value.motion_text}}</a>
+            </tr>
+          {% endfor %}<br /><br />
+        </tbody>
+      </table>
+      {% if objects.has_other_pages %}
+      <br />
+      <nav>
+        <ul class="pagination pagination-md">
+          {% if objects.has_previous %}
+            <li class="page-item ">
+              <a class="page-link" href="?page={{ objects.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+              </a>
+            </li>
           {% endif %}
-        {% endfor %}<br /><br />
-        {% endfor %}
-
+          {% for i in page_range %}
+            {% if objects.number == i %}
+              <li class="page-item active">
+                <a class="page-link" href="#">{{ i }}<span class="sr-only">(current)</span></a>
+              </li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{i}}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if objects.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ objects.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+              <span class="sr-only">Next</span>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+        <span>
+            Page {{ objects.number }} of {{ objects.paginator.num_pages }}. (Total {{ objects.paginator.count }} Results)
+        </span>
+      </nav>
+      {% endif %}<br /><br />
+        <div>
 </div>
 {% endblock %}

@@ -8,6 +8,7 @@ from admintools.models import DataQualityIssue
 from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 # Basic Classes with their Identifiers.
 upstream = {'person': Person,
@@ -71,17 +72,28 @@ def jurisdiction_intro(request, jur_name):
 
 
 # Lists given issue(s) related objetcs
-def list_issue_objects(request, jur_name, related_class, issue_slug=None):
-    issues = [issue_slug] if issue_slug is not None else IssueType.get_issues_for(related_class)
-    cards = defaultdict(list)
-    for issue in issues:
-        description = IssueType.description_for(issue)
-        issue = IssueType.class_for(issue) + '-' + issue
-        objects_list = DataQualityIssue.objects.filter(jurisdiction__name__exact=jur_name,
-                                                       issue=issue).values_list('object_id',
-                                                                                flat=True)
-        cards[description] = list(upstream[related_class].objects.in_bulk(objects_list).values())
-    cards = dict(cards)
+def list_issue_objects(request, jur_name, related_class, issue_slug):
+    description = IssueType.description_for(issue_slug)
+    issue = IssueType.class_for(issue_slug) + '-' + issue_slug
+    objects_list = DataQualityIssue.objects.filter(jurisdiction__name__exact=jur_name,
+                                                   issue=issue).values_list('object_id',
+                                                                            flat=True)
+    cards = list(upstream[related_class].objects.in_bulk(objects_list).values())
+    paginator = Paginator(cards, 20)
+    try:
+        page = int(request.GET.get('page', '1'))
+    except:
+        page = 1
+    try:
+        objects = paginator.page(page)
+    except(EmptyPage, InvalidPage):
+        objects = paginator.page(1)
+
+    index = objects.number - 1
+    max_index = len(paginator.page_range)
+    start_index = index - 4 if index >= 4 else 0
+    end_index = index + 4 if index <= max_index - 4 else max_index
+    page_range = paginator.page_range[start_index:end_index]
 
     # url_slug used to address the Django-admin page
     if related_class in ['person', 'organization']:
@@ -92,6 +104,9 @@ def list_issue_objects(request, jur_name, related_class, issue_slug=None):
         url_slug = None
 
     context = {'jur_name': jur_name,
-               'cards': cards,
-               'url_slug': url_slug}
+               'objects': objects,
+               'description': description,
+               'page_range': page_range,
+               'url_slug': url_slug,
+               'related_class': related_class}
     return render(request, 'admintools/list_issues.html', context)
