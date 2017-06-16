@@ -29,9 +29,9 @@
                 <input style="text-align:center;" type="text" name="org_classification" placeholder="{{ request.GET.org_classification|default:"CLASSIFICATION" }}" />
               </th>
               {% elif related_class == 'bill' %}
-                <th style="text-align: center;" >
+                <th style="text-align: center; width:15%;" >
                   <input style="text-align:center;" type="text" name="bill_identifier" placeholder="{{ request.GET.bill_identifier|default:"IDENTIFIER" }}" /></th>
-                <th style="text-align: center;" >
+                <th style="text-align: center;width:15%;" >
                   <input style="text-align:center;" type="text" name="bill_session" placeholder="{{ request.GET.bill_session|default:"SESSION" }}" /></th>
                 <th style="text-align: center;" >TITLE</th>
               {% elif related_class == 'voteevent' %}
