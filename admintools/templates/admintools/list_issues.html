@@ -9,6 +9,7 @@
     <a href="{% url 'list_issue_objects' jur_name related_class issue_slug %}" class="list-group-item active teal lighten-1">
       {{description}}(View All)
   </a>
+
       <table class="table table-bordered table-striped">
         <thead class="thead-default">
           <tr>
@@ -17,31 +18,31 @@
                 <button type="submit"><i class="fa fa-search"></i></button></th>
               {% if related_class == 'person' %}
               <th style="text-align: center;" >
-                <input style="text-align:center;" type="text" name="person" placeholder="NAME" />
+                <input style="text-align:center;" type="text" name="person" placeholder="{{ request.GET.person|default:"NAME" }}" />
               </th>
               <th style="text-align: center;" >PERSON ID</th>
               {% elif related_class == 'organization' %}
               <th style="text-align: center;" >
-              <input style="text-align:center;" type="text" name="organization" placeholder="NAME" />
+              <input style="text-align:center;" type="text" name="organization" placeholder="{{ request.GET.organization|default:"NAME" }}" />
               </th>
               <th style="text-align: center;" >
-                <input style="text-align:center;" type="text" name="org_classification" placeholder="CLASSIFICATION" />
+                <input style="text-align:center;" type="text" name="org_classification" placeholder="{{ request.GET.org_classification|default:"CLASSIFICATION" }}" />
               </th>
               {% elif related_class == 'bill' %}
                 <th style="text-align: center;" >
-                  <input style="text-align:center;" type="text" name="bill_identifier" placeholder="IDENTIFIER" /></th>
+                  <input style="text-align:center;" type="text" name="bill_identifier" placeholder="{{ request.GET.bill_identifier|default:"IDENTIFIER" }}" /></th>
                 <th style="text-align: center;" >
-                  <input style="text-align:center;" type="text" name="bill_session" placeholder="SESSION" /></th>
+                  <input style="text-align:center;" type="text" name="bill_session" placeholder="{{ request.GET.bill_session|default:"SESSION" }}" /></th>
                 <th style="text-align: center;" >TITLE</th>
               {% elif related_class == 'voteevent' %}
                 <th style="text-align: center; width:50%" >MOTION TEXT</th>
                 <th style="text-align: center;" >
-                  <input style="text-align:center;" type="text" name="voteevent_bill" placeholder="BILL" /></th>
+                  <input style="text-align:center;" type="text" name="voteevent_bill" placeholder="{{ request.GET.voteevent_bill|default:"BILL" }}" /></th>
                 <th style="text-align: center;" >
-                  <input style="text-align:center;" type="text" name="voteevent_org" placeholder="ORGANIZATION" /></th>
+                  <input style="text-align:center;" type="text" name="voteevent_org" placeholder="{{ request.GET.voteevent_org|default:"ORGANIZATION" }}" /></th>
               {% else %}
               <th style="text-align: center;" >
-                <input style="text-align:center;" type="text" name="membership" placeholder="UNMATCHED NAME" /></th>
+                <input style="text-align:center;" type="text" name="membership" placeholder="{{ request.GET.membership|default:"UNMATCHED NAME" }}" /></th>
               <th style="text-align: center;" >ORGANIZATION</th>
               <th style="text-align: center;" >MEMBERSHIP ID</th>
               {% endif %}
