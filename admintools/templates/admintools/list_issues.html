@@ -35,9 +35,9 @@
                   <input style="text-align:center;" type="text" name="bill_session" placeholder="{{ request.GET.bill_session|default:"SESSION" }}" /></th>
                 <th style="text-align: center;" >TITLE</th>
               {% elif related_class == 'voteevent' %}
-                <th style="text-align: center; width:50%" >MOTION TEXT</th>
+                <th style="text-align: center; " >MOTION TEXT</th>
                 <th style="text-align: center;" >
-                  <input style="text-align:center;" type="text" name="voteevent_bill" placeholder="{{ request.GET.voteevent_bill|default:"BILL" }}" /></th>
+                  <input style="text-align:center; width:30%;" type="text" name="voteevent_bill" placeholder="{{ request.GET.voteevent_bill|default:"BILL" }}" /></th>
                 <th style="text-align: center;" >
                   <input style="text-align:center;" type="text" name="voteevent_org" placeholder="{{ request.GET.voteevent_org|default:"ORGANIZATION" }}" /></th>
               {% else %}
