@@ -19,6 +19,18 @@ upstream = {'person': Person,
             'voteevent': VoteEvent}
 
 
+def get_run_status(jur_name):
+    runs = RunPlan.objects.filter(jurisdiction=jur_name).order_by('-end_time')
+    latest_date = runs.first().end_time.date()
+    status = 0
+    for run in runs:
+        if run.success:
+            break
+        else:
+            status += 1
+    return {'count': None if status == 1 else status, 'date': latest_date}
+
+
 # Status Page
 def overview(request):
     rows = {}
@@ -31,17 +43,13 @@ def overview(request):
             rows[counts['jurisdiction']][counts['issue'].split('-')[0]].get(counts['alert'], 0) + counts['issue__count']
 
         if not rows[counts['jurisdiction']].get('run'):
-            run = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time').first()
-            rows[counts['jurisdiction']]['run'] = {'status': run.success,
-                                                   'date': run.end_time.date()}
+            rows[counts['jurisdiction']]['run'] = get_run_status(jur)
 
     # Calculating RunPlan For those who don't have any type of dataquality_issues
     rest_jurs = Jurisdiction.objects.exclude(name__in=rows.keys())
     for jur in rest_jurs:
-        run = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time').first()
         rows[jur.name] = {}
-        rows[jur.name]['run'] = {'status': run.success,
-                                'date': run.end_time.date()}
+        rows[jur.name]['run'] = get_run_status(jur)
 
     rows = sorted(rows.items())
     return render(request, 'admintools/index.html', {'rows': rows})

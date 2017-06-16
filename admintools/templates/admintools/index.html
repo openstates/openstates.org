@@ -44,9 +44,14 @@
       <tr class="hoverable">
         <th><a href="{% url 'jurisdiction_intro' jur_name=name %}">{{ name }}</a></th>
         <!-- Last Run -->
-        <td align="center">
-          <i  class="fa fa-lg {{ values.run.status|yesno:"fa-check-circle good,fa-close bad"}}"></i>
+        <td align="center"  >
+          {% if values.run.count or values.run.count == None %}
+          <div data-toggle="tooltip" data-placement="bottom" title="Last {{values.run.count|default_if_none:"1"}} Run{{values.run.count|pluralize}} Failed" >
+          {% endif %}
+          <i class="fa fa-lg {{ values.run.count|yesno:"fa-close bad, fa-check-circle good, fa-warning warning"}}"></i>
           {{ values.run.date }}
+          </div>
+
         </td>
 
         <!-- People -->
@@ -107,3 +112,12 @@
 </div>
 </div>
 {%endblock%}
+
+{% block custom_sctipts %}
+<script>
+// Tooltips Initialization
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip('toggle')
+})
+</script>
+{% endblock %}
