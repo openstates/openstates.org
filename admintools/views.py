@@ -9,6 +9,7 @@ from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
+from django.db.models import Q
 
 # Basic Classes with their Identifiers.
 upstream = {'person': Person,
@@ -71,6 +72,28 @@ def jurisdiction_intro(request, jur_name):
     return render(request, 'admintools/jurisdiction_intro.html', context)
 
 
+# Filter Results
+def filter_results(request):
+    query = Q()
+    if request.GET.get('person'):
+        query &= Q(name__istartswith=request.GET.get('person'))
+    if request.GET.get('organization'):
+        query &= Q(name__istartswith=request.GET.get('organization'))
+    if request.GET.get('org_classification'):
+        query &= Q(classification__istartswith=request.GET.get('org_classification'))
+    if request.GET.get('bill_identifier'):
+        query &= Q(identifier__istartswith=request.GET.get('bill_identifier'))
+    if request.GET.get('bill_session'):
+        query &= Q(legislative_session__name__icontains=request.GET.get('bill_session'))
+    if request.GET.get('voteevent_bill'):
+        query &= Q(bill__identifier__istartswith=request.GET.get('voteevent_bill'))
+    if request.GET.get('voteevent_org'):
+        query &= Q(organization__name__istartswith=request.GET.get('voteevent_org'))
+    if request.GET.get('membership'):
+        query &= Q(person_name__istartswith=request.GET.get('membership'))
+    return query
+
+
 # Lists given issue(s) related objetcs
 def list_issue_objects(request, jur_name, related_class, issue_slug):
     description = IssueType.description_for(issue_slug)
@@ -78,8 +101,12 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     objects_list = DataQualityIssue.objects.filter(jurisdiction__name__exact=jur_name,
                                                    issue=issue).values_list('object_id',
                                                                             flat=True)
-    cards = list(upstream[related_class].objects.in_bulk(objects_list).values())
-    paginator = Paginator(cards, 20)
+    cards = upstream[related_class].objects.filter(id__in=list(objects_list))
+    cards = cards.filter(filter_results(request))
+
+    # pagination of results
+    # order_by because of 'UnorderedObjectListWarning'
+    paginator = Paginator(cards.order_by('id'), 20)
     try:
         page = int(request.GET.get('page', '1'))
     except:
@@ -89,6 +116,7 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     except(EmptyPage, InvalidPage):
         objects = paginator.page(1)
 
+    # page_range to show at bottom of table
     index = objects.number - 1
     max_index = len(paginator.page_range)
     start_index = index - 4 if index >= 4 else 0
@@ -104,6 +132,7 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
         url_slug = None
 
     context = {'jur_name': jur_name,
+               'issue_slug': issue_slug,
                'objects': objects,
                'description': description,
                'page_range': page_range,

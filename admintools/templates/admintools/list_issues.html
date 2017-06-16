@@ -1,34 +1,52 @@
 {% extends 'admintools/base.html' %}
-
+{% load url_replace %}
 {% block body %}
-<div class="container">
+<div class="container" id="cats">
     <!--Page padding-->
          <br /><br /><br />
     <!--/.Page padding-->
 
-    <a href="#" class="list-group-item active teal lighten-1">
-      {{description}}
+    <a href="{% url 'list_issue_objects' jur_name related_class issue_slug %}" class="list-group-item active teal lighten-1">
+      {{description}}(View All)
   </a>
       <table class="table table-bordered table-striped">
         <thead class="thead-default">
           <tr>
-            <th style="width:2%" ></th>
-            {% if related_class == 'person' %}
-            <th style="text-align: center;" >NAME</th>
-            <th style="text-align: center;" >PERSON ID</th>
-            {% elif related_class == 'organization' %}
-            <th style="text-align: center;" >NAME</th>
-            <th style="text-align: center;" >CLASSIFICATION</th>
-            {% elif related_class == 'bill' %}
-              <th style="text-align: center;" >IDENTIFIER</th>
-              <th style="text-align: center;" >SESSION</th>
-              <th style="text-align: center;" >TITLE</th>
-            {% elif related_class == 'voteevent' %}
-              <th style="text-align: center;" >MOTION TEXT</th>
-              <th style="text-align: center;" >BILL</th>
+            <form method='get'>
+              <th style="width:2%" >
+                <button type="submit"><i class="fa fa-search"></i></button></th>
+              {% if related_class == 'person' %}
+              <th style="text-align: center;" >
+                <input style="text-align:center;" type="text" name="person" placeholder="NAME" />
+              </th>
+              <th style="text-align: center;" >PERSON ID</th>
+              {% elif related_class == 'organization' %}
+              <th style="text-align: center;" >
+              <input style="text-align:center;" type="text" name="organization" placeholder="NAME" />
+              </th>
+              <th style="text-align: center;" >
+                <input style="text-align:center;" type="text" name="org_classification" placeholder="CLASSIFICATION" />
+              </th>
+              {% elif related_class == 'bill' %}
+                <th style="text-align: center;" >
+                  <input style="text-align:center;" type="text" name="bill_identifier" placeholder="IDENTIFIER" /></th>
+                <th style="text-align: center;" >
+                  <input style="text-align:center;" type="text" name="bill_session" placeholder="SESSION" /></th>
+                <th style="text-align: center;" >TITLE</th>
+              {% elif related_class == 'voteevent' %}
+                <th style="text-align: center; width:50%" >MOTION TEXT</th>
+                <th style="text-align: center;" >
+                  <input style="text-align:center;" type="text" name="voteevent_bill" placeholder="BILL" /></th>
+                <th style="text-align: center;" >
+                  <input style="text-align:center;" type="text" name="voteevent_org" placeholder="ORGANIZATION" /></th>
+              {% else %}
+              <th style="text-align: center;" >
+                <input style="text-align:center;" type="text" name="membership" placeholder="UNMATCHED NAME" /></th>
               <th style="text-align: center;" >ORGANIZATION</th>
-            {% endif %}
-          </tr>
+              <th style="text-align: center;" >MEMBERSHIP ID</th>
+              {% endif %}
+          </form>
+        </tr>
         </thead>
         <tbody>
           {% for value in objects %}
@@ -51,6 +69,9 @@
                 {% elif related_class == 'voteevent' %}
                   <td align="center">{{ value.bill.identifier }} in {{ value.bill.legislative_session }}</td>
                   <td align="center">{{ value.organization}}</td>
+                {% else %}
+                  <td align="center">{{ value.organization}}</td>
+                  <td align="center">{{ value.id}}</td>
                 {% endif %}
 
             </tr>
@@ -63,7 +84,7 @@
         <ul class="pagination pagination-md">
           {% if objects.has_previous %}
             <li class="page-item ">
-              <a class="page-link" href="?page={{ objects.previous_page_number }}" aria-label="Previous">
+              <a class="page-link" href="?{% url_replace request 'page' 1 %}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
               </a>
@@ -75,12 +96,12 @@
                 <a class="page-link" href="#">{{ i }}<span class="sr-only">(current)</span></a>
               </li>
             {% else %}
-            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{i}}</a></li>
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{i}}</a></li>
             {% endif %}
           {% endfor %}
           {% if objects.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ objects.next_page_number }}" aria-label="Next">
+            <a class="page-link" href="?{% url_replace request 'page' objects.paginator.num_pages %}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
               <span class="sr-only">Next</span>
             </a>
@@ -94,4 +115,8 @@
       {% endif %}<br /><br />
         <div>
 </div>
+{% endblock %}
+
+{% block custom_scripts %}
+
 {% endblock %}
