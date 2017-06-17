@@ -19,7 +19,7 @@ upstream = {'person': Person,
             'voteevent': VoteEvent}
 
 
-def get_run_status(jur_name):
+def _get_run_status(jur_name):
     runs = RunPlan.objects.filter(jurisdiction=jur_name).order_by('-end_time')
     latest_date = runs.first().end_time.date()
     status = 0
@@ -43,20 +43,20 @@ def overview(request):
             rows[counts['jurisdiction']][counts['issue'].split('-')[0]].get(counts['alert'], 0) + counts['issue__count']
 
         if not rows[counts['jurisdiction']].get('run'):
-            rows[counts['jurisdiction']]['run'] = get_run_status(jur)
+            rows[counts['jurisdiction']]['run'] = _get_run_status(jur)
 
     # Calculating RunPlan For those who don't have any type of dataquality_issues
     rest_jurs = Jurisdiction.objects.exclude(name__in=rows.keys())
     for jur in rest_jurs:
         rows[jur.name] = {}
-        rows[jur.name]['run'] = get_run_status(jur)
+        rows[jur.name]['run'] = _get_run_status(jur)
 
     rows = sorted(rows.items())
     return render(request, 'admintools/index.html', {'rows': rows})
 
 
 # Calculates all dataquality_issues in given jurisdiction
-def jur_dataquality_issues(jur_name):
+def _jur_dataquality_issues(jur_name):
     cards = defaultdict(dict)
     issues = IssueType.choices()
     for issue, description in issues:
@@ -75,13 +75,13 @@ def jur_dataquality_issues(jur_name):
 
 # Jurisdiction Specific Page
 def jurisdiction_intro(request, jur_name):
-    issues = jur_dataquality_issues(jur_name)
+    issues = _jur_dataquality_issues(jur_name)
     context = {'jur_name': jur_name, 'cards': issues}
     return render(request, 'admintools/jurisdiction_intro.html', context)
 
 
 # Filter Results
-def filter_results(request):
+def _filter_results(request):
     query = Q()
     if request.GET.get('person'):
         query = Q(name__istartswith=request.GET.get('person'))
@@ -115,7 +115,7 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
                                                                             flat=True)
     cards = upstream[related_class].objects.filter(id__in=objects_list)
     if request.GET:
-        cards = cards.filter(filter_results(request))
+        cards = cards.filter(_filter_results(request))
 
     # pagination of results
     # order_by because of 'UnorderedObjectListWarning'
