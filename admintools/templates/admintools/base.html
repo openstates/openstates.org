@@ -1,0 +1,91 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Open States Admin</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static "css/font-awesome.min.css" %}">
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="{% static "css/mdb.min.css" %}" rel="stylesheet">
+    <!-- Custom CSS -->
+    {% block custom_css %}
+    <style>
+        body {
+            background-image: url({% static 'img/background.jpg' %})
+        }
+    </style>
+    {% endblock %}
+</head>
+
+<body>
+    <!--Navigation-->
+    <nav class="navbar {% block navclass %}fixed-top{% endblock %} navbar-toggleable-md navbar-dark scrolling-navbar mdb-color lighten-3">
+        <div class="container">
+            {% block navbar_header %}
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            <a class="navbar-brand" href="#">
+                            <strong>{{ jur_name }}</strong>
+                        </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a href="{% url 'jurisdiction_intro' jur_name %}" class="nav-link">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Legislators</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Organizations</a>
+                    </li>
+                    <li class="nav-item btn-group">
+                        <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Bills</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <a class="dropdown-item">Action</a>
+                            <a class="dropdown-item">Another action</a>
+                            <a class="dropdown-item">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Run Detail</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ">
+                    <li class="nav-item">
+                        <a href="{% url 'overview' %}" class="nav-link">Status Page</i></a>
+                    </li>
+                </ul>
+            </div>
+            {% endblock %}
+        </div>
+    </nav>
+    <!--/.Navigation-->
+    <!-- Main -->
+    <main>
+
+        {% block body%} {%endblock%}
+
+    </main>
+    <!-- /.Main -->
+
+
+    <!-- SCRIPTS -->
+    {% block custom_scripts %} {% endblock %}
+    <!-- JQuery -->
+    <script type="text/javascript" src="{% static "js/jquery-3.1.1.min.js" %}"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="{% static "js/tether.min.js" %}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{% static "js/mdb.min.js" %}"></script>
+</body>
+
+</html>

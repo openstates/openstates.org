@@ -1,34 +1,37 @@
 from admintools.issues import IssueType
-from opencivicdata.core.models import Organization, Membership
+from opencivicdata.core.models import Jurisdiction, Organization, Membership
 from admintools.models import DataQualityIssue
-from django.contrib.contenttypes.models import ContentType
 
 
-def create_org_issues(queryset, issue):
+def create_org_issues(queryset, issue, jur):
     obj_list = []
     alert = IssueType.level_for(issue)
     issue = IssueType.class_for(issue) + '-' + issue
     for query_obj in queryset:
-        contenttype_obj = ContentType.objects.get_for_model(query_obj)
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
-                                               content_type=contenttype_obj,
-                                               alert=alert, issue=issue):
+                                               alert=alert, issue=issue,
+                                               jurisdiction=jur):
             obj_list.append(
                 DataQualityIssue(content_object=query_obj, alert=alert,
-                                 issue=issue)
+                                 issue=issue, jurisdiction=jur)
             )
-    print("Found New Issues: {}".format(len(obj_list)))
     DataQualityIssue.objects.bulk_create(obj_list)
+    return len(obj_list)
 
 
 def orgs_issues():
-    for issue in IssueType.get_issues_for('organization'):
-        if issue == 'no-memberships':
-            print("importing orgs with no memberships...")
-            queryset = Organization.objects.filter(memberships__isnull=True)
-            create_org_issues(queryset, issue)
+    all_jurs = Jurisdiction.objects.order_by('name')
+    for jur in all_jurs:
+        count = 0
+        issues = IssueType.get_issues_for('organization') + IssueType.get_issues_for('membership')
+        for issue in issues:
+            if issue == 'no-memberships':
+                queryset = Organization.objects.filter(jurisdiction=jur,
+                                                       memberships__isnull=True)
+                count += create_org_issues(queryset, issue, jur)
 
-        else:
-            print("importing orgs with unmatched person...")
-            queryset = Membership.objects.filter(person__isnull=True)
-            create_org_issues(queryset, issue)
+            else:
+                queryset = Membership.objects.filter(organization__jurisdiction=jur,
+                                                     person__isnull=True)
+                count += create_org_issues(queryset, issue, jur)
+        print("Imported Organization Related {} Issues for {}".format(count, jur.name))

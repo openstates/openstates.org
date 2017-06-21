@@ -30,6 +30,12 @@ class IssueType:
                 return i.related_class
 
     @classmethod
+    def description_for(cls, slug):
+        for i in cls._types:
+            if i.slug == slug:
+                return i.description
+
+    @classmethod
     def get_issues_for(cls, related_class):
         issues = []
         for i in cls._types:
@@ -47,7 +53,7 @@ def main():
 
     # Organization Related Issues
     IssueType('no-memberships', 'No Memberships', 'organization', 'error')
-    IssueType('unmatched-person', 'Unmatched Person', 'organization', 'warning')
+    IssueType('unmatched-person', 'Unmatched Person', 'membership', 'warning')
 
     # Bill Related Issues
     IssueType('no-actions', 'Missing Actions', 'bill', 'error')

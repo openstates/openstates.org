@@ -1,55 +1,46 @@
 from admintools.issues import IssueType
 from opencivicdata.legislative.models import Bill
 from admintools.models import DataQualityIssue
-from django.contrib.contenttypes.models import ContentType
+from opencivicdata.core.models import Jurisdiction
 
 
-def create_bill_issues(queryset, issue):
+def create_bill_issues(queryset, issue, jur):
     obj_list = []
     alert = IssueType.level_for(issue)
     issue = IssueType.class_for(issue) + '-' + issue
     for query_obj in queryset:
-        contenttype_obj = ContentType.objects.get_for_model(query_obj)
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
-                                               content_type=contenttype_obj,
-                                               alert=alert, issue=issue):
+                                               alert=alert, issue=issue,
+                                               jurisdiction=jur):
             obj_list.append(
                 DataQualityIssue(content_object=query_obj, alert=alert,
-                                 issue=issue)
+                                 issue=issue, jurisdiction=jur)
             )
-    print("Found New Issues: {}".format(len(obj_list)))
     DataQualityIssue.objects.bulk_create(obj_list)
+    return len(obj_list)
 
 
 def bills_issues():
-    for issue in IssueType.get_issues_for('bill'):
-        if issue == 'no-actions':
-            print("importing bills with no actions...")
-
-            queryset = Bill.objects.filter(actions__isnull=True)
-            create_bill_issues(queryset, issue)
-
-        elif issue == 'no-sponsors':
-            print("importing bills with no sponsors...")
-
-            queryset = Bill.objects.filter(sponsorships__isnull=True)
-            create_bill_issues(queryset, issue)
-
-        elif issue == 'unmatched-person-sponsor':
-            print("importing bills with unmatched person sponsors...")
-
-            queryset = Bill.objects.filter(sponsorships__entity_type='person',
-                                           sponsorships__person__isnull=True).distinct()
-            create_bill_issues(queryset, issue)
-
-        elif issue == 'unmatched-org-sponsor':
-            print("importing bills with unmatched org sponsors...")
-
-            queryset = Bill.objects.filter(sponsorships__entity_type='organization',
-                                           sponsorships__organization__isnull=True).distinct()
-            create_bill_issues(queryset, issue)
-        else:
-            print("importing bills with no version..")
-
-            queryset = Bill.objects.filter(versions__isnull=True)
-            create_bill_issues(queryset, issue)
+    all_jurs = Jurisdiction.objects.order_by('name')
+    for jur in all_jurs:
+        bills = Bill.objects.filter(legislative_session__jurisdiction=jur)
+        count = 0
+        for issue in IssueType.get_issues_for('bill'):
+            if issue == 'no-actions':
+                queryset = bills.filter(actions__isnull=True)
+                count += create_bill_issues(queryset, issue, jur)
+            elif issue == 'no-sponsors':
+                queryset = bills.filter(sponsorships__isnull=True)
+                count += create_bill_issues(queryset, issue, jur)
+            elif issue == 'unmatched-person-sponsor':
+                queryset = bills.filter(sponsorships__entity_type='person',
+                                        sponsorships__person__isnull=True).distinct()
+                count += create_bill_issues(queryset, issue, jur)
+            elif issue == 'unmatched-org-sponsor':
+                queryset = bills.filter(sponsorships__entity_type='organization',
+                                        sponsorships__organization__isnull=True).distinct()
+                count += create_bill_issues(queryset, issue, jur)
+            else:
+                queryset = bills.filter(versions__isnull=True)
+                count += create_bill_issues(queryset, issue, jur)
+        print("Imported Bills Related {} Issues for {}".format(count, jur.name))
