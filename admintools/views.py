@@ -34,18 +34,23 @@ def _get_run_status(jur_name):
 # Status Page
 def overview(request):
     rows = {}
-    all_counts = DataQualityIssue.objects.values('jurisdiction', 'issue', 'alert').annotate(Count('issue'))
+    all_counts = DataQualityIssue.objects.values('jurisdiction', 'issue',
+                                                 'alert').annotate(
+                                                     Count('issue'))
     for counts in all_counts:
         jur = Jurisdiction.objects.filter(id=counts['jurisdiction']).first()
         counts['jurisdiction'] = jur.name
-        rows.setdefault(counts['jurisdiction'], {}).setdefault(counts['issue'].split('-')[0], {})
-        rows[counts['jurisdiction']][counts['issue'].split('-')[0]][counts['alert']] = \
-            rows[counts['jurisdiction']][counts['issue'].split('-')[0]].get(counts['alert'], 0) + counts['issue__count']
+        rows.setdefault(counts['jurisdiction'], {}).setdefault(
+            counts['issue'].split('-')[0], {})
+        rows[counts['jurisdiction']][counts['issue'].split('-')[0]][
+            counts['alert']] = rows[counts['jurisdiction']][
+                counts['issue'].split('-')[0]].get(
+                    counts['alert'], 0) + counts['issue__count']
 
         if not rows[counts['jurisdiction']].get('run'):
             rows[counts['jurisdiction']]['run'] = _get_run_status(jur)
 
-    # Calculating RunPlan For those who don't have any type of dataquality_issues
+    # RunPlan For those who don't have any type of dataquality_issues
     rest_jurs = Jurisdiction.objects.exclude(name__in=rows.keys())
     for jur in rest_jurs:
         rows[jur.name] = {}
@@ -64,11 +69,14 @@ def _jur_dataquality_issues(jur_name):
         cards[related_class][issue] = {}
         issue_type = IssueType.class_for(issue) + '-' + issue
         alert = IssueType.level_for(issue)
-        cards[related_class][issue]['alert'] = True if alert == 'error' else False
+        cards[related_class][issue]['alert'] = True if alert == 'error' \
+            else False
         cards[related_class][issue]['description'] = description
         ct_obj = ContentType.objects.get_for_model(upstream[related_class])
-        j = Jurisdiction.objects.filter(name__exact=jur_name, dataquality_issues__content_type=ct_obj,
-                                        dataquality_issues__issue=issue_type).annotate(_issues=Count('dataquality_issues'))
+        j = Jurisdiction.objects.filter(
+            name__exact=jur_name, dataquality_issues__content_type=ct_obj,
+            dataquality_issues__issue=issue_type).annotate(_issues=Count(
+                'dataquality_issues'))
         cards[related_class][issue]['count'] = j[0]._issues if j else 0
     return dict(cards)
 
@@ -88,19 +96,24 @@ def _filter_results(request):
     if request.GET.get('organization'):
         query &= Q(name__istartswith=request.GET.get('organization'))
     if request.GET.get('org_classification'):
-        query &= Q(classification__istartswith=request.GET.get('org_classification'))
+        query &= Q(classification__istartswith=request.GET.get(
+            'org_classification'))
     if request.GET.get('bill_identifier'):
         query &= Q(identifier__icontains=request.GET.get('bill_identifier'))
     if request.GET.get('bill_session'):
-        query &= Q(legislative_session__name__icontains=request.GET.get('bill_session'))
+        query &= Q(legislative_session__name__icontains=request.GET.get(
+            'bill_session'))
     if request.GET.get('voteevent_bill'):
-        query &= Q(bill__identifier__icontains=request.GET.get('voteevent_bill'))
+        query &= Q(bill__identifier__icontains=request.GET.get(
+            'voteevent_bill'))
     if request.GET.get('voteevent_org'):
-        query &= Q(organization__name__icontains=request.GET.get('voteevent_org'))
+        query &= Q(organization__name__icontains=request.GET.get(
+            'voteevent_org'))
     if request.GET.get('membership'):
         query &= Q(person_name__istartswith=request.GET.get('membership'))
     if request.GET.get('membership_org'):
-        query &= Q(organization__name__icontains=request.GET.get('membership_org'))
+        query &= Q(organization__name__icontains=request.GET.get(
+            'membership_org'))
     if request.GET.get('membership_id'):
         query &= Q(id=request.GET.get('membership_id'))
     return query
@@ -110,9 +123,9 @@ def _filter_results(request):
 def list_issue_objects(request, jur_name, related_class, issue_slug):
     description = IssueType.description_for(issue_slug)
     issue = IssueType.class_for(issue_slug) + '-' + issue_slug
-    objects_list = DataQualityIssue.objects.filter(jurisdiction__name__exact=jur_name,
-                                                   issue=issue).values_list('object_id',
-                                                                            flat=True)
+    objects_list = DataQualityIssue.objects.filter(
+        jurisdiction__name__exact=jur_name,
+        issue=issue).values_list('object_id', flat=True)
     cards = upstream[related_class].objects.filter(id__in=objects_list)
     if request.GET:
         cards = cards.filter(_filter_results(request))

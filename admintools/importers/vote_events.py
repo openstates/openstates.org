@@ -24,7 +24,8 @@ def create_vote_event_issues(queryset, issue, jur):
 def vote_event_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
-        voteevents = VoteEvent.objects.filter(legislative_session__jurisdiction=jur)
+        voteevents = VoteEvent.objects.filter(
+            legislative_session__jurisdiction=jur)
         count = 0
         for issue in IssueType.get_issues_for('voteevent'):
             if issue == 'missing-bill':
@@ -32,7 +33,9 @@ def vote_event_issues():
                 count += create_vote_event_issues(queryset, issue, jur)
 
             elif issue == 'unmatched-voter':
-                queryset = voteevents.filter(votes__isnull=False, votes__voter__isnull=True).distinct()
+                queryset = voteevents.filter(votes__isnull=False,
+                                             votes__voter__isnull=True) \
+                                             .distinct()
                 count += create_vote_event_issues(queryset, issue, jur)
 
             elif issue == 'missing-voters':
@@ -41,13 +44,15 @@ def vote_event_issues():
 
             elif issue == 'missing-counts':
                 queryset = voteevents.filter(Q(counts__option='yes',
-                                                      counts__value=0)
-                                                    & Q(counts__option='no',
-                                                        counts__value=0))
+                                               counts__value=0)
+                                             & Q(counts__option='no',
+                                                 counts__value=0))
 
                 count += create_vote_event_issues(queryset, issue, jur)
 
             else:
-                queryset = voteevents.filter(counts__option='other', counts__value__gt=0)
+                queryset = voteevents.filter(counts__option='other',
+                                             counts__value__gt=0)
                 count += create_vote_event_issues(queryset, issue, jur)
-        print("Imported VoteEvents Related {} Issues for {}".format(count, jur.name))
+        print("Imported VoteEvents Related {} Issues for {}".format(count,
+                                                                    jur.name))

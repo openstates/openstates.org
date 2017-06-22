@@ -23,7 +23,8 @@ def person_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
         count = 0
-        people = Person.objects.filter(memberships__organization__jurisdiction=jur).distinct()
+        people = Person.objects.filter(
+            memberships__organization__jurisdiction=jur).distinct()
         for issue in IssueType.get_issues_for('person'):
             if issue == 'missing-photo':
                 queryset = people.filter(image__exact='')
@@ -34,4 +35,5 @@ def person_issues():
             else:
                 queryset = people.exclude(contact_details__type=issue[8:])
                 count += create_person_issues(queryset, issue, jur)
-        print("Imported People Related {} Issues for {}".format(count, jur.name))
+        print("Imported People Related {} Issues for {}".format(count,
+                                                                jur.name))

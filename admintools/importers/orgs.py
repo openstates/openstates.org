@@ -23,15 +23,19 @@ def orgs_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
         count = 0
-        issues = IssueType.get_issues_for('organization') + IssueType.get_issues_for('membership')
+        issues = IssueType.get_issues_for('organization') + \
+            IssueType.get_issues_for('membership')
         for issue in issues:
             if issue == 'no-memberships':
-                queryset = Organization.objects.filter(jurisdiction=jur,
-                                                       memberships__isnull=True)
+                queryset = Organization.objects \
+                        .filter(jurisdiction=jur, memberships__isnull=True)
                 count += create_org_issues(queryset, issue, jur)
 
             else:
-                queryset = Membership.objects.filter(organization__jurisdiction=jur,
-                                                     person__isnull=True)
+                queryset = Membership.objects \
+                    .filter(organization__jurisdiction=jur,
+                            person__isnull=True)
                 count += create_org_issues(queryset, issue, jur)
-        print("Imported Organization Related {} Issues for {}".format(count, jur.name))
+        print("Imported Organization Related {} Issues for {}".format(count,
+                                                                      jur.name)
+              )
