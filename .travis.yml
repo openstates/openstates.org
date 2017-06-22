@@ -1,0 +1,5 @@
+language: python
+sudo: false
+python: 3.5
+install: pip install flake8
+script: flake8 admintools --exclude=*/migrations/*,*/importers/__init__.py*
