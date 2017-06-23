@@ -71,8 +71,6 @@
   command: openssl dhparam -out /etc/nginx/certs/dhparams.pem 2048 creates=/etc/nginx/certs/dhparams.pem
 - name: remove nginx default config
   file: path=/etc/nginx/sites-enabled/default state=absent
-- name: copy over htpasswd
-  copy: src=../secrets/ansible/htpasswd dest=/home/openstates/htpasswd
 - name: write nginx template
   template: src=nginx.j2 dest=/etc/nginx/sites-enabled/openstates
   notify:
