@@ -8,6 +8,8 @@ master = true
 vacuum = true
 chmod-socket = 666
 processes = 4
+enable-threads = true
+single-interpreter = true
 module = openstates.wsgi:application
 {% for key, val in django_environment.items() %}
 env = {{key}}={{val}}
