@@ -2,7 +2,8 @@ from django.shortcuts import render
 from pupa.models import RunPlan
 from opencivicdata.core.models import (Jurisdiction, Person, Organization,
                                        Membership)
-from opencivicdata.legislative.models import Bill, VoteEvent
+from opencivicdata.legislative.models import (Bill, VoteEvent,
+                                              LegislativeSession)
 from admintools.issues import IssueType
 from admintools.models import DataQualityIssue
 from django.db.models import Count
@@ -19,6 +20,7 @@ upstream = {'person': Person,
             'voteevent': VoteEvent}
 
 
+# get run status for a jurisdiction
 def _get_run_status(jur_name):
     runs = RunPlan.objects.filter(jurisdiction=jur_name).order_by('-end_time')
     latest_date = runs.first().end_time.date()
@@ -84,8 +86,34 @@ def _jur_dataquality_issues(jur_name):
 # Jurisdiction Specific Page
 def jurisdiction_intro(request, jur_name):
     issues = _jur_dataquality_issues(jur_name)
-    context = {'jur_name': jur_name, 'cards': issues}
+
+    context = {'jur_name': jur_name,
+               'cards': issues}
     return render(request, 'admintools/jurisdiction_intro.html', context)
+
+
+# Bills and VoteEvents related info for a session
+def legislative_session_info(request, jur_name, identifier):
+    session = LegislativeSession.objects.get(
+        jurisdiction__name__exact=jur_name, identifier=identifier)
+
+    bill_from_orgs_list = Bill.objects.filter(
+        legislative_session__jurisdiction__name__exact=jur_name,
+        legislative_session__identifier=identifier) \
+        .values('from_organization__name').distinct()
+
+    voteevent_orgs_list = VoteEvent.objects.filter(
+        legislative_session__jurisdiction__name__exact=jur_name,
+        legislative_session__identifier=identifier) \
+        .values('organization__name').distinct()
+
+    context = {
+        'jur_name': jur_name,
+        'session': session,
+        'bill_orgs': bill_from_orgs_list,
+        'voteevent_orgs': voteevent_orgs_list,
+    }
+    return render(request, 'admintools/legislative_session_info.html', context)
 
 
 # Filter Results
@@ -155,6 +183,8 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     elif related_class in ['bill', 'voteevent']:
         url_slug = 'legislative_' + related_class + '_change'
     else:
+        # because we don't have membership objetcs listed on Django-admin panel
+        # so redirect to related organization page
         url_slug = None
 
     context = {'jur_name': jur_name,
