@@ -1,0 +1,18 @@
+---
+django_environment:
+    DEBUG: false
+    ADMINS: James Turk james@openstates.org
+    API_BASE_URL: http://openstates.org/api/v1/
+    BOUNDARY_SERVICE_URL: http://geo.openstates.org/
+    EMAIL_HOST: email-smtp.us-east-1.amazonaws.com
+    SECRET_KEY: "{{ lookup('credstash', 'site.SECRET_KEY') }}"
+    MONGO_HOST: "{{ lookup('credstash', 'site.MONGO_HOST') }}"
+    EMAIL_HOST_USER: "{{ lookup('credstash', 'site.EMAIL_HOST_USER') }}"
+    EMAIL_HOST_PASSWORD: "{{ lookup('credstash', 'site.EMAIL_HOST_PASSWORD') }}"
+    DATABASE_URL: "{{ lookup('credstash', 'site.DATABASE_URL') }}"
+
+newrelic_key: "{{ lookup('credstash', 'newrelic.INI_KEY') }}" 
+server_name: openstates.org
+ssl_cert: /etc/letsencrypt/live/openstates.org/fullchain.pem
+ssl_key: /etc/letsencrypt/live/openstates.org/privkey.pem
+internal_geo_ip: "{{ lookup('credstash', 'site.INTERNAL_GEO_IP') }}"

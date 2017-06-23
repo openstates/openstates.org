@@ -1,0 +1,3 @@
+---
+aws_key: "{{ lookup('credstash', 'aws.KEY') }}"
+aws_secret: "{{ lookup('credstash', 'aws.SECRET') }}"
