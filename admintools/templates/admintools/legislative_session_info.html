@@ -15,7 +15,7 @@
                 <h3 class="card-header default-color white-text">Bills</h3>
                 <div class="card-block">
                     {% for organization in bill_orgs %}
-                    <p><a href="{% url 'admin:legislative_bill_changelist' %}?legislative_session__jurisdiction__name={{jur_name}}&from_organization__name={{organization.from_organization__name}}">{{ forloop.counter }}. {{organization.from_organization__name}} Bills</a></p>
+                    <p><a href="{% url 'admin:legislative_bill_changelist' %}?legislative_session__jurisdiction__name={{jur_name}}&legislative_session__identifier={{session.identifier}}&from_organization__name={{organization.from_organization__name}}">{{ forloop.counter }}. {{organization.from_organization__name|title}} Bills</a></p>
                     {% empty %}
                     <p>Organizations Not Found For Any Bills</p>
                     {% endfor %}
@@ -29,7 +29,7 @@
                 <h3 class="card-header default-color white-text">VoteEvents</h3>
                 <div class="card-block">
                     {% for organization in voteevent_orgs %}
-                    <p><a href="{% url 'admin:legislative_voteevent_changelist' %}?legislative_session__jurisdiction__name={{jur_name}}&organization__name={{organization.organization__name}}">{{ forloop.counter }}. {{organization.organization__name}} Vote Events</a></p>
+                    <p><a href="{% url 'admin:legislative_voteevent_changelist' %}?legislative_session__jurisdiction__name={{jur_name}}&legislative_session__identifier={{session.identifier}}&organization__name={{organization.organization__name}}">{{ forloop.counter }}. {{organization.organization__name|title}} Vote Events</a></p>
                     {% empty %}
                     <p>Organizations Not Found For Any Vote Events</p>
                     {% endfor %}

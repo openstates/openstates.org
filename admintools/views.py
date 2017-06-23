@@ -87,8 +87,23 @@ def _jur_dataquality_issues(jur_name):
 def jurisdiction_intro(request, jur_name):
     issues = _jur_dataquality_issues(jur_name)
 
+    bill_from_orgs_list = Bill.objects.filter(
+        legislative_session__jurisdiction__name__exact=jur_name) \
+        .values('from_organization__name').distinct()
+
+    voteevent_orgs_list = VoteEvent.objects.filter(
+        legislative_session__jurisdiction__name__exact=jur_name) \
+        .values('organization__name').distinct()
+
+    orgs_list = Organization.objects.filter(
+        jurisdiction__name__exact=jur_name).values('classification').distinct()
+
     context = {'jur_name': jur_name,
-               'cards': issues}
+               'cards': issues,
+               'bill_orgs': bill_from_orgs_list,
+               'voteevent_orgs': voteevent_orgs_list,
+               'orgs': orgs_list,
+               }
     return render(request, 'admintools/jurisdiction_intro.html', context)
 
 
