@@ -2,7 +2,6 @@ from admintools.issues import IssueType
 from admintools.models import DataQualityIssue
 from opencivicdata.core.models import Jurisdiction
 from opencivicdata.legislative.models import VoteEvent
-from django.db.models import Q
 
 
 def create_vote_event_issues(queryset, issue, jur):
@@ -43,11 +42,10 @@ def vote_event_issues():
                 count += create_vote_event_issues(queryset, issue, jur)
 
             elif issue == 'missing-counts':
-                queryset = voteevents.filter(Q(counts__option='yes',
-                                               counts__value=0)
-                                             & Q(counts__option='no',
-                                                 counts__value=0))
-
+                queryset = voteevents.filter(counts__option='yes',
+                                             counts__value=0).filter(
+                                                 counts__option='no',
+                                                 counts__value=0)
                 count += create_vote_event_issues(queryset, issue, jur)
 
             else:
