@@ -9,9 +9,11 @@ class DataQualityIssue(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
-    jurisdiction = models.ForeignKey(Jurisdiction, related_name="dataquality_issues")
+    jurisdiction = models.ForeignKey(Jurisdiction,
+                                     related_name="dataquality_issues")
     alert = models.CharField(max_length=50)
-    issue = models.CharField(max_length=150, choices=issues.IssueType.choices())
+    issue = models.CharField(max_length=150,
+                             choices=issues.IssueType.choices())
     reporter = models.CharField(max_length=300, blank=True)
 
     class Meta:

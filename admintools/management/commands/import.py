@@ -44,8 +44,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if True not in [options['people'], options['organization'], options['vote_event'],
-                        options['bills']]:
+        if True not in [options['people'], options['organization'],
+                        options['vote_event'], options['bills']]:
                 options['people'] = True
                 options['organization'] = True
                 options['vote_event'] = True
@@ -58,12 +58,14 @@ class Command(BaseCommand):
 
         if options['organization']:
             orgs_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported Organization'
+            self.stdout.write(self.style.SUCCESS('Successfully Imported '
+                                                 'Organization'
                                                  ' DataQualityIssues into DB'))
 
         if options['vote_event']:
             vote_event_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported VoteEvent'
+            self.stdout.write(self.style.SUCCESS('Successfully Imported'
+                                                 'VoteEvent'
                                                  ' DataQualityIssues into DB'))
 
         if options['bills']:
