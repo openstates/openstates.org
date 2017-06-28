@@ -176,13 +176,13 @@ class VoteEventImportersTests(TestCase):
         org = Organization.objects.create(name="test org1", jurisdiction=jur)
         # For `missing-voters`
         VoteEvent.objects.create(identifier="vote1", motion_text="Test",
-                                 start_date="2017-06-26 12:12:12+12:12",
+                                 start_date="2017-06-26",
                                  result='pass', legislative_session=ls,
                                  organization=org)
         # For `missing-bill`
         vote2 = VoteEvent.objects \
             .create(identifier="vote2", motion_text="Test",
-                    start_date="2017-06-26 12:12:12+12:12",
+                    start_date="2017-06-26",
                     result='pass', legislative_session=ls,
                     organization=org)
         # For `unmatched-voter`
