@@ -22,7 +22,7 @@ class PeopleImportersTests(TestCase):
             )
 
         p = Person.objects.create(name="Hitesh Garg")
-        org = Organization.objects.create(name="test org", jurisdiction=jur)
+        org = Organization.objects.create(name="Democratic", jurisdiction=jur)
         Membership.objects.create(person=p, organization=org)
 
     def test_people_importer_missing_photo(self):
@@ -72,15 +72,16 @@ class OrganizationImportersTests(TestCase):
                 division=division,
             )
         # For `no-memberships`
-        Organization.objects.create(name="test org1", jurisdiction=jur1)
+        Organization.objects.create(name="No Membership", jurisdiction=jur1)
         # For `unmatched-person-memberships`
-        org2 = Organization.objects.create(name="test org2", jurisdiction=jur2)
+        org2 = Organization.objects.create(name="Unmatched Person Memberships",
+                                           jurisdiction=jur2)
         Membership.objects.create(person_name='Unmatched Person',
                                   organization=org2)
 
     def test_org_importer_no_memberships(self):
         orgs_issues()
-        org = Organization.objects.get(name="test org1")
+        org = Organization.objects.get(name="No Membership")
         h = DataQualityIssue.objects \
             .filter(object_id=org.id, issue='organization-no-memberships')
         self.assertEqual(len(h), 1)
@@ -104,54 +105,59 @@ class BillsImportersTests(TestCase):
                 division=division,
             )
         ls = LegislativeSession.objects.create(jurisdiction=jur,
-                                               identifier="test ls",
-                                               name="Test Session",
+                                               identifier="2017",
+                                               name="2017 Test Session",
                                                start_date="2017-06-25",
                                                end_date="2017-06-26")
         # For `no-sponsors`
-        Bill.objects.create(legislative_session=ls, identifier="test bill1")
+        Bill.objects.create(legislative_session=ls,
+                            identifier="B1")
         # For `no-actions` & `no-versions`
         bill = Bill.objects.create(legislative_session=ls,
-                                   identifier="test bill")
+                                   identifier="B4")
         # For `unmatched-person-sponsor`
-        BillSponsorship.objects.create(bill=bill, classification="Test1",
-                                       name="Test Name1", entity_type='person')
+        BillSponsorship.objects \
+            .create(bill=bill,
+                    classification="Bill with unmatched person sponsor",
+                    name="Unmatched Person Sponsor", entity_type='person')
         # For `unmatched-org-sponsor`
-        BillSponsorship.objects.create(bill=bill, classification="Test2",
-                                       name="Test Name2",
-                                       entity_type='organization')
+        BillSponsorship.objects \
+            .create(bill=bill,
+                    classification="Bill with unmatched organization sponsor",
+                    name="Unmatched Organization Sponsor",
+                    entity_type='organization')
 
     def test_bill_importer_no_actions(self):
         bills_issues()
-        bill = Bill.objects.get(identifier="test bill")
+        bill = Bill.objects.get(identifier="B4")
         h = DataQualityIssue.objects.filter(object_id=bill.id,
                                             issue='bill-no-actions')
         self.assertEqual(len(h), 1)
 
     def test_bill_importer_no_sponsors(self):
         bills_issues()
-        bill = Bill.objects.get(identifier="test bill1")
+        bill = Bill.objects.get(identifier="B1")
         h = DataQualityIssue.objects.filter(object_id=bill.id,
                                             issue='bill-no-sponsors')
         self.assertEqual(len(h), 1)
 
     def test_bill_importer_no_versions(self):
         bills_issues()
-        bill = Bill.objects.get(identifier="test bill")
+        bill = Bill.objects.get(identifier="B4")
         h = DataQualityIssue.objects.filter(object_id=bill.id,
                                             issue='bill-no-versions')
         self.assertEqual(len(h), 1)
 
     def test_bill_importer_unmatched_org_sponsor(self):
         bills_issues()
-        bill = Bill.objects.get(identifier="test bill")
+        bill = Bill.objects.get(identifier="B4")
         h = DataQualityIssue.objects.filter(object_id=bill.id,
                                             issue='bill-unmatched-org-sponsor')
         self.assertEqual(len(h), 1)
 
     def test_bill_importer_unmatched_person_sponsor(self):
         bills_issues()
-        bill = Bill.objects.get(identifier="test bill")
+        bill = Bill.objects.get(identifier="B4")
         h = DataQualityIssue.objects \
             .filter(object_id=bill.id, issue='bill-unmatched-person-sponsor')
         self.assertEqual(len(h), 1)
@@ -169,25 +175,28 @@ class VoteEventImportersTests(TestCase):
                 division=division,
             )
         ls = LegislativeSession.objects.create(jurisdiction=jur,
-                                               identifier="test ls",
-                                               name="Test Session",
+                                               identifier="2017",
+                                               name="2017 Test Session",
                                                start_date="2017-06-25",
                                                end_date="2017-06-26")
-        org = Organization.objects.create(name="test org1", jurisdiction=jur)
+        org = Organization.objects.create(name="Democratic",
+                                          jurisdiction=jur)
         # For `missing-voters`
-        VoteEvent.objects.create(identifier="vote1", motion_text="Test",
+        VoteEvent.objects.create(identifier="vote1",
+                                 motion_text="VoteEvent with missing-voters",
                                  start_date="2017-06-26",
                                  result='pass', legislative_session=ls,
                                  organization=org)
         # For `missing-bill`
         vote2 = VoteEvent.objects \
-            .create(identifier="vote2", motion_text="Test",
+            .create(identifier="vote2",
+                    motion_text="VoteEvent with missing-bill",
                     start_date="2017-06-26",
                     result='pass', legislative_session=ls,
                     organization=org)
         # For `unmatched-voter`
         PersonVote.objects.create(vote_event=vote2, option='yes',
-                                  voter_name="Test Voter")
+                                  voter_name="Unmatched Voter")
         # For `missing-counts`
         VoteCount.objects.create(vote_event=vote2, option='yes', value=0)
         VoteCount.objects.create(vote_event=vote2, option='no', value=0)
