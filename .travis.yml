@@ -9,5 +9,5 @@ before_script:
     - psql -c "CREATE EXTENSION postgis;" -U postgres -d test
 install: python setup.py -q install
 script:
-    - python manage.py test admintools
+    - python runtests.py
     - flake8 --exclude=*/migrations/*,*/importers/__init__.py*
