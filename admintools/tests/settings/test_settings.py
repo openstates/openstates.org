@@ -43,7 +43,7 @@ MIDDLEWARE = [
 
 ]
 
-ROOT_URLCONF = 'admintools.tests.test_urls'
+ROOT_URLCONF = 'admintools.tests.settings.test_urls'
 
 TEMPLATES = [
     {
