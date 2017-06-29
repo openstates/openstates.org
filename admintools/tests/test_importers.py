@@ -1,4 +1,7 @@
+import sys
 from django.test import TestCase
+from django.core.management import call_command
+from django.utils.six import StringIO
 from admintools.models import DataQualityIssue
 from opencivicdata.core.models import (Jurisdiction, Person, Division,
                                        Organization, Membership,
@@ -7,6 +10,66 @@ from opencivicdata.legislative.models import (Bill, VoteEvent,
                                               LegislativeSession)
 from admintools.importers import (person_issues, orgs_issues, bills_issues,
                                   vote_event_issues)
+
+
+class CommandsTestCase(TestCase):
+    "Test `import all` commands"
+
+    def test_import_all_command(self):
+        out = StringIO()
+        sys.stout = out
+        args = ['all']
+        call_command('import', *args, stdout=out)
+        self.assertIn('Successfully Imported People DataQualityIssues into DB',
+                      out.getvalue())
+        self.assertIn(
+            'Successfully Imported Organization DataQualityIssues into DB',
+            out.getvalue())
+        self.assertIn(
+            'Successfully Imported VoteEvent DataQualityIssues into DB',
+            out.getvalue())
+        self.assertIn(
+            'Successfully Imported Bill DataQualityIssues into DB',
+            out.getvalue())
+
+    def test_import_all_people_command(self):
+        out = StringIO()
+        sys.stout = out
+        args = ['all']
+        opts = {'people': True}
+        call_command('import', *args, **opts, stdout=out)
+        self.assertIn('Successfully Imported People DataQualityIssues into DB',
+                      out.getvalue())
+
+    def test_import_all_organization_command(self):
+        out = StringIO()
+        sys.stout = out
+        args = ['all']
+        opts = {'organization': True}
+        call_command('import', *args, **opts, stdout=out)
+        self.assertIn(
+            'Successfully Imported Organization DataQualityIssues into DB',
+            out.getvalue())
+
+    def test_import_all_vote_event_command(self):
+        out = StringIO()
+        sys.stout = out
+        args = ['all']
+        opts = {'vote_event': True}
+        call_command('import', *args, **opts, stdout=out)
+        self.assertIn(
+            'Successfully Imported VoteEvent DataQualityIssues into DB',
+            out.getvalue())
+
+    def test_import_all_bill_command(self):
+        out = StringIO()
+        sys.stout = out
+        args = ['all']
+        opts = {'bills': True}
+        call_command('import', *args, **opts, stdout=out)
+        self.assertIn(
+            'Successfully Imported Bill DataQualityIssues into DB',
+            out.getvalue())
 
 
 class PeopleImportersTests(TestCase):

@@ -135,6 +135,7 @@ class OverviewViewTests(TestCase):
 
 
 class JurisdictionintroViewTests(TestCase):
+
     def setUp(self):
         division = Division.objects.create(
             id='ocd-division/country:us', name='USA')
@@ -173,3 +174,40 @@ class JurisdictionintroViewTests(TestCase):
         self.assertEqual(
             response.context['cards']['bill']
             .get('unmatched-person-sponsor')['count'], 0)
+
+
+class ListissueobjectsViewTests(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur1 = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+        start_time = timezone.now()
+        end_time = start_time + timezone.timedelta(minutes=10)
+        RunPlan.objects.create(jurisdiction=jur1, success=True,
+                               start_time=start_time, end_time=end_time)
+
+        person1 = Person.objects.create(name="Hitesh Garg")
+        DataQualityIssue.objects.create(content_object=person1,
+                                        issue='person-missing-photo',
+                                        alert='warning',
+                                        jurisdiction=jur1)
+
+    def test_important_context_values(self):
+        """
+        To check that important context values are present.
+        """
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        response = self.client.get(reverse('list_issue_objects',
+                                           args=(jur.name,
+                                                 'person',
+                                                 'missing-photo')))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.context)
+        self.assertTrue('url_slug' in response.context)
+        self.assertTrue('jur_name' in response.context)
