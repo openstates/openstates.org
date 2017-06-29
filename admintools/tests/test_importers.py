@@ -1,10 +1,10 @@
 from django.test import TestCase
 from admintools.models import DataQualityIssue
 from opencivicdata.core.models import (Jurisdiction, Person, Division,
-                                       Organization, Membership)
-from opencivicdata.legislative.models import (Bill, VoteEvent, BillSponsorship,
-                                              LegislativeSession, PersonVote,
-                                              VoteCount)
+                                       Organization, Membership,
+                                       PersonContactDetail)
+from opencivicdata.legislative.models import (Bill, VoteEvent,
+                                              LegislativeSession)
 from admintools.importers import (person_issues, orgs_issues, bills_issues,
                                   vote_event_issues)
 
@@ -21,37 +21,84 @@ class PeopleImportersTests(TestCase):
                 division=division,
             )
 
-        p = Person.objects.create(name="Hitesh Garg")
-        org = Organization.objects.create(name="Democratic", jurisdiction=jur)
-        Membership.objects.create(person=p, organization=org)
+        Organization.objects.create(name="Democratic", jurisdiction=jur)
 
     def test_people_importer_missing_photo(self):
+        org = Organization.objects.get(name="Democratic")
+
+        person = Person.objects.create(name="Missing Photo")
+        PersonContactDetail.objects.create(person=person, type='address',
+                                           value="New York")
+        PersonContactDetail.objects.create(person=person, type='email',
+                                           value="person@email.com")
+        PersonContactDetail.objects.create(person=person, type='voice',
+                                           value="1234567890")
+        Membership.objects.create(person=person, organization=org)
+
+        # To check that on running importer twice no duplicate DataQualityIssue
+        # are being created.
         person_issues()
-        person = Person.objects.get(name="Hitesh Garg")
-        h = DataQualityIssue.objects.filter(object_id=person.id,
-                                            issue='person-missing-photo')
-        self.assertEqual(len(h), 1)
+        person_issues()
+
+        mp = DataQualityIssue.objects.filter(issue='person-missing-photo')
+        rest = DataQualityIssue.objects.exclude(issue='person-missing-photo')
+
+        self.assertEqual(len(mp), 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_people_importer_missing_email(self):
+        org = Organization.objects.get(name="Democratic")
+        person = Person.objects.create(name="Missing Email",
+                                       image="http://personimage.png")
+        PersonContactDetail.objects.create(person=person, type='address',
+                                           value="New York")
+        PersonContactDetail.objects.create(person=person, type='voice',
+                                           value="1234567890")
+
+        Membership.objects.create(person=person, organization=org)
+
         person_issues()
-        person = Person.objects.get(name="Hitesh Garg")
-        h = DataQualityIssue.objects.filter(object_id=person.id,
-                                            issue='person-missing-email')
-        self.assertEqual(len(h), 1)
+
+        me = DataQualityIssue.objects.filter(issue='person-missing-email')
+        rest = DataQualityIssue.objects.exclude(issue='person-missing-email')
+        self.assertEqual(len(me), 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_people_importer_missing_phone(self):
+        org = Organization.objects.get(name="Democratic")
+        person = Person.objects.create(name="Missing Phone",
+                                       image="http://personimage.png")
+        PersonContactDetail.objects.create(person=person, type='address',
+                                           value="New York")
+        PersonContactDetail.objects.create(person=person, type='email',
+                                           value="person@email.com")
+
+        Membership.objects.create(person=person, organization=org)
+
         person_issues()
-        person = Person.objects.get(name="Hitesh Garg")
-        h = DataQualityIssue.objects.filter(object_id=person.id,
-                                            issue='person-missing-phone')
-        self.assertEqual(len(h), 1)
+
+        mp = DataQualityIssue.objects.filter(issue='person-missing-phone')
+        rest = DataQualityIssue.objects.exclude(issue='person-missing-phone')
+        self.assertEqual(len(mp), 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_people_importer_missing_address(self):
+        org = Organization.objects.get(name="Democratic")
+        person = Person.objects.create(name="Missing Address",
+                                       image="http://personimage.png")
+        PersonContactDetail.objects.create(person=person, type='email',
+                                           value="person@email.com")
+        PersonContactDetail.objects.create(person=person, type='voice',
+                                           value="1234567890")
+
+        Membership.objects.create(person=person, organization=org)
+
         person_issues()
-        person = Person.objects.get(name="Hitesh Garg")
-        h = DataQualityIssue.objects.filter(object_id=person.id,
-                                            issue='person-missing-address')
-        self.assertEqual(len(h), 1)
+
+        ma = DataQualityIssue.objects.filter(issue='person-missing-address')
+        rest = DataQualityIssue.objects.exclude(issue='person-missing-address')
+        self.assertEqual(len(ma), 1)
+        self.assertQuerysetEqual(rest, [])
 
 
 class OrganizationImportersTests(TestCase):
@@ -59,39 +106,42 @@ class OrganizationImportersTests(TestCase):
     def setUp(self):
         division = Division.objects.create(
             id='ocd-division/country:us', name='USA')
-        jur1 = Jurisdiction.objects.create(
+        Jurisdiction.objects.create(
                 id="ocd-division/country:us/state:mo",
                 name="Missouri State Senate",
                 url="http://www.senate.mo.gov",
                 division=division,
             )
-        jur2 = Jurisdiction.objects.create(
-                id="ocd-division/country:us/state:ds",
-                name="Dausa State Senate",
-                url="http://www.senate.ds.gov",
-                division=division,
-            )
-        # For `no-memberships`
-        Organization.objects.create(name="No Membership", jurisdiction=jur1)
-        # For `unmatched-person-memberships`
-        org2 = Organization.objects.create(name="Unmatched Person Memberships",
-                                           jurisdiction=jur2)
-        Membership.objects.create(person_name='Unmatched Person',
-                                  organization=org2)
 
     def test_org_importer_no_memberships(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        Organization.objects.create(name="No Membership", jurisdiction=jur)
+
+        # To check that on running importer twice no duplicate DataQualityIssue
+        # are being created.
         orgs_issues()
-        org = Organization.objects.get(name="No Membership")
-        h = DataQualityIssue.objects \
-            .filter(object_id=org.id, issue='organization-no-memberships')
-        self.assertEqual(len(h), 1)
+        orgs_issues()
+
+        nm = DataQualityIssue.objects.filter(
+            issue='organization-no-memberships').count()
+        rest = DataQualityIssue.objects.exclude(
+            issue='organization-no-memberships')
+        self.assertEqual(nm, 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_org_importer_membership_unmatched_person(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Unmatched Person Memberships",
+                                          jurisdiction=jur)
+        Membership.objects.create(person_name='Unmatched Person',
+                                  organization=org)
         orgs_issues()
-        mem = Membership.objects.get(person_name='Unmatched Person')
-        h = DataQualityIssue.objects \
-            .filter(object_id=mem.id, issue='membership-unmatched-person')
-        self.assertEqual(len(h), 1)
+        rest = DataQualityIssue.objects.exclude(
+            issue='membership-unmatched-person')
+        up = DataQualityIssue.objects.filter(
+            issue='membership-unmatched-person').count()
+        self.assertQuerysetEqual(rest, [])
+        self.assertEqual(up, 1)
 
 
 class BillsImportersTests(TestCase):
@@ -104,63 +154,139 @@ class BillsImportersTests(TestCase):
                 url="http://www.senate.mo.gov",
                 division=division,
             )
-        ls = LegislativeSession.objects.create(jurisdiction=jur,
-                                               identifier="2017",
-                                               name="2017 Test Session",
-                                               start_date="2017-06-25",
-                                               end_date="2017-06-26")
-        # For `no-sponsors`
-        Bill.objects.create(legislative_session=ls,
-                            identifier="B1")
-        # For `no-actions` & `no-versions`
-        bill = Bill.objects.create(legislative_session=ls,
-                                   identifier="B4")
-        # For `unmatched-person-sponsor`
-        BillSponsorship.objects \
-            .create(bill=bill,
-                    classification="Bill with unmatched person sponsor",
-                    name="Unmatched Person Sponsor", entity_type='person')
-        # For `unmatched-org-sponsor`
-        BillSponsorship.objects \
-            .create(bill=bill,
-                    classification="Bill with unmatched organization sponsor",
-                    name="Unmatched Organization Sponsor",
-                    entity_type='organization')
+        LegislativeSession.objects.create(jurisdiction=jur,
+                                          identifier="2017",
+                                          name="2017 Test Session",
+                                          start_date="2017-06-25",
+                                          end_date="2017-06-26")
 
     def test_bill_importer_no_actions(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Org for Bill with no actions",
+                                          jurisdiction=jur)
+        p = Person.objects.create(name="Person for Bill with no actions")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="Bill with No Actions")
+        bill.versions.create(note="Bill with version",
+                             date="2017-06-28")
+        bill.sponsorships \
+            .create(classification="Bill with matched person sponsor",
+                    name="matched Person Sponsor", entity_type='person',
+                    person=p)
+        bill.sponsorships \
+            .create(classification="Bill with matched organization sponsor",
+                    name="matched Organization Sponsor", organization=org,
+                    entity_type='organization')
+
+        # To check that on running importer twice no duplicate DataQualityIssue
+        # are being created.
         bills_issues()
-        bill = Bill.objects.get(identifier="B4")
+        bills_issues()
+
         h = DataQualityIssue.objects.filter(object_id=bill.id,
-                                            issue='bill-no-actions')
-        self.assertEqual(len(h), 1)
+                                            issue='bill-no-actions').count()
+        rest = DataQualityIssue.objects.exclude(object_id=bill.id,
+                                                issue='bill-no-actions')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_bill_importer_no_sponsors(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Org for Bill with no sponsor",
+                                          jurisdiction=jur)
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="Bill with No Sponsors")
+        bill.actions.create(description="Bill with Action", organization=org,
+                            date="2017-06-28", order=2)
+        bill.versions.create(note="Bill with version",
+                             date="2017-06-28")
         bills_issues()
-        bill = Bill.objects.get(identifier="B1")
-        h = DataQualityIssue.objects.filter(object_id=bill.id,
-                                            issue='bill-no-sponsors')
-        self.assertEqual(len(h), 1)
+        h = DataQualityIssue.objects.filter(issue='bill-no-sponsors').count()
+        rest = DataQualityIssue.objects.exclude(issue='bill-no-sponsors')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_bill_importer_no_versions(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Org for Bill with no versions",
+                                          jurisdiction=jur)
+        p = Person.objects.create(name="Person for Bill with no versions")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="Bill with No Versions")
+        bill.actions.create(description="Bill with Action", organization=org,
+                            date="2017-06-28", order=2)
+        bill.sponsorships \
+            .create(classification="Bill with matched person sponsor",
+                    name="matched Person Sponsor", entity_type='person',
+                    person=p)
+        bill.sponsorships \
+            .create(classification="Bill with matched organization sponsor",
+                    name="matched Organization Sponsor", organization=org,
+                    entity_type='organization')
         bills_issues()
-        bill = Bill.objects.get(identifier="B4")
         h = DataQualityIssue.objects.filter(object_id=bill.id,
-                                            issue='bill-no-versions')
-        self.assertEqual(len(h), 1)
+                                            issue='bill-no-versions').count()
+        rest = DataQualityIssue.objects.exclude(issue='bill-no-versions')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_bill_importer_unmatched_org_sponsor(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Org for Unmatched org sponsor",
+                                          jurisdiction=jur)
+        p = Person.objects.create(name="Person for Unmatched org sponsor")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="Bill: Unmatched org sponsor")
+        bill.actions.create(description="Bill with Action", organization=org,
+                            date="2017-06-28", order=2)
+        bill.versions.create(note="Bill with version",
+                             date="2017-06-28")
+        bill.sponsorships \
+            .create(classification="Bill with matched person sponsor",
+                    name="matched Person Sponsor", entity_type='person',
+                    person=p)
+        bill.sponsorships \
+            .create(classification="Bill with matched organization sponsor",
+                    name="matched Organization Sponsor",
+                    entity_type='organization')
         bills_issues()
-        bill = Bill.objects.get(identifier="B4")
         h = DataQualityIssue.objects.filter(object_id=bill.id,
                                             issue='bill-unmatched-org-sponsor')
+        rest = DataQualityIssue.objects \
+            .exclude(object_id=bill.id, issue='bill-unmatched-org-sponsor')
+
         self.assertEqual(len(h), 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_bill_importer_unmatched_person_sponsor(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Org: Unmatched person sponsor",
+                                          jurisdiction=jur)
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="Bill: Unmatched person sponsor")
+        bill.actions.create(description="Bill with Action", organization=org,
+                            date="2017-06-28", order=2)
+        bill.versions.create(note="Bill with version",
+                             date="2017-06-28")
+        bill.sponsorships \
+            .create(classification="Bill with unmatched person sponsor",
+                    name="Unmatched Person Sponsor", entity_type='person')
+        bill.sponsorships \
+            .create(classification="Bill with matched organization sponsor",
+                    name="matched Organization Sponsor", organization=org,
+                    entity_type='organization')
         bills_issues()
-        bill = Bill.objects.get(identifier="B4")
         h = DataQualityIssue.objects \
             .filter(object_id=bill.id, issue='bill-unmatched-person-sponsor')
+        rest = DataQualityIssue.objects \
+            .exclude(object_id=bill.id, issue='bill-unmatched-person-sponsor')
         self.assertEqual(len(h), 1)
+        self.assertQuerysetEqual(rest, [])
 
 
 class VoteEventImportersTests(TestCase):
@@ -179,66 +305,134 @@ class VoteEventImportersTests(TestCase):
                                                name="2017 Test Session",
                                                start_date="2017-06-25",
                                                end_date="2017-06-26")
-        org = Organization.objects.create(name="Democratic",
-                                          jurisdiction=jur)
-        # For `missing-voters`
-        VoteEvent.objects.create(identifier="vote1",
-                                 motion_text="VoteEvent with missing-voters",
-                                 start_date="2017-06-26",
-                                 result='pass', legislative_session=ls,
-                                 organization=org)
-        # For `missing-bill`
-        vote2 = VoteEvent.objects \
-            .create(identifier="vote2",
+        Organization.objects.create(name="Democratic", jurisdiction=jur)
+        Person.objects.create(name="Voter")
+        Bill.objects.create(legislative_session=ls,
+                            identifier="Bill for VoteEvent")
+
+    def test_voteevent_importer_missing_voters(self):
+        org = Organization.objects.get(name="Democratic")
+        bill = Bill.objects.get(identifier="Bill for VoteEvent")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        voteevent = VoteEvent.objects \
+            .create(identifier="vote1",
+                    motion_text="VoteEvent with missing-voters",
+                    start_date="2017-06-26",
+                    result='pass', legislative_session=ls,
+                    organization=org,
+                    bill=bill)
+
+        # To check that on running importer twice no duplicate DataQualityIssue
+        # are being created.
+        vote_event_issues()
+        vote_event_issues()
+
+        h = DataQualityIssue.objects \
+            .filter(object_id=voteevent.id,
+                    issue='voteevent-missing-voters').count()
+        rest = DataQualityIssue.objects \
+            .exclude(object_id=voteevent.id,
+                     issue='voteevent-missing-voters')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
+
+    def test_voteevent_importer_missing_bill(self):
+        org = Organization.objects.get(name="Democratic")
+        p = Person.objects.get(name="Voter")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        voteevent = VoteEvent.objects \
+            .create(identifier="vote1",
                     motion_text="VoteEvent with missing-bill",
                     start_date="2017-06-26",
                     result='pass', legislative_session=ls,
                     organization=org)
-        # For `unmatched-voter`
-        PersonVote.objects.create(vote_event=vote2, option='yes',
-                                  voter_name="Unmatched Voter")
-        # For `missing-counts`
-        VoteCount.objects.create(vote_event=vote2, option='yes', value=0)
-        VoteCount.objects.create(vote_event=vote2, option='no', value=0)
-        # For `bad-counts`
-        VoteCount.objects.create(vote_event=vote2, option='other', value=10)
-
-    def test_voteevent_importer_missing_voters(self):
+        voteevent.votes.create(option="yes", voter=p)
+        voteevent.counts.create(option="yes", value=1)
+        voteevent.counts.create(option="no", value=1)
+        voteevent.counts.create(option="other", value=0)
         vote_event_issues()
-        voteevent = VoteEvent.objects.get(identifier="vote1")
         h = DataQualityIssue.objects \
             .filter(object_id=voteevent.id,
-                    issue='voteevent-missing-voters')
-        self.assertEqual(len(h), 1)
-
-    def test_voteevent_importer_missing_bill(self):
-        vote_event_issues()
-        voteevent = VoteEvent.objects.get(identifier="vote2")
-        h = DataQualityIssue.objects \
-            .filter(object_id=voteevent.id,
-                    issue='voteevent-missing-bill')
-        self.assertEqual(len(h), 1)
+                    issue='voteevent-missing-bill').count()
+        rest = DataQualityIssue.objects \
+            .exclude(object_id=voteevent.id,
+                     issue='voteevent-missing-bill')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_voteevent_importer_unmatched_voter(self):
+        org = Organization.objects.get(name="Democratic")
+        bill = Bill.objects.get(identifier="Bill for VoteEvent")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        voteevent = VoteEvent.objects \
+            .create(identifier="vote1",
+                    motion_text="VoteEvent with unmatched-voter",
+                    start_date="2017-06-26",
+                    result='pass', legislative_session=ls,
+                    organization=org,
+                    bill=bill)
+        voteevent.votes.create(option="yes", voter_name="unmatched-voter")
+        voteevent.counts.create(option="yes", value=1)
+        voteevent.counts.create(option="no", value=1)
+        voteevent.counts.create(option="other", value=0)
         vote_event_issues()
-        voteevent = VoteEvent.objects.get(identifier="vote2")
         h = DataQualityIssue.objects \
             .filter(object_id=voteevent.id,
-                    issue='voteevent-unmatched-voter')
-        self.assertEqual(len(h), 1)
+                    issue='voteevent-unmatched-voter').count()
+        rest = DataQualityIssue.objects \
+            .exclude(object_id=voteevent.id,
+                     issue='voteevent-unmatched-voter')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_voteevent_importer_missing_counts(self):
+        org = Organization.objects.get(name="Democratic")
+        p = Person.objects.get(name="Voter")
+        bill = Bill.objects.get(identifier="Bill for VoteEvent")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        voteevent = VoteEvent.objects \
+            .create(identifier="vote1",
+                    motion_text="VoteEvent with missing-counts",
+                    start_date="2017-06-26",
+                    result='pass', legislative_session=ls,
+                    organization=org,
+                    bill=bill)
+        voteevent.votes.create(option="yes", voter=p)
+        voteevent.counts.create(option="yes", value=0)
+        voteevent.counts.create(option="no", value=0)
+        voteevent.counts.create(option="other", value=0)
         vote_event_issues()
-        voteevent = VoteEvent.objects.get(identifier="vote2")
         h = DataQualityIssue.objects \
             .filter(object_id=voteevent.id,
-                    issue='voteevent-missing-counts')
-        self.assertEqual(len(h), 1)
+                    issue='voteevent-missing-counts').count()
+        rest = DataQualityIssue.objects \
+            .exclude(object_id=voteevent.id,
+                     issue='voteevent-missing-counts')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
 
     def test_voteevent_importer_bad_counts(self):
+        org = Organization.objects.get(name="Democratic")
+        p = Person.objects.get(name="Voter")
+        bill = Bill.objects.get(identifier="Bill for VoteEvent")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        voteevent = VoteEvent.objects \
+            .create(identifier="vote1",
+                    motion_text="VoteEvent with bad-counts",
+                    start_date="2017-06-26",
+                    result='pass', legislative_session=ls,
+                    organization=org,
+                    bill=bill)
+        voteevent.votes.create(option="yes", voter=p)
+        voteevent.counts.create(option="yes", value=1)
+        voteevent.counts.create(option="no", value=1)
+        voteevent.counts.create(option="other", value=1)
         vote_event_issues()
-        voteevent = VoteEvent.objects.get(identifier="vote2")
         h = DataQualityIssue.objects \
             .filter(object_id=voteevent.id,
-                    issue='voteevent-bad-counts')
-        self.assertEqual(len(h), 1)
+                    issue='voteevent-bad-counts').count()
+        rest = DataQualityIssue.objects \
+            .exclude(object_id=voteevent.id,
+                     issue='voteevent-bad-counts')
+        self.assertEqual(h, 1)
+        self.assertQuerysetEqual(rest, [])
