@@ -1,9 +1,13 @@
 from django.test import TestCase
 from pupa.models import RunPlan
-from opencivicdata.core.models import Jurisdiction, Person, Division
+from opencivicdata.core.models import (Jurisdiction, Person, Division,
+                                       Organization, Membership)
+from opencivicdata.legislative.models import (Bill, VoteEvent,
+                                              LegislativeSession)
 from django.utils import timezone
 from admintools.models import DataQualityIssue
 from django.core.urlresolvers import reverse
+from django.http import QueryDict
 
 
 class OverviewViewTests(TestCase):
@@ -175,6 +179,17 @@ class JurisdictionintroViewTests(TestCase):
             response.context['cards']['bill']
             .get('unmatched-person-sponsor')['count'], 0)
 
+    def test_context_values(self):
+        """
+        To check that important context values are present.
+        """
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        response = self.client.get(reverse('jurisdiction_intro',
+                                           args=(jur.name,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('cards' in response.context)
+        self.assertTrue('jur_name' in response.context)
+
 
 class ListissueobjectsViewTests(TestCase):
 
@@ -192,17 +207,22 @@ class ListissueobjectsViewTests(TestCase):
         RunPlan.objects.create(jurisdiction=jur1, success=True,
                                start_time=start_time, end_time=end_time)
 
-        person1 = Person.objects.create(name="Hitesh Garg")
-        DataQualityIssue.objects.create(content_object=person1,
-                                        issue='person-missing-photo',
-                                        alert='warning',
-                                        jurisdiction=jur1)
+        LegislativeSession.objects.create(jurisdiction=jur1,
+                                          identifier="2017",
+                                          name="2017 Test Session",
+                                          start_date="2017-06-25",
+                                          end_date="2017-06-26")
 
     def test_important_context_values(self):
         """
         To check that important context values are present.
         """
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        person1 = Person.objects.create(name="Hitesh Garg")
+        DataQualityIssue.objects.create(content_object=person1,
+                                        issue='person-missing-photo',
+                                        alert='warning',
+                                        jurisdiction=jur)
         response = self.client.get(reverse('list_issue_objects',
                                            args=(jur.name,
                                                  'person',
@@ -211,3 +231,233 @@ class ListissueobjectsViewTests(TestCase):
         self.assertTrue('objects' in response.context)
         self.assertTrue('url_slug' in response.context)
         self.assertTrue('jur_name' in response.context)
+
+    def test_person_filter_queries(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        person1 = Person.objects.create(name="Hitesh Garg")
+        DataQualityIssue.objects.create(content_object=person1,
+                                        issue='person-missing-photo',
+                                        alert='warning',
+                                        jurisdiction=jur)
+        query_dict = QueryDict('', mutable=True)
+        # When Number of search results > 0
+        query_dict.update({'person': "Hitesh"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'person', 'missing-photo')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'], 'core_person_change')
+        self.assertEqual(response.context['issue_slug'], 'missing-photo')
+        self.assertEqual(response.context['objects'].paginator.count, 1)
+
+        # When Number of search results = 0
+        query_dict.update({'person': "unknown person"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'person', 'missing-photo')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'], 'core_person_change')
+        self.assertEqual(response.context['issue_slug'], 'missing-photo')
+        self.assertEqual(response.context['objects'].paginator.count, 0)
+
+    def test_organization_filter_queries(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="No Membership",
+                                          classification="Test Organization",
+                                          jurisdiction=jur)
+        DataQualityIssue.objects.create(content_object=org,
+                                        issue='organization-no-memberships',
+                                        alert='error',
+                                        jurisdiction=jur)
+        query_dict = QueryDict('', mutable=True)
+        # When Number of search results > 0
+        query_dict.update({'organization': "No",
+                           'org_classification': "Test"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'organization',
+                                           'no-memberships')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'],
+                         'core_organization_change')
+        self.assertEqual(response.context['issue_slug'],
+                         'no-memberships')
+        self.assertEqual(response.context['objects'].paginator.count, 1)
+
+        # When Number of search results = 0
+        query_dict.update({'organization': "unknown",
+                           'org_classification': "unknown"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'organization',
+                                           'no-memberships')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'],
+                         'core_organization_change')
+        self.assertEqual(response.context['issue_slug'],
+                         'no-memberships')
+        self.assertEqual(response.context['objects'].paginator.count, 0)
+
+    def test_membership_filter_queries(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Unmatched Person Memberships",
+                                          jurisdiction=jur)
+        mem = Membership.objects.create(person_name='Unmatched Person',
+                                        organization=org)
+        DataQualityIssue.objects.create(content_object=mem,
+                                        issue='membership-unmatched-person',
+                                        alert='warning',
+                                        jurisdiction=jur)
+        query_dict = QueryDict('', mutable=True)
+        # When Number of search results > 0
+        query_dict.update({'membership_org': "Unmatched Person Memberships",
+                           'membership': "Unmatched Person"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'membership',
+                                           'unmatched-person')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'], None)
+        self.assertEqual(response.context['issue_slug'],
+                         'unmatched-person')
+        self.assertEqual(response.context['objects'].paginator.count, 1)
+
+        # When Number of search results = 0
+        query_dict.update({'membership_org': "unknown",
+                           'membership': "unknown"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'membership',
+                                           'unmatched-person')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'], None)
+        self.assertEqual(response.context['issue_slug'],
+                         'unmatched-person')
+        self.assertEqual(response.context['objects'].paginator.count, 0)
+
+    def test_bill_filter_queries(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Org: Unmatched person sponsor",
+                                          jurisdiction=jur)
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="Bill: Unmatched person sponsor")
+        bill.actions.create(description="Bill with Action", organization=org,
+                            date="2017-06-28", order=2)
+        bill.versions.create(note="Bill with version",
+                             date="2017-06-28")
+        bill.sponsorships \
+            .create(classification="Bill with unmatched person sponsor",
+                    name="Unmatched Person Sponsor", entity_type='person')
+        bill.sponsorships \
+            .create(classification="Bill with matched organization sponsor",
+                    name="matched Organization Sponsor", organization=org,
+                    entity_type='organization')
+        DataQualityIssue.objects.create(content_object=bill,
+                                        issue='bill-unmatched-person-sponsor',
+                                        alert='warning',
+                                        jurisdiction=jur)
+        query_dict = QueryDict('', mutable=True)
+        # When Number of search results > 0
+        query_dict.update({'bill_identifier': "Bill:",
+                           "bill_session": "2017"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'bill',
+                                           'unmatched-person-sponsor')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'],
+                         'legislative_bill_change')
+        self.assertEqual(response.context['issue_slug'],
+                         'unmatched-person-sponsor')
+        self.assertEqual(response.context['objects'].paginator.count, 1)
+
+        # When Number of search results = 0
+        query_dict.update({'bill_identifier': "unknown",
+                           "bill_session": "unknown"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'bill',
+                                           'unmatched-person-sponsor')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'],
+                         'legislative_bill_change')
+        self.assertEqual(response.context['issue_slug'],
+                         'unmatched-person-sponsor')
+        self.assertEqual(response.context['objects'].paginator.count, 0)
+
+    def test_voteevent_filter_queries(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Democratic", jurisdiction=jur)
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="Bill for VoteEvent")
+        voteevent = VoteEvent.objects \
+            .create(identifier="vote1",
+                    motion_text="VoteEvent with missing-voters",
+                    start_date="2017-06-26",
+                    result='pass', legislative_session=ls,
+                    organization=org,
+                    bill=bill)
+        DataQualityIssue.objects.create(content_object=voteevent,
+                                        issue='voteevent-missing-voters',
+                                        alert='error',
+                                        jurisdiction=jur)
+        query_dict = QueryDict('', mutable=True)
+        # When Number of search results > 0
+        query_dict.update({'voteevent_org': "Democratic",
+                           'voteevent_bill': "Bill"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'voteevent',
+                                           'missing-voters')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'],
+                         'legislative_voteevent_change')
+        self.assertEqual(response.context['issue_slug'],
+                         'missing-voters')
+        self.assertEqual(response.context['objects'].paginator.count, 1)
+
+        # When Number of search results = 0
+        query_dict.update({'voteevent_org': "unknown",
+                           "voteevent_bill": "unknown"})
+        url = '{base_url}?{querystring}' \
+            .format(base_url=reverse('list_issue_objects',
+                                     args=(jur.name, 'voteevent',
+                                           'missing-voters')
+                                     ),
+                    querystring=query_dict.urlencode())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['url_slug'],
+                         'legislative_voteevent_change')
+        self.assertEqual(response.context['issue_slug'],
+                         'missing-voters')
+        self.assertEqual(response.context['objects'].paginator.count, 0)
