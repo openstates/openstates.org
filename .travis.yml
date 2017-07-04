@@ -1,5 +1,13 @@
 language: python
 sudo: false
 python: 3.5
+addons:
+    postgresql: "9.4"
+before_script:
+    - psql -c "CREATE USER test with PASSWORD 'test' CREATEDB SUPERUSER;" -U postgres
+    - psql -c "CREATE DATABASE test;" -U postgres
+    - psql -c "CREATE EXTENSION postgis;" -U postgres -d test
 install: python setup.py -q install
-script: flake8 admintools --exclude=*/migrations/*,*/importers/__init__.py*
+script:
+    - python runtests.py
+    - flake8 --exclude=*/migrations/*,*/importers/__init__.py*

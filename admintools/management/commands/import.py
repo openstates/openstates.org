@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
         if options['vote_event']:
             vote_event_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported'
+            self.stdout.write(self.style.SUCCESS('Successfully Imported '
                                                  'VoteEvent'
                                                  ' DataQualityIssues into DB'))
 
