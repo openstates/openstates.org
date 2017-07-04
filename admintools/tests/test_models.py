@@ -5,6 +5,7 @@ from opencivicdata.core.models import (Jurisdiction, Person, Division,
                                        Organization)
 from pupa.models import RunPlan
 from django.contrib.contenttypes.models import ContentType
+from admintools.issues import IssueType
 
 
 class DataQualityIssueModelTests(TestCase):
@@ -58,3 +59,10 @@ class DataQualityIssueModelTests(TestCase):
         contenttype_obj_dqi1 = ContentType.objects.get_for_model(person)
         contenttype_obj_dqi2 = ContentType.objects.get_for_model(org)
         self.assertNotEqual(contenttype_obj_dqi1.id, contenttype_obj_dqi2.id)
+
+    def test_dataqualityissue_issue_choices(self):
+        """
+        Issue choices must be updated on the DB migrations
+        """
+        self.assertEqual(DataQualityIssue._meta.get_field('issue').choices,
+                         IssueType.choices())
