@@ -135,7 +135,7 @@ def legislative_session_info(request, jur_name, identifier):
 def _filter_results(request):
     query = Q()
     if request.GET.get('person'):
-        query = Q(name__istartswith=request.GET.get('person'))
+        query = Q(name__icontains=request.GET.get('person'))
     if request.GET.get('organization'):
         query &= Q(name__istartswith=request.GET.get('organization'))
     if request.GET.get('org_classification'):
