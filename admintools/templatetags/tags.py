@@ -12,7 +12,7 @@ def url_replace(request, field, value):
 
 
 @register.assignment_tag
-def legislative_session_list(request, jur_name):
+def legislative_session_list(jur_name):
     legislative_sessions = LegislativeSession.objects.filter(
         jurisdiction__name__exact=jur_name).values('name', 'identifier') \
         .order_by('-identifier')

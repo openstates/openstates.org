@@ -48,7 +48,7 @@
                     <li class="nav-item dropdown btn-group">
                         <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sessions</a>
                         <div class="dropdown-menu dropdown-in scrollable-menu" aria-labelledby="dropdownMenu1">
-                            {% legislative_session_list request jur_name as sessions %}
+                            {% legislative_session_list jur_name as sessions %}
                                 {% for session in sessions %}
                                 <a class="dropdown-item" href="{% url 'legislative_session_info' jur_name session.identifier %}">{{ session.name }}</a>
                                 {% endfor %}

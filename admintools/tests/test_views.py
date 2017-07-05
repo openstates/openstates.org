@@ -8,6 +8,7 @@ from django.utils import timezone
 from admintools.models import DataQualityIssue
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
+from django.template import Template, Context
 
 
 class OverviewViewTests(TestCase):
@@ -36,6 +37,10 @@ class OverviewViewTests(TestCase):
         end_time = start_time + timezone.timedelta(minutes=10)
         RunPlan.objects.create(jurisdiction=jur2, success=True,
                                start_time=start_time, end_time=end_time)
+
+    def test_view_response(self):
+        response = self.client.get(reverse('overview'))
+        self.assertEqual(response.status_code, 200)
 
     def test_run_status_count(self):
         """
@@ -107,26 +112,26 @@ class OverviewViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['rows']), 2)
 
-        def test_total_rows_count_all_dataqissue(self):
-            """
-            Total number of rows must be equal to total number of
-            jurisdictions when all of them have Data Quality Issues.
-            """
-            jur1 = Jurisdiction.objects.get(name="Missouri State Senate")
-            jur2 = Jurisdiction.objects.get(name="Dausa State Senate")
-            person1 = Person.objects.create(name="Hitesh Garg")
-            DataQualityIssue.objects.create(content_object=person1,
-                                            issue='missing-photo',
-                                            alert='warning',
-                                            jurisdiction=jur1)
-            person2 = Person.objects.create(name="Garg Hitesh")
-            DataQualityIssue.objects.create(content_object=person2,
-                                            issue='missing-photo',
-                                            alert='warning',
-                                            jurisdiction=jur2)
-            response = self.client.get(reverse('overview'))
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.context['rows']), 2)
+    def test_total_rows_count_all_dataqissue(self):
+        """
+        Total number of rows must be equal to total number of
+        jurisdictions when all of them have Data Quality Issues.
+        """
+        jur1 = Jurisdiction.objects.get(name="Missouri State Senate")
+        jur2 = Jurisdiction.objects.get(name="Dausa State Senate")
+        person1 = Person.objects.create(name="Hitesh Garg")
+        DataQualityIssue.objects.create(content_object=person1,
+                                        issue='missing-photo',
+                                        alert='warning',
+                                        jurisdiction=jur1)
+        person2 = Person.objects.create(name="Garg Hitesh")
+        DataQualityIssue.objects.create(content_object=person2,
+                                        issue='missing-photo',
+                                        alert='warning',
+                                        jurisdiction=jur2)
+        response = self.client.get(reverse('overview'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['rows']), 2)
 
     def test_overview_with_jurisdictions(self):
         """
@@ -149,6 +154,12 @@ class JurisdictionintroViewTests(TestCase):
                 url="http://www.senate.mo.gov",
                 division=division,
             )
+        Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:ds",
+                name="Dausa State Senate",
+                url="http://www.senate.ds.gov",
+                division=division,
+            )
         start_time = timezone.now()
         end_time = start_time + timezone.timedelta(minutes=10)
         RunPlan.objects.create(jurisdiction=jur1, success=True,
@@ -159,6 +170,16 @@ class JurisdictionintroViewTests(TestCase):
                                         issue='person-missing-photo',
                                         alert='warning',
                                         jurisdiction=jur1)
+
+    def test_view_response(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        response = self.client.get(reverse('jurisdiction_intro',
+                                           args=(jur.name,)))
+        self.assertEqual(response.status_code, 200)
+
+    def test_mergetool_response(self):
+        response = self.client.get(reverse('merge'))
+        self.assertEqual(response.status_code, 200)
 
     def test_dataqualityissue_count(self):
         """
@@ -189,6 +210,97 @@ class JurisdictionintroViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('cards' in response.context)
         self.assertTrue('jur_name' in response.context)
+
+    def test_organization_list(self):
+        """
+        Two orgs with same classification should be counted as one.
+        """
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        Organization.objects.create(jurisdiction=jur, name="Democratic",
+                                    classification='executive')
+        Organization.objects.create(jurisdiction=jur, name="Republican",
+                                    classification='executive')
+        orgs_list = Organization.objects.filter(
+            jurisdiction=jur).values('classification').distinct()
+        response = self.client.get(reverse('jurisdiction_intro',
+                                           args=(jur.name,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['orgs'],
+                                 ["{'classification': 'executive'}"])
+        self.assertEqual(len(orgs_list), 1)
+
+    def test_voteevent_orgs_list(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(jurisdiction=jur, name="Democratic",
+                                          classification='executive')
+        ls = LegislativeSession.objects.create(
+                                            jurisdiction=jur,
+                                            identifier="2017",
+                                            name="2017 Test Session",
+                                            start_date="2017-06-25",
+                                            end_date="2017-06-26")
+        VoteEvent.objects.create(identifier="V1", organization=org,
+                                 legislative_session=ls)
+        voteevent_orgs_list = VoteEvent.objects.filter(
+            legislative_session__jurisdiction=jur) \
+            .values('organization__name').distinct()
+        response = self.client.get(reverse('jurisdiction_intro',
+                                           args=(jur.name,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['voteevent_orgs'],
+                                 ["{'organization__name': 'Democratic'}"])
+        self.assertEqual(len(voteevent_orgs_list), 1)
+
+    def test_bill_from_orgs_list(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(jurisdiction=jur, name="Democratic",
+                                          classification='executive')
+        ls = LegislativeSession.objects.create(
+                                            jurisdiction=jur,
+                                            identifier="2017",
+                                            name="2017 Test Session",
+                                            start_date="2017-06-25",
+                                            end_date="2017-06-26")
+        Bill.objects.create(legislative_session=ls, identifier="SB 1",
+                            title="Test Bill", from_organization=org)
+        bill_from_orgs_list = Bill.objects.filter(
+            legislative_session__jurisdiction=jur) \
+            .values('from_organization__name').distinct()
+        response = self.client.get(reverse('jurisdiction_intro',
+                                           args=(jur.name,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['bill_orgs'],
+                                 ["{'from_organization__name': 'Democratic'}"])
+        self.assertEqual(len(bill_from_orgs_list), 1)
+
+    def test_legislative_session_list(self):
+        jur1 = Jurisdiction.objects.get(name="Missouri State Senate")
+        jur2 = Jurisdiction.objects.get(name="Dausa State Senate")
+        LegislativeSession.objects.create(jurisdiction=jur1,
+                                          identifier="2017",
+                                          name="2017 Test Session",
+                                          start_date="2017-06-25",
+                                          end_date="2017-06-26")
+        LegislativeSession.objects.create(jurisdiction=jur1,
+                                          identifier="2016",
+                                          name="2016 Test Session",
+                                          start_date="2016-06-25",
+                                          end_date="2016-06-26")
+        LegislativeSession.objects.create(jurisdiction=jur2,
+                                          identifier="2015",
+                                          name="2015 Test Session",
+                                          start_date="2015-06-25",
+                                          end_date="2015-06-26")
+        out = Template(
+            "{% load tags %}"
+            "{% legislative_session_list jur_name as sessions %}"
+            "{% for session in sessions %}"
+            "{{ session.name }},"
+            "{% endfor %}"
+        ).render(Context({'jur_name': jur1.name}))
+        self.assertIn('2017 Test Session', out)
+        self.assertIn('2016 Test Session', out)
+        self.assertNotIn('2015 Test Session', out)
 
 
 class ListissueobjectsViewTests(TestCase):
@@ -461,3 +573,121 @@ class ListissueobjectsViewTests(TestCase):
         self.assertEqual(response.context['issue_slug'],
                          'missing-voters')
         self.assertEqual(response.context['objects'].paginator.count, 0)
+
+
+class LegislativesessioninfoViewTest(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur1 = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+        LegislativeSession.objects.create(jurisdiction=jur1,
+                                          identifier="2017",
+                                          name="2017 Test Session",
+                                          start_date="2017-06-25",
+                                          end_date="2017-06-26")
+        LegislativeSession.objects.create(jurisdiction=jur1,
+                                          identifier="2016",
+                                          name="2016 Test Session",
+                                          start_date="2016-06-25",
+                                          end_date="2016-06-26")
+
+    def test_view_response(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        ls = LegislativeSession.objects.get(identifier="2017",
+                                            jurisdiction=jur)
+        response = self.client.get(reverse('legislative_session_info',
+                                           args=(jur.name, ls.identifier)))
+        self.assertEqual(response.status_code, 200)
+
+    def test_bill_from_orgs_list_if_exists(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(jurisdiction=jur,
+                                          name="Democratic",
+                                          classification='executive')
+        ls = LegislativeSession.objects.get(identifier="2017",
+                                            jurisdiction=jur)
+
+        Bill.objects.create(legislative_session=ls, identifier="SB 1",
+                            title="Test Bill", from_organization=org)
+        bill_from_orgs_list = Bill.objects.filter(
+            legislative_session__jurisdiction=jur,
+            legislative_session__identifier=ls.identifier) \
+            .values('from_organization__name').distinct()
+
+        response = self.client.get(reverse('legislative_session_info',
+                                           args=(jur.name,
+                                                 ls.identifier)))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(
+            response.context['bill_orgs'],
+            ["{'from_organization__name': 'Democratic'}"])
+        self.assertEqual(len(bill_from_orgs_list), 1)
+
+    def test_bill_from_orgs_list_if_not_exists(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(jurisdiction=jur,
+                                          name="Democratic",
+                                          classification='executive')
+        ls = LegislativeSession.objects.get(identifier="2017",
+                                            jurisdiction=jur)
+        ls_2016 = LegislativeSession.objects.get(identifier="2016",
+                                                 jurisdiction=jur)
+        Bill.objects.create(legislative_session=ls, identifier="SB 1",
+                            title="Test Bill", from_organization=org)
+        bill_from_orgs_list = Bill.objects.filter(
+            legislative_session__jurisdiction=jur,
+            legislative_session__identifier=ls_2016.identifier) \
+            .values('from_organization__name').distinct()
+
+        response = self.client.get(reverse('legislative_session_info',
+                                           args=(jur.name,
+                                                 ls_2016.identifier)))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['bill_orgs'], [])
+        self.assertEqual(len(bill_from_orgs_list), 0)
+
+    def test_voteevent_orgs_list_if_exists(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(jurisdiction=jur, name="Democratic",
+                                          classification='executive')
+        ls = LegislativeSession.objects.get(jurisdiction=jur,
+                                            identifier="2017")
+        VoteEvent.objects.create(identifier="V1", organization=org,
+                                 legislative_session=ls)
+        voteevent_orgs_list = VoteEvent.objects.filter(
+            legislative_session__jurisdiction=jur) \
+            .values('organization__name').distinct()
+        response = self.client.get(reverse('legislative_session_info',
+                                           args=(jur.name,
+                                                 ls.identifier)))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['voteevent_orgs'],
+                                 ["{'organization__name': 'Democratic'}"])
+        self.assertEqual(len(voteevent_orgs_list), 1)
+
+    def test_voteevent_orgs_list_if_not_exists(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(jurisdiction=jur, name="Democratic",
+                                          classification='executive')
+        ls = LegislativeSession.objects.get(jurisdiction=jur,
+                                            identifier="2017")
+        ls_2016 = LegislativeSession.objects.get(identifier="2016",
+                                                 jurisdiction=jur)
+        VoteEvent.objects.create(identifier="V1", organization=org,
+                                 legislative_session=ls)
+        voteevent_orgs_list = VoteEvent.objects.filter(
+            legislative_session__jurisdiction=jur,
+            legislative_session__identifier=ls_2016.identifier) \
+            .values('organization__name').distinct()
+        response = self.client.get(reverse('legislative_session_info',
+                                           args=(jur.name,
+                                                 ls_2016.identifier)))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['voteevent_orgs'], [])
+        self.assertEqual(len(voteevent_orgs_list), 0)
