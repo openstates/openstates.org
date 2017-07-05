@@ -5,23 +5,30 @@
     <br /><br /><br />
 
     <div class="row wow fadeIn" data-wow-delay="0.2s">
-        <div class="col-lg-6 offset-lg-3">
+        <div class="col-lg-12">
             <div class="card">
                 <h3 class="card-header default-color white-text">Data Quality Issues</h3>
-
                 <div class="card-block">
-                    {% for name, issues in cards.items %}
-                    <p>
-                        <a data-toggle="collapse" href="#{{name}}" aria-expanded="false" aria-controls="collapseExample">
-                          {{name|title }} Related</a>
-                    </p>
-                    <div class="collapse" id="{{ name }}">
-                        <div class="card card-block">
-                            {% for issue, values in issues.items %}
-                            <h6><a class="{{ values.count|yesno:",disabled" }}"href="{% url 'list_issue_objects' jur_name name issue %}" style="color:{{values.alert|yesno:"red,black"}}" >{{values.description}}</a> <span class="badge {{values.alert|yesno:"red,yellow darken-3"}}">{{values.count}}</span></h6> {% endfor %}
-                        </div><br />
+                    <div class="row">
+                        {% for name, issues in cards.items %}
+                        <div class="col-lg-4 title_{{name}}">
+                            <p>
+                                <a data-toggle="collapse" href="#" aria-expanded="false" aria-controls="collapseExample">
+                                  {{name|title }} Related</a>
+                            </p>
+                            <div>
+                                <div class="card card-block  {{name}}">
+                                    {% for issue, values in issues.items %}
+                                        {% if values.count %}
+                                    <h6><a class="{{ values.count|yesno:",disabled" }}"href="{% url 'list_issue_objects' jur_name name issue %}" style="color:{{values.alert|yesno:"red,black"}}" >{{values.description}}</a> <span class="badge {{values.alert|yesno:"red,yellow darken-3"}}">{{values.count}}</span></h6>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div><br />
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+
                 </div>
             </div>
         </div>
@@ -93,4 +100,16 @@
 
 </div>
 </div>
+{% endblock %}
+{% block custom_scripts %}
+<script>
+$(document).ready(function(){
+    {% for name, issues in cards.items %}
+        if($.trim($(".{{name}}").html())=='')
+        {
+        $(".title_{{name}}").hide();
+        }
+    {% endfor %}
+});
+</script>
 {% endblock %}
