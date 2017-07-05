@@ -1,2 +1,4 @@
+from admintools import issues
 
-default_app_config = 'admintools.apps.AdmintoolsConfig'
+# Initialazing Issues
+issues.main()
