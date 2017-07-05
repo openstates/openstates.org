@@ -28,7 +28,8 @@ def orgs_issues():
         for issue in issues:
             if issue == 'no-memberships':
                 queryset = Organization.objects \
-                        .filter(jurisdiction=jur, memberships__isnull=True)
+                        .filter(jurisdiction=jur, memberships__isnull=True) \
+                        .exclude(classification__exact='legislature')
                 count += create_org_issues(queryset, issue, jur)
 
             else:
