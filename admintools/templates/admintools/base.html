@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,6 +19,11 @@
     <style>
         body {
             background-image: url({% static 'img/background.jpg' %})
+        }
+        .scrollable-menu {
+            height: auto;
+            max-height: 300px;
+            overflow-x: hidden;
         }
     </style>
     {% endblock %}
@@ -39,18 +45,13 @@
                     <li class="nav-item">
                         <a href="{% url 'jurisdiction_intro' jur_name %}" class="nav-link">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link">Legislators</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link">Organizations</a>
-                    </li>
-                    <li class="nav-item btn-group">
-                        <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Bills</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <a class="dropdown-item">Action</a>
-                            <a class="dropdown-item">Another action</a>
-                            <a class="dropdown-item">Something else here</a>
+                    <li class="nav-item dropdown btn-group">
+                        <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sessions</a>
+                        <div class="dropdown-menu dropdown-in scrollable-menu" aria-labelledby="dropdownMenu1">
+                            {% legislative_session_list jur_name as sessions %}
+                                {% for session in sessions %}
+                                <a class="dropdown-item" href="{% url 'legislative_session_info' jur_name session.identifier %}">{{ session.name }}</a>
+                                {% endfor %}
                         </div>
                     </li>
                     <li class="nav-item">
@@ -77,7 +78,7 @@
 
 
     <!-- SCRIPTS -->
-    {% block custom_scripts %} {% endblock %}
+
     <!-- JQuery -->
     <script type="text/javascript" src="{% static "js/jquery-3.1.1.min.js" %}"></script>
     <!-- Bootstrap tooltips -->
@@ -86,6 +87,8 @@
     <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="{% static "js/mdb.min.js" %}"></script>
+    <!-- Custom Scripts -->
+    {% block custom_scripts %} {% endblock %}
 </body>
 
 </html>
