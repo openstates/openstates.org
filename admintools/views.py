@@ -11,6 +11,11 @@ from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.db import transaction
+from admintools.resolvers.person import (resolve_person_issues)
 
 # Basic Classes with their Identifiers.
 upstream = {'person': Person,
@@ -210,3 +215,36 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
                'url_slug': url_slug,
                'related_class': related_class}
     return render(request, 'admintools/list_issues.html', context)
+
+
+@transaction.atomic
+def resolve_issues(request, issue_slug,  related_class, jur_name):
+    if request.method == 'POST':
+        if related_class == 'person':
+            if issue_slug == 'missing-photo':
+                issue_items = dict((k, v) for k, v in request.POST.items()
+                                   if v and not k.startswith('csrf'))
+            else:
+                issue_items = defaultdict(dict)
+                for k, v in request.POST.items():
+                    if v and not k.startswith('csrf'):
+                        if k.startswith('label'):
+                            issue_items[k[6:]]['label'] = v
+                        elif k.startswith('note'):
+                            issue_items[k[5:]]['note'] = v
+                        else:
+                            issue_items[k]['value'] = v
+                            if not issue_items[k].get('note'):
+                                issue_items[k]['note'] = ''
+                            if not issue_items[k].get('label'):
+                                issue_items[k]['label'] = ''
+
+            resolve_person_issues(issue_slug, issue_items)
+        if len(issue_items):
+            messages.success(request, 'Successfully updated {} item(s)'
+                             .format(len(issue_items)))
+    return HttpResponseRedirect(reverse('list_issue_objects',
+                                        args=(jur_name,
+                                              related_class,
+                                              issue_slug)))
+    return HttpResponseRedirect('/')
