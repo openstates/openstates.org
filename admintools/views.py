@@ -247,4 +247,3 @@ def resolve_issues(request, issue_slug,  related_class, jur_name):
                                         args=(jur_name,
                                               related_class,
                                               issue_slug)))
-    return HttpResponseRedirect('/')

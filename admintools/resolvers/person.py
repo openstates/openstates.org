@@ -22,6 +22,7 @@ def resolve_person_issues(issue_slug, issue_items):
             p.contact_details.create(type=type_, value=values.get('value'),
                                      note=values.get('note'),
                                      label=values.get('label'))
+            p.save()
             dqi = DataQualityIssue.objects.get(object_id=identifier,
                                                issue='person-{}'
                                                .format(issue_slug))
