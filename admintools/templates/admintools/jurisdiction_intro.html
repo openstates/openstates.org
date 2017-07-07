@@ -42,7 +42,7 @@
 
                 <h3 class="card-header default-color white-text">Legislators</h3>
                 <div class="card-block">
-                    <p><a href="{% url 'merge' jur_name %}">1. Merge Tool</a></p>
+                    <p><a href="{% url 'merge' jur_id %}">1. Merge Tool</a></p>
                     <a class="btn btn-primary" href="{% url 'admin:core_person_changelist' %}?memberships__organization__jurisdiction__name={{jur_name}}">View All</a>
                 </div>
             </div>
