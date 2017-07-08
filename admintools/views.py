@@ -221,29 +221,13 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
 def resolve_issues(request, issue_slug,  related_class, jur_name):
     if request.method == 'POST':
         if related_class == 'person':
-            if issue_slug == 'missing-photo':
-                issue_items = dict((k, v) for k, v in request.POST.items()
-                                   if v and not k.startswith('csrf'))
-            else:
-                issue_items = defaultdict(dict)
-                for k, v in request.POST.items():
-                    if v and not k.startswith('csrf'):
-                        if k.startswith('label'):
-                            issue_items[k[6:]]['label'] = v
-                        elif k.startswith('note'):
-                            issue_items[k[5:]]['note'] = v
-                        else:
-                            issue_items[k]['value'] = v
-                            if not issue_items[k].get('note'):
-                                issue_items[k]['note'] = ''
-                            if not issue_items[k].get('label'):
-                                issue_items[k]['label'] = ''
-
-            resolve_person_issues(issue_slug, issue_items)
-        if len(issue_items):
-            messages.success(request, 'Successfully updated {} item(s)'
-                             .format(len(issue_items)))
+            l = resolve_person_issues(issue_slug, request.POST)
+        else:
+            l = 0
+            pass
+        if l:
+            messages.success(request, 'Successfully updated {} {}(s)'
+                             .format(l, IssueType.description_for(issue_slug)))
     return HttpResponseRedirect(reverse('list_issue_objects',
-                                        args=(jur_name,
-                                              related_class,
+                                        args=(jur_name, related_class,
                                               issue_slug)))
