@@ -162,8 +162,6 @@ def _filter_results(request):
     if request.GET.get('membership_org'):
         query &= Q(organization__name__icontains=request.GET.get(
             'membership_org'))
-    if request.GET.get('membership_id'):
-        query &= Q(id=request.GET.get('membership_id'))
     return query
 
 

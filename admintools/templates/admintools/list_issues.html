@@ -53,13 +53,11 @@
                         <input style="text-align:center; width:30%;" type="text" name="voteevent_bill" placeholder="BILL" value="{{ request.GET.voteevent_bill }}" /></th>
                     <th style="text-align: center;">
                         <input style="text-align:center;" type="text" name="voteevent_org" placeholder="ORGANIZATION" value="{{ request.GET.voteevent_org}}" /></th>
-                    {% else %}
+                    {% elif related_class == 'membership' %}
                     <th style="text-align: center;">
                         <input style="text-align:center;" type="text" name="membership" placeholder="UNMATCHED NAME" value="{{ request.GET.membership}}" /></th>
                     <th style="text-align: center;">
                         <input style="text-align:center;" type="text" name="membership_org" placeholder="ORGANIZATION" value="{{request.GET.membership_org}}" /></th>
-                    <th style="text-align: center;">
-                        <input style="text-align:center;" type="text" name="membership_id" placeholder="MEMBERSHIP ID " value="{{ request.GET.membership_id}}" /></th>
                     {% endif %}
                     <th style="text-align: center;">SOURCES</th>
                 </form>
@@ -70,14 +68,18 @@
                     <tr id="tr-{{value.id}}">
                       {% if related_class == 'person' %}
                         {% if issue_slug != 'missing-photo' %}
-                        <td scope="row"><input type="button" onclick='append_fun("{{ value.id }}")' value="+"></td>
+                          <td scope="row"><input type="button" onclick='append_fun("{{ value.id }}")' value="+"></td>
                         {% else %}
-                        <td scope="row"></td>
+                          <td scope="row"></td>
                         {% endif %}
                       {% elif related_class == 'organization' %}
                         <td scope="row">
                           <input type="checkbox" class="filled-in" name="{{ value.id }}" form="my_form" style="width: 20px;height: 20px;">
                         </td>
+                      {% elif related_class == 'membership' %}
+                      <td scope="row">
+                         <a href="#"><i class="fa fa-external-link" style="color: #004d40;" aria-hidden="true"></i></a>
+                      </td>
                       {% else %}
                       <td scope="row"></td>
                     {% endif %}
@@ -94,6 +96,7 @@
                         <td align="center"><input type="text" name="note_{{ value.id }}" form="my_form" /></td>
                         <td align="center"><input type="text" name="label_{{ value.id }}" form="my_form" /></td>
                         {% endif %}
+
                         {% elif related_class == 'organization' %}
                         <td align="center">{{ value.classification|title }}</td>
                         {% elif related_class == 'bill' %}
@@ -102,24 +105,32 @@
                         {% elif related_class == 'voteevent' %}
                         <td align="center">{{ value.bill.identifier }} in {{ value.bill.legislative_session }}</td>
                         <td align="center">{{ value.organization}}</td>
-                        {% else %}
+                        {% elif related_class == 'membership' %}
                         <td align="center">{{ value.organization}}</td>
-                        <td align="center">{{ value.id}}</td>
                         {% endif %}
-
+                        {% if related_class != 'person' %}
+                          <td align="center">
+                            {% for item in value.sources.values %}
+                                <a href="{{ item.url }}">Link{{forloop.counter}} </a>
+                            {% endfor %}
+                          </td>
+                        {% else %}
                         <td align="center">
-                          {% for item in value.sources.values %}
+                          {% for item in value.links.values %}
                               <a href="{{ item.url }}">Link{{forloop.counter}} </a>
                           {% endfor %}
                         </td>
+                        {% endif %}
                     </tr>
             {% endfor %}
             <br /><br />
         </tbody>
     </table>
+    {% if related_class != 'membership' %}
     <button class="btn btn-cyan col-lg-2 offset-lg-6" style="margin-left: 900px;" form="my_form" type="submit">
       {% if related_class != 'organization' %}Save{% else %}Delete{% endif %}
     </button>
+    {% endif %}
     {% if objects.has_other_pages %}
     <br />
     <nav>
