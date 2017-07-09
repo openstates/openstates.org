@@ -7,7 +7,7 @@ def _prepare_import(issue_slug, post_data):
     if issue_slug == 'missing-photo':
         issue_items = dict((k, v) for k, v in post_data.items()
                            if v and not k.startswith('csrf'))
-    else:
+    elif issue_slug in ['missing-phone', 'missing-email', 'missing-address']:
         issue_items = defaultdict(dict)
         count = 1
         for k, v in post_data.items():
@@ -17,15 +17,16 @@ def _prepare_import(issue_slug, post_data):
                 # using custom hash because two legislators can have same Phone
                 # numbers for eg, `State House Message Phone`
                 hash_ = str(count) + '__@#$__' + v
-                if not issue_items.get(hash_):
-                    issue_items[hash_]['id'] = "ocd-person/" + c[1]
-                    issue_items[hash_]['code'] = c[0]
+                issue_items[hash_]['id'] = "ocd-person/" + c[1]
+                issue_items[hash_]['code'] = c[0]
                 count += 1
         for hash_, item in issue_items.items():
             issue_items[hash_]['note'] = post_data['note_' + item['code']
                                                    + item['id']]
             issue_items[hash_]['label'] = post_data['label_' + item['code']
                                                     + item['id']]
+    else:
+        raise ValueError("Person Issue Resolver needs update for new issue.")
     return issue_items
 
 
@@ -44,7 +45,7 @@ def resolve_person_issues(issue_slug, post_data):
         objects_set = set()
         if issue_slug == 'missing-phone':
             type_ = 'voice'
-        else:
+        elif issue_slug in ['missing-email', 'missing-address']:
             type_ = issue_slug[8:]
         for hash_, items in issue_items.items():
             new_value = hash_.split('__@#$__')[1]
@@ -53,6 +54,8 @@ def resolve_person_issues(issue_slug, post_data):
                                      note=items.get('note'),
                                      label=items.get('label'))
             p.save()
+            # not using .filter() directly to make sure that only one object is
+            # being deleted from DataQualityIssue table.
             objects_set.add(p)
         for object_ in objects_set:
             dqi = DataQualityIssue.objects.get(object_id=object_.id,
