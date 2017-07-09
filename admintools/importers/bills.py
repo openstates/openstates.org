@@ -46,6 +46,6 @@ def bills_issues():
                 queryset = bills.filter(versions__isnull=True)
                 count += create_bill_issues(queryset, issue, jur)
             else:
-                raise ValueError("Bill Importer needs update for new issue.") 
+                raise ValueError("Bill Importer needs update for new issue.")
         print("Imported Bills Related {} Issues for {}".format(count,
                                                                jur.name))
