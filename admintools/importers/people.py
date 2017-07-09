@@ -32,8 +32,10 @@ def person_issues():
             elif issue == 'missing-phone':
                 queryset = people.exclude(contact_details__type='voice')
                 count += create_person_issues(queryset, issue, jur)
-            else:
+            elif issue in ['missing-email', 'missing-address']:
                 queryset = people.exclude(contact_details__type=issue[8:])
                 count += create_person_issues(queryset, issue, jur)
+            else:
+                raise ValueError("People Importer needs update for new issue.")
         print("Imported People Related {} Issues for {}".format(count,
                                                                 jur.name))

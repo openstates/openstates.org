@@ -91,7 +91,7 @@
                         <!-- VoteEvent -->
                         <td align="center">
                             {% if values.voteevent.error %}
-                            <i class="fa fa-lg fa-close bad"></i> {{ row.voteevents.bill_error }} {% endif %} {% if values.voteevent.warning %}
+                            <i class="fa fa-lg fa-close bad"></i> {{ values.voteevent.error }} {% endif %} {% if values.voteevent.warning %}
                             <i class="fa fa-lg fa-warning warning"></i> {{ values.voteevent.warning }} {% endif %} {% if not values.voteevent.error and not values.voteevent.warning %}
                             <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
                         </td>

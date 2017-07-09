@@ -42,8 +42,10 @@ def bills_issues():
                     .filter(sponsorships__entity_type='organization',
                             sponsorships__organization__isnull=True).distinct()
                 count += create_bill_issues(queryset, issue, jur)
-            else:
+            elif issue == 'no-versions':
                 queryset = bills.filter(versions__isnull=True)
                 count += create_bill_issues(queryset, issue, jur)
+            else:
+                raise ValueError("Bill Importer needs update for new issue.") 
         print("Imported Bills Related {} Issues for {}".format(count,
                                                                jur.name))
