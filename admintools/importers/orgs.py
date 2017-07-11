@@ -32,11 +32,14 @@ def orgs_issues():
                         .exclude(classification__exact='legislature')
                 count += create_org_issues(queryset, issue, jur)
 
-            else:
+            elif issue == 'unmatched-person':
                 queryset = Membership.objects \
                     .filter(organization__jurisdiction=jur,
                             person__isnull=True)
                 count += create_org_issues(queryset, issue, jur)
+            else:
+                raise ValueError("Organization Importer needs "
+                                 "update for new issue.")
         print("Imported Organization Related {} Issues for {}".format(count,
                                                                       jur.name)
               )

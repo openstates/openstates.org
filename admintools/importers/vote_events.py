@@ -48,9 +48,12 @@ def vote_event_issues():
                                                  counts__value=0)
                 count += create_vote_event_issues(queryset, issue, jur)
 
-            else:
+            elif issue == 'bad-counts':
                 queryset = voteevents.filter(counts__option='other',
                                              counts__value__gt=0)
                 count += create_vote_event_issues(queryset, issue, jur)
+            else:
+                raise ValueError("VoteEvents Importer needs update "
+                                 "for new issue.")
         print("Imported VoteEvents Related {} Issues for {}".format(count,
                                                                     jur.name))
