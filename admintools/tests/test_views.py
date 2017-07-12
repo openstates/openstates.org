@@ -180,7 +180,7 @@ class JurisdictionintroViewTests(TestCase):
     def test_mergetool_response(self):
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
         response = self.client.get(reverse('merge',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
 
     def test_dataqualityissue_count(self):
