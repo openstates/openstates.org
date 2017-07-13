@@ -59,7 +59,7 @@ class IssueResolverPatch(models.Model):
         db_table = 'opencivicdata_issue_resolver_patch'
 
     def __str__(self):
-        return '{} patch For {} by {} ({})'.format(self.applied_by,
-                                                   self.category,
-                                                   self.reporter_name,
-                                                   self.alert)
+        return '{} patch of {} by {} ({})'.format(self.applied_by,
+                                                  self.category,
+                                                  self.reporter_name,
+                                                  self.alert)

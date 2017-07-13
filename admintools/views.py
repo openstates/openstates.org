@@ -222,8 +222,7 @@ def _prepare_import(issue_slug, posted_data):
         issue_items = defaultdict(dict)
         count = 1
         for k, v in posted_data.items():
-            if v and not k.startswith('csrf') and not k.startswith('note')  \
-                    and not k.startswith('label'):
+            if v and not k.startswith('csrf') and not k.startswith('note'):
                 c = k.split("ocd-person/")
                 # using custom hash because two legislators can have same Phone
                 # numbers for eg, `State House Message Phone`
@@ -234,8 +233,6 @@ def _prepare_import(issue_slug, posted_data):
         for hash_, item in issue_items.items():
             issue_items[hash_]['note'] = posted_data['note_' + item['code']
                                                      + item['id']]
-            issue_items[hash_]['label'] = posted_data['label_' + item['code']
-                                                      + item['id']]
     else:
         raise ValueError("Person Issue Resolver needs update for new issue.")
     return issue_items
@@ -258,15 +255,18 @@ def person_resolve_issues(request, issue_slug, jur_name):
             if issue_slug != 'missing-photo':
                 new_value = hash_.split('__@#$__')[1]
                 p = Person.objects.get(id=items.get('id'))
+                note = items.get('note')
             else:
                 # hash_ == ocd id of person here.
                 new_value = items
                 p = Person.objects.get(id=hash_)
+                note = ''
             patch = IssueResolverPatch.objects.create(
                 content_object=p,
                 jurisdiction=jur,
                 status='approved',
                 new_value=new_value,
+                note=note,
                 category=category,
                 alert='warning',
                 applied_by='admin',

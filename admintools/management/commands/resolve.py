@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from ...resolvers.person import resolve_person_issues
+from ...resolvers.person import apply_person_patches
 
 
 class Command(BaseCommand):
@@ -10,7 +10,7 @@ class Command(BaseCommand):
         parser.add_argument('issues', nargs='+', type=str)
 
     def handle(self, *args, **options):
-        resolve_person_issues()
+        apply_person_patches()
         self.stdout.write(self.style.SUCCESS('Successfully Imported People'
                                              ' Issue Resolver Patches '
                                              'into DB'))

@@ -32,7 +32,6 @@
                       <th style="text-align: center;">{{description}}</th>
                       {% if issue_slug != 'missing-photo' %}
                           <th style="text-align: center;">Note</th>
-                          <th style="text-align: center;">Label</th>
                       {% endif %}
                     {% elif related_class == 'organization' %}
                     <th style="text-align: center;">
@@ -94,7 +93,6 @@
                         <td align="center"><input type="text" name="{{ value.id }}" form="my_form" /></td>
                         {% if issue_slug != 'missing-photo' %}
                         <td align="center"><input type="text" name="note_{{ value.id }}" form="my_form" /></td>
-                        <td align="center"><input type="text" name="label_{{ value.id }}" form="my_form" /></td>
                         {% endif %}
 
                         {% elif related_class == 'organization' %}
@@ -174,7 +172,6 @@ function append_fun(h) {
     newElement.insertCell(1).innerHTML = "";
     newElement.insertCell(2).innerHTML = "<td align='center'><input type='text' name=" + i + "_" +  h + " form='my_form' /></td>";
     newElement.insertCell(3).innerHTML = "<td align='center'><input type='text' name='note_" + i + "_" +  h + "' form='my_form' /></td>";
-    newElement.insertCell(4).innerHTML = "<td align='center'><input type='text' name='label_" + i + "_" +  h + "' form='my_form' /></td>";
     target.parentNode.insertBefore(newElement, target.nextSibling );
     i++;
     return newElement;
