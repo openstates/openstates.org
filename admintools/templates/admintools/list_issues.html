@@ -18,7 +18,7 @@
     {% endfor %}
   {% endif %}
 
-  <form method="post" action="{% url 'resolve_issues' issue_slug related_class jur_name %}" id="my_form">{% csrf_token %}</form>
+  <form method="post" action="{% url 'person_resolve_issues' issue_slug jur_name %}" id="my_form">{% csrf_token %}</form>
     <table class="table table-bordered table-striped">
         <thead class="thead-default">
             <tr>

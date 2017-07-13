@@ -5,7 +5,7 @@ from opencivicdata.core.models import (Jurisdiction, Person, Organization,
 from opencivicdata.legislative.models import (Bill, VoteEvent,
                                               LegislativeSession)
 from admintools.issues import IssueType
-from admintools.models import DataQualityIssue
+from admintools.models import DataQualityIssue, IssueResolverPatch
 from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
@@ -15,7 +15,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db import transaction
-from admintools.resolvers.person import (resolve_person_issues)
 
 # Basic Classes with their Identifiers.
 upstream = {'person': Person,
@@ -215,17 +214,68 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     return render(request, 'admintools/list_issues.html', context)
 
 
+def _prepare_import(issue_slug, posted_data):
+    if issue_slug == 'missing-photo':
+        issue_items = dict((k, v) for k, v in posted_data.items()
+                           if v and not k.startswith('csrf'))
+    elif issue_slug in ['missing-phone', 'missing-email', 'missing-address']:
+        issue_items = defaultdict(dict)
+        count = 1
+        for k, v in posted_data.items():
+            if v and not k.startswith('csrf') and not k.startswith('note')  \
+                    and not k.startswith('label'):
+                c = k.split("ocd-person/")
+                # using custom hash because two legislators can have same Phone
+                # numbers for eg, `State House Message Phone`
+                hash_ = str(count) + '__@#$__' + v
+                issue_items[hash_]['id'] = "ocd-person/" + c[1]
+                issue_items[hash_]['code'] = c[0]
+                count += 1
+        for hash_, item in issue_items.items():
+            issue_items[hash_]['note'] = posted_data['note_' + item['code']
+                                                     + item['id']]
+            issue_items[hash_]['label'] = posted_data['label_' + item['code']
+                                                      + item['id']]
+    else:
+        raise ValueError("Person Issue Resolver needs update for new issue.")
+    return issue_items
+
+
 @transaction.atomic
-def resolve_issues(request, issue_slug,  related_class, jur_name):
+def person_resolve_issues(request, issue_slug, jur_name):
     if request.method == 'POST':
-        if related_class == 'person':
-            l = resolve_person_issues(issue_slug, request.POST)
+        if issue_slug == 'missing-phone':
+            category = 'voice'
+        elif issue_slug == 'missing-photo':
+            category = 'image'
+        elif issue_slug in ['missing-email', 'missing-address']:
+            category = issue_slug[8:]
         else:
-            l = 0
-            pass
-        if l:
-            messages.success(request, 'Successfully updated {} {}(s)'
-                             .format(l, IssueType.description_for(issue_slug)))
+            raise ValueError("Person Resolver needs update for new issue.")
+        jur = Jurisdiction.objects.get(name__exact=jur_name)
+        issue_items = _prepare_import(issue_slug, request.POST)
+        for hash_, items in issue_items.items():
+            if issue_slug != 'missing-photo':
+                new_value = hash_.split('__@#$__')[1]
+                p = Person.objects.get(id=items.get('id'))
+            else:
+                # hash_ == ocd id of person here.
+                new_value = items
+                p = Person.objects.get(id=hash_)
+            patch = IssueResolverPatch.objects.create(
+                content_object=p,
+                jurisdiction=jur,
+                status='approved',
+                new_value=new_value,
+                category=category,
+                alert='warning',
+                applied_by='admin',
+            )
+            patch.save()
+        messages.success(request, 'Successfully created {} {}(s) Admin '
+                         'Patches'.format(len(issue_items),
+                                          IssueType.description_for(
+                                              issue_slug)))
     return HttpResponseRedirect(reverse('list_issue_objects',
-                                        args=(jur_name, related_class,
+                                        args=(jur_name, 'person',
                                               issue_slug)))

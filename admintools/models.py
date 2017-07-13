@@ -45,14 +45,14 @@ class IssueResolverPatch(models.Model):
     jurisdiction = models.ForeignKey(Jurisdiction,
                                      related_name="issue_resolver_patches")
     status = models.CharField(max_length=100)
-    old_value = models.CharField(max_length=2250)
+    old_value = models.CharField(max_length=2250, blank=True)
     new_value = models.CharField(max_length=2250)
     category = models.CharField(max_length=500, choices=CATEGORY_CHOICES)
     alert = models.CharField(max_length=500, choices=ALERT_CHOICES)
     note = models.TextField(blank=True)
-    source = models.URLField(max_length=2250)
-    reporter_email = models.EmailField()
-    reporter_name = models.CharField(max_length=500)
+    source = models.URLField(max_length=2250, blank=True)
+    reporter_email = models.EmailField(blank=True)
+    reporter_name = models.CharField(max_length=500, blank=True)
     applied_by = models.CharField(max_length=205)  # user/admin  (choices ??)
 
     class Meta:

@@ -32,4 +32,3 @@ if __name__ == '__main__':
     from opencivicdata.core.models import Person
     print("Starting Patches population script...")
     populate()
-

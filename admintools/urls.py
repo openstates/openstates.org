@@ -15,7 +15,6 @@ urlpatterns = [
         '(?P<issue_slug>[-\w]+)$',
         views.list_issue_objects, name='list_issue_objects'),
 
-    url(r'^admintools/(?P<issue_slug>[-\w]+)/(?P<related_class>[-\w]+)/'
-        '(?P<jur_name>[a-zA-Z\s]*)/$',
-        views.resolve_issues, name='resolve_issues')
+    url(r'^admintools/(?P<issue_slug>[-\w]+)/(?P<jur_name>[a-zA-Z\s]*)/$',
+        views.person_resolve_issues, name='person_resolve_issues')
 ]
