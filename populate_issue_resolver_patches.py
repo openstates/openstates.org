@@ -26,7 +26,8 @@ def populate():
 
 
 if __name__ == '__main__':
-    assert os.environ.get('DJANGO_SETTINGS_MODULE'), "Export `DJANGO_SETTINGS_MODULE` First!"
+    assert os.environ.get('DJANGO_SETTINGS_MODULE'), \
+        "Export `DJANGO_SETTINGS_MODULE` First!"
     django.setup()
     from admintools.models import IssueResolverPatch
     from opencivicdata.core.models import Person
