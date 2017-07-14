@@ -4,7 +4,7 @@
 <div class="container">
     <!--Page padding-->
     <br /><br /><br />
-    <form class="form-inline" method="get" action="{% url 'review_patches' jur_name %}">
+    <form class="form-inline" method="get" action="{% url 'review_person_patches' jur_name %}">
         <div class="md-form form-group">
             <label style="margin-top: -8px;"><strong>Category</strong></label>
           <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
@@ -28,6 +28,15 @@
             <button class="btn btn-cyan" type="submit">Go</button>
         </div>
     </form>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+  {% endif %}
+    <form method="post" action="{% url 'review_person_patches' jur_name %}" id="apply_patch_form">{% csrf_token %}</form>
     <table class="table table-bordered table-striped">
       <thead>
         <tr class="table-active">
@@ -37,7 +46,8 @@
           <th>Note</th>
           <th style="width:4%">Source</th>
           <th style="text-align: center;">Reporter</th>
-          <th style="text-align: center; width:16%;">Status</th>
+          <th style="text-align: center; width:4%;">Approve</th>
+          <th style="text-align: center; width:4%;">Reject</th>
         </tr>
       </thead>
       <tbody>
@@ -52,8 +62,10 @@
               </td>
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
               <td style="text-align: center;">
-                <a href="#" style="color: #007E33;"><i class="fa fa-check"></i>Approve</a>  /
-                <a href="#" style="color: #CC0000;"><i class="fa fa-remove"></i>Reject</a>
+                  <input type="checkbox" class="filled-in" name="approved_{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
+              </td>
+              <td style="text-align: center;">
+                   <input type="checkbox" class="filled-in" name="deprecated_{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
               </td>
             </tr>
         {% empty %}
@@ -61,5 +73,39 @@
         {% endfor %}
       </tbody>
     </table>
+    <button class="btn btn-cyan col-lg-2 offset-lg-6" style="margin-left: 900px;" form="apply_patch_form" type="submit">
+        Apply
+    </button>
+{% if patches.has_other_pages %}
+<br />
+<nav>
+<ul class="pagination pagination-md">
+    {% if patches.has_previous %}
+    <li class="page-item ">
+        <a class="page-link" href="?{% url_replace request 'page' 1 %}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">Previous</span>
+      </a>
+    </li>
+    {% endif %} {% for i in page_range %} {% if patches.number == i %}
+    <li class="page-item active">
+        <a class="page-link" href="#">{{ i }}<span class="sr-only">(current)</span></a>
+    </li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{i}}</a></li>
+    {% endif %} {% endfor %} {% if patches.has_next %}
+    <li class="page-item">
+        <a class="page-link" href="?{% url_replace request 'page' patches.paginator.num_pages %}" aria-label="Next">
+      <span aria-hidden="true">&raquo;</span>
+      <span class="sr-only">Next</span>
+    </a>
+    </li>
+    {% endif %}
+</ul>
+<span>
+    Page {{ patches.number }} of {{ patches.paginator.num_pages }}. (Total {{ patches.paginator.count }} Results)
+</span>
+</nav>
+{% endif %}<br /><br />
 </div>
 {% endblock %}

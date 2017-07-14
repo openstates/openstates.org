@@ -37,6 +37,27 @@ def _get_run_status(jur_name):
     return {'count': None if status == 1 else status, 'date': latest_date}
 
 
+def _get_pagination(objects_list, request):
+    paginator = Paginator(objects_list, 20)
+    try:
+        page = int(request.GET.get('page', '1'))
+    except:
+        page = 1
+    try:
+        objects = paginator.page(page)
+    except(EmptyPage, InvalidPage):
+        objects = paginator.page(1)
+
+    # page_range to show at bottom of table
+    index = objects.number - 1
+    max_index = len(paginator.page_range)
+    start_index = index - 4 if index >= 4 else 0
+    end_index = index + 4 if index <= max_index - 4 else max_index
+    page_range = paginator.page_range[start_index:end_index]
+
+    return objects, page_range
+
+
 # Status Page
 def overview(request):
     rows = {}
@@ -175,24 +196,7 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     if request.GET:
         cards = cards.filter(_filter_results(request))
 
-    # pagination of results
-    # order_by because of 'UnorderedObjectListWarning'
-    paginator = Paginator(cards.order_by('id'), 20)
-    try:
-        page = int(request.GET.get('page', '1'))
-    except:
-        page = 1
-    try:
-        objects = paginator.page(page)
-    except(EmptyPage, InvalidPage):
-        objects = paginator.page(1)
-
-    # page_range to show at bottom of table
-    index = objects.number - 1
-    max_index = len(paginator.page_range)
-    start_index = index - 4 if index >= 4 else 0
-    end_index = index + 4 if index <= max_index - 4 else max_index
-    page_range = paginator.page_range[start_index:end_index]
+    objects, page_range = _get_pagination(cards.order_by('id'), request)
 
     # url_slug used to address the Django-admin page
     if related_class in ['person', 'organization']:
@@ -281,9 +285,20 @@ def person_resolve_issues(request, issue_slug, jur_name):
                                               issue_slug)))
 
 
-def review_patches(request, jur_name):
-    patches = IssueResolverPatch.objects.exclude(status='deprecated').filter(
-        jurisdiction__name__exact=jur_name)
+def review_person_patches(request, jur_name):
+    if request.method == 'POST':
+        for k, v in request.POST.items():
+            if not k.startswith('csrf'):
+                c = k.split("ocd-person/")
+                person = Person.objects.get(id="ocd-person/" + c[1])
+                patch = IssueResolverPatch.objects.get(object_id=person.id,
+                                                       status='unreviewed')
+                patch.status = c[0][:-1]
+                patch.save()
+        messages.success(request, 'Successfully updated status of {} '
+                         'Patche(s)'.format(len(request.POST)-1))
+    patches = IssueResolverPatch.objects \
+        .filter(status='unreviewed', jurisdiction__name__exact=jur_name)
     category_search = False
     alert_search = False
     if request.GET.get('category'):
@@ -292,8 +307,11 @@ def review_patches(request, jur_name):
     if request.GET.get('alert'):
         patches = patches.filter(alert=request.GET.get('alert'))
         alert_search = request.GET.get('alert')
+
+    objects, page_range = _get_pagination(patches.order_by('id'), request)
     context = {'jur_name': jur_name,
-               'patches': patches,
+               'patches': objects,
+               'page_range': page_range,
                'alert_search': alert_search,
                'category_search': category_search}
-    return render(request, 'admintools/review_patches.html', context)
+    return render(request, 'admintools/review_person_patches.html', context)
