@@ -325,3 +325,33 @@ def review_person_patches(request, jur_name):
                'category_search': category_search,
                'applied_by_search': applied_by_search}
     return render(request, 'admintools/review_person_patches.html', context)
+
+
+def list_all_person_patches(request, jur_name):
+    patches = IssueResolverPatch.objects \
+        .filter(jurisdiction__name__exact=jur_name)
+    category_search = False
+    alert_search = False
+    applied_by_search = False
+    status_search = False
+    if request.GET.get('category'):
+        patches = patches.filter(category=request.GET.get('category'))
+        category_search = request.GET.get('category')
+    if request.GET.get('alert'):
+        patches = patches.filter(alert=request.GET.get('alert'))
+        alert_search = request.GET.get('alert')
+    if request.GET.get('applied_by'):
+        patches = patches.filter(applied_by=request.GET.get('applied_by'))
+        applied_by_search = request.GET.get('applied_by')
+    if request.GET.get('status'):
+        patches = patches.filter(status=request.GET.get('status'))
+        status_search = request.GET.get('status')
+    objects, page_range = _get_pagination(patches.order_by('id'), request)
+    context = {'jur_name': jur_name,
+               'patches': objects,
+               'page_range': page_range,
+               'alert_search': alert_search,
+               'category_search': category_search,
+               'applied_by_search': applied_by_search,
+               'status_search': status_search}
+    return render(request, 'admintools/list_person_patches.html', context)

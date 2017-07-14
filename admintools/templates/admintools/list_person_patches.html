@@ -5,10 +5,10 @@
     <!--Page padding-->
     <br /><br /><br />
     <a href="#" style="margin-bottom: 10px;" class="list-group-item active teal lighten-1">
-          Review Patches
-      </a>
+        All Patches
+    </a>
 
-    <form class="form-inline" method="get" action="{% url 'review_person_patches' jur_name %}">
+    <form class="form-inline" method="get" action="{% url 'list_all_person_patches' jur_name %}">
         <div class="md-form form-group">
             <label style="margin-top: -8px;"><strong>Category</strong></label>
           <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
@@ -37,19 +37,19 @@
             </select>
         </div>
         <div class="md-form form-group">
+            <label style="margin-top: -8px;"><strong>Status</strong></label>
+            <select name="status" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 60px;">
+              <option value="" {% if not status_search %}selected{% endif %}>All</option>
+              <option value="approved" {% if status_search == 'approved' %}selected{% endif %}>Approved</option>
+              <option value="unreviewed" {% if status_search == 'unreviewed' %}selected{% endif %}>Unreviewed</option>
+              <option value="deprecated" {% if status_search == 'deprecated' %}selected{% endif %}>Deprecated</option>
+            </select>
+        </div>
+        <div class="md-form form-group">
             <button class="btn btn-cyan" type="submit">Go</button>
         </div>
     </form>
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-success alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                {{ message }}
-            </div>
-        {% endfor %}
-  {% endif %}
-    <form method="post" action="{% url 'review_person_patches' jur_name %}" id="apply_patch_form">{% csrf_token %}</form>
-    <table class="table table-bordered table-striped table-sm">
+    <table class="table table-bordered table-striped">
       <thead>
         <tr class="table-active">
           <th>Person</th>
@@ -58,7 +58,7 @@
           <th>Note</th>
           <th style="width:4%">Source</th>
           <th style="text-align: center;">Reporter</th>
-          <th style="text-align: center; width:4%;">Action</th>
+          <th style="text-align: center;">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -72,20 +72,13 @@
                   <a href="{{ patch.source }}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
               </td>
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
-              <td style="text-align: center; width:21%;">
-                  <label><input type="radio" class="filled-in radio_custom"  id="a_{{patch.id}}"  value="approved" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Approve</label> /
-                   <label><input type="radio" class="filled-in radio_custom"  id="r_{{patch.id}}" value="deprecated" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Reject</label>
-                   <button style="margin-left: 5px;" onclick='deselectRadio("{{ patch.id }}")'><i class="fa fa-close"></i></button>
-              </td>
+              <td style="text-align: center;">{{ patch.status }}</td>
             </tr>
         {% empty %}
          <h3>No Patches Available!</h3><br />
         {% endfor %}
       </tbody>
     </table>
-    <button class="btn btn-cyan col-lg-2 offset-lg-6" style="margin-left: 900px;" form="apply_patch_form" type="submit">
-        Apply
-    </button>
 {% if patches.has_other_pages %}
 <br />
 <nav>
@@ -118,12 +111,4 @@
 </nav>
 {% endif %}<br /><br />
 </div>
-{% endblock %}
-{% block custom_scripts %}
-<script>
-function deselectRadio(patch_id) {
-    document.getElementById("a_"+patch_id).checked = false;
-    document.getElementById("r_"+patch_id).checked = false;
-}
-</script>
 {% endblock %}
