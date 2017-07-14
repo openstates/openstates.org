@@ -289,14 +289,12 @@ def review_person_patches(request, jur_name):
     if request.method == 'POST':
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
-                c = k.split("ocd-person/")
-                person = Person.objects.get(id="ocd-person/" + c[1])
-                patch = IssueResolverPatch.objects.get(object_id=person.id,
-                                                       status='unreviewed')
-                patch.status = c[0][:-1]
+                c = k.split("__")
+                patch = IssueResolverPatch.objects.get(id=c[1])
+                patch.status = c[0]
                 patch.save()
         messages.success(request, 'Successfully updated status of {} '
-                         'Patche(s)'.format(len(request.POST)-1))
+                         'Patch(es)'.format(len(request.POST)-1))
     patches = IssueResolverPatch.objects \
         .filter(status='unreviewed', jurisdiction__name__exact=jur_name)
     category_search = False
