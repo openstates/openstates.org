@@ -17,8 +17,9 @@
   </div>
     {% endfor %}
   {% endif %}
-
+  {% if related_class == 'person' %}
   <form method="post" action="{% url 'person_resolve_issues' issue_slug jur_name %}" id="my_form">{% csrf_token %}</form>
+  {% endif %}
     <table class="table table-bordered table-striped">
         <thead class="thead-default">
             <tr>
@@ -163,6 +164,7 @@
     {% endblock %}
 {% block custom_scripts %}
 <script>
+{% if related_class == 'person' %}
 var i = 1;
 function append_fun(h) {
     var target = document.getElementById('tr-' + h);
@@ -181,5 +183,6 @@ function delete_fun(rowid) {
     var row = document.getElementById(rowid);
     row.parentNode.removeChild(row);
 }
+{% endif %}
 </script>
 {% endblock %}
