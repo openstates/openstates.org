@@ -25,6 +25,14 @@
             </select>
         </div>
         <div class="md-form form-group">
+            <label style="margin-top: -8px;"><strong>By</strong></label>
+            <select name="applied_by" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 30px;">
+              <option value="" {% if not applied_by_search %}selected{% endif %}>All</option>
+              <option value="admin" {% if applied_by_search == 'admin' %}selected{% endif %}>Admin</option>
+              <option value="user" {% if applied_by_search == 'user' %}selected{% endif %}>User</option>
+            </select>
+        </div>
+        <div class="md-form form-group">
             <button class="btn btn-cyan" type="submit">Go</button>
         </div>
     </form>
