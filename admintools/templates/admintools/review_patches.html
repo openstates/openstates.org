@@ -1,0 +1,65 @@
+{% extends 'admintools/base.html' %}
+{% load tags %}
+{% block body %}
+<div class="container">
+    <!--Page padding-->
+    <br /><br /><br />
+    <form class="form-inline" method="get" action="{% url 'review_patches' jur_name %}">
+        <div class="md-form form-group">
+            <label style="margin-top: -8px;"><strong>Category</strong></label>
+          <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
+            <option value="" {% if not category_search %}selected{% endif %}>All</option>
+            <option value="name" {% if category_search == 'name' %}selected{% endif %}>Name</option>
+            <option value="image" {% if category_search == 'image' %}selected{% endif %}>Image</option>
+            <option value="voice" {% if category_search == 'voice' %}selected{% endif %}>Phone</option>
+            <option value="email" {% if category_search == 'email' %}selected{% endif %}>Email</option>
+            <option value="address" {% if category_search == 'address' %}selected{% endif %}>Address</option>
+          </select>
+      </div>
+        <div class="md-form form-group">
+            <label style="margin-top: -8px;"><strong>Alert</strong></label>
+            <select name="alert" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 50px;">
+              <option value="" {% if not alert_search %}selected{% endif %}>All</option>
+              <option value="error" {% if alert_search == 'error' %}selected{% endif %}>Error</option>
+              <option value="warning" {% if alert_search == 'warning' %}selected{% endif %}>Warning</option>
+            </select>
+        </div>
+        <div class="md-form form-group">
+            <button class="btn btn-cyan" type="submit">Go</button>
+        </div>
+    </form>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr class="table-active">
+          <th>Person</th>
+          <th>Old Value</th>
+          <th>New Value</th>
+          <th>Note</th>
+          <th style="width:4%">Source</th>
+          <th style="text-align: center;">Reporter</th>
+          <th style="text-align: center; width:16%;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+         {% for patch in patches %}
+            <tr class="hoverable">
+              <td>{% person_from_id patch.object_id %}</td>
+              <td>{{ patch.old_value }}</td>
+              <td>{{ patch.new_value }}</td>
+              <td>{{ patch.note }}</td>
+              <td style="text-align: center;">
+                  <a href="{{ patch.source }}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+              </td>
+              <td style="text-align: center;">{{ patch.reporter_email }}</td>
+              <td style="text-align: center;">
+                <a href="#" style="color: #007E33;"><i class="fa fa-check"></i>Approve</a>  /
+                <a href="#" style="color: #CC0000;"><i class="fa fa-remove"></i>Reject</a>
+              </td>
+            </tr>
+        {% empty %}
+         <h3>No Patches Available!</h3><br />
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}

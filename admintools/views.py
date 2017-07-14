@@ -279,3 +279,21 @@ def person_resolve_issues(request, issue_slug, jur_name):
     return HttpResponseRedirect(reverse('list_issue_objects',
                                         args=(jur_name, 'person',
                                               issue_slug)))
+
+
+def review_patches(request, jur_name):
+    patches = IssueResolverPatch.objects.exclude(status='deprecated').filter(
+        jurisdiction__name__exact=jur_name)
+    category_search = False
+    alert_search = False
+    if request.GET.get('category'):
+        patches = patches.filter(category=request.GET.get('category'))
+        category_search = request.GET.get('category')
+    if request.GET.get('alert'):
+        patches = patches.filter(alert=request.GET.get('alert'))
+        alert_search = request.GET.get('alert')
+    context = {'jur_name': jur_name,
+               'patches': patches,
+               'alert_search': alert_search,
+               'category_search': category_search}
+    return render(request, 'admintools/review_patches.html', context)

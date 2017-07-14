@@ -39,12 +39,17 @@ class IssueResolverPatch(models.Model):
         ('email', 'Email'),
         ('image', 'Photo'),
     )
+    STATUS_CHOICES = (
+        ('approved', 'Approved'),
+        ('unreviewed', 'Unreviewed'),
+        ('deprecated', 'Deprecated'),
+    )
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
     jurisdiction = models.ForeignKey(Jurisdiction,
                                      related_name="issue_resolver_patches")
-    status = models.CharField(max_length=100)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES)
     old_value = models.CharField(max_length=2250, blank=True)
     new_value = models.CharField(max_length=2250)
     category = models.CharField(max_length=500, choices=CATEGORY_CHOICES)
