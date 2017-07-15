@@ -10,8 +10,11 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/review-patches/$',
         views.review_person_patches, name="review_person_patches"),
 
-    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/retirement-tool/$',
-        views.retirement_tool, name="retirement_tool"),
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/retire-legislators/$',
+        views.retire_legislators, name="retire_legislators"),
+
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/all-retired-legislators/$',
+        views.list_retired_legislators, name="list_retired_legislators"),
 
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/$', views.jurisdiction_intro,
         name='jurisdiction_intro'),

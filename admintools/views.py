@@ -387,7 +387,7 @@ def list_all_person_patches(request, jur_name):
     return render(request, 'admintools/list_person_patches.html', context)
 
 
-def retirement_tool(request, jur_name):
+def retire_legislators(request, jur_name):
     if request.method == 'POST':
         count = 0
         for k, v in request.POST.items():
@@ -396,17 +396,48 @@ def retirement_tool(request, jur_name):
                 Membership.objects.filter(person=p) \
                     .update(end_date=v)
                 count += 1
-        messages.success(request, 'Successfully Retired {} '
-                         'legislator(s)'.format(count))
+        if count > 0:
+            messages.success(request, 'Successfully Retired {} '
+                             'legislator(s)'.format(count))
     if request.GET.get('person'):
         people = Person.objects.filter(
             memberships__organization__jurisdiction__name__exact=jur_name,
+            memberships__end_date='',
             name__icontains=request.GET.get('person'))
     else:
         people = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name)
+            memberships__organization__jurisdiction__name__exact=jur_name,
+            memberships__end_date='')
     objects, page_range = _get_pagination(people.order_by('id'), request)
     context = {'jur_name': jur_name,
                'people': objects,
                'page_range': page_range}
-    return render(request, 'admintools/retirement_tool.html', context)
+    return render(request, 'admintools/retire_legislators.html', context)
+
+
+def list_retired_legislators(request, jur_name):
+    if request.method == 'POST':
+        count = 0
+        for k, v in request.POST.items():
+            if not k.startswith('csrf'):
+                p = Person.objects.get(id=k)
+                Membership.objects.filter(person=p) \
+                    .update(end_date=v)
+                count += 1
+        if count > 0:
+            messages.success(request, 'Successfully Updated {} '
+                             'Retired legislator(s)'.format(count))
+    if request.GET.get('person'):
+        people = Person.objects.filter(
+            Q(memberships__organization__jurisdiction__name__exact=jur_name),
+            ~Q(memberships__end_date=''),
+            Q(name__icontains=request.GET.get('person')))
+    else:
+        people = Person.objects.filter(
+            Q(memberships__organization__jurisdiction__name__exact=jur_name) &
+            ~Q(memberships__end_date=''))
+    objects, page_range = _get_pagination(people.order_by('id'), request)
+    context = {'jur_name': jur_name,
+               'people': objects,
+               'page_range': page_range}
+    return render(request, 'admintools/list_retired_legislators.html', context)
