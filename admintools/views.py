@@ -393,8 +393,8 @@ def retire_legislators(request, jur_name):
         for k, v in request.POST.items():
             if v and not k.startswith('csrf'):
                 p = Person.objects.get(id=k)
-                Membership.objects.filter(person=p) \
-                    .update(end_date=v)
+                mem = Membership.objects.filter(person=p, end_date='')
+                mem.update(end_date=v)
                 count += 1
         if count > 0:
             messages.success(request, 'Successfully Retired {} '
