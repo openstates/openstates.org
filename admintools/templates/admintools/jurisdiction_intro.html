@@ -42,8 +42,16 @@
 
                 <h3 class="card-header default-color white-text">Legislators</h3>
                 <div class="card-block">
+
                     <p><a href="{% url 'merge' jur_id %}">1. Merge Tool</a></p>
+<<<<<<< HEAD
                     <p><a href="{% url 'retire_legislators' jur_name %}">2. Retirement Tool</a></p>
+=======
+
+
+                    <p><a href="{% url 'retirement_tool' jur_name %}">2. Retirement Tool</a></p>
+
+>>>>>>> temporary work on retirement-tool
                     <a class="btn btn-primary" href="{% url 'admin:core_person_changelist' %}?memberships__organization__jurisdiction__name={{jur_name}}">View All</a>
                 </div>
             </div>
