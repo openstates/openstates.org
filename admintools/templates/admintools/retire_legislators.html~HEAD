@@ -4,40 +4,44 @@
 <div class="container">
     <!--Page padding-->
     <br /><br /><br />
-    <a href="#" style="margin-bottom: 10px;" class="list-group-item active teal lighten-1">
-      Retirement Tool
-  </a>
+    <div class="row">
+      <h2><strong>Retire Legislators</strong></h2>
 
-  <form class="form-inline" method="get" action="{% url 'retirement_tool' jur_name %}" style="margin-left: 350px;">
-      <div class="md-form form-group">
-          <i class="fa fa-user prefix"></i>
-          <input type="text" name="person" value="{{ request.GET.person }}" id="form92" class="form-control validate">
-      </div>
-      <div class="md-form form-group">
-          <a href="" class="btn btn-primary btn-md">Search</a>
-      </div>
-  </form>
+    <form class="form-inline" method="get" action="{% url 'retire_legislators' jur_name %}" style="margin-left: 190px;">
+        <div class="md-form form-group">
+            <i class="fa fa-user prefix"></i>
+            <input type="text" name="person" value="{{ request.GET.person }}" id="form92" class="form-control validate">
+        </div>
+        <div class="md-form form-group">
+            <a href="" class="btn btn-primary btn-md">Search</a>
+        </div>
+    </form>
+    <h3 style="margin-top: 8px;width: 250px;">
+      <a href="{% url 'list_retired_legislators' jur_name %}"> > Retired Legislators</a>
+    </h3>
+    </div>
+
   {% if messages %}
       {% for message in messages %}
-          <div class="alert alert-success alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
               <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
               {{ message }}
           </div>
       {% endfor %}
   {% endif %}
-  <form method="post" action="{% url 'retirement_tool' jur_name %}" id="retire_form">{% csrf_token %}</form>
+  <form method="post" action="{% url 'retire_legislators' jur_name %}" id="retire_form">{% csrf_token %}</form>
   <table class="table table-bordered table-striped table-sm">
     <thead>
       <tr class="table-active">
-        <th>Person</th>
-        <th>Retirement Date</th>
+        <th style="text-align: center;">Person</th>
+        <th style="text-align: center;">Retirement Date</th>
       </tr>
     </thead>
     <tbody>
        {% for person in people %}
           <tr class="hoverable">
-            <td><a href="{% url 'admin:core_person_change' person.id %}">{{ person.name }}</a></td>
-            <td><input type="text" name="{{person.id}}" placeholder="YYYY-MM-DD" form="retire_form" /></td>
+            <td style="text-align: center;"><a href="{% url 'admin:core_person_change' person.id %}">{{ person.name }}</a></td>
+            <td ><input style="text-align: center;" type="text" name="{{person.id}}" placeholder="YYYY-MM-DD" form="retire_form" /></td>
           </tr>
       {% empty %}
        <h3>No Results Found!</h3><br />

@@ -23,7 +23,7 @@
 
   {% if messages %}
       {% for message in messages %}
-          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+          <div class="alert alert-success alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
               <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
               {{ message }}
           </div>
