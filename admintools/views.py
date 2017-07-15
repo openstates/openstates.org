@@ -388,8 +388,25 @@ def list_all_person_patches(request, jur_name):
 
 
 def retirement_tool(request, jur_name):
+    if request.method == 'POST':
+        count = 0
+        for k, v in request.POST.items():
+            if v and not k.startswith('csrf'):
+                p = Person.objects.get(id=k)
+                Membership.objects.filter(person=p) \
+                    .update(end_date=v)
+                count += 1
+        messages.success(request, 'Successfully Retired {} '
+                         'legislator(s)'.format(count))
     if request.GET.get('person'):
-        person = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_nam)
-    context = {'jur_name': jur_name}
+        people = Person.objects.filter(
+            memberships__organization__jurisdiction__name__exact=jur_name,
+            name__icontains=request.GET.get('person'))
+    else:
+        people = Person.objects.filter(
+            memberships__organization__jurisdiction__name__exact=jur_name)
+    objects, page_range = _get_pagination(people.order_by('id'), request)
+    context = {'jur_name': jur_name,
+               'people': objects,
+               'page_range': page_range}
     return render(request, 'admintools/retirement_tool.html', context)
