@@ -21,29 +21,33 @@
           </select>
       </div>
         <div class="md-form form-group">
-            <label style="margin-top: -8px;"><strong>Alert</strong></label>
-            <select name="alert" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 50px;">
+            <label style="margin-top: -8px;"><strong style="margin-left: -20px;">Alert</strong></label>
+            <select name="alert" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 20px;">
               <option value="" {% if not alert_search %}selected{% endif %}>All</option>
               <option value="error" {% if alert_search == 'error' %}selected{% endif %}>Error</option>
               <option value="warning" {% if alert_search == 'warning' %}selected{% endif %}>Warning</option>
             </select>
         </div>
         <div class="md-form form-group">
-            <label style="margin-top: -8px;"><strong>By</strong></label>
-            <select name="applied_by" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 30px;">
+            <label style="margin-top: -8px;"><strong style="margin-left: -20px;">By</strong></label>
+            <select name="applied_by" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 5px;">
               <option value="" {% if not applied_by_search %}selected{% endif %}>All</option>
               <option value="admin" {% if applied_by_search == 'admin' %}selected{% endif %}>Admin</option>
               <option value="user" {% if applied_by_search == 'user' %}selected{% endif %}>User</option>
             </select>
         </div>
         <div class="md-form form-group">
-            <label style="margin-top: -8px;"><strong>Status</strong></label>
-            <select name="status" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 60px;">
+            <label style="margin-top: -8px;"><strong style="margin-left: -22px;">Status</strong></label>
+            <select name="status" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 30px;">
               <option value="" {% if not status_search %}selected{% endif %}>All</option>
               <option value="approved" {% if status_search == 'approved' %}selected{% endif %}>Approved</option>
               <option value="unreviewed" {% if status_search == 'unreviewed' %}selected{% endif %}>Unreviewed</option>
               <option value="deprecated" {% if status_search == 'deprecated' %}selected{% endif %}>Deprecated</option>
             </select>
+        </div>
+        <div class="md-form form-group">
+            <label style="margin-top: -8px;" for="person_input"><strong>Person</strong></label>
+            <input style="text-align:center;margin-bottom: 20px;" type="text" name="person" id="person_input" value="{{ request.GET.person}}" />
         </div>
         <div class="md-form form-group">
             <button class="btn btn-cyan" type="submit">Go</button>

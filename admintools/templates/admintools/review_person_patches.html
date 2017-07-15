@@ -37,6 +37,10 @@
             </select>
         </div>
         <div class="md-form form-group">
+                <label style="margin-top: -8px;" for="person_input"><strong>Person</strong></label>
+                <input style="text-align:center;margin-bottom: 20px;" type="text" name="person" id="person_input" value="{{ request.GET.person}}" />
+            </div>
+        <div class="md-form form-group">
             <button class="btn btn-cyan" type="submit">Go</button>
         </div>
     </form>

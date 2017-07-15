@@ -308,6 +308,10 @@ def review_person_patches(request, jur_name):
     category_search = False
     alert_search = False
     applied_by_search = False
+    if request.GET.get('person'):
+        person_ids = Person.objects.filter(
+            name__icontains=request.GET.get('person'))
+        patches = patches.filter(object_id__in=person_ids)
     if request.GET.get('category'):
         patches = patches.filter(category=request.GET.get('category'))
         category_search = request.GET.get('category')
@@ -334,6 +338,10 @@ def list_all_person_patches(request, jur_name):
     alert_search = False
     applied_by_search = False
     status_search = False
+    if request.GET.get('person'):
+        person_ids = Person.objects.filter(
+            name__icontains=request.GET.get('person'))
+        patches = patches.filter(object_id__in=person_ids)
     if request.GET.get('category'):
         patches = patches.filter(category=request.GET.get('category'))
         category_search = request.GET.get('category')
