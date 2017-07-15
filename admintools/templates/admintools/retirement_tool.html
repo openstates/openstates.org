@@ -1,0 +1,22 @@
+{% extends 'admintools/base.html' %}
+{% load tags %}
+{% block body %}
+<div class="container">
+    <!--Page padding-->
+    <br /><br /><br />
+    <a href="#" style="margin-bottom: 10px;" class="list-group-item active teal lighten-1">
+      Retirement Tool
+  </a>
+
+  <form class="form-inline" method="get" action="{% url 'retirement_tool' jur_name %}" style="margin-left: 350px;">
+      <div class="md-form form-group">
+          <i class="fa fa-user prefix"></i>
+          <input type="text" name="person" value="{{ request.GET.person }}" id="form92" class="form-control validate">
+      </div>
+      <div class="md-form form-group">
+          <a href="" class="btn btn-primary btn-md">Search</a>
+      </div>
+
+  </form>
+</div>
+{% endblock %}
