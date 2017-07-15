@@ -411,8 +411,6 @@ class VoteEventImportersTests(TestCase):
                     organization=org)
         voteevent.votes.create(option="yes", voter=p)
         voteevent.counts.create(option="yes", value=1)
-        voteevent.counts.create(option="no", value=1)
-        voteevent.counts.create(option="other", value=0)
         vote_event_issues()
         h = DataQualityIssue.objects \
             .filter(object_id=voteevent.id,
@@ -436,8 +434,6 @@ class VoteEventImportersTests(TestCase):
                     bill=bill)
         voteevent.votes.create(option="yes", voter_name="unmatched-voter")
         voteevent.counts.create(option="yes", value=1)
-        voteevent.counts.create(option="no", value=1)
-        voteevent.counts.create(option="other", value=0)
         vote_event_issues()
         h = DataQualityIssue.objects \
             .filter(object_id=voteevent.id,
@@ -460,10 +456,10 @@ class VoteEventImportersTests(TestCase):
                     result='pass', legislative_session=ls,
                     organization=org,
                     bill=bill)
-        voteevent.votes.create(option="yes", voter=p)
+        voteevent.votes.create(option="other", voter=p)
+        voteevent.counts.create(option="other", value=1)
         voteevent.counts.create(option="yes", value=0)
         voteevent.counts.create(option="no", value=0)
-        voteevent.counts.create(option="other", value=0)
         vote_event_issues()
         h = DataQualityIssue.objects \
             .filter(object_id=voteevent.id,
