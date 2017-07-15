@@ -25,6 +25,7 @@
   {% if messages %}
       {% for message in messages %}
           <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+
               <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
               {{ message }}
           </div>
@@ -43,6 +44,7 @@
           <tr class="hoverable">
             <td style="text-align: center;"><a href="{% url 'admin:core_person_change' person.id %}">{{ person.name }}</a></td>
             <td ><strong><input style="text-align: center;" type="text" name="{{person.id}}" value="{{ end_date }}" form="retire_form" /></td>
+
           </tr>
       {% empty %}
        <h3>No Results Found!</h3><br />
