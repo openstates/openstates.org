@@ -385,3 +385,11 @@ def list_all_person_patches(request, jur_name):
                'status_': status_,
                'alerts_': alerts_}
     return render(request, 'admintools/list_person_patches.html', context)
+
+
+def retirement_tool(request, jur_name):
+    if request.GET.get('person'):
+        person = Person.objects.filter(
+            memberships__organization__jurisdiction__name__exact=jur_nam)
+    context = {'jur_name': jur_name}
+    return render(request, 'admintools/retirement_tool.html', context)

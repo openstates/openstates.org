@@ -4,11 +4,14 @@ from . import views
 urlpatterns = [
     url(r'^admintools/$', views.overview, name='overview'),
 
-    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/view-all-patches/$',
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/all-patches/$',
         views.list_all_person_patches, name="list_all_person_patches"),
 
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/review-patches/$',
         views.review_person_patches, name="review_person_patches"),
+
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/retirement-tool/$',
+        views.retirement_tool, name="retirement_tool"),
 
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/$', views.jurisdiction_intro,
         name='jurisdiction_intro'),
