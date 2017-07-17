@@ -13,36 +13,40 @@ def apply_person_patches(patches, jur_name):
             # Number of approved pathces for 'image' for a person must be one.
             ap = patches.filter(object_id=person.id, category='image').count()
             if ap == 1:
-                person.image = patch.new_value
-                person.save()
-                count += 1
-                if patch.alert == 'warning':
-                    dqi = DataQualityIssue.objects \
-                        .filter(object_id=person.id,
-                                issue='person-missing-photo')
-                    assert dqi.count() <= 1, "Not more than one Data Quality" \
-                        " Issue must be deleted."
-                    dqi.delete()
+                # make sure that patch is not applied before.
+                if not person.image == patch.new_value:
+                    person.image = patch.new_value
+                    person.save()
+                    count += 1
+                    if patch.alert == 'warning':
+                        dqi = DataQualityIssue.objects \
+                            .filter(object_id=person.id,
+                                    issue='person-missing-photo')
+                        assert dqi.count() <= 1, "Not more than one Data" \
+                            " Quality Issue must be deleted."
+                        dqi.delete()
             else:
                 if patch.object_id not in image_duplicates:
                     p = Person.objects.get(id=patch.object_id).name
-                    print("{}: Found multiple `approved` patches of `image` "
+                    print("{}: Found {} `approved` patches of `image` "
                           "for \"{}\". skipping..."
-                          .format(jur_name, p))
+                          .format(jur_name, ap, p))
                 image_duplicates.append(patch.object_id)
         elif patch.category == 'name':
             # Number of approved pathces for 'name' for a person must be one.
             ap = patches.filter(object_id=person.id, category='name').count()
             if ap == 1:
-                person.name = patch.new_value
-                person.save()
-                count += 1
+                # make sure that patch is not applied before.
+                if not person.name == patch.new_value:
+                    person.name = patch.new_value
+                    person.save()
+                    count += 1
             else:
                 if patch.object_id not in name_duplicates:
                     p = Person.objects.get(id=patch.object_id).name
-                    print("{}: Found multiple `approved` patches of `name` "
+                    print("{}: Found {} `approved` patches of `name` "
                           "for \"{}\". skipping..."
-                          .format(jur_name, p))
+                          .format(jur_name, ap, p))
                 name_duplicates.append(patch.object_id)
         elif patch.category in ['voice', 'address', 'email']:
             # make sure that patch is not applied before.
@@ -73,4 +77,4 @@ def setup_person_resolver():
         patches = IssueResolverPatch.objects.filter(jurisdiction=jur,
                                                     status='approved')
         count = apply_person_patches(patches, jur.name)
-        print("Applied {} Person Patches For {}".format(count, jur.name))
+        print("Applied {} New Person Patches For {}".format(count, jur.name))
