@@ -68,10 +68,10 @@
                   <a href="{{ patch.source }}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
               </td>
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
-              <td style="text-align: center; width:20%;">
-                  <input type="radio" class="filled-in radio_custom"  id="a_{{patch.id}}"  value="approved" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Approve /
-                   <input type="radio" class="filled-in radio_custom"  id="r_{{patch.id}}" value="deprecated" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Reject
-                   <i class="fa fa-close" onclick='deselectRadio("{{ patch.id }}")' style="width: 20px;height: 20px;margin-left: 5px;"></i>
+              <td style="text-align: center; width:21%;">
+                  <label><input type="radio" class="filled-in radio_custom"  id="a_{{patch.id}}"  value="approved" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Approve</label> /
+                   <label><input type="radio" class="filled-in radio_custom"  id="r_{{patch.id}}" value="deprecated" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Reject</label>
+                   <button style="margin-left: 5px;" onclick='deselectRadio("{{ patch.id }}")'><i class="fa fa-close"></i></button>
               </td>
             </tr>
         {% empty %}
