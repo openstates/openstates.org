@@ -5,12 +5,16 @@ from opencivicdata.core.models import (Jurisdiction, Person, Organization,
 from opencivicdata.legislative.models import (Bill, VoteEvent,
                                               LegislativeSession)
 from admintools.issues import IssueType
-from admintools.models import DataQualityIssue
+from admintools.models import DataQualityIssue, IssueResolverPatch
 from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.db import transaction
 
 # Basic Classes with their Identifiers.
 upstream = {'person': Person,
@@ -31,6 +35,27 @@ def _get_run_status(jur_name):
         else:
             status += 1
     return {'count': None if status == 1 else status, 'date': latest_date}
+
+
+def _get_pagination(objects_list, request):
+    paginator = Paginator(objects_list, 20)
+    try:
+        page = int(request.GET.get('page', '1'))
+    except:
+        page = 1
+    try:
+        objects = paginator.page(page)
+    except(EmptyPage, InvalidPage):
+        objects = paginator.page(1)
+
+    # page_range to show at bottom of table
+    index = objects.number - 1
+    max_index = len(paginator.page_range)
+    start_index = index - 4 if index >= 4 else 0
+    end_index = index + 4 if index <= max_index - 4 else max_index
+    page_range = paginator.page_range[start_index:end_index]
+
+    return objects, page_range
 
 
 # Status Page
@@ -157,8 +182,6 @@ def _filter_results(request):
     if request.GET.get('membership_org'):
         query &= Q(organization__name__icontains=request.GET.get(
             'membership_org'))
-    if request.GET.get('membership_id'):
-        query &= Q(id=request.GET.get('membership_id'))
     return query
 
 
@@ -173,24 +196,7 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     if request.GET:
         cards = cards.filter(_filter_results(request))
 
-    # pagination of results
-    # order_by because of 'UnorderedObjectListWarning'
-    paginator = Paginator(cards.order_by('id'), 20)
-    try:
-        page = int(request.GET.get('page', '1'))
-    except:
-        page = 1
-    try:
-        objects = paginator.page(page)
-    except(EmptyPage, InvalidPage):
-        objects = paginator.page(1)
-
-    # page_range to show at bottom of table
-    index = objects.number - 1
-    max_index = len(paginator.page_range)
-    start_index = index - 4 if index >= 4 else 0
-    end_index = index + 4 if index <= max_index - 4 else max_index
-    page_range = paginator.page_range[start_index:end_index]
+    objects, page_range = _get_pagination(cards.order_by('id'), request)
 
     # url_slug used to address the Django-admin page
     if related_class in ['person', 'organization']:
@@ -210,3 +216,112 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
                'url_slug': url_slug,
                'related_class': related_class}
     return render(request, 'admintools/list_issues.html', context)
+
+
+def _prepare_import(issue_slug, posted_data):
+    if issue_slug == 'missing-photo':
+        issue_items = dict((k, v) for k, v in posted_data.items()
+                           if v and not k.startswith('csrf'))
+    elif issue_slug in ['missing-phone', 'missing-email', 'missing-address']:
+        issue_items = defaultdict(dict)
+        count = 1
+        for k, v in posted_data.items():
+            if v and not k.startswith('csrf') and not k.startswith('note'):
+                c = k.split("ocd-person/")
+                # using custom hash because two legislators can have same Phone
+                # numbers for eg, `State House Message Phone`
+                hash_ = str(count) + '__@#$__' + v
+                issue_items[hash_]['id'] = "ocd-person/" + c[1]
+                issue_items[hash_]['code'] = c[0]
+                count += 1
+        for hash_, item in issue_items.items():
+            issue_items[hash_]['note'] = posted_data['note_' + item['code']
+                                                     + item['id']]
+    else:
+        raise ValueError("Person Issue Resolver needs update for new issue.")
+    return issue_items
+
+
+@transaction.atomic
+def person_resolve_issues(request, issue_slug, jur_name):
+    if request.method == 'POST':
+        if issue_slug == 'missing-phone':
+            category = 'voice'
+        elif issue_slug == 'missing-photo':
+            category = 'image'
+        elif issue_slug in ['missing-email', 'missing-address']:
+            category = issue_slug[8:]
+        else:
+            raise ValueError("Person Resolver needs update for new issue.")
+        jur = Jurisdiction.objects.get(name__exact=jur_name)
+        issue_items = _prepare_import(issue_slug, request.POST)
+        for hash_, items in issue_items.items():
+            if issue_slug != 'missing-photo':
+                new_value = hash_.split('__@#$__')[1]
+                p = Person.objects.get(id=items.get('id'))
+                note = items.get('note')
+            else:
+                # hash_ == ocd id of person here.
+                new_value = items
+                p = Person.objects.get(id=hash_)
+                note = ''
+            patch = IssueResolverPatch.objects.create(
+                content_object=p,
+                jurisdiction=jur,
+                status='unreviewed',
+                new_value=new_value,
+                note=note,
+                category=category,
+                alert='warning',
+                applied_by='admin',
+            )
+            patch.save()
+        messages.success(request, 'Successfully created {} {}(s) Admin '
+                         'Patches'.format(len(issue_items),
+                                          IssueType.description_for(
+                                              issue_slug)))
+    return HttpResponseRedirect(reverse('list_issue_objects',
+                                        args=(jur_name, 'person',
+                                              issue_slug)))
+
+
+def review_person_patches(request, jur_name):
+    if request.method == 'POST':
+        for k, v in request.POST.items():
+            if not k.startswith('csrf'):
+                # k = 'category__patch_id__object_id'
+                # v = `status`
+                c = k.split("__")
+                if (c[0] == 'image' or c[0] == 'name') and v == 'approved':
+                    # mark alerady approved patch as deprecated
+                    approved_patch = IssueResolverPatch.objects.get(
+                        object_id=c[2], category=c[0], status='approved')
+                    approved_patch.status = 'deprecated'
+                    approved_patch.save()
+                patch = IssueResolverPatch.objects.get(id=c[1])
+                patch.status = v
+                patch.save()
+        messages.success(request, 'Successfully updated status of {} '
+                         'Patch(es)'.format(len(request.POST)-1))
+    patches = IssueResolverPatch.objects \
+        .filter(status='unreviewed', jurisdiction__name__exact=jur_name)
+    category_search = False
+    alert_search = False
+    applied_by_search = False
+    if request.GET.get('category'):
+        patches = patches.filter(category=request.GET.get('category'))
+        category_search = request.GET.get('category')
+    if request.GET.get('alert'):
+        patches = patches.filter(alert=request.GET.get('alert'))
+        alert_search = request.GET.get('alert')
+    if request.GET.get('applied_by'):
+        patches = patches.filter(applied_by=request.GET.get('applied_by'))
+        applied_by_search = request.GET.get('applied_by')
+    objects, page_range = _get_pagination(patches.order_by('id'), request)
+    context = {'jur_name': jur_name,
+               'patches': objects,
+               'page_range': page_range,
+               'alert_search': alert_search,
+               'category_search': category_search,
+               'applied_by_search': applied_by_search}
+    return render(request, 'admintools/review_person_patches.html', context)
