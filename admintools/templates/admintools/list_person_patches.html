@@ -7,25 +7,23 @@
     <a href="#" style="margin-bottom: 10px;" class="list-group-item active teal lighten-1">
         All Patches
     </a>
-
     <form class="form-inline" method="get" action="{% url 'list_all_person_patches' jur_name %}">
         <div class="md-form form-group">
             <label style="margin-top: -8px;"><strong>Category</strong></label>
           <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
             <option value="" {% if not category_search %}selected{% endif %}>All</option>
-            <option value="name" {% if category_search == 'name' %}selected{% endif %}>Name</option>
-            <option value="image" {% if category_search == 'image' %}selected{% endif %}>Image</option>
-            <option value="voice" {% if category_search == 'voice' %}selected{% endif %}>Phone</option>
-            <option value="email" {% if category_search == 'email' %}selected{% endif %}>Email</option>
-            <option value="address" {% if category_search == 'address' %}selected{% endif %}>Address</option>
+            {% for k, v in categories_ %}
+                <option value="{{k}}" {% if category_search == k %}selected{% endif %}>{{v}}</option>
+            {% endfor %}
           </select>
       </div>
         <div class="md-form form-group">
             <label style="margin-top: -8px;"><strong style="margin-left: -20px;">Alert</strong></label>
             <select name="alert" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 20px;">
               <option value="" {% if not alert_search %}selected{% endif %}>All</option>
-              <option value="error" {% if alert_search == 'error' %}selected{% endif %}>Error</option>
-              <option value="warning" {% if alert_search == 'warning' %}selected{% endif %}>Warning</option>
+             {% for k, v in alerts_ %}
+              <option value="{{k}}" {% if alert_search == k %}selected{% endif %}>{{v}}</option>
+             {% endfor %}
             </select>
         </div>
         <div class="md-form form-group">
@@ -40,9 +38,9 @@
             <label style="margin-top: -8px;"><strong style="margin-left: -22px;">Status</strong></label>
             <select name="status" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 30px;">
               <option value="" {% if not status_search %}selected{% endif %}>All</option>
-              <option value="approved" {% if status_search == 'approved' %}selected{% endif %}>Approved</option>
-              <option value="unreviewed" {% if status_search == 'unreviewed' %}selected{% endif %}>Unreviewed</option>
-              <option value="deprecated" {% if status_search == 'deprecated' %}selected{% endif %}>Deprecated</option>
+             {% for k, v in status_ %}
+              <option value="{{k}}" {% if status_search == k %}selected{% endif %}>{{v}}</option>
+             {% endfor %}
             </select>
         </div>
         <div class="md-form form-group">
