@@ -125,7 +125,7 @@
             <br /><br />
         </tbody>
     </table>
-    {% if related_class != 'membership' %}
+    {% if related_class == 'person' or related_class == 'organization' %}
     <button class="btn btn-cyan col-lg-2 offset-lg-6" style="margin-left: 900px;" form="my_form" type="submit">
       {% if related_class != 'organization' %}Save{% else %}Delete{% endif %}
     </button>
