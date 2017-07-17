@@ -43,6 +43,7 @@ class IssueResolverPatch(models.Model):
         ('approved', 'Approved'),
         ('unreviewed', 'Unreviewed'),
         ('deprecated', 'Deprecated'),
+        ('rejected', 'Rejected')
     )
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=300)

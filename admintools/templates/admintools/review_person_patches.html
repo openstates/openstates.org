@@ -70,10 +70,10 @@
               </td>
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
               <td style="text-align: center;">
-                  <input type="checkbox" class="filled-in" name="approved__{{ patch.id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
+                  <input type="checkbox" class="filled-in" name="approved__{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
               </td>
               <td style="text-align: center;">
-                   <input type="checkbox" class="filled-in" name="deprecated__{{ patch.id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
+                   <input type="checkbox" class="filled-in" name="rejected__{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
               </td>
             </tr>
         {% empty %}

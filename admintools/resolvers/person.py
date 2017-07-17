@@ -1,10 +1,10 @@
-from opencivicdata.core.models import Person
+from opencivicdata.core.models import Jurisdiction, Person
 from admintools.models import DataQualityIssue, IssueResolverPatch
 
 
 # apply approved patches and delete that DataQualityIssue from DB (if exists).
-def apply_person_patches():
-    patches = IssueResolverPatch.objects.filter(status='approved')
+def apply_person_patches(patches, jur_name):
+    count = 0
     image_duplicates = []
     name_duplicates = []
     for patch in patches:
@@ -15,6 +15,7 @@ def apply_person_patches():
             if ap == 1:
                 person.image = patch.new_value
                 person.save()
+                count += 1
                 if patch.alert == 'warning':
                     dqi = DataQualityIssue.objects \
                         .filter(object_id=person.id,
@@ -24,9 +25,10 @@ def apply_person_patches():
                     dqi.delete()
             else:
                 if patch.object_id not in image_duplicates:
-                    print("Found more than one approved patches of image "
-                          "for person ({}). skipping..."
-                          .format(patch.object_id))
+                    p = Person.objects.get(id=patch.object_id).name
+                    print("{}: Found multiple `approved` patches of `image` "
+                          "for \"{}\". skipping..."
+                          .format(jur_name, p))
                 image_duplicates.append(patch.object_id)
         elif patch.category == 'name':
             # Number of approved pathces for 'name' for a person must be one.
@@ -34,11 +36,13 @@ def apply_person_patches():
             if ap == 1:
                 person.name = patch.new_value
                 person.save()
+                count += 1
             else:
                 if patch.object_id not in name_duplicates:
-                    print("Found more than one approved patches of name "
-                          "for person ({}). skipping..."
-                          .format(patch.object_id))
+                    p = Person.objects.get(id=patch.object_id).name
+                    print("{}: Found multiple `approved` patches of `name` "
+                          "for \"{}\". skipping..."
+                          .format(jur_name, p))
                 name_duplicates.append(patch.object_id)
         elif patch.category in ['voice', 'address', 'email']:
             # make sure that patch is not applied before.
@@ -49,6 +53,7 @@ def apply_person_patches():
                                       value=patch.old_value,
                                       defaults={'value': patch.new_value,
                                                 'note': patch.note})
+                count += 1
             if patch.alert == 'warning':
                 dqi = DataQualityIssue.objects \
                     .filter(object_id=person.id, issue='person-missing-{}'
@@ -57,3 +62,15 @@ def apply_person_patches():
                 assert dqi.count() <= 1, "Not more than one Data Quality " \
                     "Issue must be deleted."
                 dqi.delete()
+        else:
+            raise ValueError("Resolvers Needs Update For New Category!")
+    return count
+
+
+def setup_person_resolver():
+    all_jurs = Jurisdiction.objects.order_by('name')
+    for jur in all_jurs:
+        patches = IssueResolverPatch.objects.filter(jurisdiction=jur,
+                                                    status='approved')
+        count = apply_person_patches(patches, jur.name)
+        print("Applied {} Person Patches For {}".format(count, jur.name))
