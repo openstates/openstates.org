@@ -37,14 +37,11 @@
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="{% url 'jurisdiction_intro' jur_name %}">
                             <strong>{{ jur_name }}</strong>
                         </a>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a href="{% url 'jurisdiction_intro' jur_name %}" class="nav-link">Home <span class="sr-only">(current)</span></a>
-                    </li>
                     <li class="nav-item dropdown btn-group">
                         <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sessions</a>
                         <div class="dropdown-menu dropdown-in scrollable-menu" aria-labelledby="dropdownMenu1">
