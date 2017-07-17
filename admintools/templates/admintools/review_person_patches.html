@@ -54,8 +54,7 @@
           <th>Note</th>
           <th style="width:4%">Source</th>
           <th style="text-align: center;">Reporter</th>
-          <th style="text-align: center; width:4%;">Approve</th>
-          <th style="text-align: center; width:4%;">Reject</th>
+          <th style="text-align: center; width:4%;">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -69,11 +68,10 @@
                   <a href="{{ patch.source }}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
               </td>
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
-              <td style="text-align: center;">
-                  <input type="checkbox" class="filled-in" name="approved__{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
-              </td>
-              <td style="text-align: center;">
-                   <input type="checkbox" class="filled-in" name="rejected__{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;">
+              <td style="text-align: center; width:20%;">
+                  <input type="radio" class="filled-in radio_custom"  id="a_{{patch.id}}"  value="approved" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Approve /
+                   <input type="radio" class="filled-in radio_custom"  id="r_{{patch.id}}" value="deprecated" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Reject
+                   <i class="fa fa-close" onclick='deselectRadio("{{ patch.id }}")' style="width: 20px;height: 20px;margin-left: 5px;"></i>
               </td>
             </tr>
         {% empty %}
@@ -116,4 +114,12 @@
 </nav>
 {% endif %}<br /><br />
 </div>
+{% endblock %}
+{% block custom_scripts %}
+<script>
+function deselectRadio(patch_id) {
+    document.getElementById("a_"+patch_id).checked = false;
+    document.getElementById("r_"+patch_id).checked = false;
+}
+</script>
 {% endblock %}

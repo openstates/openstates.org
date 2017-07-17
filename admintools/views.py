@@ -289,16 +289,17 @@ def review_person_patches(request, jur_name):
     if request.method == 'POST':
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
-                # k = 'status__category__patch_id__object_id'
+                # k = 'category__patch_id__object_id'
+                # v = `status`
                 c = k.split("__")
-                if (c[1] == 'image' or c[1] == 'name') and c[0] == 'approved':
+                if (c[0] == 'image' or c[0] == 'name') and v == 'approved':
                     # mark alerady approved patch as deprecated
                     approved_patch = IssueResolverPatch.objects.get(
-                        object_id=c[3], category=c[1], status='approved')
+                        object_id=c[2], category=c[0], status='approved')
                     approved_patch.status = 'deprecated'
                     approved_patch.save()
-                patch = IssueResolverPatch.objects.get(id=c[2])
-                patch.status = c[0]
+                patch = IssueResolverPatch.objects.get(id=c[1])
+                patch.status = v
                 patch.save()
         messages.success(request, 'Successfully updated status of {} '
                          'Patch(es)'.format(len(request.POST)-1))
