@@ -277,8 +277,8 @@ def person_resolve_issues(request, issue_slug, jur_name):
             )
             patch.save()
         messages.success(request, 'Successfully created {} {}(s) Admin '
-                         'Patches'.format(len(issue_items),
-                                          IssueType.description_for(
+                         'Patch(es)'.format(len(issue_items),
+                                            IssueType.description_for(
                                               issue_slug)))
     return HttpResponseRedirect(reverse('list_issue_objects',
                                         args=(jur_name, 'person',
@@ -293,21 +293,30 @@ def review_person_patches(request, jur_name):
                 # v = `status`
                 c = k.split("__")
                 if (c[0] == 'image' or c[0] == 'name') and v == 'approved':
-                    # mark alerady approved patch as deprecated
-                    approved_patch = IssueResolverPatch.objects.get(
-                        object_id=c[2], category=c[0], status='approved')
-                    approved_patch.status = 'deprecated'
-                    approved_patch.save()
+                    try:
+                        # mark alerady approved patch as deprecated (if any!)
+                        approved_patch = IssueResolverPatch.objects.get(
+                            object_id=c[2], category=c[0], status='approved')
+                        approved_patch.status = 'deprecated'
+                        approved_patch.save()
+                    except IssueResolverPatch.DoesNotExist:
+                        pass
                 patch = IssueResolverPatch.objects.get(id=c[1])
                 patch.status = v
                 patch.save()
-        messages.success(request, 'Successfully updated status of {} '
-                         'Patch(es)'.format(len(request.POST)-1))
+        if len(request.POST)-1:
+            messages.success(request, 'Successfully updated status of {} '
+                             'Patch(es)'.format(len(request.POST)-1))
     patches = IssueResolverPatch.objects \
         .filter(status='unreviewed', jurisdiction__name__exact=jur_name)
     category_search = False
     alert_search = False
     applied_by_search = False
+    if request.GET.get('person'):
+        person_ids = Person.objects.filter(
+            memberships__organization__jurisdiction__name__exact=jur_name,
+            name__icontains=request.GET.get('person'))
+        patches = patches.filter(object_id__in=person_ids)
     if request.GET.get('category'):
         patches = patches.filter(category=request.GET.get('category'))
         category_search = request.GET.get('category')
@@ -318,10 +327,60 @@ def review_person_patches(request, jur_name):
         patches = patches.filter(applied_by=request.GET.get('applied_by'))
         applied_by_search = request.GET.get('applied_by')
     objects, page_range = _get_pagination(patches.order_by('id'), request)
+    categories_ = sorted(dict(IssueResolverPatch._meta.get_field(
+        'category').choices).items())
+    alerts_ = sorted(dict(IssueResolverPatch._meta.get_field(
+        'alert').choices).items())
     context = {'jur_name': jur_name,
                'patches': objects,
                'page_range': page_range,
                'alert_search': alert_search,
                'category_search': category_search,
-               'applied_by_search': applied_by_search}
+               'applied_by_search': applied_by_search,
+               'categories_': categories_,
+               'alerts_': alerts_}
     return render(request, 'admintools/review_person_patches.html', context)
+
+
+def list_all_person_patches(request, jur_name):
+    patches = IssueResolverPatch.objects \
+        .filter(jurisdiction__name__exact=jur_name)
+    category_search = False
+    alert_search = False
+    applied_by_search = False
+    status_search = False
+    if request.GET.get('person'):
+        person_ids = Person.objects.filter(
+            memberships__organization__jurisdiction__name__exact=jur_name,
+            name__icontains=request.GET.get('person'))
+        patches = patches.filter(object_id__in=person_ids)
+    if request.GET.get('category'):
+        patches = patches.filter(category=request.GET.get('category'))
+        category_search = request.GET.get('category')
+    if request.GET.get('alert'):
+        patches = patches.filter(alert=request.GET.get('alert'))
+        alert_search = request.GET.get('alert')
+    if request.GET.get('applied_by'):
+        patches = patches.filter(applied_by=request.GET.get('applied_by'))
+        applied_by_search = request.GET.get('applied_by')
+    if request.GET.get('status'):
+        patches = patches.filter(status=request.GET.get('status'))
+        status_search = request.GET.get('status')
+    objects, page_range = _get_pagination(patches.order_by('id'), request)
+    categories_ = sorted(dict(IssueResolverPatch._meta.get_field(
+        'category').choices).items())
+    alerts_ = sorted(dict(IssueResolverPatch._meta.get_field(
+        'alert').choices).items())
+    status_ = sorted(dict(IssueResolverPatch._meta.get_field(
+        'status').choices).items())
+    context = {'jur_name': jur_name,
+               'patches': objects,
+               'page_range': page_range,
+               'alert_search': alert_search,
+               'category_search': category_search,
+               'applied_by_search': applied_by_search,
+               'status_search': status_search,
+               'categories_': categories_,
+               'status_': status_,
+               'alerts_': alerts_}
+    return render(request, 'admintools/list_person_patches.html', context)

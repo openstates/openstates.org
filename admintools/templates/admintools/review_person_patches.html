@@ -5,37 +5,40 @@
     <!--Page padding-->
     <br /><br /><br />
     <form class="form-inline" method="get" action="{% url 'review_person_patches' jur_name %}">
-        <div class="md-form form-group">
-            <label style="margin-top: -8px;"><strong>Category</strong></label>
-          <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
-            <option value="" {% if not category_search %}selected{% endif %}>All</option>
-            <option value="name" {% if category_search == 'name' %}selected{% endif %}>Name</option>
-            <option value="image" {% if category_search == 'image' %}selected{% endif %}>Image</option>
-            <option value="voice" {% if category_search == 'voice' %}selected{% endif %}>Phone</option>
-            <option value="email" {% if category_search == 'email' %}selected{% endif %}>Email</option>
-            <option value="address" {% if category_search == 'address' %}selected{% endif %}>Address</option>
-          </select>
-      </div>
-        <div class="md-form form-group">
-            <label style="margin-top: -8px;"><strong>Alert</strong></label>
-            <select name="alert" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 50px;">
-              <option value="" {% if not alert_search %}selected{% endif %}>All</option>
-              <option value="error" {% if alert_search == 'error' %}selected{% endif %}>Error</option>
-              <option value="warning" {% if alert_search == 'warning' %}selected{% endif %}>Warning</option>
+          <div class="md-form form-group">
+              <label style="margin-top: -8px;"><strong>Category</strong></label>
+            <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
+              <option value="" {% if not category_search %}selected{% endif %}>All</option>
+              {% for k, v in categories_ %}
+                  <option value="{{k}}" {% if category_search == k %}selected{% endif %}>{{v}}</option>
+              {% endfor %}
             </select>
         </div>
-        <div class="md-form form-group">
-            <label style="margin-top: -8px;"><strong>By</strong></label>
-            <select name="applied_by" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 30px;">
-              <option value="" {% if not applied_by_search %}selected{% endif %}>All</option>
-              <option value="admin" {% if applied_by_search == 'admin' %}selected{% endif %}>Admin</option>
-              <option value="user" {% if applied_by_search == 'user' %}selected{% endif %}>User</option>
-            </select>
-        </div>
-        <div class="md-form form-group">
-            <button class="btn btn-cyan" type="submit">Go</button>
-        </div>
-    </form>
+          <div class="md-form form-group">
+              <label style="margin-top: -8px;"><strong style="margin-left: -20px;">Alert</strong></label>
+              <select name="alert" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 20px;">
+                <option value="" {% if not alert_search %}selected{% endif %}>All</option>
+               {% for k, v in alerts_ %}
+                <option value="{{k}}" {% if alert_search == k %}selected{% endif %}>{{v}}</option>
+               {% endfor %}
+              </select>
+          </div>
+          <div class="md-form form-group">
+              <label style="margin-top: -8px;"><strong style="margin-left: -20px;">By</strong></label>
+              <select name="applied_by" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 5px;">
+                <option value="" {% if not applied_by_search %}selected{% endif %}>All</option>
+                <option value="admin" {% if applied_by_search == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="user" {% if applied_by_search == 'user' %}selected{% endif %}>User</option>
+              </select>
+          </div>
+          <div class="md-form form-group">
+              <label style="margin-top: -8px;" for="person_input"><strong>Person</strong></label>
+              <input style="text-align:center;margin-bottom: 20px;" type="text" name="person" id="person_input" value="{{ request.GET.person}}" />
+          </div>
+          <div class="md-form form-group">
+              <button class="btn btn-cyan" type="submit">Go</button>
+          </div>
+      </form>
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-success alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
@@ -70,7 +73,7 @@
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
               <td style="text-align: center; width:21%;">
                   <label><input type="radio" class="filled-in radio_custom"  id="a_{{patch.id}}"  value="approved" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Approve</label> /
-                   <label><input type="radio" class="filled-in radio_custom"  id="r_{{patch.id}}" value="deprecated" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Reject</label>
+                   <label><input type="radio" class="filled-in radio_custom"  id="r_{{patch.id}}" value="rejected" name="{{ patch.category }}__{{ patch.id }}__{{ patch.object_id }}" form="apply_patch_form" style="width: 20px;height: 20px;"> Reject</label>
                    <button style="margin-left: 5px;" onclick='deselectRadio("{{ patch.id }}")'><i class="fa fa-close"></i></button>
               </td>
             </tr>
