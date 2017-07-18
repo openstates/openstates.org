@@ -1,7 +1,7 @@
 from admintools.issues import IssueType
 from admintools.models import DataQualityIssue
 from opencivicdata.core.models import Jurisdiction
-from opencivicdata.legislative.models import VoteEvent
+from opencivicdata.legislative.models import VoteEvent, VoteCount, PersonVote
 
 
 def create_vote_event_issues(queryset, issue, jur):
@@ -49,8 +49,14 @@ def vote_event_issues():
                 count += create_vote_event_issues(queryset, issue, jur)
 
             elif issue == 'bad-counts':
-                queryset = voteevents.filter(counts__option='other',
-                                             counts__value__gt=0)
+                all_counts = VoteCount.objects.filter(
+                    vote_event__legislative_session__jurisdiction=jur)
+                queryset = set()
+                for _count in all_counts:
+                    if PersonVote.objects.filter(
+                        vote_event=_count.vote_event,
+                            option=_count.option).count() != _count.value:
+                        queryset.add(_count.vote_event)
                 count += create_vote_event_issues(queryset, issue, jur)
             else:
                 raise ValueError("VoteEvents Importer needs update "
