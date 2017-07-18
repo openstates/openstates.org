@@ -162,9 +162,9 @@ def _filter_results(request):
     if request.GET.get('person'):
         query = Q(name__icontains=request.GET.get('person'))
     if request.GET.get('organization'):
-        query &= Q(name__istartswith=request.GET.get('organization'))
+        query &= Q(name__icontains=request.GET.get('organization'))
     if request.GET.get('org_classification'):
-        query &= Q(classification__istartswith=request.GET.get(
+        query &= Q(classification__icontains=request.GET.get(
             'org_classification'))
     if request.GET.get('bill_identifier'):
         query &= Q(identifier__icontains=request.GET.get('bill_identifier'))
@@ -178,7 +178,7 @@ def _filter_results(request):
         query &= Q(organization__name__icontains=request.GET.get(
             'voteevent_org'))
     if request.GET.get('membership'):
-        query &= Q(person_name__istartswith=request.GET.get('membership'))
+        query &= Q(person_name__icontains=request.GET.get('membership'))
     if request.GET.get('membership_org'):
         query &= Q(organization__name__icontains=request.GET.get(
             'membership_org'))
