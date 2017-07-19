@@ -390,15 +390,27 @@ def list_all_person_patches(request, jur_name):
 def retire_legislators(request, jur_name):
     if request.method == 'POST':
         count = 0
+        reconsider_person = []
         for k, v in request.POST.items():
             if v and not k.startswith('csrf'):
                 p = Person.objects.get(id=k)
-                mem = Membership.objects.filter(person=p, end_date='')
-                mem.update(end_date=v)
-                count += 1
-        if count > 0:
+                # To make sure that provided retirement date is not less than
+                # all of the existing end_dates
+                prev = Membership.objects.filter(person=p,
+                                                 end_date__gt=v).count()
+                if prev:
+                    reconsider_person.append(p)
+                else:
+                    mem = Membership.objects.filter(person=p, end_date='')
+                    mem.update(end_date=v)
+                    count += 1
+        if count:
             messages.success(request, 'Successfully Retired {} '
                              'legislator(s)'.format(count))
+        if reconsider_person:
+            for person in reconsider_person:
+                messages.error(request, 'Provide a valid Retirement Date for'
+                               ' {}'.format(person.name))
     if request.GET.get('person'):
         people = Person.objects.filter(
             memberships__organization__jurisdiction__name__exact=jur_name,
@@ -408,7 +420,7 @@ def retire_legislators(request, jur_name):
         people = Person.objects.filter(
             memberships__organization__jurisdiction__name__exact=jur_name,
             memberships__end_date='').distinct()
-    objects, page_range = _get_pagination(people.order_by('id'), request)
+    objects, page_range = _get_pagination(people.order_by('name'), request)
     context = {'jur_name': jur_name,
                'people': objects,
                'page_range': page_range}
@@ -418,16 +430,35 @@ def retire_legislators(request, jur_name):
 def list_retired_legislators(request, jur_name):
     if request.method == 'POST':
         count = 0
+        reconsider_person = []
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
                 p = Person.objects.get(id=k)
-                # BUG Don't update all end_dates
-                Membership.objects.filter(person=p) \
-                    .update(end_date=v)
-                count += 1
+                prev_retirement_date = Membership.objects.filter(
+                    person=p).order_by('-end_date').first().end_date
+                v = v.strip()
+                if v:
+                    # To make sure that provided retirement date is not less
+                    # than the end_date, other than current retirement date
+                    prev_date = Membership.objects \
+                        .filter(person=p, end_date__lt=prev_retirement_date) \
+                        .order_by('-end_date').first()
+                    if prev_date:
+                        if prev_date.end_date > v:
+                            reconsider_person.append(p)
+                            continue
+                if prev_retirement_date != v:
+                    Membership.objects.filter(
+                        person=p, end_date=prev_retirement_date) \
+                        .update(end_date=v)
+                    count += 1
         if count:
             messages.success(request, 'Successfully Updated {} '
                              'Retired legislator(s)'.format(count))
+        if reconsider_person:
+            for person in reconsider_person:
+                messages.error(request, 'Provide a valid Retirement Date for'
+                               ' {}'.format(person.name))
     if request.GET.get('person'):
         people = Person.objects.filter(
             Q(memberships__organization__jurisdiction__name__exact=jur_name),
@@ -437,8 +468,15 @@ def list_retired_legislators(request, jur_name):
         people = Person.objects.filter(
             Q(memberships__organization__jurisdiction__name__exact=jur_name) &
             ~Q(memberships__end_date='')).distinct()
-    objects, page_range = _get_pagination(people.order_by('id'), request)
+    for person in people:
+        if Membership.objects.filter(person=person, end_date=''):
+            people = people.exclude(id=person.id)
+    objects, page_range = _get_pagination(people.order_by('name'), request)
+    people_with_end_date = {}
+    for person in objects:
+        people_with_end_date[person] = Membership.objects.filter(
+            person=person).order_by('-end_date').first().end_date
     context = {'jur_name': jur_name,
-               'people': objects,
+               'people': people_with_end_date,
                'page_range': page_range}
     return render(request, 'admintools/list_retired_legislators.html', context)
