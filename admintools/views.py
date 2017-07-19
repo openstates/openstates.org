@@ -475,6 +475,6 @@ def list_retired_legislators(request, jur_name):
     objects, page_range = _get_pagination(tuple(people_with_end_date.items()),
                                           request)
     context = {'jur_name': jur_name,
-               'people': people_with_end_date,
+               'people': objects,
                'page_range': page_range}
     return render(request, 'admintools/list_retired_legislators.html', context)
