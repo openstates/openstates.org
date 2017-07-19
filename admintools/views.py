@@ -429,6 +429,7 @@ def retire_legislators(request, jur_name):
 def list_retired_legislators(request, jur_name):
     if request.method == 'POST':
         count = 0
+        reconsider_person = []
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
                 p = Person.objects.get(id=k)
@@ -454,6 +455,10 @@ def list_retired_legislators(request, jur_name):
         if count:
             messages.success(request, 'Successfully Updated {} '
                              'Retired legislator(s)'.format(count))
+        if reconsider_person:
+            for person in reconsider_person:
+                messages.error(request, 'Provide a valid Retirement Date for'
+                               ' {}'.format(person.name))
     if request.GET.get('person'):
         people = Person.objects.filter(
             memberships__organization__jurisdiction__name__exact=jur_name) \
@@ -470,6 +475,6 @@ def list_retired_legislators(request, jur_name):
     objects, page_range = _get_pagination(tuple(people_with_end_date.items()),
                                           request)
     context = {'jur_name': jur_name,
-               'people': objects,
+               'people': people_with_end_date,
                'page_range': page_range}
     return render(request, 'admintools/list_retired_legislators.html', context)
