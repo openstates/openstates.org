@@ -403,11 +403,11 @@ def retire_legislators(request, jur_name):
         people = Person.objects.filter(
             memberships__organization__jurisdiction__name__exact=jur_name,
             memberships__end_date='',
-            name__icontains=request.GET.get('person'))
+            name__icontains=request.GET.get('person')).distinct()
     else:
         people = Person.objects.filter(
             memberships__organization__jurisdiction__name__exact=jur_name,
-            memberships__end_date='')
+            memberships__end_date='').distinct()
     objects, page_range = _get_pagination(people.order_by('id'), request)
     context = {'jur_name': jur_name,
                'people': objects,
@@ -421,21 +421,22 @@ def list_retired_legislators(request, jur_name):
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
                 p = Person.objects.get(id=k)
+                # BUG Don't update all end_dates
                 Membership.objects.filter(person=p) \
                     .update(end_date=v)
                 count += 1
-        if count > 0:
+        if count:
             messages.success(request, 'Successfully Updated {} '
                              'Retired legislator(s)'.format(count))
     if request.GET.get('person'):
         people = Person.objects.filter(
             Q(memberships__organization__jurisdiction__name__exact=jur_name),
             ~Q(memberships__end_date=''),
-            Q(name__icontains=request.GET.get('person')))
+            Q(name__icontains=request.GET.get('person'))).distinct()
     else:
         people = Person.objects.filter(
             Q(memberships__organization__jurisdiction__name__exact=jur_name) &
-            ~Q(memberships__end_date=''))
+            ~Q(memberships__end_date='')).distinct()
     objects, page_range = _get_pagination(people.order_by('id'), request)
     context = {'jur_name': jur_name,
                'people': objects,
