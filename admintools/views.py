@@ -471,12 +471,13 @@ def list_retired_legislators(request, jur_name):
     for person in people:
         if Membership.objects.filter(person=person, end_date=''):
             people = people.exclude(id=person.id)
-    objects, page_range = _get_pagination(people.order_by('name'), request)
     people_with_end_date = {}
-    for person in objects:
+    for person in people:
         people_with_end_date[person] = Membership.objects.filter(
             person=person).order_by('-end_date').first().end_date
+    objects, page_range = _get_pagination(tuple(people_with_end_date.items()),
+                                          request)
     context = {'jur_name': jur_name,
-               'people': people_with_end_date,
+               'people': objects,
                'page_range': page_range}
     return render(request, 'admintools/list_retired_legislators.html', context)
