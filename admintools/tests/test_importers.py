@@ -2,6 +2,7 @@ import sys
 from django.test import TestCase
 from django.core.management import call_command
 from django.utils.six import StringIO
+from admintools.issues import IssueType
 from admintools.models import DataQualityIssue
 from opencivicdata.core.models import (Jurisdiction, Person, Division,
                                        Organization, Membership,
@@ -163,6 +164,18 @@ class PeopleImportersTests(TestCase):
         self.assertEqual(len(ma), 1)
         self.assertQuerysetEqual(rest, [])
 
+    def test_people_importer_zzz_valueerror_on_not_updated_new_issue(self):
+        IssueType('missing-name', 'Missing Name', 'person', 'error')
+        DataQualityIssue._meta.get_field('issue').choices.append(
+            ('missing-name', 'Missing Name'))
+        try:
+            person_issues()
+        except ValueError as e:
+            exception_raised = True
+            self.assertEqual(str(e), 'People Importer needs'
+                             ' update for new issue.')
+        self.assertEqual(exception_raised, True)
+
 
 class OrganizationImportersTests(TestCase):
 
@@ -205,6 +218,18 @@ class OrganizationImportersTests(TestCase):
             issue='membership-unmatched-person').count()
         self.assertQuerysetEqual(rest, [])
         self.assertEqual(up, 1)
+
+    def test_org_importer_zzz_valueerror_on_not_updated_new_issue(self):
+        IssueType('missing-orgs', 'Missing Orgs', 'organization', 'error')
+        DataQualityIssue._meta.get_field('issue').choices.append(
+            ('missing-orgs', 'Missing Orgs'))
+        try:
+            orgs_issues()
+        except ValueError as e:
+            exception_raised = True
+            self.assertEqual(str(e), 'Organization Importer needs '
+                             'update for new issue.')
+        self.assertEqual(exception_raised, True)
 
 
 class BillsImportersTests(TestCase):
@@ -351,6 +376,18 @@ class BillsImportersTests(TestCase):
         self.assertEqual(len(h), 1)
         self.assertQuerysetEqual(rest, [])
 
+    def test_bill_importer_zzz_valueerror_on_not_updated_new_issue(self):
+        IssueType('missing-billxyz', 'Missing BillXYZ', 'bill', 'error')
+        DataQualityIssue._meta.get_field('issue').choices.append(
+            ('missing-billxyz', 'Missing BillXYZ'))
+        try:
+            bills_issues()
+        except ValueError as e:
+            exception_raised = True
+            self.assertEqual(str(e), 'Bill Importer needs '
+                             'update for new issue.')
+        self.assertEqual(exception_raised, True)
+
 
 class VoteEventImportersTests(TestCase):
 
@@ -495,3 +532,15 @@ class VoteEventImportersTests(TestCase):
                      issue='voteevent-bad-counts')
         self.assertEqual(h, 1)
         self.assertQuerysetEqual(rest, [])
+
+    def test_voteevent_importer_zzz_valueerror_on_not_updated_new_issue(self):
+        IssueType('missing-votexyz', 'Missing VoteXYZ', 'voteevent', 'warning')
+        DataQualityIssue._meta.get_field('issue').choices.append(
+            ('missing-votexyz', 'Missing VoteXYZ'))
+        try:
+            vote_event_issues()
+        except ValueError as e:
+            exception_raised = True
+            self.assertEqual(str(e), 'VoteEvents Importer needs '
+                             'update for new issue.')
+        self.assertEqual(exception_raised, True)
