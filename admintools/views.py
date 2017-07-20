@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from pupa.models import RunPlan
 from opencivicdata.core.models import (Jurisdiction, Person, Organization,
-                                       Membership, PersonName)
+                                       Membership, PersonName, Post)
 from opencivicdata.legislative.models import (Bill, VoteEvent, BillSponsorship,
                                               LegislativeSession, PersonVote)
 from admintools.issues import IssueType
@@ -21,7 +21,8 @@ upstream = {'person': Person,
             'organization': Organization,
             'membership': Membership,
             'bill': Bill,
-            'voteevent': VoteEvent}
+            'voteevent': VoteEvent,
+            'post': Post}
 
 
 # get run status for a jurisdiction
@@ -183,6 +184,10 @@ def _filter_results(request):
     if request.GET.get('membership_org'):
         query &= Q(organization__name__icontains=request.GET.get(
             'membership_org'))
+    if request.GET.get('post'):
+        query &= Q(role__icontains=request.GET.get('post'))
+    if request.GET.get('post_org'):
+        query &= Q(organization__name__icontains=request.GET.get('post_org'))
     return query
 
 
@@ -196,11 +201,10 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
     cards = upstream[related_class].objects.filter(id__in=objects_list)
     if request.GET:
         cards = cards.filter(_filter_results(request))
-
     objects, page_range = _get_pagination(cards.order_by('id'), request)
 
     # url_slug used to address the Django-admin page
-    if related_class in ['person', 'organization']:
+    if related_class in ['person', 'organization', 'post']:
         url_slug = 'core_' + related_class + '_change'
     elif related_class in ['bill', 'voteevent']:
         url_slug = 'legislative_' + related_class + '_change'
