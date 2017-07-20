@@ -4,11 +4,14 @@
 <div class="container">
     <!--Page padding-->
     <br /><br /><br />
-
-    <a href="{% url 'list_issue_objects' jur_name related_class issue_slug %}" class="list-group-item active teal lighten-1">
-      {{ related_class|title }} :  {{description}}   (View All)
-  </a>
-
+    <div class="row">
+        <h2><strong>{{ related_class|title }} :  {{description}}</strong></h2>
+        <a href="{% url 'list_issue_objects' jur_name related_class issue_slug %}">(View All)</a>
+        {% if related_class == 'post' %}
+          <a class="offset-3" href="{% url 'retire_legislators' jur_name %}">Retirement Tool</a></p>
+          <a class="offset-1" href="{% url 'merge' %}">Merge Tool</a>
+        {% endif %}
+    </div>
   {% if messages %}
     {% for message in messages %}
     <div class="alert alert-success alert-dismissable" style="margin-bottom: -30px;margin-top: 10px;">
@@ -58,6 +61,11 @@
                         <input style="text-align:center;" type="text" name="membership" placeholder="UNMATCHED NAME" value="{{ request.GET.membership}}" /></th>
                     <th style="text-align: center;">
                         <input style="text-align:center;" type="text" name="membership_org" placeholder="ORGANIZATION" value="{{request.GET.membership_org}}" /></th>
+                    {% elif related_class == 'post' %}
+                    <th style="text-align: center;">
+                        <input style="text-align:center;" type="text" name="post" placeholder="POST ROLE" value="{{ request.GET.post}}" /></th>
+                    <th style="text-align: center;">
+                        <input style="text-align:center;" type="text" name="post_org" placeholder="ORGANIZATION" value="{{request.GET.post_org}}" /></th>
                     {% endif %}
                     <th style="text-align: center;">SOURCES</th>
                 </form>
@@ -85,7 +93,7 @@
                     {% endif %}
                         <td align="center">
                             {% if url_slug %}
-                            <a href="{% url 'admin:'|add:url_slug value.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{ value.motion_text }}</a>
+                            <a href="{% url 'admin:'|add:url_slug value.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{ value.motion_text }}{{ value.role }}</a>
                             {% else %}
                             <a href="{% url 'admin:core_organization_change' value.organization.id %}">{{value.person_name}}</a>
                             {% endif %}
@@ -98,6 +106,8 @@
 
                         {% elif related_class == 'organization' %}
                         <td align="center">{{ value.classification|title }}</td>
+                        {% elif related_class == 'post' %}
+                          <td align="center">{{ value.organization.name|title }}</td>
                         {% elif related_class == 'bill' %}
                         <td align="center">{{ value.legislative_session }}</td>
                         <td align="center">{{ value.title }}</td>
@@ -107,7 +117,7 @@
                         {% elif related_class == 'membership' %}
                         <td align="center">{{ value.organization}}</td>
                         {% endif %}
-                        {% if related_class != 'person' %}
+                        {% if related_class != 'person' or related_class != 'post' %}
                           <td align="center">
                             {% for item in value.sources.values %}
                                 <a href="{{ item.url }}">Link{{forloop.counter}} </a>
