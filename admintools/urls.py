@@ -19,6 +19,9 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/$', views.jurisdiction_intro,
         name='jurisdiction_intro'),
 
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/(?P<category>.*)/$',
+        views.name_resolution_tool, name='name_resolution_tool'),
+
     # must be above 'list_issue_objects' to avoid 'related_class'
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/session_id/'
         '(?P<identifier>.*)/$', views.legislative_session_info,
