@@ -111,7 +111,7 @@ def _jur_dataquality_issues(jur_name):
 # Jurisdiction Specific Page
 def jurisdiction_intro(request, jur_name):
     issues = _jur_dataquality_issues(jur_name)
-
+    jur_id = Jurisdiction.objects.get(name__exact=jur_name).id
     bill_from_orgs_list = Bill.objects.filter(
         legislative_session__jurisdiction__name__exact=jur_name) \
         .values('from_organization__name').distinct()
@@ -124,6 +124,7 @@ def jurisdiction_intro(request, jur_name):
         jurisdiction__name__exact=jur_name).values('classification').distinct()
 
     context = {'jur_name': jur_name,
+               'jur_id': jur_id,
                'cards': issues,
                'bill_orgs': bill_from_orgs_list,
                'voteevent_orgs': voteevent_orgs_list,
