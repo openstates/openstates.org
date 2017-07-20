@@ -164,6 +164,9 @@ class PeopleImportersTests(TestCase):
         self.assertEqual(len(ma), 1)
         self.assertQuerysetEqual(rest, [])
 
+    # `zzz` to make sure that this test runs at last. otherwise new IssueType
+    # gets activated which cause other tests to raise ValueError.
+    # tried to deleting the created issue at end of test but not working.
     def test_people_importer_zzz_valueerror_on_not_updated_new_issue(self):
         IssueType('missing-name', 'Missing Name', 'person', 'error')
         DataQualityIssue._meta.get_field('issue').choices.append(
