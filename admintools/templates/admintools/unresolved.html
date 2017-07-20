@@ -16,6 +16,7 @@
         {% endif %}
           </strong>
       </h2>
+      {% if category != 'unmatched_memberships' %}
       <form class="form-inline" method="get" action="{% url 'name_resolution_tool' jur_name category %}">
             <div class="md-form form-group">
                 <label style="margin-left: 130px;"><strong style="margin-top: -8px;">Legislative Session</strong></label>
@@ -31,6 +32,7 @@
                 <button class="btn btn-cyan" type="submit">Go</button>
             </div>
         </form>
+    {% endif %}    
     </div>
       {% if messages %}
           {% for message in messages %}

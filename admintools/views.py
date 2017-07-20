@@ -496,13 +496,21 @@ def name_resolution_tool(request, jur_name, category):
                     vs = PersonVote.objects.filter(voter_id=None,
                                                    voter_name=name)
                     vs.update(voter_id=pid)
+                elif category == 'unmatched_memberships':
+                    mem = Membership.objects.filter(person_id=None,
+                                                    person_name=name)
+                    mem.update(person_id=pid)
+                else:
+                    raise ValueError('Name Resolution Tool needs update'
+                                     ' for new category')
                 count += 1
         messages.success(request, 'Successfully Updated {} '
                          'Umatched legislator(s)'.format(count))
     unresolved = Counter()
     session_search = False
     session_id = request.GET.get('session_id')
-    if not session_id and not session_id == 'all':
+    if category != 'unmatched_memberships' and \
+            not session_id and not session_id == 'all':
         session_id = LegislativeSession.objects.filter(
             jurisdiction__name__exact=jur_name).order_by('-identifier') \
             .first().identifier
@@ -530,6 +538,13 @@ def name_resolution_tool(request, jur_name, category):
         session_search = session_id
         for obj in queryset:
             unresolved[obj.voter_name] += obj.num
+    elif category == 'unmatched_memberships':
+        queryset = Membership.objects.filter(
+            organization__jurisdiction__name__exact=jur_name,
+            person_id=None
+        ).annotate(num=Count('person_name'))
+        for obj in queryset:
+            unresolved[obj.person_name] += obj.num
     else:
         raise ValueError('Name Resolution Tool needs update'
                          ' for new category')
