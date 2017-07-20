@@ -1,5 +1,6 @@
 from admintools.issues import IssueType
-from opencivicdata.core.models import Jurisdiction, Organization, Membership
+from opencivicdata.core.models import (Jurisdiction, Organization,
+                                       Membership, Post)
 from admintools.models import DataQualityIssue
 
 
@@ -24,7 +25,8 @@ def orgs_issues():
     for jur in all_jurs:
         count = 0
         issues = IssueType.get_issues_for('organization') + \
-            IssueType.get_issues_for('membership')
+            IssueType.get_issues_for('membership') + \
+            IssueType.get_issues_for('post')
         for issue in issues:
             if issue == 'no-memberships':
                 queryset = Organization.objects \
@@ -36,6 +38,22 @@ def orgs_issues():
                 queryset = Membership.objects \
                     .filter(organization__jurisdiction=jur,
                             person__isnull=True)
+                count += create_org_issues(queryset, issue, jur)
+            elif issue == 'many-memberships':
+                posts = Post.objects.filter(organization__jurisdiction=jur)
+                queryset = set()
+                for post in posts:
+                    if Membership.objects.filter(post=post).count() > \
+                            post.maximum_memberships:
+                            queryset.add(post)
+                count += create_org_issues(queryset, issue, jur)
+            elif issue == 'few-memberships':
+                posts = Post.objects.filter(organization__jurisdiction=jur)
+                queryset = set()
+                for post in posts:
+                    if Membership.objects.filter(post=post).count() < \
+                            post.maximum_memberships:
+                            queryset.add(post)
                 count += create_org_issues(queryset, issue, jur)
             else:
                 raise ValueError("Organization Importer needs "

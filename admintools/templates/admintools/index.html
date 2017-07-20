@@ -74,10 +74,23 @@
 
                         <!-- Organization -->
                         <td align="center">
-                            {% if values.organization.error%}
-                            <i class="fa fa-lg fa-close bad"></i> {{ values.organization.error}} {% endif %} {% if values.membership.warning %}
-                            <i class="fa fa-lg fa-warning warning"></i> {{ values.membership.warning }} {% endif %} {% if not values.organization.error and not values.membership.warning %}
-                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                            {% if values.organization.error and values.post.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.organization.error|add:values.post.error }}
+                            {% elif values.organization.error and not values.post.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.organization.error }}
+                            {% elif not values.organization.error and values.post.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.post.error }}
+                            {% endif %}
+                            {% if values.membership.warning and values.post.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i>{{ values.membership.warning|add:values.post.warning }}
+                            {% elif values.membership.warning and not values.post.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.membership.warning }}
+                            {% elif not values.membership.warning and values.post.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.post.warning }}
+                            {% endif %}
+                            {% if not values.organization.error and not values.membership.warning and not values.post.error and not values.post.warning%}
+                                <i class="fa fa-lg fa-check-square-o good"></i>
+                            {% endif %}
                         </td>
 
                         <!-- Bill -->
