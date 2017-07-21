@@ -722,18 +722,18 @@ class RetireLegislatorsViewTest(TestCase):
     def test_view_response(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         response = self.client.get(reverse('retire_legislators',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
 
     def test_invalid_retirement_date(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         p = Person.objects.get(name="Hitesh Garg")
         # Suppose retirement_date == '2017-12-24' (This is not possible)
-        url = reverse('retire_legislators', args=(jur.name,))
+        url = reverse('retire_legislators', args=(jur.id,))
         data = {p.id: '2017-12-24'}
         response = self.client.post(url, data)
         # some basic checks
-        self.assertTrue('jur_name' in response.context)
+        self.assertTrue('jur_id' in response.context)
         self.assertTrue('people' in response.context)
         self.assertTrue('page_range' in response.context)
         # Memberships should not be updated
@@ -745,7 +745,7 @@ class RetireLegislatorsViewTest(TestCase):
         p = Person.objects.get(name="Hitesh Garg")
         org1 = Organization.objects.get(name="Democratic")
         # Suppose retirement_date == '2017-12-30'
-        url = reverse('retire_legislators', args=(jur.name,))
+        url = reverse('retire_legislators', args=(jur.id,))
         data = {p.id: '2017-12-30'}
         self.client.post(url, data)
         m1 = Membership.objects.get(organization=org1)
@@ -787,14 +787,14 @@ class ListRetiredLegislatorsViewTest(TestCase):
     def test_view_response(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         response = self.client.get(reverse('list_retired_legislators',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
 
     def test_valid_update_in_retirement_date(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         p = Person.objects.get(name="Hitesh Garg")
         org1 = Organization.objects.get(name="Democratic")
-        url = reverse('list_retired_legislators', args=(jur.name,))
+        url = reverse('list_retired_legislators', args=(jur.id,))
         data = {p.id: '2017-12-26'}
         self.client.post(url, data)
         m1 = Membership.objects.get(organization=org1)
@@ -807,7 +807,7 @@ class ListRetiredLegislatorsViewTest(TestCase):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         p = Person.objects.get(name="Hitesh Garg")
         org1 = Organization.objects.get(name="Democratic")
-        url = reverse('list_retired_legislators', args=(jur.name,))
+        url = reverse('list_retired_legislators', args=(jur.id,))
         data = {p.id: '2017-12-24'}
         self.client.post(url, data)
         m1 = Membership.objects.get(organization=org1)
@@ -823,7 +823,7 @@ class ListRetiredLegislatorsViewTest(TestCase):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         p = Person.objects.get(name="Hitesh Garg")
         org1 = Organization.objects.get(name="Democratic")
-        url = reverse('list_retired_legislators', args=(jur.name,))
+        url = reverse('list_retired_legislators', args=(jur.id,))
         data = {p.id: ''}
         self.client.post(url, data)
         m1 = Membership.objects.get(organization=org1)
