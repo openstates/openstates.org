@@ -1,6 +1,6 @@
 from django import template
 from opencivicdata.legislative.models import LegislativeSession
-from opencivicdata.core.models import Person
+from opencivicdata.core.models import Person, Jurisdiction
 
 register = template.Library()
 
@@ -23,3 +23,8 @@ def legislative_session_list(jur_name):
 @register.simple_tag
 def person_from_id(person_id):
     return Person.objects.get(id=person_id).name
+
+
+@register.simple_tag
+def jurisdiction_name_from_id(jurisdiction_id):
+    return Jurisdiction.objects.get(id=jurisdiction_id).name

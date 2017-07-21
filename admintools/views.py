@@ -26,8 +26,8 @@ upstream = {'person': Person,
 
 
 # get run status for a jurisdiction
-def _get_run_status(jur_name):
-    runs = RunPlan.objects.filter(jurisdiction=jur_name).order_by('-end_time')
+def _get_run_status(jur):
+    runs = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time')
     latest_date = runs.first().end_time.date()
     status = 0
     for run in runs:
@@ -66,9 +66,9 @@ def overview(request):
                                                  'alert').annotate(
                                                      Count('issue'))
     for counts in all_counts:
-        jur = Jurisdiction.objects.filter(id=counts['jurisdiction']).first()
-        counts['jurisdiction'] = jur.name
-        rows.setdefault(counts['jurisdiction'], {}).setdefault(
+        jur = Jurisdiction.objects.get(id=counts['jurisdiction'])
+        rows.setdefault(counts['jurisdiction'], {})['jur_name'] = jur.name
+        rows[counts['jurisdiction']].setdefault(
             counts['issue'].split('-')[0], {})
         rows[counts['jurisdiction']][counts['issue'].split('-')[0]][
             counts['alert']] = rows[counts['jurisdiction']][
@@ -79,17 +79,17 @@ def overview(request):
             rows[counts['jurisdiction']]['run'] = _get_run_status(jur)
 
     # RunPlan For those who don't have any type of dataquality_issues
-    rest_jurs = Jurisdiction.objects.exclude(name__in=rows.keys())
+    rest_jurs = Jurisdiction.objects.exclude(id__in=rows.keys())
     for jur in rest_jurs:
-        rows[jur.name] = {}
-        rows[jur.name]['run'] = _get_run_status(jur)
-
-    rows = sorted(rows.items())
+        rows[jur.id] = {}
+        rows[jur.id]['run'] = _get_run_status(jur)
+    print(rows.items())
+    rows = sorted(rows.items(),  key=lambda v: v[1]['jur_name'])
     return render(request, 'admintools/index.html', {'rows': rows})
 
 
 # Calculates all dataquality_issues in given jurisdiction
-def _jur_dataquality_issues(jur_name):
+def _jur_dataquality_issues(jur_id):
     cards = defaultdict(dict)
     issues = IssueType.choices()
     for issue, description in issues:
@@ -102,7 +102,7 @@ def _jur_dataquality_issues(jur_name):
         cards[related_class][issue]['description'] = description
         ct_obj = ContentType.objects.get_for_model(upstream[related_class])
         j = Jurisdiction.objects.filter(
-            name__exact=jur_name, dataquality_issues__content_type=ct_obj,
+            id=jur_id, dataquality_issues__content_type=ct_obj,
             dataquality_issues__issue=issue_type).annotate(_issues=Count(
                 'dataquality_issues'))
         cards[related_class][issue]['count'] = j[0]._issues if j else 0
@@ -110,22 +110,20 @@ def _jur_dataquality_issues(jur_name):
 
 
 # Jurisdiction Specific Page
-def jurisdiction_intro(request, jur_name):
-    issues = _jur_dataquality_issues(jur_name)
-    jur_id = Jurisdiction.objects.get(name__exact=jur_name).id
+def jurisdiction_intro(request, jur_id):
+    issues = _jur_dataquality_issues(jur_id)
     bill_from_orgs_list = Bill.objects.filter(
-        legislative_session__jurisdiction__name__exact=jur_name) \
+        legislative_session__jurisdiction__id=jur_id) \
         .values('from_organization__name').distinct()
 
     voteevent_orgs_list = VoteEvent.objects.filter(
-        legislative_session__jurisdiction__name__exact=jur_name) \
+        legislative_session__jurisdiction__id=jur_id) \
         .values('organization__name').distinct()
 
     orgs_list = Organization.objects.filter(
-        jurisdiction__name__exact=jur_name).values('classification').distinct()
+        jurisdiction__id=jur_id).values('classification').distinct()
 
-    context = {'jur_name': jur_name,
-               'jur_id': jur_id,
+    context = {'jur_id': jur_id,
                'cards': issues,
                'bill_orgs': bill_from_orgs_list,
                'voteevent_orgs': voteevent_orgs_list,
