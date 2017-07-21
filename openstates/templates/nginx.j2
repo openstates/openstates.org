@@ -28,6 +28,7 @@ server {
     ssl_session_tickets off;
     ssl_stapling on;
     ssl_stapling_verify on;
+    add_header Strict-Transport-Security "max-age=31536000" always;
 }
 
 server {
@@ -56,6 +57,7 @@ server {
         uwsgi_cache_valid 301 302 404 2h;
         uwsgi_cache_valid any     1m;
         uwsgi_cache my_cache;
+        add_header Strict-Transport-Security "max-age=31536000" always;
         add_header X-Cache-Status $upstream_cache_status;
         expires 2h;
     }
