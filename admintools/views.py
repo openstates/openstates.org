@@ -396,12 +396,11 @@ def retire_legislators(request, jur_name):
                 p = Person.objects.get(id=k)
                 # To make sure that provided retirement date is not less than
                 # all of the existing end_dates
-                prev = Membership.objects.filter(person=p,
-                                                 end_date__gt=v).count()
+                prev = p.memberships.filter(end_date__gt=v).count()
                 if prev:
                     reconsider_person.append(p)
                 else:
-                    mem = Membership.objects.filter(person=p, end_date='')
+                    mem = p.memberships.filter(end_date='')
                     mem.update(end_date=v)
                     count += 1
         if count:
@@ -413,13 +412,13 @@ def retire_legislators(request, jur_name):
                                ' {}'.format(person.name))
     if request.GET.get('person'):
         people = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name,
-            memberships__end_date='',
-            name__icontains=request.GET.get('person')).distinct()
+            memberships__organization__jurisdiction__name__exact=jur_name) \
+                .filter(memberships__end_date='',
+                        name__icontains=request.GET.get('person')).distinct()
     else:
         people = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name,
-            memberships__end_date='').distinct()
+            memberships__organization__jurisdiction__name__exact=jur_name) \
+            .filter(memberships__end_date='').distinct()
     objects, page_range = _get_pagination(people.order_by('name'), request)
     context = {'jur_name': jur_name,
                'people': objects,
@@ -430,51 +429,44 @@ def retire_legislators(request, jur_name):
 def list_retired_legislators(request, jur_name):
     if request.method == 'POST':
         count = 0
-        reconsider_person = []
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
                 p = Person.objects.get(id=k)
-                prev_retirement_date = Membership.objects.filter(
-                    person=p).order_by('-end_date').first().end_date
+                prev_retirement_date = p.memberships.order_by(
+                    '-end_date').first().end_date
                 v = v.strip()
                 if v:
                     # To make sure that provided retirement date is not less
                     # than the end_date, other than current retirement date
-                    prev_date = Membership.objects \
-                        .filter(person=p, end_date__lt=prev_retirement_date) \
-                        .order_by('-end_date').first()
+                    prev_date = p.memberships.filter(
+                        end_date__lt=prev_retirement_date).order_by(
+                            '-end_date').first()
                     if prev_date:
                         if prev_date.end_date > v:
-                            reconsider_person.append(p)
+                            messages.error(request,
+                                           'Provide a valid Retirement Date'
+                                           ' for {}'.format(p.name))
                             continue
                 if prev_retirement_date != v:
-                    Membership.objects.filter(
-                        person=p, end_date=prev_retirement_date) \
+                    p.memberships.filter(end_date=prev_retirement_date) \
                         .update(end_date=v)
                     count += 1
         if count:
             messages.success(request, 'Successfully Updated {} '
                              'Retired legislator(s)'.format(count))
-        if reconsider_person:
-            for person in reconsider_person:
-                messages.error(request, 'Provide a valid Retirement Date for'
-                               ' {}'.format(person.name))
     if request.GET.get('person'):
         people = Person.objects.filter(
-            Q(memberships__organization__jurisdiction__name__exact=jur_name),
-            ~Q(memberships__end_date=''),
-            Q(name__icontains=request.GET.get('person'))).distinct()
+            memberships__organization__jurisdiction__name__exact=jur_name) \
+            .filter(~Q(memberships__end_date=''),
+                    Q(name__icontains=request.GET.get('person'))).distinct()
     else:
         people = Person.objects.filter(
-            Q(memberships__organization__jurisdiction__name__exact=jur_name) &
-            ~Q(memberships__end_date='')).distinct()
-    for person in people:
-        if Membership.objects.filter(person=person, end_date=''):
-            people = people.exclude(id=person.id)
+            memberships__organization__jurisdiction__name__exact=jur_name) \
+            .filter(~Q(memberships__end_date='')).distinct()
     people_with_end_date = {}
     for person in people:
-        people_with_end_date[person] = Membership.objects.filter(
-            person=person).order_by('-end_date').first().end_date
+        people_with_end_date[person] = person.memberships.order_by(
+            '-end_date').first().end_date
     objects, page_range = _get_pagination(tuple(people_with_end_date.items()),
                                           request)
     context = {'jur_name': jur_name,
