@@ -1,0 +1,80 @@
+{% extends 'admintools/base.html' %}
+{% load staticfiles %}
+{% block body %}
+<div class="container">
+    <!--Page padding-->
+    <br /><br /><br />
+    <h2>Create A Patch</h2>
+    <br />
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+<form method="post" class="form-horizontal" action="{% url 'create_person_patch' jur_id %}">
+  {% csrf_token %}
+  <div class="form-inline">
+    <label class="control-label col-sm-2"><strong>PERSON</strong></label>
+    <div >
+      <select  name="person" class="people-opts">
+        <option value="">---</option>
+        {% for p in people %}
+        <option  value="{{p.id}}">{{p}}</option>
+        {% endfor %}
+      </select>
+    </div>
+      <label class="control-label col-sm-2" for="category"><strong>CATEGORY</strong></label>
+      <div >
+          <select  name="category" class="custom-select">
+            <option value="">---</option>
+            <option value="name">Wrong Name</option>
+            <option value="image">Wrong Image</option>
+            <option value="voice">Wrong Phone</option>
+            <option value="email">Wrong Email</option>
+            <option value="address">Wrong Address</option>
+          </select>
+      </div>
+  </div>
+    <br /><br />
+  <div class="form-inline">
+    <label class="control-label col-sm-2" for="old_value"><strong>OLD VALUE</strong></label>
+    <div class="col-sm-3">
+      <input type="text" name="old_value" required class="form-control" id="old_value">
+    </div>
+    <label class="control-label col-sm-2"  for="new_value"><strong>NEW VALUE</strong></label>
+    <div class="col-sm-3">
+      <input type="text" name="new_value" required class="form-control" id="new_value">
+    </div>
+  </div>
+  <br />
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="note"><strong>NOTE</strong></label>
+    <div class="col-sm-10">
+      <input type="text" name="note" class="form-control" id="note">
+    </div>
+  </div>
+  <br />
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="source"><strong>SOURCE</strong></label>
+    <div class="col-sm-10">
+      <input type="text" name="source" class="form-control" id="source">
+    </div>
+  </div>
+  <br />
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" style="margin-left: 450px;" class="btn btn-cyan" >Save  </button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block custom_scripts %}
+<link rel="stylesheet" href="{% static "css/select2.min.css" %}">
+<script type="text/javascript" src="{% static "js/select2.min.js" %}"></script>
+<script>
+    $('.people-opts').select2();
+</script>
+{% endblock %}
