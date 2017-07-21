@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/all-retired-legislators/$',
         views.list_retired_legislators, name="list_retired_legislators"),
 
-    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/$', views.jurisdiction_intro,
+    url(r'^admintools/(?P<jur_id>.*)/$', views.jurisdiction_intro,
         name='jurisdiction_intro'),
 
     # must be above 'list_issue_objects' to avoid 'related_class'
@@ -30,7 +30,7 @@ urlpatterns = [
 
     # must be below 'legislative_session_info' & `list_issue_objects`
     # to avoid 'category'
-    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/(?P<category>.*)/$',
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/(?P<category>[-\w]+)/$',
         views.name_resolution_tool, name='name_resolution_tool'),
 
     url(r'^admintools/(?P<issue_slug>[-\w]+)/(?P<jur_name>[a-zA-Z\s]*)/$',
