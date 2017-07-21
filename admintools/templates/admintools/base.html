@@ -38,7 +38,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
             <a class="navbar-brand" href="{% url 'jurisdiction_intro' jur_name %}">
-                            <strong>{{ jur_name }}</strong>
+                            <strong>{% jurisdiction_name_from_id jur_id %}</strong>
                         </a>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">

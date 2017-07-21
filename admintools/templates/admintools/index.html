@@ -1,4 +1,5 @@
 {% extends 'admintools/base.html' %}
+{% load tags %}
 {% load staticfiles %}
 {% block navbar_header %}
 <a class="navbar-brand" href="#">
@@ -54,9 +55,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for name, values in rows %}
+                    {% for id_, values in rows %}
                     <tr class="hoverable">
-                        <th><a href="{% url 'jurisdiction_intro' jur_name=name %}">{{ name }}</a></th>
+                        <th><a href="{% url 'jurisdiction_intro' id_ %}">{% jurisdiction_name_from_id id_ %}</a></th>
                         <!-- Last Run -->
                         <td align="center">
                             {% if values.run.count or values.run.count == None %}
