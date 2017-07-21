@@ -17,12 +17,12 @@
           </strong>
       </h2>
       {% if category != 'unmatched_memberships' %}
-      <form class="form-inline" method="get" action="{% url 'name_resolution_tool' jur_name category %}">
+      <form class="form-inline" method="get" action="{% url 'name_resolution_tool' jur_id category %}">
             <div class="md-form form-group">
                 <label style="margin-left: 130px;"><strong style="margin-top: -8px;">Legislative Session</strong></label>
               <select name="session_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 300px;">
                 <option value="all" {% if session_search == 'all' %}selected{% endif %}>All</option>
-                {% legislative_session_list jur_name as sessions %}
+                {% legislative_session_list jur_id as sessions %}
                     {% for session in sessions %}
                         <option value="{{ session.identifier }}" {% if session_search == session.identifier %}selected{% endif %}>{{ session.name }}</option>
                     {% endfor %}
@@ -32,7 +32,7 @@
                 <button class="btn btn-cyan" type="submit">Go</button>
             </div>
         </form>
-    {% endif %}    
+    {% endif %}
     </div>
       {% if messages %}
           {% for message in messages %}
@@ -43,7 +43,7 @@
           {% endfor %}
       {% endif %}
 
-    <form method="post" action="{% url 'name_resolution_tool' jur_name category %}" id="unresolved_form">{% csrf_token %}</form>
+    <form method="post" action="{% url 'name_resolution_tool' jur_id category %}" id="unresolved_form">{% csrf_token %}</form>
     <table class="table table-bordered table-striped table-sm">
       <thead>
         <tr class="table-active">

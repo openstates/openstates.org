@@ -4,7 +4,10 @@
 <div class="container">
     <!--Page padding-->
     <br /><br /><br />
-    <form class="form-inline" method="get" action="{% url 'review_person_patches' jur_name %}">
+    <a href="#" style="margin-bottom: 10px;" class="list-group-item active teal lighten-1">
+          Review Patches
+      </a>
+    <form class="form-inline" method="get" action="{% url 'review_person_patches' jur_id %}">
           <div class="md-form form-group">
               <label style="margin-top: -8px;"><strong>Category</strong></label>
             <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
@@ -47,7 +50,7 @@
             </div>
         {% endfor %}
   {% endif %}
-    <form method="post" action="{% url 'review_person_patches' jur_name %}" id="apply_patch_form">{% csrf_token %}</form>
+    <form method="post" action="{% url 'review_person_patches' jur_id %}" id="apply_patch_form">{% csrf_token %}</form>
     <table class="table table-bordered table-striped">
       <thead>
         <tr class="table-active">

@@ -7,7 +7,7 @@
     <div class="row">
       <h2><strong>Retire Legislators</strong></h2>
 
-    <form class="form-inline" method="get" action="{% url 'retire_legislators' jur_name %}" style="margin-left: 190px;">
+    <form class="form-inline" method="get" action="{% url 'retire_legislators' jur_id %}" style="margin-left: 190px;">
         <div class="md-form form-group">
             <i class="fa fa-user prefix"></i>
             <input type="text" name="person" value="{{ request.GET.person }}" id="form92" class="form-control validate">
@@ -17,7 +17,7 @@
         </div>
     </form>
     <h3 style="margin-top: 8px;width: 250px;">
-      <a href="{% url 'list_retired_legislators' jur_name %}"> > Retired Legislators</a>
+      <a href="{% url 'list_retired_legislators' jur_id %}"> > Retired Legislators</a>
     </h3>
     </div>
   {% if messages %}
@@ -28,7 +28,7 @@
           </div>
       {% endfor %}
   {% endif %}
-  <form method="post" action="{% url 'retire_legislators' jur_name %}" id="retire_form">{% csrf_token %}</form>
+  <form method="post" action="{% url 'retire_legislators' jur_id %}" id="retire_form">{% csrf_token %}</form>
   <table class="table table-bordered table-striped table-sm">
     <thead>
       <tr class="table-active">
