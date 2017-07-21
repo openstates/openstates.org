@@ -9,7 +9,7 @@
         <a href="{% url 'list_issue_objects' jur_name related_class issue_slug %}">(View All)</a>
         {% if related_class == 'post' %}
           <a class="offset-3" href="{% url 'retire_legislators' jur_name %}">Retirement Tool</a></p>
-          <a class="offset-1" href="{% url 'merge' %}">Merge Tool</a>
+          <a class="offset-1" href="{% url 'merge' jur_id %}">Merge Tool</a>
         {% endif %}
     </div>
   {% if messages %}
