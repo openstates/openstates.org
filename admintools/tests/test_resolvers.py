@@ -147,10 +147,9 @@ class PeoplePatchesTest(TestCase):
                                           applied_by='admin')
         setup_person_resolver()
         # getting updated object
-        p = PersonContactDetail.objects.filter(person=person)
-        queryset = ('<QuerySet [<PersonContactDetail: Postal Address: WY>, '
-                    '<PersonContactDetail: Postal Address: Maine>]>')
-        self.assertEqual(str(p), queryset)
+        pc = PersonContactDetail.objects.filter(person=person)
+        self.assertEqual(pc.filter(value="WY").count(), 1)
+        self.assertEqual(pc.filter(value="Maine").count(), 1)
 
     def test_missing_voice_patches(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
@@ -191,10 +190,9 @@ class PeoplePatchesTest(TestCase):
                                         issue='person-missing-phone')
         setup_person_resolver()
         # getting updated object
-        p = PersonContactDetail.objects.filter(person=person)
-        queryset = ('<QuerySet [<PersonContactDetail: Voice Phone: 456>, '
-                    '<PersonContactDetail: Voice Phone: 852>]>')
-        self.assertEqual(str(p), queryset)
+        pc = PersonContactDetail.objects.filter(person=person)
+        self.assertEqual(pc.filter(value='456').count(), 1)
+        self.assertEqual(pc.filter(value='852').count(), 1)
         # make sure that DataQualityIssue has been deleted
         dqi = DataQualityIssue.objects.filter(object_id=person.id)
         self.assertQuerysetEqual(dqi, [])
@@ -244,14 +242,10 @@ class PeoplePatchesTest(TestCase):
                                         issue='person-missing-email')
         setup_person_resolver()
         # getting updated object
-        p1 = PersonContactDetail.objects.filter(person=person1)
-        p2 = PersonContactDetail.objects.filter(person=person2)
-        queryset1 = ('<QuerySet [<PersonContactDetail:'
-                     ' Email: right@gmail.com>]>')
-        queryset2 = ('<QuerySet [<PersonContactDetail:'
-                     ' Email: right@gmail.com>]>')
-        self.assertEqual(str(p1), queryset1)
-        self.assertEqual(str(p2), queryset2)
+        pc1 = PersonContactDetail.objects.filter(person=person1)
+        pc2 = PersonContactDetail.objects.filter(person=person2)
+        self.assertEqual(pc1.filter(value='right@gmail.com').count(), 1)
+        self.assertEqual(pc2.filter(value='right@gmail.com').count(), 1)
         # make sure that DataQualityIssue has been deleted
         dqi = DataQualityIssue.objects.filter(object_id=person1.id)
         self.assertQuerysetEqual(dqi, [])
