@@ -51,6 +51,15 @@
             <button class="btn btn-cyan" type="submit">Go</button>
         </div>
     </form>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <form method="post" action="{% url 'list_all_person_patches' jur_id %}" id="re_review_patch_form">{% csrf_token %}</form>
     <table class="table table-bordered table-striped">
       <thead>
         <tr class="table-active">
@@ -60,7 +69,7 @@
           <th>Note</th>
           <th style="width:4%">Source</th>
           <th style="text-align: center;">Reporter</th>
-          <th style="text-align: center;">Status</th>
+          <th style="text-align: center; width:3%">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -74,13 +83,22 @@
                   <a href="{{ patch.source }}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
               </td>
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
-              <td style="text-align: center;">{{ patch.status|title }}</td>
+               <td>
+               <select form="re_review_patch_form" name="{{patch.id}}" class="mb-2 mr-sm-2 mb-sm-0" style="margin-left: 30px;">
+                   {% for k, v in status_ %}
+                    <option value="{{k}}" {% if patch.status == k %}selected{% endif %}>{{v}}</option>
+                   {% endfor %}
+               </select>
+           </td>
             </tr>
         {% empty %}
          <h3>No Patches Available!</h3><br />
         {% endfor %}
       </tbody>
     </table>
+    <button class="btn btn-cyan" style="margin-left: 900px;" form="re_review_patch_form" type="submit">
+        Update Status
+    </button>
 {% if patches.has_other_pages %}
 <br />
 <nav>
