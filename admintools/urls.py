@@ -19,9 +19,6 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/$', views.jurisdiction_intro,
         name='jurisdiction_intro'),
 
-    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/(?P<category>.*)/$',
-        views.name_resolution_tool, name='name_resolution_tool'),
-
     # must be above 'list_issue_objects' to avoid 'related_class'
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/session_id/'
         '(?P<identifier>.*)/$', views.legislative_session_info,
@@ -30,6 +27,11 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/(?P<related_class>[-\w]+)/'
         '(?P<issue_slug>[-\w]+)/$',
         views.list_issue_objects, name='list_issue_objects'),
+
+    # must be below 'legislative_session_info' & `list_issue_objects`
+    # to avoid 'category'
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/(?P<category>.*)/$',
+        views.name_resolution_tool, name='name_resolution_tool'),
 
     url(r'^admintools/(?P<issue_slug>[-\w]+)/(?P<jur_name>[a-zA-Z\s]*)/$',
         views.person_resolve_issues, name='person_resolve_issues')
