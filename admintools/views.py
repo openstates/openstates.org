@@ -575,3 +575,27 @@ def name_resolution_tool(request, jur_id, category):
         'session_search': session_search,
     }
     return render(request, 'admintools/unresolved.html', context)
+
+
+def create_person_patch(request, jur_id):
+    if request.method == 'POST':
+        p = Person.objects.get(id=request.POST['person'])
+        # if any error occur then create will throw error itself.
+        IssueResolverPatch.objects.create(
+            content_object=p,
+            jurisdiction_id=jur_id,
+            status='unreviewed',
+            old_value=request.POST['old_value'],
+            new_value=request.POST['new_value'],
+            source=request.POST.get('source'),
+            category=request.POST['category'],
+            alert='error',
+            note=request.POST.get('note'),
+            applied_by='admin',
+        )
+        messages.success(request, "Successfully created Patch")
+    people = Person.objects.filter(
+        memberships__organization__jurisdiction_id=jur_id).distinct()
+    context = {'jur_id': jur_id,
+               'people': people}
+    return render(request, 'admintools/create_person_patch.html', context)
