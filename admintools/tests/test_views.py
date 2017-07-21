@@ -57,7 +57,7 @@ class OverviewViewTests(TestCase):
         response = self.client.get(reverse('overview'))
         self.assertEqual(response.status_code, 200)
         for item in response.context['rows']:
-            if item[0] == jur.name:
+            if item[0] == jur.id:
                 run_count = item[1]['run'].get('count')
         self.assertEqual(run_count, None)
 
@@ -68,7 +68,7 @@ class OverviewViewTests(TestCase):
         response = self.client.get(reverse('overview'))
         self.assertEqual(response.status_code, 200)
         for item in response.context['rows']:
-            if item[0] == jur.name:
+            if item[0] == jur.id:
                 run_count = item[1]['run'].get('count')
         self.assertEqual(run_count, 0)
 
@@ -84,7 +84,7 @@ class OverviewViewTests(TestCase):
         response = self.client.get(reverse('overview'))
         self.assertEqual(response.status_code, 200)
         for item in response.context['rows']:
-            if item[0] == jur.name:
+            if item[0] == jur.id:
                 run_count = item[1]['run'].get('count')
         self.assertEqual(run_count, 2)
 
@@ -174,7 +174,7 @@ class JurisdictionintroViewTests(TestCase):
     def test_view_response(self):
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
         response = self.client.get(reverse('jurisdiction_intro',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
 
     def test_mergetool_response(self):
@@ -190,7 +190,7 @@ class JurisdictionintroViewTests(TestCase):
         """
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
         response = self.client.get(reverse('jurisdiction_intro',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context['cards']['person']['missing-photo']['count'], 1)
@@ -208,10 +208,10 @@ class JurisdictionintroViewTests(TestCase):
         """
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
         response = self.client.get(reverse('jurisdiction_intro',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('cards' in response.context)
-        self.assertTrue('jur_name' in response.context)
+        self.assertTrue('jur_id' in response.context)
 
     def test_organization_list(self):
         """
@@ -225,7 +225,7 @@ class JurisdictionintroViewTests(TestCase):
         orgs_list = Organization.objects.filter(
             jurisdiction=jur).values('classification').distinct()
         response = self.client.get(reverse('jurisdiction_intro',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['orgs'],
                                  ["{'classification': 'executive'}"])
@@ -247,7 +247,7 @@ class JurisdictionintroViewTests(TestCase):
             legislative_session__jurisdiction=jur) \
             .values('organization__name').distinct()
         response = self.client.get(reverse('jurisdiction_intro',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['voteevent_orgs'],
                                  ["{'organization__name': 'Democratic'}"])
@@ -269,7 +269,7 @@ class JurisdictionintroViewTests(TestCase):
             legislative_session__jurisdiction=jur) \
             .values('from_organization__name').distinct()
         response = self.client.get(reverse('jurisdiction_intro',
-                                           args=(jur.name,)))
+                                           args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['bill_orgs'],
                                  ["{'from_organization__name': 'Democratic'}"])
@@ -295,11 +295,11 @@ class JurisdictionintroViewTests(TestCase):
                                           end_date="2015-06-26")
         out = Template(
             "{% load tags %}"
-            "{% legislative_session_list jur_name as sessions %}"
+            "{% legislative_session_list jur_id as sessions %}"
             "{% for session in sessions %}"
             "{{ session.name }},"
             "{% endfor %}"
-        ).render(Context({'jur_name': jur1.name}))
+        ).render(Context({'jur_id': jur1.id}))
         self.assertIn('2017 Test Session', out)
         self.assertIn('2016 Test Session', out)
         self.assertNotIn('2015 Test Session', out)
@@ -338,13 +338,13 @@ class ListissueobjectsViewTests(TestCase):
                                         alert='warning',
                                         jurisdiction=jur)
         response = self.client.get(reverse('list_issue_objects',
-                                           args=(jur.name,
+                                           args=(jur.id,
                                                  'person',
                                                  'missing-photo')))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.context)
         self.assertTrue('url_slug' in response.context)
-        self.assertTrue('jur_name' in response.context)
+        self.assertTrue('jur_id' in response.context)
 
     def test_person_filter_queries(self):
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
@@ -358,7 +358,7 @@ class ListissueobjectsViewTests(TestCase):
         query_dict.update({'person': "Hitesh"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'person', 'missing-photo')
+                                     args=(jur.id, 'person', 'missing-photo')
                                      ),
                     querystring=query_dict.urlencode())
         response = self.client.get(url)
@@ -371,7 +371,7 @@ class ListissueobjectsViewTests(TestCase):
         query_dict.update({'person': "unknown person"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'person', 'missing-photo')
+                                     args=(jur.id, 'person', 'missing-photo')
                                      ),
                     querystring=query_dict.urlencode())
         response = self.client.get(url)
@@ -395,7 +395,7 @@ class ListissueobjectsViewTests(TestCase):
                            'org_classification': "Test"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'organization',
+                                     args=(jur.id, 'organization',
                                            'no-memberships')
                                      ),
                     querystring=query_dict.urlencode())
@@ -412,7 +412,7 @@ class ListissueobjectsViewTests(TestCase):
                            'org_classification': "unknown"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'organization',
+                                     args=(jur.id, 'organization',
                                            'no-memberships')
                                      ),
                     querystring=query_dict.urlencode())
@@ -440,7 +440,7 @@ class ListissueobjectsViewTests(TestCase):
                            'membership': "Unmatched Person"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'membership',
+                                     args=(jur.id, 'membership',
                                            'unmatched-person')
                                      ),
                     querystring=query_dict.urlencode())
@@ -456,7 +456,7 @@ class ListissueobjectsViewTests(TestCase):
                            'membership': "unknown"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'membership',
+                                     args=(jur.id, 'membership',
                                            'unmatched-person')
                                      ),
                     querystring=query_dict.urlencode())
@@ -495,7 +495,7 @@ class ListissueobjectsViewTests(TestCase):
                            "bill_session": "2017"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'bill',
+                                     args=(jur.id, 'bill',
                                            'unmatched-person-sponsor')
                                      ),
                     querystring=query_dict.urlencode())
@@ -512,7 +512,7 @@ class ListissueobjectsViewTests(TestCase):
                            "bill_session": "unknown"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'bill',
+                                     args=(jur.id, 'bill',
                                            'unmatched-person-sponsor')
                                      ),
                     querystring=query_dict.urlencode())
@@ -547,7 +547,7 @@ class ListissueobjectsViewTests(TestCase):
                            'voteevent_bill': "Bill"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'voteevent',
+                                     args=(jur.id, 'voteevent',
                                            'missing-voters')
                                      ),
                     querystring=query_dict.urlencode())
@@ -564,7 +564,7 @@ class ListissueobjectsViewTests(TestCase):
                            "voteevent_bill": "unknown"})
         url = '{base_url}?{querystring}' \
             .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.name, 'voteevent',
+                                     args=(jur.id, 'voteevent',
                                            'missing-voters')
                                      ),
                     querystring=query_dict.urlencode())
@@ -604,7 +604,7 @@ class LegislativesessioninfoViewTest(TestCase):
         ls = LegislativeSession.objects.get(identifier="2017",
                                             jurisdiction=jur)
         response = self.client.get(reverse('legislative_session_info',
-                                           args=(jur.name, ls.identifier)))
+                                           args=(jur.id, ls.identifier)))
         self.assertEqual(response.status_code, 200)
 
     def test_bill_from_orgs_list_if_exists(self):
@@ -623,7 +623,7 @@ class LegislativesessioninfoViewTest(TestCase):
             .values('from_organization__name').distinct()
 
         response = self.client.get(reverse('legislative_session_info',
-                                           args=(jur.name,
+                                           args=(jur.id,
                                                  ls.identifier)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(
@@ -648,7 +648,7 @@ class LegislativesessioninfoViewTest(TestCase):
             .values('from_organization__name').distinct()
 
         response = self.client.get(reverse('legislative_session_info',
-                                           args=(jur.name,
+                                           args=(jur.id,
                                                  ls_2016.identifier)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['bill_orgs'], [])
@@ -666,7 +666,7 @@ class LegislativesessioninfoViewTest(TestCase):
             legislative_session__jurisdiction=jur) \
             .values('organization__name').distinct()
         response = self.client.get(reverse('legislative_session_info',
-                                           args=(jur.name,
+                                           args=(jur.id,
                                                  ls.identifier)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['voteevent_orgs'],
@@ -688,7 +688,7 @@ class LegislativesessioninfoViewTest(TestCase):
             legislative_session__identifier=ls_2016.identifier) \
             .values('organization__name').distinct()
         response = self.client.get(reverse('legislative_session_info',
-                                           args=(jur.name,
+                                           args=(jur.id,
                                                  ls_2016.identifier)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['voteevent_orgs'], [])
