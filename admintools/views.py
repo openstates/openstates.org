@@ -38,6 +38,7 @@ def _get_run_status(jur):
     return {'count': None if status == 1 else status, 'date': latest_date}
 
 
+# get pagination of results upto 20 objects
 def _get_pagination(objects_list, request):
     paginator = Paginator(objects_list, 20)
     try:
@@ -221,6 +222,7 @@ def list_issue_objects(request, jur_id, related_class, issue_slug):
     return render(request, 'admintools/list_issues.html', context)
 
 
+# prepare data to be loaded into main DB.
 def _prepare_import(issue_slug, posted_data):
     if issue_slug == 'missing-photo':
         issue_items = dict((k, v) for k, v in posted_data.items()
@@ -245,6 +247,7 @@ def _prepare_import(issue_slug, posted_data):
     return issue_items
 
 
+# creates `unreviewed` patches into DB applied_by `admin` for `missing` values.
 @transaction.atomic
 def person_resolve_issues(request, issue_slug, jur_id):
     if request.method == 'POST':
@@ -288,6 +291,7 @@ def person_resolve_issues(request, issue_slug, jur_id):
                                               issue_slug)))
 
 
+# lists `unreviewed` patches for review.
 def review_person_patches(request, jur_id):
     if request.method == 'POST':
         for k, v in request.POST.items():
@@ -310,11 +314,14 @@ def review_person_patches(request, jur_id):
         if len(request.POST)-1:
             messages.success(request, 'Successfully updated status of {} '
                              'Patch(es)'.format(len(request.POST)-1))
+
     patches = IssueResolverPatch.objects \
         .filter(status='unreviewed', jurisdiction_id=jur_id)
+    # To maintain applied filter in template
     category_search = False
     alert_search = False
     applied_by_search = False
+    # Filters Results
     if request.GET.get('person'):
         person_ids = Person.objects.filter(
             memberships__organization__jurisdiction_id=jur_id,
@@ -329,11 +336,13 @@ def review_person_patches(request, jur_id):
     if request.GET.get('applied_by'):
         patches = patches.filter(applied_by=request.GET.get('applied_by'))
         applied_by_search = request.GET.get('applied_by')
+
     objects, page_range = _get_pagination(patches.order_by('id'), request)
     categories_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'category').choices).items())
     alerts_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'alert').choices).items())
+
     context = {'jur_id': jur_id,
                'patches': objects,
                'page_range': page_range,
@@ -345,12 +354,14 @@ def review_person_patches(request, jur_id):
     return render(request, 'admintools/review_person_patches.html', context)
 
 
+# list all patches and functionality to modify `status`.
 def list_all_person_patches(request, jur_id):
     if request.method == 'POST':
         count = 0
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
                 pa = IssueResolverPatch.objects.get(id=k)
+                # if `status` is changed.
                 if pa.status != v:
                     pa.status = v
                     pa.save()
@@ -358,12 +369,15 @@ def list_all_person_patches(request, jur_id):
         if count:
             messages.success(request, "Successfully Updated Status of "
                              "{} Patch(es)".format(count))
+
     patches = IssueResolverPatch.objects \
         .filter(jurisdiction_id=jur_id)
+    # To maintain applied filter in template
     category_search = False
     alert_search = False
     applied_by_search = False
     status_search = False
+    # Filter Results
     if request.GET.get('person'):
         person_ids = Person.objects.filter(
             memberships__organization__jurisdiction_id=jur_id,
@@ -381,13 +395,16 @@ def list_all_person_patches(request, jur_id):
     if request.GET.get('status'):
         patches = patches.filter(status=request.GET.get('status'))
         status_search = request.GET.get('status')
+
     objects, page_range = _get_pagination(patches.order_by('id'), request)
+
     categories_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'category').choices).items())
     alerts_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'alert').choices).items())
     status_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'status').choices).items())
+
     context = {'jur_id': jur_id,
                'patches': objects,
                'page_range': page_range,
@@ -401,6 +418,7 @@ def list_all_person_patches(request, jur_id):
     return render(request, 'admintools/list_person_patches.html', context)
 
 
+# To retire legislator(s)
 def retire_legislators(request, jur_id):
     if request.method == 'POST':
         count = 0
@@ -429,6 +447,7 @@ def retire_legislators(request, jur_id):
         people = Person.objects.filter(
             memberships__organization__jurisdiction_id=jur_id) \
             .filter(memberships__end_date='').distinct()
+
     objects, page_range = _get_pagination(people.order_by('name'), request)
     context = {'jur_id': jur_id,
                'people': objects,
@@ -436,6 +455,7 @@ def retire_legislators(request, jur_id):
     return render(request, 'admintools/retire_legislators.html', context)
 
 
+# List all the retire legislator(s) and functionality to update/unretire them.
 def list_retired_legislators(request, jur_id):
     if request.method == 'POST':
         count = 0
@@ -464,6 +484,7 @@ def list_retired_legislators(request, jur_id):
         if count:
             messages.success(request, 'Successfully Updated {} '
                              'Retired legislator(s)'.format(count))
+
     if request.GET.get('person'):
         people = Person.objects.filter(
             memberships__organization__jurisdiction_id=jur_id) \
@@ -473,6 +494,7 @@ def list_retired_legislators(request, jur_id):
         people = Person.objects.filter(
             memberships__organization__jurisdiction_id=jur_id) \
             .filter(~Q(memberships__end_date='')).distinct()
+
     people_with_end_date = {}
     for person in people:
         people_with_end_date[person] = person.memberships.order_by(
@@ -485,6 +507,7 @@ def list_retired_legislators(request, jur_id):
     return render(request, 'admintools/list_retired_legislators.html', context)
 
 
+# Name Resolution Tool
 def name_resolution_tool(request, jur_id, category):
     if request.method == 'POST':
         count = 0
@@ -516,11 +539,14 @@ def name_resolution_tool(request, jur_id, category):
                 count += 1
         messages.success(request, 'Successfully Updated {} '
                          'Umatched legislator(s)'.format(count))
+
     unresolved = Counter()
     session_search = False
     session_id = request.GET.get('session_id')
+
     if category != 'unmatched_memberships' and \
             not session_id and not session_id == 'all':
+        # By Default:- Filter By Latest Legislative Session
         session_id = LegislativeSession.objects.filter(
             jurisdiction_id=jur_id).order_by('-identifier') \
             .first().identifier
@@ -534,25 +560,30 @@ def name_resolution_tool(request, jur_id, category):
             queryset = queryset.filter(
                 bill__legislative_session__identifier=session_id)
         session_search = session_id
+        # Calculates how many times a unmatched name appeared.
         for obj in queryset:
             unresolved[obj.name] += obj.num
+
     elif category == 'unmatched_voteevent_voters':
-        j = jur_id  # To avoid `E251` flake8 error.
         queryset = PersonVote.objects \
             .filter(
-                vote_event__legislative_session__jurisdiction_id=j,
+                vote_event__legislative_session__jurisdiction_id=jur_id,
                 voter_id=None).annotate(num=Count('voter_name'))
         if session_id != 'all':
             queryset = queryset.filter(
                 vote_event__legislative_session__identifier=session_id)
+
         session_search = session_id
+        # Calculates how many times a unmatched name appeared.
         for obj in queryset:
             unresolved[obj.voter_name] += obj.num
+
     elif category == 'unmatched_memberships':
         queryset = Membership.objects.filter(
             organization__jurisdiction_id=jur_id,
             person_id=None
         ).annotate(num=Count('person_name'))
+        # Calculates how many times a unmatched name appeared.
         for obj in queryset:
             unresolved[obj.person_name] += obj.num
     else:
@@ -562,6 +593,7 @@ def name_resolution_tool(request, jur_id, category):
     # convert unresolved to a normal dict so it's iterable in template
     unresolved = sorted(((k, v) for (k, v) in unresolved.items()),
                         key=lambda x: x[1], reverse=True)
+
     objects, page_range = _get_pagination(unresolved, request)
     people = Person.objects.filter(
         memberships__organization__jurisdiction_id=jur_id) \
@@ -577,10 +609,11 @@ def name_resolution_tool(request, jur_id, category):
     return render(request, 'admintools/unresolved.html', context)
 
 
+# create a `unreviewed` patch for wrong values.
 def create_person_patch(request, jur_id):
     if request.method == 'POST':
         p = Person.objects.get(id=request.POST['person'])
-        # if any error occur then create will throw error itself.
+        # if any error occur then `create` will throw error.
         IssueResolverPatch.objects.create(
             content_object=p,
             jurisdiction_id=jur_id,

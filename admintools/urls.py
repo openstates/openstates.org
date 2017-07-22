@@ -2,6 +2,11 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+
+    # all the urls starting with `jur_id` should have some manual string
+    # identifier after them other they will get redirected to
+    # `jurisdiction_intro` page causing `jurisdiction_id` not mathced error.
+
     url(r'^admintools/$', views.overview, name='overview'),
 
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/all-patches/$',
@@ -19,7 +24,6 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/all-retired-legislators/$',
         views.list_retired_legislators, name="list_retired_legislators"),
 
-    # must be above 'list_issue_objects' & 'jurisdiction_intro'
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/session-id/'
         '(?P<identifier>.*)/$', views.legislative_session_info,
         name="legislative_session_info"),
@@ -31,8 +35,6 @@ urlpatterns = [
         '(?P<issue_slug>[-\w]+)/$',
         views.list_issue_objects, name='list_issue_objects'),
 
-    # must be below 'legislative_session_info' & `list_issue_objects`
-    # to avoid 'category'
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/(?P<category>[-\w]+)/$',
         views.name_resolution_tool, name='name_resolution_tool'),
 
