@@ -21,7 +21,7 @@
     {% endfor %}
   {% endif %}
   {% if related_class == 'person' %}
-  <form method="post" action="{% url 'person_resolve_issues' issue_slug jur_id %}" id="my_form">{% csrf_token %}</form>
+  <form method="post" action="{% url 'person_resolve_issues' jur_id issue_slug %}" id="my_form">{% csrf_token %}</form>
   {% endif %}
     <table class="table table-bordered table-striped">
         <thead class="thead-default">

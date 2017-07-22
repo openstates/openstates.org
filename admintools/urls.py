@@ -35,9 +35,12 @@ urlpatterns = [
         '(?P<issue_slug>[-\w]+)/$',
         views.list_issue_objects, name='list_issue_objects'),
 
-    url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/(?P<category>[-\w]+)/$',
-        views.name_resolution_tool, name='name_resolution_tool'),
+    # must be above `name_resolution_tool`
+    url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/create-patch/'
+        '(?P<issue_slug>[-\w]+)/$',
+        views.person_resolve_issues, name='person_resolve_issues'),
 
-    url(r'^admintools/(?P<issue_slug>[-\w]+)/(?P<jur_id>[\w\-\:\/]+)/$',
-        views.person_resolve_issues, name='person_resolve_issues')
+    url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/(?P<category>[-\w]+)/$',
+        views.name_resolution_tool, name='name_resolution_tool')
+
 ]

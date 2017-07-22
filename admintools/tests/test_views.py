@@ -714,7 +714,8 @@ class RetireLegislatorsViewTest(TestCase):
         org5 = Organization.objects.create(name="Joint", jurisdiction=jur)
         Membership.objects.create(person=person, organization=org1,
                                   end_date='2017-12-25')
-        Membership.objects.create(person=person, organization=org2)
+        Membership.objects.create(person=person, organization=org2,
+                                  end_date='2017-12-23')
         Membership.objects.create(person=person, organization=org3)
         Membership.objects.create(person=person, organization=org4)
         Membership.objects.create(person=person, organization=org5)
@@ -724,6 +725,8 @@ class RetireLegislatorsViewTest(TestCase):
         response = self.client.get(reverse('retire_legislators',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
+        person = Person.objects.get(name="Hitesh Garg")
+        self.assertTrue(person in response.context['people'].object_list)
 
     def test_invalid_retirement_date(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
@@ -752,7 +755,7 @@ class RetireLegislatorsViewTest(TestCase):
         self.assertEqual(m1.end_date, '2017-12-25')
         mem = Membership.objects.filter(person=p,
                                         end_date='2017-12-30').count()
-        self.assertEqual(mem, 4)
+        self.assertEqual(mem, 3)
 
 
 class ListRetiredLegislatorsViewTest(TestCase):
@@ -786,9 +789,14 @@ class ListRetiredLegislatorsViewTest(TestCase):
 
     def test_view_response(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        person = Person.objects.get(name="Hitesh Garg")
         response = self.client.get(reverse('list_retired_legislators',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['people'].object_list[0][0],
+                         person)
+        self.assertEqual(response.context['people'].object_list[0][1],
+                         '2017-12-30')
 
     def test_valid_update_in_retirement_date(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
@@ -1052,3 +1060,286 @@ class NameResolutionToolViewTest(TestCase):
         sp2 = BillSponsorship.objects.get(id=sp2.id)
         self.assertEqual(sp1.person_id, p1.id)
         self.assertEqual(sp2.person_id, p2.id)
+
+
+class ReviewPatchesViewTest(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+        p = Person.objects.create(name="Hitesh Garg")
+        org = Organization.objects.create(name="Democratic", jurisdiction=jur)
+        Membership.objects.create(person=p, organization=org)
+        # some `unreviewed` patches.
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='unreviewed',
+                                          old_value='Hitesh Garg',
+                                          new_value='Garg',
+                                          category='name',
+                                          alert='error',
+                                          applied_by='admin')
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='rejected',
+                                          old_value='Hitesh Garg',
+                                          new_value='Ga',
+                                          category='name',
+                                          alert='error',
+                                          applied_by='admin')
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='unreviewed',
+                                          new_value='http://www/image.png',
+                                          category='image',
+                                          alert='warning',
+                                          applied_by='user')
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='deprecated',
+                                          new_value='http://www/right.png',
+                                          category='image',
+                                          alert='warning',
+                                          applied_by='user')
+
+    def test_view_response(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        response = self.client.get(reverse('review_person_patches',
+                                           args=(jur.id,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('jur_id' in response.context)
+        self.assertTrue('patches' in response.context)
+
+    def test_only_unreviewed_pathces_are_coming_up(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        response = self.client.get(reverse('review_person_patches',
+                                           args=(jur.id,)))
+        unreviewed_patches = IssueResolverPatch.objects \
+            .filter(jurisdiction=jur, status='unreviewed').count()
+        self.assertEqual(len(response.context['patches'].object_list),
+                         unreviewed_patches)
+
+    def test_status_after_review(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        url = reverse('review_person_patches', args=(jur.id,))
+        # there are 2 unreviewed patches
+        patch1 = IssueResolverPatch.objects.get(new_value='Garg')
+        patch2 = IssueResolverPatch.objects.get(
+            new_value="http://www/image.png")
+        data = {
+            'name__{}__{}'.format(patch1.id, patch1.object_id): 'rejected',
+            'image__{}__{}'.format(patch2.id, patch1.object_id): 'approved'
+
+        }
+        resp = self.client.post(url, data)
+        self.assertEqual(resp.status_code, 200)
+        # getting updated objects
+        patch1 = IssueResolverPatch.objects.get(new_value='Garg')
+        patch2 = IssueResolverPatch.objects.get(
+            new_value="http://www/image.png")
+        self.assertEqual(patch1.status, 'rejected')
+        self.assertEqual(patch2.status, 'approved')
+        self.assertQuerysetEqual(IssueResolverPatch.objects.filter(
+            status='unreviewed'), [])
+
+
+class ListAllPersonPatchesViewTest(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+        p = Person.objects.create(name="Hitesh Garg")
+        org = Organization.objects.create(name="Democratic", jurisdiction=jur)
+        Membership.objects.create(person=p, organization=org)
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='unreviewed',
+                                          old_value='Hitesh Garg',
+                                          new_value='Garg',
+                                          category='name',
+                                          alert='error',
+                                          applied_by='admin')
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='rejected',
+                                          old_value='Hitesh Garg',
+                                          new_value='Ga',
+                                          category='name',
+                                          alert='error',
+                                          applied_by='admin')
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='approved',
+                                          new_value='http://www/image.png',
+                                          category='image',
+                                          alert='warning',
+                                          applied_by='user')
+        IssueResolverPatch.objects.create(content_object=p,
+                                          jurisdiction=jur,
+                                          status='deprecated',
+                                          new_value='http://www/right.png',
+                                          category='image',
+                                          alert='warning',
+                                          applied_by='user')
+
+    def test_view_response(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        response = self.client.get(reverse('list_all_person_patches',
+                                           args=(jur.id,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('jur_id' in response.context)
+        self.assertTrue('patches' in response.context)
+
+    def test_all_patches_are_coming_up(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        response = self.client.get(reverse('list_all_person_patches',
+                                           args=(jur.id,)))
+        self.assertEqual(len(response.context['patches'].object_list), 4)
+
+    def test_modify_patch_status(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        patch = IssueResolverPatch.objects.get(new_value='Garg')
+        self.assertEqual(patch.status, 'unreviewed')
+        url = reverse('list_all_person_patches', args=(jur.id,))
+        data = {patch.id: 'approved'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        # getting updated object
+        patch = IssueResolverPatch.objects.get(new_value='Garg')
+        self.assertEqual(patch.status, 'approved')
+
+    def test_modified_multiple_approved_patch_for_image_or_name(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        patch = IssueResolverPatch.objects.get(
+            new_value='http://www/right.png')
+        self.assertEqual(patch.status, 'deprecated')
+        url = reverse('list_all_person_patches', args=(jur.id,))
+        data = {patch.id: 'approved'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        # getting updated object
+        patch = IssueResolverPatch.objects.get(
+            new_value='http://www/right.png')
+        self.assertEqual(patch.status, 'deprecated')
+
+
+class PersonResolveIssueViewTest(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+        p = Person.objects.create(name="Hitesh Garg")
+        p2 = Person.objects.create(name="Sheenu")
+        org = Organization.objects.create(name="Democratic", jurisdiction=jur)
+        Membership.objects.create(person=p, organization=org)
+        Membership.objects.create(person=p2, organization=org)
+
+    def test_create_missing_image_patch(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        url = reverse('person_resolve_issues', args=(jur.id, 'missing-photo'))
+        p = Person.objects.get(name="Hitesh Garg")
+        data = {p.id: 'http://www.image.png'}
+        response = self.client.post(url, data)
+        # HttpResponseRedirect (Found 302)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(IssueResolverPatch.objects.count(), 1)
+        self.assertEqual(IssueResolverPatch.objects.filter(
+            status='unreviewed').count(), 1)
+        self.assertEqual(IssueResolverPatch.objects.filter(
+            object_id=p.id).count(), 1)
+
+    def test_create_missing_voice_patch(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        url = reverse('person_resolve_issues', args=(jur.id, 'missing-phone'))
+        p = Person.objects.get(name="Hitesh Garg")
+        data = {
+            p.id: '102-658-894',
+            'note_{}'.format(p.id): 'Capitol Office',
+            '1_{}'.format(p.id): '258-965-624',
+            'note_1_{}'.format(p.id): 'District Office'
+        }
+        response = self.client.post(url, data)
+        # HttpResponseRedirect (Found 302)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(IssueResolverPatch.objects.count(), 2)
+        patch = IssueResolverPatch.objects.get(new_value='102-658-894')
+        self.assertEqual(patch.status, 'unreviewed')
+        self.assertEqual(patch.category, 'voice')
+        self.assertEqual(patch.note, 'Capitol Office')
+        patch = IssueResolverPatch.objects.get(new_value='258-965-624')
+        self.assertEqual(patch.status, 'unreviewed')
+        self.assertEqual(patch.category, 'voice')
+        self.assertEqual(patch.note, 'District Office')
+
+    def test_create_missing_email_patch(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        url = reverse('person_resolve_issues', args=(jur.id, 'missing-email'))
+        p = Person.objects.get(name="Hitesh Garg")
+        p2 = Person.objects.get(name="Sheenu")
+        data = {
+            p.id: 'test@gmail.com',
+            'note_{}'.format(p.id): 'Capitol Office',
+            '1_{}'.format(p.id): 'right@gmail.com',
+            'note_1_{}'.format(p.id): 'District Office',
+            p2.id: 'person2@gmail.com',
+            'note_{}'.format(p2.id): 'Person2 Office'
+        }
+        response = self.client.post(url, data)
+        # HttpResponseRedirect (Found 302)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(IssueResolverPatch.objects.count(), 3)
+        patch = IssueResolverPatch.objects.get(new_value='test@gmail.com')
+        self.assertEqual(patch.status, 'unreviewed')
+        self.assertEqual(patch.category, 'email')
+        self.assertEqual(patch.note, 'Capitol Office')
+        patch = IssueResolverPatch.objects.get(
+            new_value='person2@gmail.com')
+        self.assertEqual(patch.status, 'unreviewed')
+        self.assertEqual(patch.category, 'email')
+        self.assertEqual(patch.note, 'Person2 Office')
+        patch = IssueResolverPatch.objects.get(new_value='right@gmail.com')
+        self.assertEqual(patch.status, 'unreviewed')
+        self.assertEqual(patch.category, 'email')
+        self.assertEqual(patch.note, 'District Office')
+
+    def test_create_missing_address_patch(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        url = reverse('person_resolve_issues', args=(jur.id,
+                                                     'missing-address'))
+        p = Person.objects.get(name="Hitesh Garg")
+        data = {
+            p.id: 'New York',
+            'note_{}'.format(p.id): 'Capitol Office',
+            '1_{}'.format(p.id): 'Maine',
+            'note_1_{}'.format(p.id): 'District Office'
+        }
+        response = self.client.post(url, data)
+        # HttpResponseRedirect (Found 302)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(IssueResolverPatch.objects.count(), 2)
+        patch = IssueResolverPatch.objects.get(new_value='New York')
+        self.assertEqual(patch.status, 'unreviewed')
+        self.assertEqual(patch.category, 'address')
+        self.assertEqual(patch.note, 'Capitol Office')
+        patch = IssueResolverPatch.objects.get(new_value='Maine')
+        self.assertEqual(patch.status, 'unreviewed')
+        self.assertEqual(patch.category, 'address')
+        self.assertEqual(patch.note, 'District Office')

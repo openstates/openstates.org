@@ -249,7 +249,7 @@ def _prepare_import(issue_slug, posted_data):
 
 # creates `unreviewed` patches into DB applied_by `admin` for `missing` values.
 @transaction.atomic
-def person_resolve_issues(request, issue_slug, jur_id):
+def person_resolve_issues(request, jur_id, issue_slug):
     if request.method == 'POST':
         if issue_slug == 'missing-phone':
             category = 'voice'
@@ -282,10 +282,11 @@ def person_resolve_issues(request, issue_slug, jur_id):
                 applied_by='admin',
             )
             patch.save()
-        messages.success(request, 'Successfully created {} {}(s) Admin '
-                         'Patch(es)'.format(len(issue_items),
-                                            IssueType.description_for(
-                                              issue_slug)))
+        if issue_items:
+            messages.success(request, 'Successfully created {} {}(s) Admin '
+                             'Patch(es)'.format(len(issue_items),
+                                                IssueType.description_for(
+                                                  issue_slug)))
     return HttpResponseRedirect(reverse('list_issue_objects',
                                         args=(jur_id, 'person',
                                               issue_slug)))
@@ -361,6 +362,19 @@ def list_all_person_patches(request, jur_id):
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
                 pa = IssueResolverPatch.objects.get(id=k)
+                # if category is `name` or `image` and updated status is
+                # approved then make sure to display error if there is already
+                # a approved patch is present.
+                if pa.category in ['image', 'name'] and v == 'approved' \
+                        and pa.status != v:
+                    hg = IssueResolverPatch.objects \
+                        .filter(jurisdiction_id=jur_id, object_id=pa.object_id,
+                                category=pa.category, status='approved')
+                    if hg:
+                        per = Person.objects.get(id=pa.object_id)
+                        messages.error(request, "Two Approved Pathces for {}"
+                                       " ({})".format(per.name, pa.category))
+                        continue
                 # if `status` is changed.
                 if pa.status != v:
                     pa.status = v
