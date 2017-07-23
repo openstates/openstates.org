@@ -501,22 +501,23 @@ def list_retired_legislators(request, jur_id):
                 resp = validate_date(v)
                 if resp or v == '':
                     if v:
-                        # To make sure that provided retirement date is not
-                        # less than the end_date, other than current
-                        # retirement date
-                        prev_date = p.memberships.filter(
-                            end_date__lt=prev_retirement_date).order_by(
-                                '-end_date').first()
-                        if prev_date:
-                            if prev_date.end_date > v:
-                                messages.error(request,
-                                               'Provide a valid Retirement '
-                                               'Date for {}'.format(p.name))
-                                continue
-                    else:
-                        messages.error(request,
-                                       'Provide a valid Retirement Date'
-                                       ' for {}'.format(p.name))
+                        if resp:
+                            # To make sure that provided retirement date is not
+                            # less than the end_date, other than current
+                            # retirement date
+                            prev_date = p.memberships.filter(
+                                end_date__lt=prev_retirement_date).order_by(
+                                    '-end_date').first()
+                            if prev_date:
+                                if prev_date.end_date > v:
+                                    messages.error(request, 'Provide a valid '
+                                                   'Retirement Date for '
+                                                   '{}'.format(p.name))
+                                    continue
+                        else:
+                            messages.error(request,
+                                           'Provide a valid Retirement Date'
+                                           ' for {}'.format(p.name))
                     if prev_retirement_date != v:
                         p.memberships.filter(end_date=prev_retirement_date) \
                             .update(end_date=v)
