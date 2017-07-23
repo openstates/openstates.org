@@ -318,6 +318,7 @@ def review_person_patches(request, jur_id):
 
     patches = IssueResolverPatch.objects \
         .filter(status='unreviewed', jurisdiction_id=jur_id)
+
     # To maintain applied filter in template
     category_search = False
     alert_search = False
@@ -586,7 +587,6 @@ def name_resolution_tool(request, jur_id, category):
         if session_id != 'all':
             queryset = queryset.filter(
                 vote_event__legislative_session__identifier=session_id)
-
         session_search = session_id
         # Calculates how many times a unmatched name appeared.
         for obj in queryset:
@@ -597,6 +597,7 @@ def name_resolution_tool(request, jur_id, category):
             organization__jurisdiction_id=jur_id,
             person_id=None
         ).annotate(num=Count('person_name'))
+
         # Calculates how many times a unmatched name appeared.
         for obj in queryset:
             unresolved[obj.person_name] += obj.num

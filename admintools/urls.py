@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/all-retired-legislators/$',
         views.list_retired_legislators, name="list_retired_legislators"),
 
+    # must be above 'list_issue_objects' & 'jurisdiction_intro'
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/session-id/'
         '(?P<identifier>.*)/$', views.legislative_session_info,
         name="legislative_session_info"),
