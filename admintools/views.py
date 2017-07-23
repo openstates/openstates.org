@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from pupa.models import RunPlan
 from opencivicdata.core.models import (Jurisdiction, Person, Organization,
-                                       Membership)
-from opencivicdata.legislative.models import (Bill, VoteEvent,
-                                              LegislativeSession)
+                                       Membership, PersonName)
+from opencivicdata.legislative.models import (Bill, VoteEvent, BillSponsorship,
+                                              LegislativeSession, PersonVote)
 from admintools.issues import IssueType
 from admintools.models import DataQualityIssue, IssueResolverPatch
 from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
-from collections import defaultdict
+from collections import defaultdict, Counter
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
 from django.core.urlresolvers import reverse
@@ -473,3 +473,95 @@ def list_retired_legislators(request, jur_name):
                'people': objects,
                'page_range': page_range}
     return render(request, 'admintools/list_retired_legislators.html', context)
+
+
+def name_resolution_tool(request, jur_name, category):
+    if request.method == 'POST':
+        count = 0
+        for name, pid in request.POST.items():
+            if pid and not name.startswith('csrf'):
+                PersonName.objects.create(person_id=pid, name=name,
+                                          note='added via name resolution tool'
+                                          )
+                person = Person.objects.get(pk=pid)
+                if 'other_names' not in person.locked_fields:
+                    person.locked_fields.append('other_names')
+                    person.save()
+                if category == 'unmatched_bill_sponsors':
+                    sp = BillSponsorship.objects.filter(entity_type='person',
+                                                        person_id=None,
+                                                        name=name)
+                    sp.update(person_id=pid)
+                elif category == 'unmatched_voteevent_voters':
+                    vs = PersonVote.objects.filter(voter_id=None,
+                                                   voter_name=name)
+                    vs.update(voter_id=pid)
+                elif category == 'unmatched_memberships':
+                    mem = Membership.objects.filter(person_id=None,
+                                                    person_name=name)
+                    mem.update(person_id=pid)
+                else:
+                    raise ValueError('Name Resolution Tool needs update'
+                                     ' for new category')
+                count += 1
+        messages.success(request, 'Successfully Updated {} '
+                         'Umatched legislator(s)'.format(count))
+    unresolved = Counter()
+    session_search = False
+    session_id = request.GET.get('session_id')
+    if category != 'unmatched_memberships' and \
+            not session_id and not session_id == 'all':
+        session_id = LegislativeSession.objects.filter(
+            jurisdiction__name__exact=jur_name).order_by('-identifier') \
+            .first().identifier
+    if category == 'unmatched_bill_sponsors':
+        queryset = BillSponsorship.objects \
+            .filter(
+                bill__legislative_session__jurisdiction__name__exact=jur_name,
+                entity_type='person',
+                person_id=None).annotate(num=Count('name'))
+        if session_id != 'all':
+            queryset = queryset.filter(
+                bill__legislative_session__identifier=session_id)
+        session_search = session_id
+        for obj in queryset:
+            unresolved[obj.name] += obj.num
+    elif category == 'unmatched_voteevent_voters':
+        j = jur_name  # To avoid `E251` flake8 error.
+        queryset = PersonVote.objects \
+            .filter(
+                vote_event__legislative_session__jurisdiction__name__exact=j,
+                voter_id=None).annotate(num=Count('voter_name'))
+        if session_id != 'all':
+            queryset = queryset.filter(
+                vote_event__legislative_session__identifier=session_id)
+        session_search = session_id
+        for obj in queryset:
+            unresolved[obj.voter_name] += obj.num
+    elif category == 'unmatched_memberships':
+        queryset = Membership.objects.filter(
+            organization__jurisdiction__name__exact=jur_name,
+            person_id=None
+        ).annotate(num=Count('person_name'))
+        for obj in queryset:
+            unresolved[obj.person_name] += obj.num
+    else:
+        raise ValueError('Name Resolution Tool needs update'
+                         ' for new category')
+
+    # convert unresolved to a normal dict so it's iterable in template
+    unresolved = sorted(((k, v) for (k, v) in unresolved.items()),
+                        key=lambda x: x[1], reverse=True)
+    objects, page_range = _get_pagination(unresolved, request)
+    people = Person.objects.filter(
+        memberships__organization__jurisdiction__name__exact=jur_name) \
+        .order_by('name').distinct()
+    context = {
+        'jur_name': jur_name,
+        'people': people,
+        'unresolved': objects,
+        'page_range': page_range,
+        'category': category,
+        'session_search': session_search,
+    }
+    return render(request, 'admintools/unresolved.html', context)

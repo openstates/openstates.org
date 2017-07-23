@@ -1,0 +1,117 @@
+{% extends 'admintools/base.html' %}
+{% load staticfiles %}
+{% load tags %}
+{% block body %}
+<div class="container">
+    <!--Page padding-->
+    <br /><br /><br />
+    <div class="row">
+      <h2><strong>Unmatched
+        {% if category == 'unmatched_bill_sponsors' %}
+            Bill Sponsors
+        {% elif category == 'unmatched_voteevent_voters' %}
+            Voters
+        {% elif category == 'unmatched_memberships' %}
+            Memberships
+        {% endif %}
+          </strong>
+      </h2>
+      {% if category != 'unmatched_memberships' %}
+      <form class="form-inline" method="get" action="{% url 'name_resolution_tool' jur_name category %}">
+            <div class="md-form form-group">
+                <label style="margin-left: 130px;"><strong style="margin-top: -8px;">Legislative Session</strong></label>
+              <select name="session_id" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 300px;">
+                <option value="all" {% if session_search == 'all' %}selected{% endif %}>All</option>
+                {% legislative_session_list jur_name as sessions %}
+                    {% for session in sessions %}
+                        <option value="{{ session.identifier }}" {% if session_search == session.identifier %}selected{% endif %}>{{ session.name }}</option>
+                    {% endfor %}
+              </select>
+          </div>
+            <div class="md-form form-group">
+                <button class="btn btn-cyan" type="submit">Go</button>
+            </div>
+        </form>
+    {% endif %}    
+    </div>
+      {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                  {{ message }}
+              </div>
+          {% endfor %}
+      {% endif %}
+
+    <form method="post" action="{% url 'name_resolution_tool' jur_name category %}" id="unresolved_form">{% csrf_token %}</form>
+    <table class="table table-bordered table-striped table-sm">
+      <thead>
+        <tr class="table-active">
+          <th style="text-align: center;">Name</th>
+          <th style="text-align: center;">Times Appeared</th>
+          <th style="text-align: center;">Person</th>
+        </tr>
+      </thead>
+      <tbody>
+           {% for name, count in unresolved %}
+            <tr class="hoverable">
+              <td style="text-align: center;">{{ name }}</td>
+              <td style="text-align: center;">{{ count }}</td>
+              <td style="text-align: center;">
+                <select form="unresolved_form" name="{{name}}" class="people-opts">
+                  <option value="">---</option>
+                  {% for p in people %}
+                  <option  value="{{p.id}}">{{p}}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+        {% empty %}
+         <h3>No Results Found!</h3><br />
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="btn btn-cyan" style="margin-left: 900px;" form="unresolved_form" type="submit">
+        Save
+    </button>
+    {% if unresolved.has_other_pages %}
+      <br />
+      <nav>
+      <ul class="pagination pagination-md">
+      {% if unresolved.has_previous %}
+      <li class="page-item ">
+          <a class="page-link" href="?{% url_replace request 'page' 1 %}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+      {% endif %} {% for i in page_range %} {% if unresolved.number == i %}
+      <li class="page-item active">
+          <a class="page-link" href="#">{{ i }}<span class="sr-only">(current)</span></a>
+      </li>
+      {% else %}
+      <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{i}}</a></li>
+      {% endif %} {% endfor %} {% if unresolved.has_next %}
+      <li class="page-item">
+          <a class="page-link" href="?{% url_replace request 'page' unresolved.paginator.num_pages %}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+      </li>
+      {% endif %}
+      </ul>
+      <span>
+      Page {{ unresolved.number }} of {{ unresolved.paginator.num_pages }}. (Total {{ unresolved.paginator.count }} Results)
+      </span>
+      </nav>
+  {% endif %}<br /><br />
+</div>
+{% endblock %}
+
+{% block custom_scripts %}
+<link rel="stylesheet" href="{% static "css/select2.min.css" %}">
+<script type="text/javascript" src="{% static "js/select2.min.js" %}"></script>
+<script>
+    $('.people-opts').select2();
+</script>
+{% endblock %}

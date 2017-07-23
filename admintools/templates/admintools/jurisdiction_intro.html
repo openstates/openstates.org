@@ -43,7 +43,15 @@
                 <h3 class="card-header default-color white-text">Legislators</h3>
                 <div class="card-block">
                     <p><a href="{% url 'merge' jur_id %}">1. Merge Tool</a></p>
-                    <p><a href="{% url 'retire_legislators' jur_name %}">2. Retirement Tool</a></p>
+                    <p>2.<a href="{% url 'retire_legislators' jur_name %}">Retirement Tool</a></p>
+                    <p>3. <a data-toggle="collapse" href="#name_re" aria-expanded="false" aria-controls="collapseExample">Name Resolution Tool</a></p>
+                    <div class="collapse" id="name_re">
+                        <p style="margin-left: 35px;margin-top: -5px;">
+                            <a href="{% url 'name_resolution_tool' jur_name 'unmatched_bill_sponsors' %}">* Bill Sponsors</a><br />
+                            <a href="{% url 'name_resolution_tool' jur_name 'unmatched_voteevent_voters' %}">* Voters</a><br />
+                            <a href="{% url 'name_resolution_tool' jur_name 'unmatched_memberships' %}">* Memberships</a>
+                        </p>
+                    </div>
                     <a class="btn btn-primary" href="{% url 'admin:core_person_changelist' %}?memberships__organization__jurisdiction__name={{jur_name}}">View All</a>
                 </div>
             </div>

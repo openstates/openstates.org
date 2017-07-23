@@ -28,6 +28,11 @@ urlpatterns = [
         '(?P<issue_slug>[-\w]+)/$',
         views.list_issue_objects, name='list_issue_objects'),
 
+    # must be below 'legislative_session_info' & `list_issue_objects`
+    # to avoid 'category'
+    url(r'^admintools/(?P<jur_name>[a-zA-Z\s]*)/(?P<category>.*)/$',
+        views.name_resolution_tool, name='name_resolution_tool'),
+
     url(r'^admintools/(?P<issue_slug>[-\w]+)/(?P<jur_name>[a-zA-Z\s]*)/$',
         views.person_resolve_issues, name='person_resolve_issues')
 ]
