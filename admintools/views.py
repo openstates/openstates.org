@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db import transaction
+import datetime
 
 # Basic Classes with their Identifiers.
 upstream = {'person': Person,
@@ -36,6 +37,15 @@ def _get_run_status(jur):
         else:
             status += 1
     return {'count': None if status == 1 else status, 'date': latest_date}
+
+
+# validate date in YYYY-MM-DD format.
+def validate_date(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
 
 
 # get pagination of results upto 20 objects
@@ -439,17 +449,24 @@ def retire_legislators(request, jur_id):
         count = 0
         for k, v in request.POST.items():
             if v and not k.startswith('csrf'):
+                v = v.replace('/', '-')
+                # validate date in YYYY-MM-DD format
+                resp = validate_date(v)
                 p = Person.objects.get(id=k)
-                # To make sure that provided retirement date is not less than
-                # all of the existing end_dates
-                prev = p.memberships.filter(end_date__gt=v).count()
-                if prev:
-                    messages.error(request, 'Provide a valid Retirement Date '
-                                   'for {}'.format(p.name))
+                if resp:
+                    # To make sure that provided retirement date is not less
+                    # than all of the existing end_dates
+                    prev = p.memberships.filter(end_date__gt=v).count()
+                    if prev:
+                        messages.error(request, 'Provide a valid Retirement '
+                                       'Date for {}'.format(p.name))
+                    else:
+                        mem = p.memberships.filter(end_date='')
+                        mem.update(end_date=v)
+                        count += 1
                 else:
-                    mem = p.memberships.filter(end_date='')
-                    mem.update(end_date=v)
-                    count += 1
+                    messages.error(request, 'Provide a valid Retirement '
+                                   'Date for {}'.format(p.name))
         if count:
             messages.success(request, 'Successfully Retired {} '
                              'legislator(s)'.format(count))
@@ -479,23 +496,35 @@ def list_retired_legislators(request, jur_id):
                 p = Person.objects.get(id=k)
                 prev_retirement_date = p.memberships.order_by(
                     '-end_date').first().end_date
-                v = v.strip()
-                if v:
-                    # To make sure that provided retirement date is not less
-                    # than the end_date, other than current retirement date
-                    prev_date = p.memberships.filter(
-                        end_date__lt=prev_retirement_date).order_by(
-                            '-end_date').first()
-                    if prev_date:
-                        if prev_date.end_date > v:
-                            messages.error(request,
-                                           'Provide a valid Retirement Date'
-                                           ' for {}'.format(p.name))
-                            continue
-                if prev_retirement_date != v:
-                    p.memberships.filter(end_date=prev_retirement_date) \
-                        .update(end_date=v)
-                    count += 1
+                v = v.replace('/', '-')
+                # validate date in YYYY-MM-DD format
+                resp = validate_date(v)
+                if resp or v == '':
+                    if v:
+                        # To make sure that provided retirement date is not
+                        # less than the end_date, other than current
+                        # retirement date
+                        prev_date = p.memberships.filter(
+                            end_date__lt=prev_retirement_date).order_by(
+                                '-end_date').first()
+                        if prev_date:
+                            if prev_date.end_date > v:
+                                messages.error(request,
+                                               'Provide a valid Retirement '
+                                               'Date for {}'.format(p.name))
+                                continue
+                    else:
+                        messages.error(request,
+                                       'Provide a valid Retirement Date'
+                                       ' for {}'.format(p.name))
+                    if prev_retirement_date != v:
+                        p.memberships.filter(end_date=prev_retirement_date) \
+                            .update(end_date=v)
+                        count += 1
+                else:
+                    messages.error(request,
+                                   'Provide a valid Retirement Date'
+                                   ' for {}'.format(p.name))
         if count:
             messages.success(request, 'Successfully Updated {} '
                              'Retired legislator(s)'.format(count))
