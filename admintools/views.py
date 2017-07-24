@@ -383,8 +383,9 @@ def list_all_person_patches(request, jur_id):
                                 category=pa.category, status='approved')
                     if hg:
                         per = Person.objects.get(id=pa.object_id)
-                        messages.error(request, "Two Approved Pathces for {}"
-                                       " ({})".format(per.name, pa.category))
+                        messages.error(request, "Multiple Approved Pathces for"
+                                       " {} ({})".format(per.name, pa.category)
+                                       )
                         continue
                 # if `status` is changed.
                 if pa.status != v:
