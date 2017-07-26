@@ -7,7 +7,7 @@
     <div class="row">
         <h2><strong>{{ related_class|title }} :  {{description}}</strong></h2>
         <a href="{% url 'list_issue_objects' jur_id related_class issue_slug %}">(View All)</a>
-        {% if related_class == 'post' %}
+        {% if related_class == 'post' and description == 'Too Many People' %}
           <a class="offset-3" href="{% url 'retire_legislators' jur_id %}">Retirement Tool</a></p>
           <a class="offset-1" href="{% url 'merge' jur_id %}">Merge Tool</a>
         {% endif %}
@@ -63,79 +63,101 @@
                         <input style="text-align:center;" type="text" name="membership_org" placeholder="ORGANIZATION" value="{{request.GET.membership_org}}" /></th>
                     {% elif related_class == 'post' %}
                     <th style="text-align: center;">
-                        <input style="text-align:center;" type="text" name="post" placeholder="POST ROLE" value="{{ request.GET.post}}" /></th>
+                        <input style="text-align:center;" type="text" name="post_label" placeholder="LABEL" value="{{request.GET.post_label}}" /></th>
                     <th style="text-align: center;">
-                        <input style="text-align:center;" type="text" name="post_org" placeholder="ORGANIZATION" value="{{request.GET.post_org}}" /></th>
+                        <input style="text-align:center;" type="text" name="post_role" placeholder="ROLE" value="{{ request.GET.post_role}}" /></th>
                     {% endif %}
-                    <th style="text-align: center;">SOURCES</th>
+                    {% if related_class != 'post' %}
+                      <th style="text-align: center;">SOURCES</th>
+                    {% elif related_class == 'post' and description == 'Too Many People' %}
+                      <th style="text-align: center;">Members</th>
+                    {% endif %}
                 </form>
             </tr>
         </thead>
         <tbody>
             {% for value in objects %}
-                    <tr id="tr-{{value.id}}">
-                      {% if related_class == 'person' %}
-                        {% if issue_slug != 'missing-photo' %}
-                          <td scope="row"><input type="button" onclick='append_fun("{{ value.id }}")' value="+"></td>
-                        {% else %}
-                          <td scope="row"></td>
-                        {% endif %}
-                      {% elif related_class == 'organization' %}
-                        <td scope="row">
-                          <input type="checkbox" class="filled-in" name="{{ value.id }}" form="my_form" style="width: 20px;height: 20px;">
-                        </td>
-                      {% elif related_class == 'membership' %}
-                      <td scope="row">
-                         <a href="#"><i class="fa fa-external-link" style="color: #004d40;" aria-hidden="true"></i></a>
-                      </td>
-                      {% else %}
-                      <td scope="row"></td>
-                    {% endif %}
-                        <td align="center">
-                            {% if url_slug %}
-                            <a href="{% url 'admin:'|add:url_slug value.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{ value.motion_text }}{{ value.role }}</a>
-                            {% else %}
-                            <a href="{% url 'admin:core_organization_change' value.organization.id %}">{{value.person_name}}</a>
-                            {% endif %}
-                        </td>
-                        {% if related_class == 'person' %}
-                        <td align="center"><input type="text" name="{{ value.id }}" form="my_form" /></td>
-                        {% if issue_slug != 'missing-photo' %}
-                        <td align="center"><input type="text" name="note_{{ value.id }}" form="my_form" /></td>
-                        {% endif %}
+              <tr id="tr-{{value.id}}">
+                <!-- first column -->
+                {% if related_class == 'person' %}
+                  {% if issue_slug != 'missing-photo' %}
+                    <td scope="row"><input type="button" onclick='append_fun("{{ value.id }}")' value="+"></td>
+                  {% else %}
+                    <td scope="row"></td>
+                  {% endif %}
+                {% elif related_class == 'organization' %}
+                  <td scope="row">
+                    <input type="checkbox" class="filled-in" name="{{ value.id }}" form="my_form" style="width: 20px;height: 20px;">
+                  </td>
+                {% elif related_class == 'membership' %}
+                  <td scope="row">
+                   <a href="#"><i class="fa fa-external-link" style="color: #004d40;" aria-hidden="true"></i></a>
+                  </td>
+                {% else %}
+                  <td scope="row"></td>
+                {% endif %}
+                <!-- end of first column -->
 
-                        {% elif related_class == 'organization' %}
-                        <td align="center">{{ value.classification|title }}</td>
-                        {% elif related_class == 'post' %}
-                          <td align="center">{{ value.organization.name|title }}</td>
-                        {% elif related_class == 'bill' %}
-                        <td align="center">{{ value.legislative_session }}</td>
-                        <td align="center">{{ value.title }}</td>
-                        {% elif related_class == 'voteevent' %}
-                        <td align="center">{{ value.bill.identifier }} in {{ value.bill.legislative_session }}</td>
-                        <td align="center">{{ value.organization}}</td>
-                        {% elif related_class == 'membership' %}
-                        <td align="center">{{ value.organization}}</td>
-                        {% endif %}
-                        {% if related_class != 'person' or related_class != 'post' %}
-                          <td align="center">
-                            {% for item in value.sources.values %}
-                                <a href="{{ item.url }}">Link{{forloop.counter}} </a>
-                            {% endfor %}
-                          </td>
-                        {% else %}
-                        <td align="center">
-                          {% for item in value.links.values %}
-                              <a href="{{ item.url }}">Link{{forloop.counter}} </a>
-                          {% endfor %}
-                        </td>
-                        {% endif %}
-                    </tr>
+                <td align="center">
+                  {% if url_slug %}
+                    <a href="{% url 'admin:'|add:url_slug value.id %}">{{value.name}}{{value.person_name}}{{value.identifier}}{{ value.motion_text }}{{ value.label }}</a>
+                  {% else %}
+                    <a href="{% url 'admin:core_organization_change' value.organization.id %}">{{value.person_name}}</a>
+                  {% endif %}
+                </td>
+
+                {% if related_class == 'person' %}
+                  <td align="center"><input type="text" name="{{ value.id }}" form="my_form" /></td>
+                  {% if issue_slug != 'missing-photo' %}
+                    <td align="center"><input type="text" name="note_{{ value.id }}" form="my_form" /></td>
+                  {% endif %}
+
+                {% elif related_class == 'organization' %}
+                  <td align="center">{{ value.classification|title }}</td>
+
+                {% elif related_class == 'post' %}
+                  <td align="center">{{ value.role|title }}</td>
+                  {% if description == 'Too Many People' %}
+                  <td align="center">
+                    {% for member in value.memberships.all%}
+                      {{ member.person_name }}<br />
+                    {% endfor %}
+                  </td>
+                  {% endif %}
+
+                {% elif related_class == 'bill' %}
+                  <td align="center">{{ value.legislative_session }}</td>
+                  <td align="center">{{ value.title }}</td>
+
+                {% elif related_class == 'voteevent' %}
+                  <td align="center">{{ value.bill.identifier }} in {{ value.bill.legislative_session }}</td>
+                  <td align="center">{{ value.organization}}</td>
+
+                {% elif related_class == 'membership' %}
+                  <td align="center">{{ value.organization}}</td>
+                {% endif %}
+
+                {% if related_class != 'person' and related_class != 'post'%}
+                  <td align="center">
+                    {% for item in value.sources.values %}
+                      <a href="{{ item.url }}">Link{{forloop.counter}} </a>
+                    {% endfor %}
+                  </td>
+
+                {% elif related_class != 'post' %}
+                  <td align="center">
+                    {% for item in value.links.values %}
+                      <a href="{{ item.url }}">Link{{forloop.counter}} </a>
+                    {% endfor %}
+                  </td>
+                {% endif %}
+              </tr>
             {% endfor %}
             <br /><br />
         </tbody>
     </table>
     {% if related_class == 'person' or related_class == 'organization' %}
+    {"Delete" is Disabled For Now}
     <button class="btn btn-cyan col-lg-2 offset-lg-6" style="margin-left: 900px;" form="my_form" type="submit">
       {% if related_class != 'organization' %}Save{% else %}Delete{% endif %}
     </button>

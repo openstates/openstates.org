@@ -193,10 +193,10 @@ def _filter_results(request):
     if request.GET.get('membership_org'):
         query &= Q(organization__name__icontains=request.GET.get(
             'membership_org'))
-    if request.GET.get('post'):
-        query &= Q(role__icontains=request.GET.get('post'))
-    if request.GET.get('post_org'):
-        query &= Q(organization__name__icontains=request.GET.get('post_org'))
+    if request.GET.get('post_role'):
+        query &= Q(role__icontains=request.GET.get('post_role'))
+    if request.GET.get('post_label'):
+        query &= Q(label__icontains=request.GET.get('post_label'))
     return query
 
 
