@@ -54,6 +54,8 @@ def main():
     # Organization Related Issues
     IssueType('no-memberships', 'No Memberships', 'organization', 'error')
     IssueType('unmatched-person', 'Unmatched Person', 'membership', 'warning')
+    IssueType('many-memberships', 'Too Many People', 'post', 'error')
+    IssueType('few-memberships', 'Too Few people', 'post', 'warning')
 
     # Bill Related Issues
     IssueType('no-actions', 'Missing Actions', 'bill', 'error')
