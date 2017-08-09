@@ -7,6 +7,9 @@ urlpatterns = [
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/all-patches/$',
         views.list_all_person_patches, name="list_all_person_patches"),
 
+    url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/create-patch/$',
+        views.create_person_patch, name="create_person_patch"),
+
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/review-patches/$',
         views.review_person_patches, name="review_person_patches"),
 

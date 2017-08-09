@@ -346,6 +346,18 @@ def review_person_patches(request, jur_id):
 
 
 def list_all_person_patches(request, jur_id):
+    if request.method == 'POST':
+        count = 0
+        for k, v in request.POST.items():
+            if not k.startswith('csrf'):
+                pa = IssueResolverPatch.objects.get(id=k)
+                if pa.status != v:
+                    pa.status = v
+                    pa.save()
+                    count += 1
+        if count:
+            messages.success(request, "Successfully Updated Status of "
+                             "{} Patch(es)".format(count))
     patches = IssueResolverPatch.objects \
         .filter(jurisdiction_id=jur_id)
     category_search = False
@@ -392,7 +404,6 @@ def list_all_person_patches(request, jur_id):
 def retire_legislators(request, jur_id):
     if request.method == 'POST':
         count = 0
-        reconsider_person = []
         for k, v in request.POST.items():
             if v and not k.startswith('csrf'):
                 p = Person.objects.get(id=k)
@@ -400,7 +411,8 @@ def retire_legislators(request, jur_id):
                 # all of the existing end_dates
                 prev = p.memberships.filter(end_date__gt=v).count()
                 if prev:
-                    reconsider_person.append(p)
+                    messages.error(request, 'Provide a valid Retirement Date '
+                                   'for {}'.format(p.name))
                 else:
                     mem = p.memberships.filter(end_date='')
                     mem.update(end_date=v)
@@ -408,10 +420,6 @@ def retire_legislators(request, jur_id):
         if count:
             messages.success(request, 'Successfully Retired {} '
                              'legislator(s)'.format(count))
-        if reconsider_person:
-            for person in reconsider_person:
-                messages.error(request, 'Provide a valid Retirement Date for'
-                               ' {}'.format(person.name))
     if request.GET.get('person'):
         people = Person.objects.filter(
             memberships__organization__jurisdiction_id=jur_id) \
@@ -567,3 +575,27 @@ def name_resolution_tool(request, jur_id, category):
         'session_search': session_search,
     }
     return render(request, 'admintools/unresolved.html', context)
+
+
+def create_person_patch(request, jur_id):
+    if request.method == 'POST':
+        p = Person.objects.get(id=request.POST['person'])
+        # if any error occur then create will throw error itself.
+        IssueResolverPatch.objects.create(
+            content_object=p,
+            jurisdiction_id=jur_id,
+            status='unreviewed',
+            old_value=request.POST['old_value'],
+            new_value=request.POST['new_value'],
+            source=request.POST.get('source'),
+            category=request.POST['category'],
+            alert='error',
+            note=request.POST.get('note'),
+            applied_by='admin',
+        )
+        messages.success(request, "Successfully created Patch")
+    people = Person.objects.filter(
+        memberships__organization__jurisdiction_id=jur_id).distinct()
+    context = {'jur_id': jur_id,
+               'people': people}
+    return render(request, 'admintools/create_person_patch.html', context)
