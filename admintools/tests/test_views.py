@@ -693,3 +693,140 @@ class LegislativesessioninfoViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['voteevent_orgs'], [])
         self.assertEqual(len(voteevent_orgs_list), 0)
+
+
+class RetireLegislatorsViewTest(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+        person = Person.objects.create(name="Hitesh Garg")
+        org1 = Organization.objects.create(name="Democratic", jurisdiction=jur)
+        org2 = Organization.objects.create(name="Republican", jurisdiction=jur)
+        org3 = Organization.objects.create(name="House", jurisdiction=jur)
+        org4 = Organization.objects.create(name="Senate", jurisdiction=jur)
+        org5 = Organization.objects.create(name="Joint", jurisdiction=jur)
+        Membership.objects.create(person=person, organization=org1,
+                                  end_date='2017-12-25')
+        Membership.objects.create(person=person, organization=org2)
+        Membership.objects.create(person=person, organization=org3)
+        Membership.objects.create(person=person, organization=org4)
+        Membership.objects.create(person=person, organization=org5)
+
+    def test_view_response(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        response = self.client.get(reverse('retire_legislators',
+                                           args=(jur.name,)))
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_retirement_date(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        p = Person.objects.get(name="Hitesh Garg")
+        # Suppose retirement_date == '2017-12-24' (This is not possible)
+        url = reverse('retire_legislators', args=(jur.name,))
+        data = {p.id: '2017-12-24'}
+        response = self.client.post(url, data)
+        # some basic checks
+        self.assertTrue('jur_name' in response.context)
+        self.assertTrue('people' in response.context)
+        self.assertTrue('page_range' in response.context)
+        # Memberships should not be updated
+        mem = Membership.objects.filter(person=p, end_date='2017-12-24')
+        self.assertQuerysetEqual(mem, [])
+
+    def test_valid_retirement_date(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        p = Person.objects.get(name="Hitesh Garg")
+        org1 = Organization.objects.get(name="Democratic")
+        # Suppose retirement_date == '2017-12-30'
+        url = reverse('retire_legislators', args=(jur.name,))
+        data = {p.id: '2017-12-30'}
+        self.client.post(url, data)
+        m1 = Membership.objects.get(organization=org1)
+        self.assertEqual(m1.end_date, '2017-12-25')
+        mem = Membership.objects.filter(person=p,
+                                        end_date='2017-12-30').count()
+        self.assertEqual(mem, 4)
+
+
+class ListRetiredLegislatorsViewTest(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+        person = Person.objects.create(name="Hitesh Garg")
+        org1 = Organization.objects.create(name="Democratic", jurisdiction=jur)
+        org2 = Organization.objects.create(name="Republican", jurisdiction=jur)
+        org3 = Organization.objects.create(name="House", jurisdiction=jur)
+        org4 = Organization.objects.create(name="Senate", jurisdiction=jur)
+        org5 = Organization.objects.create(name="Joint", jurisdiction=jur)
+        # Suppose retirement_date == '2017-12-30'
+        Membership.objects.create(person=person, organization=org1,
+                                  end_date='2017-12-25')
+        Membership.objects.create(person=person, organization=org2,
+                                  end_date='2017-12-30')
+        Membership.objects.create(person=person, organization=org3,
+                                  end_date='2017-12-30')
+        Membership.objects.create(person=person, organization=org4,
+                                  end_date='2017-12-30')
+        Membership.objects.create(person=person, organization=org5,
+                                  end_date='2017-12-30')
+
+    def test_view_response(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        response = self.client.get(reverse('list_retired_legislators',
+                                           args=(jur.name,)))
+        self.assertEqual(response.status_code, 200)
+
+    def test_valid_update_in_retirement_date(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        p = Person.objects.get(name="Hitesh Garg")
+        org1 = Organization.objects.get(name="Democratic")
+        url = reverse('list_retired_legislators', args=(jur.name,))
+        data = {p.id: '2017-12-26'}
+        self.client.post(url, data)
+        m1 = Membership.objects.get(organization=org1)
+        self.assertEqual(m1.end_date, '2017-12-25')
+        mem = Membership.objects.filter(person=p,
+                                        end_date='2017-12-26').count()
+        self.assertEqual(mem, 4)
+
+    def test_invalid_update_in_retirement_date(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        p = Person.objects.get(name="Hitesh Garg")
+        org1 = Organization.objects.get(name="Democratic")
+        url = reverse('list_retired_legislators', args=(jur.name,))
+        data = {p.id: '2017-12-24'}
+        self.client.post(url, data)
+        m1 = Membership.objects.get(organization=org1)
+        self.assertEqual(m1.end_date, '2017-12-25')
+        mem = Membership.objects.filter(person=p,
+                                        end_date='2017-12-24').count()
+        self.assertEqual(mem, 0)
+        mem = Membership.objects.filter(person=p,
+                                        end_date='2017-12-30').count()
+        self.assertEqual(mem, 4)
+
+    def test_un_retire_a_legislator(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        p = Person.objects.get(name="Hitesh Garg")
+        org1 = Organization.objects.get(name="Democratic")
+        url = reverse('list_retired_legislators', args=(jur.name,))
+        data = {p.id: ''}
+        self.client.post(url, data)
+        m1 = Membership.objects.get(organization=org1)
+        self.assertEqual(m1.end_date, '2017-12-25')
+        mem = Membership.objects.filter(person=p, end_date='').count()
+        self.assertEqual(mem, 4)
