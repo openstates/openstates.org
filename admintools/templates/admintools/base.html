@@ -37,25 +37,25 @@
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-            <a class="navbar-brand" href="{% url 'jurisdiction_intro' jur_name %}">
-                            <strong>{{ jur_name }}</strong>
+            <a class="navbar-brand" href="{% url 'jurisdiction_intro' jur_id %}">
+                            <strong>{% jurisdiction_name_from_id jur_id %}</strong>
                         </a>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown btn-group">
                         <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sessions</a>
                         <div class="dropdown-menu dropdown-in scrollable-menu" aria-labelledby="dropdownMenu1">
-                            {% legislative_session_list jur_name as sessions %}
+                            {% legislative_session_list jur_id as sessions %}
                                 {% for session in sessions %}
-                                <a class="dropdown-item" href="{% url 'legislative_session_info' jur_name session.identifier %}">{{ session.name }}</a>
+                                <a class="dropdown-item" href="{% url 'legislative_session_info' jur_id session.identifier %}">{{ session.name }}</a>
                                 {% endfor %}
                         </div>
                     </li>
                     <li class="nav-item dropdown btn-group">
                         <a class="nav-link dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Patches</a>
                         <div class="dropdown-menu dropdown-in scrollable-menu" aria-labelledby="dropdownMenu2">
-                            <a class="dropdown-item" href="{% url 'review_person_patches' jur_name %}" class="nav-link"> Review </i></a>
-                            <a class="dropdown-item" href="{% url 'list_all_person_patches' jur_name %}" class="nav-link"> View All </i></a>
+                            <a class="dropdown-item" href="{% url 'review_person_patches' jur_id %}" class="nav-link"> Review </i></a>
+                            <a class="dropdown-item" href="{% url 'list_all_person_patches' jur_id %}" class="nav-link"> View All </i></a>
                         </div>
                     </li>
                 </ul>

@@ -6,9 +6,9 @@
     <br /><br /><br />
     <div class="row">
         <h2><strong>{{ related_class|title }} :  {{description}}</strong></h2>
-        <a href="{% url 'list_issue_objects' jur_name related_class issue_slug %}">(View All)</a>
+        <a href="{% url 'list_issue_objects' jur_id related_class issue_slug %}">(View All)</a>
         {% if related_class == 'post' and description == 'Too Many People' %}
-          <a class="offset-3" href="{% url 'retire_legislators' jur_name %}">Retirement Tool</a></p>
+          <a class="offset-3" href="{% url 'retire_legislators' jur_id %}">Retirement Tool</a></p>
           <a class="offset-1" href="{% url 'merge' jur_id %}">Merge Tool</a>
         {% endif %}
     </div>
@@ -21,7 +21,7 @@
     {% endfor %}
   {% endif %}
   {% if related_class == 'person' %}
-  <form method="post" action="{% url 'person_resolve_issues' issue_slug jur_name %}" id="my_form">{% csrf_token %}</form>
+  <form method="post" action="{% url 'person_resolve_issues' issue_slug jur_id %}" id="my_form">{% csrf_token %}</form>
   {% endif %}
     <table class="table table-bordered table-striped">
         <thead class="thead-default">

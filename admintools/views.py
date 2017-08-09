@@ -26,8 +26,8 @@ upstream = {'person': Person,
 
 
 # get run status for a jurisdiction
-def _get_run_status(jur_name):
-    runs = RunPlan.objects.filter(jurisdiction=jur_name).order_by('-end_time')
+def _get_run_status(jur):
+    runs = RunPlan.objects.filter(jurisdiction=jur).order_by('-end_time')
     latest_date = runs.first().end_time.date()
     status = 0
     for run in runs:
@@ -66,9 +66,9 @@ def overview(request):
                                                  'alert').annotate(
                                                      Count('issue'))
     for counts in all_counts:
-        jur = Jurisdiction.objects.filter(id=counts['jurisdiction']).first()
-        counts['jurisdiction'] = jur.name
-        rows.setdefault(counts['jurisdiction'], {}).setdefault(
+        jur = Jurisdiction.objects.get(id=counts['jurisdiction'])
+        rows.setdefault(counts['jurisdiction'], {})['jur_name'] = jur.name
+        rows[counts['jurisdiction']].setdefault(
             counts['issue'].split('-')[0], {})
         rows[counts['jurisdiction']][counts['issue'].split('-')[0]][
             counts['alert']] = rows[counts['jurisdiction']][
@@ -79,17 +79,17 @@ def overview(request):
             rows[counts['jurisdiction']]['run'] = _get_run_status(jur)
 
     # RunPlan For those who don't have any type of dataquality_issues
-    rest_jurs = Jurisdiction.objects.exclude(name__in=rows.keys())
+    rest_jurs = Jurisdiction.objects.exclude(id__in=rows.keys())
     for jur in rest_jurs:
-        rows[jur.name] = {}
-        rows[jur.name]['run'] = _get_run_status(jur)
-
-    rows = sorted(rows.items())
+        rows[jur.id] = {}
+        rows[jur.id]['jur_name'] = jur.name
+        rows[jur.id]['run'] = _get_run_status(jur)
+    rows = sorted(rows.items(),  key=lambda v: v[1]['jur_name'])
     return render(request, 'admintools/index.html', {'rows': rows})
 
 
 # Calculates all dataquality_issues in given jurisdiction
-def _jur_dataquality_issues(jur_name):
+def _jur_dataquality_issues(jur_id):
     cards = defaultdict(dict)
     issues = IssueType.choices()
     for issue, description in issues:
@@ -102,7 +102,7 @@ def _jur_dataquality_issues(jur_name):
         cards[related_class][issue]['description'] = description
         ct_obj = ContentType.objects.get_for_model(upstream[related_class])
         j = Jurisdiction.objects.filter(
-            name__exact=jur_name, dataquality_issues__content_type=ct_obj,
+            id=jur_id, dataquality_issues__content_type=ct_obj,
             dataquality_issues__issue=issue_type).annotate(_issues=Count(
                 'dataquality_issues'))
         cards[related_class][issue]['count'] = j[0]._issues if j else 0
@@ -110,22 +110,20 @@ def _jur_dataquality_issues(jur_name):
 
 
 # Jurisdiction Specific Page
-def jurisdiction_intro(request, jur_name):
-    issues = _jur_dataquality_issues(jur_name)
-    jur_id = Jurisdiction.objects.get(name__exact=jur_name).id
+def jurisdiction_intro(request, jur_id):
+    issues = _jur_dataquality_issues(jur_id)
     bill_from_orgs_list = Bill.objects.filter(
-        legislative_session__jurisdiction__name__exact=jur_name) \
+        legislative_session__jurisdiction__id=jur_id) \
         .values('from_organization__name').distinct()
 
     voteevent_orgs_list = VoteEvent.objects.filter(
-        legislative_session__jurisdiction__name__exact=jur_name) \
+        legislative_session__jurisdiction__id=jur_id) \
         .values('organization__name').distinct()
 
     orgs_list = Organization.objects.filter(
-        jurisdiction__name__exact=jur_name).values('classification').distinct()
+        jurisdiction__id=jur_id).values('classification').distinct()
 
-    context = {'jur_name': jur_name,
-               'jur_id': jur_id,
+    context = {'jur_id': jur_id,
                'cards': issues,
                'bill_orgs': bill_from_orgs_list,
                'voteevent_orgs': voteevent_orgs_list,
@@ -135,22 +133,22 @@ def jurisdiction_intro(request, jur_name):
 
 
 # Bills and VoteEvents related info for a session
-def legislative_session_info(request, jur_name, identifier):
+def legislative_session_info(request, jur_id, identifier):
     session = LegislativeSession.objects.get(
-        jurisdiction__name__exact=jur_name, identifier=identifier)
+        jurisdiction__id=jur_id, identifier=identifier)
 
     bill_from_orgs_list = Bill.objects.filter(
-        legislative_session__jurisdiction__name__exact=jur_name,
+        legislative_session__jurisdiction__id=jur_id,
         legislative_session__identifier=identifier) \
         .values('from_organization__name').distinct()
 
     voteevent_orgs_list = VoteEvent.objects.filter(
-        legislative_session__jurisdiction__name__exact=jur_name,
+        legislative_session__jurisdiction__id=jur_id,
         legislative_session__identifier=identifier) \
         .values('organization__name').distinct()
 
     context = {
-        'jur_name': jur_name,
+        'jur_id': jur_id,
         'session': session,
         'bill_orgs': bill_from_orgs_list,
         'voteevent_orgs': voteevent_orgs_list,
@@ -192,11 +190,11 @@ def _filter_results(request):
 
 
 # Lists given issue(s) related objetcs
-def list_issue_objects(request, jur_name, related_class, issue_slug):
+def list_issue_objects(request, jur_id, related_class, issue_slug):
     description = IssueType.description_for(issue_slug)
     issue = IssueType.class_for(issue_slug) + '-' + issue_slug
     objects_list = DataQualityIssue.objects.filter(
-        jurisdiction__name__exact=jur_name,
+        jurisdiction_id=jur_id,
         issue=issue).values_list('object_id', flat=True)
     cards = upstream[related_class].objects.filter(id__in=objects_list)
     if request.GET:
@@ -213,7 +211,7 @@ def list_issue_objects(request, jur_name, related_class, issue_slug):
         # so redirect to related organization page
         url_slug = None
 
-    context = {'jur_name': jur_name,
+    context = {'jur_id': jur_id,
                'issue_slug': issue_slug,
                'objects': objects,
                'description': description,
@@ -248,7 +246,7 @@ def _prepare_import(issue_slug, posted_data):
 
 
 @transaction.atomic
-def person_resolve_issues(request, issue_slug, jur_name):
+def person_resolve_issues(request, issue_slug, jur_id):
     if request.method == 'POST':
         if issue_slug == 'missing-phone':
             category = 'voice'
@@ -258,7 +256,7 @@ def person_resolve_issues(request, issue_slug, jur_name):
             category = issue_slug[8:]
         else:
             raise ValueError("Person Resolver needs update for new issue.")
-        jur = Jurisdiction.objects.get(name__exact=jur_name)
+        jur = Jurisdiction.objects.get(id=jur_id)
         issue_items = _prepare_import(issue_slug, request.POST)
         for hash_, items in issue_items.items():
             if issue_slug != 'missing-photo':
@@ -286,11 +284,11 @@ def person_resolve_issues(request, issue_slug, jur_name):
                                             IssueType.description_for(
                                               issue_slug)))
     return HttpResponseRedirect(reverse('list_issue_objects',
-                                        args=(jur_name, 'person',
+                                        args=(jur_id, 'person',
                                               issue_slug)))
 
 
-def review_person_patches(request, jur_name):
+def review_person_patches(request, jur_id):
     if request.method == 'POST':
         for k, v in request.POST.items():
             if not k.startswith('csrf'):
@@ -313,13 +311,13 @@ def review_person_patches(request, jur_name):
             messages.success(request, 'Successfully updated status of {} '
                              'Patch(es)'.format(len(request.POST)-1))
     patches = IssueResolverPatch.objects \
-        .filter(status='unreviewed', jurisdiction__name__exact=jur_name)
+        .filter(status='unreviewed', jurisdiction_id=jur_id)
     category_search = False
     alert_search = False
     applied_by_search = False
     if request.GET.get('person'):
         person_ids = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name,
+            memberships__organization__jurisdiction_id=jur_id,
             name__icontains=request.GET.get('person'))
         patches = patches.filter(object_id__in=person_ids)
     if request.GET.get('category'):
@@ -336,7 +334,7 @@ def review_person_patches(request, jur_name):
         'category').choices).items())
     alerts_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'alert').choices).items())
-    context = {'jur_name': jur_name,
+    context = {'jur_id': jur_id,
                'patches': objects,
                'page_range': page_range,
                'alert_search': alert_search,
@@ -347,16 +345,16 @@ def review_person_patches(request, jur_name):
     return render(request, 'admintools/review_person_patches.html', context)
 
 
-def list_all_person_patches(request, jur_name):
+def list_all_person_patches(request, jur_id):
     patches = IssueResolverPatch.objects \
-        .filter(jurisdiction__name__exact=jur_name)
+        .filter(jurisdiction_id=jur_id)
     category_search = False
     alert_search = False
     applied_by_search = False
     status_search = False
     if request.GET.get('person'):
         person_ids = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name,
+            memberships__organization__jurisdiction_id=jur_id,
             name__icontains=request.GET.get('person'))
         patches = patches.filter(object_id__in=person_ids)
     if request.GET.get('category'):
@@ -378,7 +376,7 @@ def list_all_person_patches(request, jur_name):
         'alert').choices).items())
     status_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'status').choices).items())
-    context = {'jur_name': jur_name,
+    context = {'jur_id': jur_id,
                'patches': objects,
                'page_range': page_range,
                'alert_search': alert_search,
@@ -391,7 +389,7 @@ def list_all_person_patches(request, jur_name):
     return render(request, 'admintools/list_person_patches.html', context)
 
 
-def retire_legislators(request, jur_name):
+def retire_legislators(request, jur_id):
     if request.method == 'POST':
         count = 0
         reconsider_person = []
@@ -416,21 +414,21 @@ def retire_legislators(request, jur_name):
                                ' {}'.format(person.name))
     if request.GET.get('person'):
         people = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name) \
+            memberships__organization__jurisdiction_id=jur_id) \
                 .filter(memberships__end_date='',
                         name__icontains=request.GET.get('person')).distinct()
     else:
         people = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name) \
+            memberships__organization__jurisdiction_id=jur_id) \
             .filter(memberships__end_date='').distinct()
     objects, page_range = _get_pagination(people.order_by('name'), request)
-    context = {'jur_name': jur_name,
+    context = {'jur_id': jur_id,
                'people': objects,
                'page_range': page_range}
     return render(request, 'admintools/retire_legislators.html', context)
 
 
-def list_retired_legislators(request, jur_name):
+def list_retired_legislators(request, jur_id):
     if request.method == 'POST':
         count = 0
         for k, v in request.POST.items():
@@ -460,12 +458,12 @@ def list_retired_legislators(request, jur_name):
                              'Retired legislator(s)'.format(count))
     if request.GET.get('person'):
         people = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name) \
+            memberships__organization__jurisdiction_id=jur_id) \
             .filter(~Q(memberships__end_date=''),
                     Q(name__icontains=request.GET.get('person'))).distinct()
     else:
         people = Person.objects.filter(
-            memberships__organization__jurisdiction__name__exact=jur_name) \
+            memberships__organization__jurisdiction_id=jur_id) \
             .filter(~Q(memberships__end_date='')).distinct()
     people_with_end_date = {}
     for person in people:
@@ -473,13 +471,13 @@ def list_retired_legislators(request, jur_name):
             '-end_date').first().end_date
     objects, page_range = _get_pagination(tuple(people_with_end_date.items()),
                                           request)
-    context = {'jur_name': jur_name,
+    context = {'jur_id': jur_id,
                'people': objects,
                'page_range': page_range}
     return render(request, 'admintools/list_retired_legislators.html', context)
 
 
-def name_resolution_tool(request, jur_name, category):
+def name_resolution_tool(request, jur_id, category):
     if request.method == 'POST':
         count = 0
         for name, pid in request.POST.items():
@@ -516,12 +514,12 @@ def name_resolution_tool(request, jur_name, category):
     if category != 'unmatched_memberships' and \
             not session_id and not session_id == 'all':
         session_id = LegislativeSession.objects.filter(
-            jurisdiction__name__exact=jur_name).order_by('-identifier') \
+            jurisdiction_id=jur_id).order_by('-identifier') \
             .first().identifier
     if category == 'unmatched_bill_sponsors':
         queryset = BillSponsorship.objects \
             .filter(
-                bill__legislative_session__jurisdiction__name__exact=jur_name,
+                bill__legislative_session__jurisdiction_id=jur_id,
                 entity_type='person',
                 person_id=None).annotate(num=Count('name'))
         if session_id != 'all':
@@ -531,10 +529,10 @@ def name_resolution_tool(request, jur_name, category):
         for obj in queryset:
             unresolved[obj.name] += obj.num
     elif category == 'unmatched_voteevent_voters':
-        j = jur_name  # To avoid `E251` flake8 error.
+        j = jur_id  # To avoid `E251` flake8 error.
         queryset = PersonVote.objects \
             .filter(
-                vote_event__legislative_session__jurisdiction__name__exact=j,
+                vote_event__legislative_session__jurisdiction_id=j,
                 voter_id=None).annotate(num=Count('voter_name'))
         if session_id != 'all':
             queryset = queryset.filter(
@@ -544,7 +542,7 @@ def name_resolution_tool(request, jur_name, category):
             unresolved[obj.voter_name] += obj.num
     elif category == 'unmatched_memberships':
         queryset = Membership.objects.filter(
-            organization__jurisdiction__name__exact=jur_name,
+            organization__jurisdiction_id=jur_id,
             person_id=None
         ).annotate(num=Count('person_name'))
         for obj in queryset:
@@ -558,10 +556,10 @@ def name_resolution_tool(request, jur_name, category):
                         key=lambda x: x[1], reverse=True)
     objects, page_range = _get_pagination(unresolved, request)
     people = Person.objects.filter(
-        memberships__organization__jurisdiction__name__exact=jur_name) \
+        memberships__organization__jurisdiction_id=jur_id) \
         .order_by('name').distinct()
     context = {
-        'jur_name': jur_name,
+        'jur_id': jur_id,
         'people': people,
         'unresolved': objects,
         'page_range': page_range,

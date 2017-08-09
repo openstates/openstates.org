@@ -1,6 +1,6 @@
 from django import template
 from opencivicdata.legislative.models import LegislativeSession
-from opencivicdata.core.models import Person
+from opencivicdata.core.models import Person, Jurisdiction
 
 register = template.Library()
 
@@ -13,9 +13,9 @@ def url_replace(request, field, value):
 
 
 @register.assignment_tag
-def legislative_session_list(jur_name):
+def legislative_session_list(jur_id):
     legislative_sessions = LegislativeSession.objects.filter(
-        jurisdiction__name__exact=jur_name).values('name', 'identifier') \
+        jurisdiction_id=jur_id).values('name', 'identifier') \
         .order_by('-identifier')
     return legislative_sessions
 
@@ -23,3 +23,8 @@ def legislative_session_list(jur_name):
 @register.simple_tag
 def person_from_id(person_id):
     return Person.objects.get(id=person_id).name
+
+
+@register.simple_tag
+def jurisdiction_name_from_id(jurisdiction_id):
+    return Jurisdiction.objects.get(id=jurisdiction_id).name

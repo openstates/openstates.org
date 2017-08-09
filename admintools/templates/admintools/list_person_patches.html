@@ -7,7 +7,7 @@
     <a href="#" style="margin-bottom: 10px;" class="list-group-item active teal lighten-1">
         All Patches
     </a>
-    <form class="form-inline" method="get" action="{% url 'list_all_person_patches' jur_name %}">
+    <form class="form-inline" method="get" action="{% url 'list_all_person_patches' jur_id %}">
         <div class="md-form form-group">
             <label style="margin-top: -8px;"><strong>Category</strong></label>
           <select name="category" class="custom-select mb-2 mr-sm-2 mb-sm-0" style="margin-left: 80px;">
@@ -74,7 +74,7 @@
                   <a href="{{ patch.source }}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
               </td>
               <td style="text-align: center;">{{ patch.reporter_email }}</td>
-              <td style="text-align: center;">{{ patch.status }}</td>
+              <td style="text-align: center;">{{ patch.status|title }}</td>
             </tr>
         {% empty %}
          <h3>No Patches Available!</h3><br />
