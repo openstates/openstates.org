@@ -14,6 +14,8 @@ setup(name="admintools",
             'pupa>=0.6',
             'opencivicdata>=1.0',
             'flake8',
+            # Temporary Dependancy
+            'idna<2.6,>=2.5',
       ],
       classifiers=["Intended Audience :: Developers",
                    "License :: OSI Approved :: MIT License",
