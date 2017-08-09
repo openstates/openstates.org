@@ -119,7 +119,7 @@
                   <td align="center">{{ value.role|title }}</td>
                   {% if description == 'Too Many People' %}
                   <td align="center">
-                    {% for member in value.memberships.all%}
+                    {% for member in value.memberships.all|dictsortreversed:"start_date" %}
                       {{ member.person_name }}<br />
                     {% endfor %}
                   </td>
