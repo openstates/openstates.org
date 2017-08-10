@@ -23,6 +23,9 @@ def create_vote_event_issues(queryset, issue, jur):
 def vote_event_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
+        DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
+                                        issue__startswith='voteevent-'
+                                        ).delete()
         voteevents = VoteEvent.objects.filter(
             legislative_session__jurisdiction=jur)
         count = 0

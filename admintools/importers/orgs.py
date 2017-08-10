@@ -2,7 +2,7 @@ from admintools.issues import IssueType
 from opencivicdata.core.models import (Jurisdiction, Organization,
                                        Membership, Post)
 from admintools.models import DataQualityIssue
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 
 
 def create_org_issues(queryset, issue, jur):
@@ -24,6 +24,12 @@ def create_org_issues(queryset, issue, jur):
 def orgs_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
+        DataQualityIssue.objects.filter(jurisdiction=jur, status='active'
+                                        ).filter(
+                                        Q(issue__startswith='organization-')
+                                        | Q(issue__startswith='membership-')
+                                        | Q(issue__startswith='post-')
+                                        ).delete()
         count = 0
         issues = IssueType.get_issues_for('organization') + \
             IssueType.get_issues_for('membership') + \

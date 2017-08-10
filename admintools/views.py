@@ -73,9 +73,8 @@ def _get_pagination(objects_list, request):
 # Status Page
 def overview(request):
     rows = {}
-    all_counts = DataQualityIssue.objects.values('jurisdiction', 'issue',
-                                                 'alert').annotate(
-                                                     Count('issue'))
+    all_counts = DataQualityIssue.objects.filter(status='active').values(
+        'jurisdiction', 'issue', 'alert').annotate(Count('issue'))
     for counts in all_counts:
         jur = Jurisdiction.objects.get(id=counts['jurisdiction'])
         rows.setdefault(counts['jurisdiction'], {})['jur_name'] = jur.name
@@ -99,7 +98,7 @@ def overview(request):
     return render(request, 'admintools/index.html', {'rows': rows})
 
 
-# Calculates all dataquality_issues in given jurisdiction
+# Calculates all active dataquality_issues in given jurisdiction
 def _jur_dataquality_issues(jur_id):
     cards = defaultdict(dict)
     issues = IssueType.choices()
@@ -113,7 +112,8 @@ def _jur_dataquality_issues(jur_id):
         cards[related_class][issue]['description'] = description
         ct_obj = ContentType.objects.get_for_model(upstream[related_class])
         j = Jurisdiction.objects.filter(
-            id=jur_id, dataquality_issues__content_type=ct_obj,
+            id=jur_id, dataquality_issues__status='active',
+            dataquality_issues__content_type=ct_obj,
             dataquality_issues__issue=issue_type).annotate(_issues=Count(
                 'dataquality_issues'))
         cards[related_class][issue]['count'] = j[0]._issues if j else 0
@@ -206,6 +206,7 @@ def list_issue_objects(request, jur_id, related_class, issue_slug):
     issue = IssueType.class_for(issue_slug) + '-' + issue_slug
     objects_list = DataQualityIssue.objects.filter(
         jurisdiction_id=jur_id,
+        status='active',
         issue=issue).values_list('object_id', flat=True)
     cards = upstream[related_class].objects.filter(id__in=objects_list)
     if request.GET:
@@ -678,3 +679,24 @@ def create_person_patch(request, jur_id):
     context = {'jur_id': jur_id,
                'people': people}
     return render(request, 'admintools/create_person_patch.html', context)
+
+
+# Data Quality Exceptions
+def dataquality_exceptions(request, jur_id, issue_slug):
+    if request.method == 'POST':
+        msg = request.POST['message']
+        ids = [key for key in request.POST if not key.startswith('csrf')
+               and not key == 'message']
+        related_class = IssueType.class_for(issue_slug)
+        issue = related_class + '-' + issue_slug
+        DataQualityIssue.objects.filter(jurisdiction_id=jur_id,
+                                        object_id__in=ids, issue=issue,
+                                        status='active').update(
+                                            status='ignored', message=msg)
+        messages.success(request, "Successfully Ignored {} Issue(s)".format(
+            len(request.POST) - 2))
+        return HttpResponseRedirect(reverse('list_issue_objects',
+                                            args=(jur_id, related_class,
+                                                  issue_slug)))
+    else:
+        pass

@@ -12,6 +12,7 @@
           <a class="offset-1" href="{% url 'merge' jur_id %}">Merge Tool</a>
         {% endif %}
     </div>
+
   {% if messages %}
     {% for message in messages %}
     <div class="alert alert-success alert-dismissable" style="margin-bottom: -30px;margin-top: 10px;">
@@ -20,15 +21,19 @@
   </div>
     {% endfor %}
   {% endif %}
+
   {% if related_class == 'person' %}
   <form method="post" action="{% url 'person_resolve_issues' jur_id issue_slug %}" id="my_form">{% csrf_token %}</form>
   {% endif %}
+
     <table class="table table-bordered table-striped">
         <thead class="thead-default">
             <tr>
                 <form method='get'>
                     <th style="width:2%">
-                        <button type="submit"><i class="fa fa-search"></i></button></th>
+                        <button type="submit"><i class="fa fa-search"></i></button>
+                    </th>
+
                     {% if related_class == 'person' %}
                     <th style="text-align: center;">
                         <input style="text-align:center;" type="text" name="person" placeholder="NAME" value="{{ request.GET.person}}" />
@@ -71,6 +76,9 @@
                       <th style="text-align: center;">SOURCES</th>
                     {% elif related_class == 'post' and description == 'Too Many People' %}
                       <th style="text-align: center;">Members</th>
+                    {% endif %}
+                    {% if related_class != 'post' %}
+                      <th style="text-align: center;">IGNORE</th>
                     {% endif %}
                 </form>
             </tr>
@@ -151,14 +159,19 @@
                     {% endfor %}
                   </td>
                 {% endif %}
+
+                {% if related_class != 'post' %}
+                <td scope="row" align="center">
+                  <input type="checkbox" class="filled-in" name="{{ value.id }}" form="ignore_form" style="width: 20px;height: 20px;">
+                </td>
+                {% endif %}
               </tr>
             {% endfor %}
             <br /><br />
         </tbody>
     </table>
     {% if related_class == 'person' or related_class == 'organization' %}
-    {"Delete" is Disabled For Now}
-    <button class="btn btn-cyan col-lg-2 offset-lg-6" style="margin-left: 900px;" form="my_form" type="submit">
+    <button class="btn btn-cyan col-lg-2 offset-lg-6" {% if related_class == 'organization' %}disabled{% endif %} style="margin-left: 900px;" form="my_form" type="submit">
       {% if related_class != 'organization' %}Save{% else %}Delete{% endif %}
     </button>
     {% endif %}
@@ -192,7 +205,18 @@
             Page {{ objects.number }} of {{ objects.paginator.num_pages }}. (Total {{ objects.paginator.count }} Results)
         </span>
     </nav>
-    {% endif %}<br /><br />
+    {% endif %}
+    {% if related_class != 'post' %}
+    <hr style="background-color:black">
+    <form class="form-inline" method="post" action="{% url 'dataquality_exceptions' jur_id issue_slug %}" id="ignore_form">
+      {%  csrf_token %}
+      <div class="form-group">
+        <label for="exampleInputName2"><h3>Note: </h3></label>
+        <input type="text" class="form-control" form="ignore_form" name="message" id="exampleInputName2" placeholder="Errorful stuff on remote site" style="margin-left: 20px;height: 20px;width: 850px;">
+      </div>
+      <button type="submit" class="btn btn-default">Ignore</button>
+    </form>
+    {% endif %}<br />
     {% endblock %}
 {% block custom_scripts %}
 <script>

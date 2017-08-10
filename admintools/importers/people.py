@@ -22,6 +22,8 @@ def create_person_issues(queryset, issue, jur):
 def person_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
+        DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
+                                        issue__startswith='person-').delete()
         count = 0
         people = Person.objects.filter(
             memberships__organization__jurisdiction=jur).distinct()

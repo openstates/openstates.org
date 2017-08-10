@@ -23,6 +23,8 @@ def create_bill_issues(queryset, issue, jur):
 def bills_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     for jur in all_jurs:
+        DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
+                                        issue__startswith='bill-').delete()
         bills = Bill.objects.filter(legislative_session__jurisdiction=jur)
         count = 0
         for issue in IssueType.get_issues_for('bill'):
