@@ -5,7 +5,7 @@ from django.utils.six import StringIO
 from admintools.issues import IssueType
 from admintools.models import DataQualityIssue
 from opencivicdata.core.models import (Jurisdiction, Person, Division,
-                                       Organization, Membership,
+                                       Organization, Membership, Post,
                                        PersonContactDetail)
 from opencivicdata.legislative.models import (Bill, VoteEvent,
                                               LegislativeSession)
@@ -221,6 +221,48 @@ class OrganizationImportersTests(TestCase):
             issue='membership-unmatched-person').count()
         self.assertQuerysetEqual(rest, [])
         self.assertEqual(up, 1)
+
+    def test_org_importer_many_memberships(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Too Many Memberships",
+                                          jurisdiction=jur)
+        person = Person.objects.create(name="Test Person")
+        post = Post.objects.create(label='14', organization=org,
+                                   maximum_memberships=2)
+        Membership.objects.create(person=person, organization=org,
+                                  post=post)
+        Membership.objects.create(person=person, organization=org,
+                                  post=post)
+        Membership.objects.create(person=person, organization=org,
+                                  post=post)
+        orgs_issues()
+        rest = DataQualityIssue.objects.exclude(
+            issue='post-many-memberships')
+        mm = DataQualityIssue.objects.filter(
+            issue='post-many-memberships').count()
+        self.assertQuerysetEqual(rest, [])
+        self.assertEqual(mm, 1)
+
+    def test_org_importer_few_memberships(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org = Organization.objects.create(name="Too Few Memberships",
+                                          jurisdiction=jur)
+        person = Person.objects.create(name="Test Person")
+        post = Post.objects.create(label='14', organization=org,
+                                   maximum_memberships=4)
+        Membership.objects.create(person=person, organization=org,
+                                  post=post)
+        Membership.objects.create(person=person, organization=org,
+                                  post=post)
+        Membership.objects.create(person=person, organization=org,
+                                  post=post)
+        orgs_issues()
+        rest = DataQualityIssue.objects.exclude(
+            issue='post-few-memberships')
+        fm = DataQualityIssue.objects.filter(
+            issue='post-few-memberships').count()
+        self.assertQuerysetEqual(rest, [])
+        self.assertEqual(fm, 1)
 
     def test_org_importer_zzz_valueerror_on_not_updated_new_issue(self):
         IssueType('missing-orgs', 'Missing Orgs', 'organization', 'error')

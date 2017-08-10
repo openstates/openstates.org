@@ -1,4 +1,5 @@
 {% extends 'admintools/base.html' %}
+{% load staticfiles %}
 {% load tags %}
 {% block body %}
 <div class="container">
@@ -21,7 +22,7 @@
         <a href="{% url 'retire_legislators' jur_id %}"> > Retire Legislators</a>
     </h3>
     </div>
-  ** Leave Date Field Blank To Unretire a Legislator
+  ** Press 'Clear' To Unretire a Legislator
   {% if messages %}
       {% for message in messages %}
           <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
@@ -42,7 +43,7 @@
        {% for person, end_date in people %}
           <tr class="hoverable">
             <td style="text-align: center;"><a href="{% url 'admin:core_person_change' person.id %}">{{ person.name }}</a></td>
-            <td ><strong><input style="text-align: center;" type="text" name="{{person.id}}" value="{{ end_date }}" form="retire_form" /></td>
+            <td style="text-align: center;"><strong><input style="text-align: center;" type"text" id="datepcik" name="{{person.id}}" value="{{ end_date }}" form="retire_form" /></td>
           </tr>
       {% empty %}
        <h3>No Results Found!</h3><br />
@@ -85,3 +86,21 @@
   {% endif %}<br /><br />
   </div>
   {% endblock %}
+{% block custom_scripts %}
+<script type="text/javascript" src="{% static "js/bootstrap-datepicker.min.js" %}"></script>
+<link rel="stylesheet" href="{% static "css/bootstrap-datepicker3.css" %}"/>
+<script>
+        $(document).ready(function(){
+          var date_input=$('input[id="datepcik"]');
+          var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+          var options={
+            format: 'yyyy/mm/dd',
+            container: container,
+            orientation: "top right",
+            clearBtn: true,
+            autoclose: true,
+          };
+          date_input.datepicker(options);
+        })
+    </script>
+{% endblock %}
