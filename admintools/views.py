@@ -712,6 +712,7 @@ def dataquality_exceptions(request, jur_id, issue_slug, action):
                                                 args=(jur_id, related_class,
                                                       issue_slug)))
         elif action == 'remove':
+            ids = []
             # keys = msg__@#$__ocd-id1__@#$__ocd-id2
             for keys in request.POST.keys():
                 if not keys.startswith('csrf'):
@@ -725,8 +726,9 @@ def dataquality_exceptions(request, jur_id, issue_slug, action):
                                                     message=msg).update(
                                                         status='active',
                                                         message='')
-            messages.success(request, "Successfully Activated {} "
-                             "Issue(s)".format(len(ids)))
+            if ids:
+                messages.success(request, "Successfully Activated {} "
+                                 "Issue(s)".format(len(ids)))
             return HttpResponseRedirect(reverse('dataquality_exceptions',
                                                 args=(jur_id, issue_slug,
                                                       'remove')))
