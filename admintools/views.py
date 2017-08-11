@@ -101,15 +101,20 @@ def overview(request):
 # Calculates all active dataquality_issues in given jurisdiction
 def _jur_dataquality_issues(jur_id):
     cards = defaultdict(dict)
+    exceptions = defaultdict(dict)
     issues = IssueType.choices()
     for issue, description in issues:
         related_class = IssueType.class_for(issue)
         cards[related_class][issue] = {}
+        exceptions[related_class][issue] = {}
         issue_type = IssueType.class_for(issue) + '-' + issue
         alert = IssueType.level_for(issue)
         cards[related_class][issue]['alert'] = True if alert == 'error' \
             else False
+        exceptions[related_class][issue]['alert'] = True if alert == 'error' \
+            else False
         cards[related_class][issue]['description'] = description
+        exceptions[related_class][issue]['description'] = description
         ct_obj = ContentType.objects.get_for_model(upstream[related_class])
         j = Jurisdiction.objects.filter(
             id=jur_id, dataquality_issues__status='active',
@@ -117,12 +122,18 @@ def _jur_dataquality_issues(jur_id):
             dataquality_issues__issue=issue_type).annotate(_issues=Count(
                 'dataquality_issues'))
         cards[related_class][issue]['count'] = j[0]._issues if j else 0
-    return dict(cards)
+        je = Jurisdiction.objects.filter(
+            id=jur_id, dataquality_issues__status='ignored',
+            dataquality_issues__content_type=ct_obj,
+            dataquality_issues__issue=issue_type).annotate(_issues=Count(
+                'dataquality_issues'))
+        exceptions[related_class][issue]['count'] = je[0]._issues if je else 0
+    return dict(cards), dict(exceptions)
 
 
 # Jurisdiction Specific Page
 def jurisdiction_intro(request, jur_id):
-    issues = _jur_dataquality_issues(jur_id)
+    issues, exceptions = _jur_dataquality_issues(jur_id)
     bill_from_orgs_list = Bill.objects.filter(
         legislative_session__jurisdiction__id=jur_id) \
         .values('from_organization__name').distinct()
@@ -136,6 +147,7 @@ def jurisdiction_intro(request, jur_id):
 
     context = {'jur_id': jur_id,
                'cards': issues,
+               'exceptions': exceptions,
                'bill_orgs': bill_from_orgs_list,
                'voteevent_orgs': voteevent_orgs_list,
                'orgs': orgs_list,
@@ -682,21 +694,79 @@ def create_person_patch(request, jur_id):
 
 
 # Data Quality Exceptions
-def dataquality_exceptions(request, jur_id, issue_slug):
+def dataquality_exceptions(request, jur_id, issue_slug, action):
+    related_class = IssueType.class_for(issue_slug)
+    issue = related_class + '-' + issue_slug
     if request.method == 'POST':
-        msg = request.POST['message']
-        ids = [key for key in request.POST if not key.startswith('csrf')
-               and not key == 'message']
-        related_class = IssueType.class_for(issue_slug)
-        issue = related_class + '-' + issue_slug
-        DataQualityIssue.objects.filter(jurisdiction_id=jur_id,
-                                        object_id__in=ids, issue=issue,
-                                        status='active').update(
-                                            status='ignored', message=msg)
-        messages.success(request, "Successfully Ignored {} Issue(s)".format(
-            len(request.POST) - 2))
-        return HttpResponseRedirect(reverse('list_issue_objects',
-                                            args=(jur_id, related_class,
-                                                  issue_slug)))
+        if action == 'add':
+            msg = request.POST['message']
+            ids = [key for key in request.POST if not key.startswith('csrf')
+                   and not key == 'message']
+            DataQualityIssue.objects.filter(jurisdiction_id=jur_id,
+                                            object_id__in=ids, issue=issue,
+                                            status='active').update(
+                                                status='ignored', message=msg)
+            messages.success(request, "Successfully Ignored {} Issue(s)"
+                             .format(len(request.POST) - 2))
+            return HttpResponseRedirect(reverse('list_issue_objects',
+                                                args=(jur_id, related_class,
+                                                      issue_slug)))
+        elif action == 'remove':
+            # keys = msg__@#$__ocd-id1__@#$__ocd-id2
+            for keys in request.POST.keys():
+                if not keys.startswith('csrf'):
+                    ids = keys.split('__@#$__')
+                    msg = ids[0]
+                    ids.remove(ids[0])
+                    DataQualityIssue.objects.filter(jurisdiction_id=jur_id,
+                                                    object_id__in=ids,
+                                                    issue=issue,
+                                                    status='ignored',
+                                                    message=msg).update(
+                                                        status='active',
+                                                        message='')
+            messages.success(request, "Successfully Activated {} "
+                             "Issue(s)".format(len(ids)))
+            return HttpResponseRedirect(reverse('dataquality_exceptions',
+                                                args=(jur_id, issue_slug,
+                                                      'remove')))
+
     else:
-        pass
+        description = IssueType.description_for(issue_slug)
+        objects_list = DataQualityIssue.objects.filter(
+                        jurisdiction_id=jur_id,
+                        status='ignored',
+                        issue=issue).values_list('object_id', flat=True)
+        if request.GET:
+            if request.GET.get('message'):
+                objects_list = objects_list.filter(
+                    message__icontains=request.GET['message'])
+            cards = upstream[related_class].objects.filter(
+                id__in=objects_list)
+            cards = cards.filter(_filter_results(request))
+        else:
+            cards = upstream[related_class].objects.filter(id__in=objects_list)
+        data = defaultdict(list)
+        for card in cards:
+            msg = DataQualityIssue.objects.get(object_id=card.id,
+                                               issue=issue).message
+            data[msg].append(card)
+        objects, page_range = _get_pagination(tuple(data.items()), request)
+        # url_slug used to address the Django-admin page
+        if related_class in ['person', 'organization', 'post']:
+            url_slug = 'core_' + related_class + '_change'
+        elif related_class in ['bill', 'voteevent']:
+            url_slug = 'legislative_' + related_class + '_change'
+        else:
+            # because we don't have membership objetcs listed on Django-admin
+            # panel. so redirect to related organization page
+            url_slug = None
+        context = {'jur_id': jur_id,
+                   'issue_slug': issue_slug,
+                   'objects': objects,
+                   'description': description,
+                   'page_range': page_range,
+                   'url_slug': url_slug,
+                   'related_class': related_class}
+        return render(request, 'admintools/list_dataquality_exceptions.html',
+                      context)

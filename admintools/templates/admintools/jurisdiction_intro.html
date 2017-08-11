@@ -32,10 +32,39 @@
                 </div>
             </div>
         </div>
+    </div>
 
-
+    <br /><br />
+    <div class="row wow fadeIn" data-wow-delay="0.2s">
+        <div class="col-lg-12">
+            <div class="card">
+                <h3 class="card-header default-color white-text">Data Quality Exceptions</h3>
+                <div class="card-block">
+                    <div class="row">
+                        {% for name, issues in exceptions.items %}
+                        <div class="col-lg-4 exception_title_{{name}}">
+                            <p>
+                                <a data-toggle="collapse" href="#" aria-expanded="false" aria-controls="collapseExample">
+                                  {{name|title }} Related</a>
+                            </p>
+                            <div>
+                                <div class="card card-block  exception_{{name}}">
+                                    {% for issue, values in issues.items %}
+                                        {% if values.count %}
+                                    <h6><a class="{{ values.count|yesno:",disabled" }}"href="{% url 'dataquality_exceptions' jur_id issue 'remove' %}" style="color:{{values.alert|yesno:"red,black"}}" >{{values.description}}</a> <span class="badge {{values.alert|yesno:"red,yellow darken-3"}}">{{values.count}}</span></h6>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div><br />
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <br /><br />
+
     <div class="row wow fadeIn" data-wow-delay="0.2s">
         <div class="col-lg-6">
             <div class="card">
@@ -102,10 +131,8 @@
                 </div>
             </div>
         </div>
-
-
     </div>
-    <br /><br / />
+    <br /><br />
 
 </div>
 </div>
@@ -117,6 +144,13 @@ $(document).ready(function(){
         if($.trim($(".{{name}}").html())=='')
         {
         $(".title_{{name}}").hide();
+        }
+    {% endfor %}
+
+    {% for name, issues in exceptions.items %}
+        if($.trim($(".exception_{{name}}").html())=='')
+        {
+        $(".exception_title_{{name}}").hide();
         }
     {% endfor %}
 });

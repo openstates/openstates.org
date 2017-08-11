@@ -1,0 +1,112 @@
+{% extends 'admintools/base.html' %}
+{% load tags %}
+{% block body %}
+<div class="container">
+    <!--Page padding-->
+    <br /><br /><br />
+    <div class="row">
+        <h2><strong>{{ related_class|title }} Exceptions:  {{description}}</strong></h2>
+        <a href="{% url 'dataquality_exceptions' jur_id issue_slug 'remove' %}">(View All)</a>
+    </div>
+
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissable" style="margin-bottom: -30px;margin-top: 10px;">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {{ message }}
+  </div>
+    {% endfor %}
+  {% endif %}
+    <form method="post" action="{% url 'dataquality_exceptions' jur_id issue_slug 'remove' %}" id="my_form">{% csrf_token %}</form>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-default">
+            <tr>
+                <form method='get'>
+                    <th style="width:2%">
+                        <button type="submit"><i class="fa fa-search"></i></button>
+                    </th>
+                    <th style="text-align: center;">
+                        <input style="text-align:center;" type="text" name="message" placeholder="MESSAGE" value="{{ request.GET.message}}" />
+                    </th>
+
+                    {% if related_class == 'person' %}
+                    <th style="text-align: center;">
+                        <input style="text-align:center;" type="text" name="person" placeholder="NAME" value="{{ request.GET.person}}" />
+                    </th>
+
+                    {% elif related_class == 'organization' %}
+                    <th style="text-align: center;">
+                        <input style="text-align:center;" type="text" name="organization" placeholder="NAME" value="{{ request.GET.organization}}" />
+                    </th>
+
+                    {% elif related_class == 'bill' %}
+                    <th style="text-align: center; width:15%;">
+                        <input style="text-align:center;" type="text" name="bill_identifier" placeholder="IDENTIFIER" value="{{ request.GET.bill_identifier}}" />
+                    </th>
+
+                    {% elif related_class == 'voteevent' %}
+                    <th style="text-align: center;">
+                        <input style="text-align:center; width:30%;" type="text" name="voteevent_bill" placeholder="VOTE EVENT BILL" value="{{ request.GET.voteevent_bill }}" /></th>
+
+                    {% elif related_class == 'membership' %}
+                    <th style="text-align: center;">
+                        <input style="text-align:center;" type="text" name="membership" placeholder="UNMATCHED NAME" value="{{ request.GET.membership}}" />
+                    </th>
+                    {% endif %}
+                </form>
+            </tr>
+        </thead>
+        <tbody>
+              {% for msg, values in objects %}
+              <tr>
+                <td scope="row">
+                  <input type="checkbox" class="filled-in" name="{{ msg }}{% for value in values %}__@#$__{{value.id}}{% endfor %}" form="my_form" style="width: 20px;height: 20px;">
+                </td>
+                <td align="center">{{ msg }}</td>
+                <td align="center">
+                  {% for value in values %}
+                    {{value.identifier }} {{ value.name }} {{ value.bill.identifier }}<br />
+                  {% endfor %}
+                 </td>
+               </tr>
+              {% endfor %}
+            <br /><br />
+        </tbody>
+    </table>
+    <button class="btn btn-cyan col-lg-2 offset-lg-6" style="margin-left: 900px;" form="my_form" type="submit">
+      REMOVE
+    </button>
+
+    {% if objects.has_other_pages %}
+    <br />
+    <nav>
+        <ul class="pagination pagination-md">
+            {% if objects.has_previous %}
+            <li class="page-item ">
+                <a class="page-link" href="?{% url_replace request 'page' 1 %}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+              </a>
+            </li>
+            {% endif %} {% for i in page_range %} {% if objects.number == i %}
+            <li class="page-item active">
+                <a class="page-link" href="#">{{ i }}<span class="sr-only">(current)</span></a>
+            </li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{i}}</a></li>
+            {% endif %} {% endfor %} {% if objects.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{% url_replace request 'page' objects.paginator.num_pages %}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+              <span class="sr-only">Next</span>
+            </a>
+            </li>
+            {% endif %}
+        </ul>
+        <span>
+            Page {{ objects.number }} of {{ objects.paginator.num_pages }}. (Total {{ objects.paginator.count }} Results)
+        </span>
+    </nav>
+    {% endif %}
+
+{% endblock %}

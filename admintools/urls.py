@@ -28,8 +28,8 @@ urlpatterns = [
         views.jurisdiction_intro, name='jurisdiction_intro'),
 
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/ignored-issues/'
-        '(?P<issue_slug>[-\w]+)/$', views.dataquality_exceptions,
-        name='dataquality_exceptions'),
+        '(?P<issue_slug>[-\w]+)/(?P<action>[-\w]+)/$',
+        views.dataquality_exceptions, name='dataquality_exceptions'),
 
     url(r'^admintools/(?P<jur_id>[\w\-\:\/]+)/session-id/'
         '(?P<identifier>.*)/$', views.legislative_session_info,

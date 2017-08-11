@@ -5,7 +5,7 @@
     <!--Page padding-->
     <br /><br /><br />
     <div class="row">
-        <h2><strong>{{ related_class|title }} :  {{description}}</strong></h2>
+        <h2><strong>{{ related_class|title }} Issues:  {{description}}</strong></h2>
         <a href="{% url 'list_issue_objects' jur_id related_class issue_slug %}">(View All)</a>
         {% if related_class == 'post' and description == 'Too Many People' %}
           <a class="offset-3" href="{% url 'retire_legislators' jur_id %}">Retirement Tool</a></p>
@@ -208,16 +208,16 @@
     {% endif %}
     {% if related_class != 'post' %}
     <hr style="background-color:black">
-    <form class="form-inline" method="post" action="{% url 'dataquality_exceptions' jur_id issue_slug %}" id="ignore_form">
+    <form class="form-inline" method="post" action="{% url 'dataquality_exceptions' jur_id issue_slug 'add' %}" id="ignore_form">
       {%  csrf_token %}
       <div class="form-group">
         <label for="exampleInputName2"><h3>Note: </h3></label>
-        <input type="text" class="form-control" form="ignore_form" name="message" id="exampleInputName2" placeholder="Errorful stuff on remote site" style="margin-left: 20px;height: 20px;width: 850px;">
+        <input type="text" class="form-control" form="ignore_form" required name="message" id="exampleInputName2" placeholder="Errorful stuff on remote site" style="margin-left: 20px;height: 20px;width: 850px;">
       </div>
       <button type="submit" class="btn btn-default">Ignore</button>
     </form>
     {% endif %}<br />
-    {% endblock %}
+{% endblock %}
 {% block custom_scripts %}
 <script>
 {% if related_class == 'person' %}
