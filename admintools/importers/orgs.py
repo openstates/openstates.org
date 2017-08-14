@@ -12,10 +12,12 @@ def create_org_issues(queryset, issue, jur):
     for query_obj in queryset:
         if not DataQualityIssue.objects.filter(object_id=query_obj.id,
                                                alert=alert, issue=issue,
-                                               jurisdiction=jur):
+                                               jurisdiction=jur,
+                                               status='ignored'):
             obj_list.append(
                 DataQualityIssue(content_object=query_obj, alert=alert,
-                                 issue=issue, jurisdiction=jur)
+                                 issue=issue, jurisdiction=jur,
+                                 status='active')
             )
     DataQualityIssue.objects.bulk_create(obj_list)
     return len(obj_list)

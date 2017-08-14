@@ -164,9 +164,37 @@ class PeopleImportersTests(TestCase):
         self.assertEqual(len(ma), 1)
         self.assertQuerysetEqual(rest, [])
 
+    def test_people_importer_delete_active_dqis_before_import(self):
+        org = Organization.objects.get(name="Democratic")
+        p = Person.objects.create(name="John Snow")
+        Membership.objects.create(person=p, organization=org)
+        # Some Data Quality Issues
+        DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
+                                        content_object=p,
+                                        alert='warning',
+                                        issue='person-missing-phone',
+                                        status='active')
+        DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
+                                        content_object=p,
+                                        alert='warning',
+                                        issue='person-missing-address',
+                                        status='ignored')
+        DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
+                                        content_object=p,
+                                        alert='warning',
+                                        issue='person-missing-email',
+                                        status='active')
+        person_issues()
+
+        ignored_issues = DataQualityIssue.objects \
+            .filter(status='ignored', issue='person-missing-address')
+        active_issues = DataQualityIssue.objects.filter(status='active')
+        self.assertEqual(len(ignored_issues), 1)
+        self.assertEqual(len(active_issues), 3)
+
     # `zzz` to make sure that this test runs at last. otherwise new IssueType
     # gets activated which cause other tests to raise ValueError.
-    # tried to deleting the created issue at end of test but not working.
+    # tried deleting the created issue at end of test but not working.
     def test_people_importer_zzz_valueerror_on_not_updated_new_issue(self):
         IssueType('missing-name', 'Missing Name', 'person', 'error')
         DataQualityIssue._meta.get_field('issue').choices.append(
@@ -263,6 +291,33 @@ class OrganizationImportersTests(TestCase):
             issue='post-few-memberships').count()
         self.assertQuerysetEqual(rest, [])
         self.assertEqual(fm, 1)
+
+    def test_org_importer_delete_active_dqis_before_import(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        org1 = Organization.objects.create(name="No Membership",
+                                           jurisdiction=jur)
+        org = Organization.objects.create(name="Unmatched Person Memberships",
+                                          jurisdiction=jur)
+        Membership.objects.create(person_name='Unmatched Person',
+                                  organization=org)
+        # Some Data Quality Issues
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=org1,
+                                        alert='error',
+                                        issue='organization-no-memberships',
+                                        status='ignored')
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=org,
+                                        alert='warning',
+                                        issue='membership-unmatched-person',
+                                        status='active')
+        orgs_issues()
+
+        ignored_issues = DataQualityIssue.objects \
+            .filter(status='ignored', issue='organization-no-memberships')
+        active_issues = DataQualityIssue.objects.filter(status='active')
+        self.assertEqual(len(ignored_issues), 1)
+        self.assertEqual(len(active_issues), 1)
 
     def test_org_importer_zzz_valueerror_on_not_updated_new_issue(self):
         IssueType('missing-orgs', 'Missing Orgs', 'organization', 'error')
@@ -421,6 +476,34 @@ class BillsImportersTests(TestCase):
         self.assertEqual(len(h), 1)
         self.assertQuerysetEqual(rest, [])
 
+    def test_bill_importer_delete_active_dqis_before_import(self):
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        bill = Bill.objects.create(legislative_session=ls,
+                                   identifier="BS01")
+        # Some Data Quality Issues
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=bill,
+                                        alert='error',
+                                        issue='bill-no-actions',
+                                        status='ignored')
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=bill,
+                                        alert='warning',
+                                        issue='bill-no-sponsors',
+                                        status='active')
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=bill,
+                                        alert='warning',
+                                        issue='bill-no-versions',
+                                        status='active')
+        bills_issues()
+        ignored_issues = DataQualityIssue.objects \
+            .filter(status='ignored', issue='bill-no-actions')
+        active_issues = DataQualityIssue.objects.filter(status='active')
+        self.assertEqual(len(ignored_issues), 1)
+        self.assertEqual(len(active_issues), 2)
+
     def test_bill_importer_zzz_valueerror_on_not_updated_new_issue(self):
         IssueType('missing-billxyz', 'Missing BillXYZ', 'bill', 'error')
         DataQualityIssue._meta.get_field('issue').choices.append(
@@ -577,6 +660,34 @@ class VoteEventImportersTests(TestCase):
                      issue='voteevent-bad-counts')
         self.assertEqual(h, 1)
         self.assertQuerysetEqual(rest, [])
+
+    def test_bill_importer_delete_active_dqis_before_import(self):
+        org = Organization.objects.get(name="Democratic")
+        ls = LegislativeSession.objects.get(identifier="2017")
+        voteevent = VoteEvent.objects \
+            .create(identifier="vote1",
+                    motion_text="VoteEvent with missing-bills & missingvoters",
+                    start_date="2017-06-26",
+                    result='pass', legislative_session=ls,
+                    organization=org)
+        # Some Data Quality Issues
+        DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
+                                        content_object=voteevent,
+                                        alert='error',
+                                        issue='voteevent-missing-bill',
+                                        status='ignored')
+        DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
+                                        content_object=voteevent,
+                                        alert='warning',
+                                        issue='voteevent-missing-voters',
+                                        status='active')
+        vote_event_issues()
+
+        ignored_issues = DataQualityIssue.objects \
+            .filter(status='ignored', issue='voteevent-missing-bill')
+        active_issues = DataQualityIssue.objects.filter(status='active')
+        self.assertEqual(len(ignored_issues), 1)
+        self.assertEqual(len(active_issues), 1)
 
     def test_voteevent_importer_zzz_valueerror_on_not_updated_new_issue(self):
         IssueType('missing-votexyz', 'Missing VoteXYZ', 'voteevent', 'warning')
