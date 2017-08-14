@@ -107,7 +107,8 @@ class OverviewViewTests(TestCase):
         DataQualityIssue.objects.create(content_object=person,
                                         issue='missing-photo',
                                         alert='warning',
-                                        jurisdiction=jur1)
+                                        jurisdiction=jur1,
+                                        status='active')
         response = self.client.get(reverse('overview'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['rows']), 2)
@@ -123,12 +124,14 @@ class OverviewViewTests(TestCase):
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='missing-photo',
                                         alert='warning',
-                                        jurisdiction=jur1)
+                                        jurisdiction=jur1,
+                                        status='active')
         person2 = Person.objects.create(name="Garg Hitesh")
         DataQualityIssue.objects.create(content_object=person2,
                                         issue='missing-photo',
                                         alert='warning',
-                                        jurisdiction=jur2)
+                                        jurisdiction=jur2,
+                                        status='active')
         response = self.client.get(reverse('overview'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['rows']), 2)
@@ -166,10 +169,18 @@ class JurisdictionintroViewTests(TestCase):
                                start_time=start_time, end_time=end_time)
 
         person1 = Person.objects.create(name="Hitesh Garg")
+        # Data Quality Issue
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='person-missing-photo',
                                         alert='warning',
-                                        jurisdiction=jur1)
+                                        jurisdiction=jur1,
+                                        status='active')
+        # Data Quality Exception
+        DataQualityIssue.objects.create(content_object=person1,
+                                        issue='person-missing-phone',
+                                        alert='warning',
+                                        jurisdiction=jur1,
+                                        status='ignored')
 
     def test_view_response(self):
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
@@ -202,6 +213,26 @@ class JurisdictionintroViewTests(TestCase):
             response.context['cards']['bill']
             .get('unmatched-person-sponsor')['count'], 0)
 
+    def test_dataqualityexception_count(self):
+        """
+        If a particular exception exists for a `related_class` then it's count
+        will be greater than zero otherwise count will be zero.
+        """
+        jur = Jurisdiction.objects.get(name="Missouri State Senate")
+        response = self.client.get(reverse('jurisdiction_intro',
+                                           args=(jur.id,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context['exceptions']['person']['missing-phone']['count'],
+            1)
+        # some other checks
+        self.assertEqual(
+            response.context['exceptions']
+            .get('organization')['no-memberships']['count'], 0)
+        self.assertEqual(
+            response.context['exceptions']['bill']
+            .get('unmatched-person-sponsor')['count'], 0)
+
     def test_context_values(self):
         """
         To check that important context values are present.
@@ -210,6 +241,7 @@ class JurisdictionintroViewTests(TestCase):
         response = self.client.get(reverse('jurisdiction_intro',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
+        self.assertTrue('exceptions' in response.context)
         self.assertTrue('cards' in response.context)
         self.assertTrue('jur_id' in response.context)
 
@@ -336,7 +368,8 @@ class ListissueobjectsViewTests(TestCase):
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='person-missing-photo',
                                         alert='warning',
-                                        jurisdiction=jur)
+                                        jurisdiction=jur,
+                                        status='active')
         response = self.client.get(reverse('list_issue_objects',
                                            args=(jur.id,
                                                  'person',
@@ -1374,3 +1407,96 @@ class PersonResolveIssueViewTest(TestCase):
         self.assertEqual(patch.status, 'unreviewed')
         self.assertEqual(patch.category, 'address')
         self.assertEqual(patch.note, 'District Office')
+
+
+class DataQualityExceptionsViewTest(TestCase):
+
+    def setUp(self):
+        division = Division.objects.create(
+            id='ocd-division/country:us', name='USA')
+        jur = Jurisdiction.objects.create(
+                id="ocd-division/country:us/state:mo",
+                name="Missouri State Senate",
+                url="http://www.senate.mo.gov",
+                division=division,
+            )
+
+        Organization.objects.create(name="Democratic", jurisdiction=jur)
+
+    def test_view_response(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        response = self.client.get(reverse('dataquality_exceptions',
+                                           args=(jur.id, 'missing-photo',
+                                                 'remove')))
+        self.assertEqual(response.status_code, 200)
+
+    def test_listing_all_exceptions(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        org = Organization.objects.get(name="Democratic")
+        p1 = Person.objects.create(name="John Snow")
+        Membership.objects.create(person=p1, organization=org)
+        p2 = Person.objects.create(name="Peter")
+        Membership.objects.create(person=p2, organization=org)
+        # some data quality exceptions
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=p1,
+                                        alert='warning',
+                                        issue='person-missing-address',
+                                        status='ignored',
+                                        message='missing on remote site')
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=p2,
+                                        alert='warning',
+                                        issue='person-missing-address',
+                                        status='ignored',
+                                        message='missing on openstates.org')
+        response = self.client.get(reverse('dataquality_exceptions',
+                                           args=(jur.id, 'missing-address',
+                                                 'remove')))
+        self.assertEqual(response.context['url_slug'], 'core_person_change')
+        dqe = DataQualityIssue.objects.filter(status='ignored').count()
+        self.assertEqual(len(response.context['objects'].object_list), dqe)
+
+    def test_add_data_quality_exception(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        org = Organization.objects.get(name="Democratic")
+        p1 = Person.objects.create(name="John Snow")
+        Membership.objects.create(person=p1, organization=org)
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=p1,
+                                        alert='warning',
+                                        issue='person-missing-address',
+                                        status='active')
+        data = {'message': 'remote site don\'t have address',
+                p1.id: 'on'}
+        url = reverse('dataquality_exceptions', args=(jur.id,
+                                                      'missing-address',
+                                                      'add'))
+        self.client.post(url, data)
+        dqe = DataQualityIssue.objects.get(object_id=p1.id)
+        self.assertEqual(dqe.status, 'ignored')
+        self.assertEqual(dqe.message, 'remote site don\'t have address')
+        self.assertQuerysetEqual(DataQualityIssue.objects.filter(
+            status='active'), [])
+
+    def test_remove_data_quality_exception(self):
+        jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
+        org = Organization.objects.get(name="Democratic")
+        p1 = Person.objects.create(name="John Snow")
+        Membership.objects.create(person=p1, organization=org)
+        DataQualityIssue.objects.create(jurisdiction=jur,
+                                        content_object=p1,
+                                        alert='warning',
+                                        issue='person-missing-address',
+                                        status='ignored',
+                                        message='error on website')
+        url = reverse('dataquality_exceptions', args=(jur.id,
+                                                      'missing-address',
+                                                      'remove'))
+        data = {'error on website__@#$__{}'.format(p1.id): 'on'}
+        self.client.post(url, data)
+        dqe = DataQualityIssue.objects.get(object_id=p1.id)
+        self.assertEqual(dqe.status, 'active')
+        self.assertEqual(dqe.message, '')
+        self.assertQuerysetEqual(DataQualityIssue.objects.filter(
+            status='ignored'), [])

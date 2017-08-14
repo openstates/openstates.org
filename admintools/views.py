@@ -48,6 +48,19 @@ def validate_date(date_text):
         return False
 
 
+# url_slug used to address the Django-admin page
+def _get_url_slug(related_class):
+    if related_class in ['person', 'organization', 'post']:
+        url_slug = 'core_' + related_class + '_change'
+    elif related_class in ['bill', 'voteevent']:
+        url_slug = 'legislative_' + related_class + '_change'
+    else:
+        # because we don't have membership objetcs listed on Django-admin
+        # panel. so redirect to related organization page
+        url_slug = None
+    return url_slug
+
+
 # get pagination of results upto 20 objects
 def _get_pagination(objects_list, request):
     paginator = Paginator(objects_list, 20)
@@ -224,16 +237,7 @@ def list_issue_objects(request, jur_id, related_class, issue_slug):
     if request.GET:
         cards = cards.filter(_filter_results(request))
     objects, page_range = _get_pagination(cards.order_by('id'), request)
-
-    # url_slug used to address the Django-admin page
-    if related_class in ['person', 'organization', 'post']:
-        url_slug = 'core_' + related_class + '_change'
-    elif related_class in ['bill', 'voteevent']:
-        url_slug = 'legislative_' + related_class + '_change'
-    else:
-        # because we don't have membership objetcs listed on Django-admin panel
-        # so redirect to related organization page
-        url_slug = None
+    url_slug = _get_url_slug(related_class)
 
     context = {'jur_id': jur_id,
                'issue_slug': issue_slug,
@@ -748,21 +752,15 @@ def dataquality_exceptions(request, jur_id, issue_slug, action):
             cards = cards.filter(_filter_results(request))
         else:
             cards = upstream[related_class].objects.filter(id__in=objects_list)
+
         data = defaultdict(list)
         for card in cards:
             msg = DataQualityIssue.objects.get(object_id=card.id,
                                                issue=issue).message
             data[msg].append(card)
         objects, page_range = _get_pagination(tuple(data.items()), request)
-        # url_slug used to address the Django-admin page
-        if related_class in ['person', 'organization', 'post']:
-            url_slug = 'core_' + related_class + '_change'
-        elif related_class in ['bill', 'voteevent']:
-            url_slug = 'legislative_' + related_class + '_change'
-        else:
-            # because we don't have membership objetcs listed on Django-admin
-            # panel. so redirect to related organization page
-            url_slug = None
+        url_slug = _get_url_slug(related_class)
+
         context = {'jur_id': jur_id,
                    'issue_slug': issue_slug,
                    'objects': objects,
