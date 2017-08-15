@@ -21,7 +21,7 @@ class DataQualityIssue(models.Model):
     reporter = models.CharField(max_length=300, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default='active')
-    message = models.CharField(max_length=5000, blank=True)
+    message = models.TextField(blank=True)
 
     class Meta:
         db_table = 'opencivicdata_dataqualityissue'

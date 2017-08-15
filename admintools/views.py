@@ -122,10 +122,8 @@ def _jur_dataquality_issues(jur_id):
         exceptions[related_class][issue] = {}
         issue_type = IssueType.class_for(issue) + '-' + issue
         alert = IssueType.level_for(issue)
-        cards[related_class][issue]['alert'] = True if alert == 'error' \
-            else False
-        exceptions[related_class][issue]['alert'] = True if alert == 'error' \
-            else False
+        cards[related_class][issue]['alert'] = (alert == 'error')
+        exceptions[related_class][issue]['alert'] = (alert == 'error')
         cards[related_class][issue]['description'] = description
         exceptions[related_class][issue]['description'] = description
         ct_obj = ContentType.objects.get_for_model(upstream[related_class])
