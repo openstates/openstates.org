@@ -14,12 +14,12 @@ from admintools.importers import (person_issues, orgs_issues, bills_issues,
 
 
 class CommandsTestCase(TestCase):
-    "Test `import all` commands"
+    "Test `import` commands"
 
     def test_import_all_command(self):
         out = StringIO()
         sys.stout = out
-        args = ['all']
+        args = []
         call_command('import', *args, stdout=out)
         self.assertIn('Successfully Imported People DataQualityIssues into DB',
                       out.getvalue())
@@ -36,7 +36,7 @@ class CommandsTestCase(TestCase):
     def test_import_all_people_command(self):
         out = StringIO()
         sys.stout = out
-        args = ['all']
+        args = []
         opts = {'people': True}
         call_command('import', *args, **opts, stdout=out)
         self.assertIn('Successfully Imported People DataQualityIssues into DB',
@@ -45,7 +45,7 @@ class CommandsTestCase(TestCase):
     def test_import_all_organization_command(self):
         out = StringIO()
         sys.stout = out
-        args = ['all']
+        args = []
         opts = {'organization': True}
         call_command('import', *args, **opts, stdout=out)
         self.assertIn(
@@ -55,7 +55,7 @@ class CommandsTestCase(TestCase):
     def test_import_all_vote_event_command(self):
         out = StringIO()
         sys.stout = out
-        args = ['all']
+        args = []
         opts = {'vote_event': True}
         call_command('import', *args, **opts, stdout=out)
         self.assertIn(
@@ -65,7 +65,7 @@ class CommandsTestCase(TestCase):
     def test_import_all_bill_command(self):
         out = StringIO()
         sys.stout = out
-        args = ['all']
+        args = []
         opts = {'bills': True}
         call_command('import', *args, **opts, stdout=out)
         self.assertIn(
