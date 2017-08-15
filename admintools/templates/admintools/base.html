@@ -59,6 +59,17 @@
                             <a class="dropdown-item" href="{% url 'list_all_person_patches' jur_id %}" class="nav-link"> View All </i></a>
                         </div>
                     </li>
+                    <li class="nav-item dropdown btn-group">
+                        <a class="nav-link dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Name Resolution Tool</a>
+                        <div class="dropdown-menu dropdown-in scrollable-menu" aria-labelledby="dropdownMenu2">
+                            <a class="dropdown-item" href="{% url 'name_resolution_tool' jur_id 'unmatched_bill_sponsors' %}" class="nav-link"> Bill Sponsors </i></a>
+                            <a class="dropdown-item" href="{% url 'name_resolution_tool' jur_id 'unmatched_voteevent_voters' %}" class="nav-link"> Voters </i></a>
+                            <a class="dropdown-item" href="{% url 'name_resolution_tool' jur_id 'unmatched_memberships' %}" class="nav-link"> Memberships </i></a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown btn-group">
+                        <a class="nav-link" href="{% url 'retire_legislators' jur_id %}"> Retirement Tool</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ">
                     <li class="nav-item">
