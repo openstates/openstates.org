@@ -7,8 +7,6 @@ class Command(BaseCommand):
     help = 'Import Data Quality Issues into DB'
 
     def add_arguments(self, parser):
-        # Positional arguments
-        parser.add_argument('all', nargs='+', type=str)
 
         # Optional arguments
         parser.add_argument(
