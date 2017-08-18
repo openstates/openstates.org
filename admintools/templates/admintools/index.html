@@ -34,22 +34,28 @@
             <table class="table table-bordered table-striped table-sm">
                 <thead class="thead-default">
                     <tr>
-                        <th style="width:15%">
+                        <th style="width:14%">
                             <center>Jurisdiction</center>
                         </th>
-                        <th style="width:13%">
+                        <th style="width:12%">
                             <center>Last Run</center>
                         </th>
-                        <th style="width:14%">
+                        <th style="width:10%">
                             <center>People</center>
                         </th>
-                        <th style="width:18%">
+                        <th style="width:12%">
                             <center>Organization</center>
                         </th>
-                        <th style="width:20%">
+                        <th style="width:10%">
+                            <center>Membership</center>
+                        </th>
+                        <th style="width:10%">
+                            <center>Post</center>
+                        </th>
+                        <th style="width:15%">
                             <center>Bill</center>
                         </th>
-                        <th style="width:20%">
+                        <th style="width:15%">
                             <center>VoteEvent</center>
                         </th>
                     </tr>
@@ -75,23 +81,32 @@
 
                         <!-- Organization -->
                         <td align="center">
-                            {% if values.organization.error and values.post.error %}
-                                <i class="fa fa-lg fa-close bad"></i> {{ values.organization.error|add:values.post.error }}
-                            {% elif values.organization.error and not values.post.error %}
-                                <i class="fa fa-lg fa-close bad"></i> {{ values.organization.error }}
-                            {% elif not values.organization.error and values.post.error %}
-                                <i class="fa fa-lg fa-close bad"></i> {{ values.post.error }}
-                            {% endif %}
-                            {% if values.membership.warning and values.post.warning %}
-                                <i class="fa fa-lg fa-warning warning"></i>{{ values.membership.warning|add:values.post.warning }}
-                            {% elif values.membership.warning and not values.post.warning %}
-                                <i class="fa fa-lg fa-warning warning"></i> {{ values.membership.warning }}
-                            {% elif not values.membership.warning and values.post.warning %}
-                                <i class="fa fa-lg fa-warning warning"></i> {{ values.post.warning }}
-                            {% endif %}
-                            {% if not values.organization.error and not values.membership.warning and not values.post.error and not values.post.warning%}
-                                <i class="fa fa-lg fa-check-square-o good"></i>
-                            {% endif %}
+                            {% if values.organization.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.organization.error}}{% endif %}
+                            {% if values.organization.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.organization.warning }}{% endif %}
+                            {% if not values.organization.warning and not values.organization.error %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                        </td>
+
+                        <!-- Membership -->
+                        <td align="center">
+                            {% if values.membership.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.membership.error}}{% endif %}
+                            {% if values.membership.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.membership.warning }}{% endif %}
+                            {% if not values.membership.warning and not values.membership.error %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                        </td>
+
+                        <!-- Post -->
+                        <td align="center">
+                            {% if values.post.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.post.error}}{% endif %}
+                            {% if values.post.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.post.warning }}{% endif %}
+                            {% if not values.post.warning and not values.post.error %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
                         </td>
 
                         <!-- Bill -->
