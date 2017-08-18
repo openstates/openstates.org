@@ -40,7 +40,7 @@ def _get_run_status(jur):
 
 
 # validate date in YYYY-MM-DD format.
-def validate_date(date_text):
+def _validate_date(date_text):
     try:
         datetime.datetime.strptime(date_text, '%Y-%m-%d')
         return True
@@ -270,6 +270,9 @@ def _prepare_import(issue_slug, posted_data):
                                                      + item['id']]
     else:
         raise ValueError("Person Issue Resolver needs update for new issue.")
+    from pprint import pprint
+    pprint(posted_data)
+    pprint(issue_items)    
     return issue_items
 
 
@@ -468,7 +471,7 @@ def retire_legislators(request, jur_id):
             if v and not k.startswith('csrf'):
                 v = v.replace('/', '-')
                 # validate date in YYYY-MM-DD format
-                resp = validate_date(v)
+                resp = _validate_date(v)
                 p = Person.objects.get(id=k)
                 if resp:
                     # To make sure that provided retirement date is not less
@@ -515,7 +518,7 @@ def list_retired_legislators(request, jur_id):
                     '-end_date').first().end_date
                 v = v.replace('/', '-')
                 # validate date in YYYY-MM-DD format
-                resp = validate_date(v)
+                resp = _validate_date(v)
                 if resp or v == '':
                     if v:
                         if resp:
