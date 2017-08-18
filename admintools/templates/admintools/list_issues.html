@@ -7,7 +7,7 @@
     <div class="row">
         <h2><strong>{{ related_class|title }} Issues:  {{description}}</strong></h2>
         <a href="{% url 'list_issue_objects' jur_id related_class issue_slug %}">(View All)</a>
-        {% if related_class == 'post' and description == 'Too Many People' %}
+        {% if related_class == 'post' and issue_slug == 'many-memberships' %}
           <a class="offset-3" href="{% url 'retire_legislators' jur_id %}">Retirement Tool</a></p>
           <a class="offset-1" href="{% url 'merge' jur_id %}">Merge Tool</a>
         {% endif %}
@@ -74,7 +74,7 @@
                     {% endif %}
                     {% if related_class != 'post' %}
                       <th style="text-align: center;">SOURCES</th>
-                    {% elif related_class == 'post' and description == 'Too Many People' %}
+                    {% elif related_class == 'post' and issue_slug == 'many-memberships' %}
                       <th style="text-align: center;">Members</th>
                     {% endif %}
                     {% if related_class != 'post' %}
@@ -125,10 +125,11 @@
 
                 {% elif related_class == 'post' %}
                   <td align="center">{{ value.role|title }}</td>
-                  {% if description == 'Too Many People' %}
+                  {% if issue_slug == 'many-memberships' %}
                   <td align="center">
                     {% for member in value.memberships.all|dictsortreversed:"start_date" %}
-                      {{ member.person_name }}<br />
+                        <a href="{% url 'retire_legislators' jur_id %}?person={{member.person_name}}"  target="_blank">{{ member.person_name }}</a>
+                      <br />
                     {% endfor %}
                   </td>
                   {% endif %}

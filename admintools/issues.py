@@ -53,7 +53,11 @@ def main():
 
     # Organization Related Issues
     IssueType('no-memberships', 'No Memberships', 'organization', 'error')
+
+    # Membership Related Issues
     IssueType('unmatched-person', 'Unmatched Person', 'membership', 'warning')
+
+    # Post Related Issues
     IssueType('many-memberships', 'Too Many People', 'post', 'error')
     IssueType('few-memberships', 'Too Few people', 'post', 'warning')
 
