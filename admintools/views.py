@@ -270,9 +270,6 @@ def _prepare_import(issue_slug, posted_data):
                                                      + item['id']]
     else:
         raise ValueError("Person Issue Resolver needs update for new issue.")
-    from pprint import pprint
-    pprint(posted_data)
-    pprint(issue_items)    
     return issue_items
 
 

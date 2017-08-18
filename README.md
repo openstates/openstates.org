@@ -59,10 +59,10 @@ python manage.py import --bills
 
 View Name:- `overview`
 
-Purpose:- Displays the status of all known data quality issues and run details for all jurisdictions in tabular format.
+Purpose:- Displays the status of all known data quality issues and run details for all jurisdictions in a tabular format.
 
 Helper Function:-
-1. `_get_run_status`:- This fucntion calculates the Run Status of a given jurisdiction. which returns
+1. `_get_run_status`:- This function calculates the Run Status of a given jurisdiction. which returns
 
     `{'count': VALUE , 'date': DATE}`
 
@@ -87,7 +87,7 @@ Where, *issue_related_class* :- `IssueType.class_for(issue_slug)` ie, name of op
 View Name:- `jurisdiction_intro`
 
 Purpose:-
-1. Displays Jurisdiction Specific Informations like,
+1. Displays Jurisdiction Specific Information like,
     1. Data Quality Issues
     2. Data Quality Exceptions
 2. Provide links to different tools like,
@@ -204,7 +204,7 @@ Purpose:-
 - lists all person patches for a jurisdiction
 - Allows User to filter results by `Category`, `Alert`, `Created By`, `Status` and `Person Name`
 - Allows User to update the `Status` of a patch
-- if category is `name` or `image` and updated status is `approved`. Then it makes sure to display error if there is already a `approved` patch present for a object
+- if category is `name` or `image` and updated status is `approved`. Then it makes sure to display error if there is already a `approved` patch present for an object
 
 Helper Function:-
 - [_get_pagination](#get-pagination)
@@ -217,7 +217,7 @@ View Name:- `retire_legislators`
 Purpose:-
 - Lists all unretired legislators of a jurisdiction.
 - Allows user to enter retirement dates of legislators and bulk retire them.
-- Make sure that provided retirement date is not less  than all of the existing membership `end_dates`. If so then displays the error.
+- Make sure that provided retirement date is not less than all of the existing membership `end_dates`. If so then displays the error.
 - Allows User to search a legislator by name
 - Make sure to validate date provided by user in `YYYY-MM-DD` format
 
@@ -250,7 +250,7 @@ View Name:- `name_resolution_tool`
 
 Purpose:-
 - Allows User to Match
-    - Unmatched Bill Sponsores
+    - Unmatched Bill Sponsors
     - Unmatched Voters
     - Unmatched Organization Members
 
@@ -275,8 +275,8 @@ Purpose:- Allows User to create a `person-patch` for *wrong values*(ie, alert ty
 View Name:- `dataquality_exceptions`
 
 Purpose:-
-- Allows User to mark a data quality issues as `ignored` from `Data Quality Issue Section` (in this case django-view will take `action='add'` as argument)
-- Allows User to remove data quality issues which are marked as `ignored` (in this case django-view will take `action='remove'` as argument)
+- Allows User to mark a data quality issues as `ignored` from `Data Quality Issue Section` (in this case Django-view will take `action='add'` as argument)
+- Allows User to remove data quality issues which are marked as `ignored` (in this case Django-view will take `action='remove'` as argument)
 - Lists all ignored data quality issues for a jurisdiction
 - Allows User to filter results.
 
@@ -293,7 +293,7 @@ Helper Function:-
 
 Function Name:- `_filter_results`
 
-Purpose:- Filter the objetcs accroding to query of user.
+Purpose:- Filter the objects according to query of user.
 
 #### Get Pagination
 
