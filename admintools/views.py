@@ -234,7 +234,8 @@ def list_issue_objects(request, jur_id, related_class, issue_slug):
     cards = upstream[related_class].objects.filter(id__in=objects_list)
     if request.GET:
         cards = cards.filter(_filter_results(request))
-    objects, page_range = _get_pagination(cards.order_by('id'), request)
+    sort_type = 'label' if related_class == 'post' else 'id'
+    objects, page_range = _get_pagination(cards.order_by(sort_type), request)
     url_slug = _get_url_slug(related_class)
 
     context = {'jur_id': jur_id,
