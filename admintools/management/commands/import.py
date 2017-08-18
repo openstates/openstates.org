@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
-from ...importers import (person_issues, bills_issues,
-                          vote_event_issues, orgs_issues)
+from ...importers import (people_issues, bills_issues, memberships_issues,
+                          vote_events_issues, organizations_issues,
+                          posts_issues)
 
 
 class Command(BaseCommand):
@@ -18,11 +19,27 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            '--orgs',
+            '--organizations',
             action='store_true',
             dest='organization',
             default=False,
             help='import Organization Related Issues',
+        )
+
+        parser.add_argument(
+            '--memberships',
+            action='store_true',
+            dest='membership',
+            default=False,
+            help='import Membership Related Issues',
+        )
+
+        parser.add_argument(
+            '--posts',
+            action='store_true',
+            dest='post',
+            default=False,
+            help='import Post Related Issues',
         )
 
         parser.add_argument(
@@ -43,25 +60,40 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if True not in [options['people'], options['organization'],
-                        options['vote_event'], options['bills']]:
+                        options['vote_event'], options['bills'],
+                        options['membership'], options['post']]:
                 options['people'] = True
                 options['organization'] = True
                 options['vote_event'] = True
                 options['bills'] = True
+                options['membership'] = True
+                options['post'] = True
 
         if options['people']:
-            person_issues()
+            people_issues()
             self.stdout.write(self.style.SUCCESS('Successfully Imported People'
                                                  ' DataQualityIssues into DB'))
 
         if options['organization']:
-            orgs_issues()
+            organizations_issues()
             self.stdout.write(self.style.SUCCESS('Successfully Imported '
                                                  'Organization'
                                                  ' DataQualityIssues into DB'))
 
+        if options['membership']:
+            memberships_issues()
+            self.stdout.write(self.style.SUCCESS('Successfully Imported '
+                                                 'Membership'
+                                                 ' DataQualityIssues into DB'))
+
+        if options['post']:
+            posts_issues()
+            self.stdout.write(self.style.SUCCESS('Successfully Imported '
+                                                 'Post'
+                                                 ' DataQualityIssues into DB'))
+
         if options['vote_event']:
-            vote_event_issues()
+            vote_events_issues()
             self.stdout.write(self.style.SUCCESS('Successfully Imported '
                                                  'VoteEvent'
                                                  ' DataQualityIssues into DB'))

@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from .common import create_issues
 
 
-def person_issues():
+def people_issues():
     all_jurs = Jurisdiction.objects.order_by('name')
     contenttype_obj = ContentType.objects.get_for_model(Person)
     for jur in all_jurs:
