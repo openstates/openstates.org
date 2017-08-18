@@ -4,7 +4,7 @@ GSoC 2017 Data Quality &amp; Admin Tools
 [![Build Status](https://travis-ci.org/openstates/admintools.svg?branch=master)](https://travis-ci.org/openstates/admintools)
 
 
-# Documentation for Open States Admin Tools
+# Open States Admin Tools Documentation
 
 1. [Management Commands](#management-commands)
 2. [Django Views](#django-views)
@@ -14,13 +14,13 @@ GSoC 2017 Data Quality &amp; Admin Tools
 ## Management Commands
 1. Import Data Quality Issues into Database
     ```
-python manage.py import
-python manage.py import --people
-python manage.py import --organizations
-python manage.py import --membership
-python manage.py import --posts
-python manage.py import --vote_events
-python manage.py import --bills
+    python manage.py import
+    python manage.py import --people
+    python manage.py import --organizations
+    python manage.py import --membership
+    python manage.py import --posts
+    python manage.py import --vote_events
+    python manage.py import --bills
     ```
     > provide optional arguments to import specific type of data quality issues
 
@@ -38,7 +38,7 @@ python manage.py import --bills
 6. [Review Person Patches](#review-person-patches)
 7. [List All Person Patches](#list-all-person-patches)
 8. [Retire Legislators](#retire-legislators)
-9. [List Retired Legislators](#list-retire-legislators)
+9. [List Retired Legislators](#list-retired-legislators)
 10. [Name Resolution Tool](#name-resolution-tool)
 11. [Create Person Patch](#create-person-patch)
 12. [Data Quality Exceptions](#data-quality-exceptions)
@@ -52,25 +52,25 @@ python manage.py import --bills
 4. [_get_pagination](#get-pagination)
 5. [_jur_dataquality_issues](#jurisdiction-specific-page)
 6. [_filter_results](#filter-results)
-7. [_prepare_import](#prepare-import)
+7. [_prepare_import](#person-resolve-issues)
 
 ---
 ### Status Page
 
-View Name:- `overview`
+**View Name**:- `overview`
 
-Purpose:- Displays the status of all known data quality issues and run details for all jurisdictions in a tabular format.
+**Purpose**:- Displays the status of all known data quality issues and run details for all jurisdictions in a tabular format.
 
-Helper Function:-
+**Helper Function**:-
 1. `_get_run_status`:- This function calculates the Run Status of a given jurisdiction. which returns
 
     `{'count': VALUE , 'date': DATE}`
 
-    Where,
-        1. VALUE:-  None (if only last run failed)
-                    0 (if last run was successful)
-                    X (last X runs failed, where X > 1)
-        2. DATE:- Last Run Date (datetime.date(YYYY, MM, DD))            
+        Where,
+            1. VALUE:-  None (if only last run failed)
+                        0 (if last run was successful)
+                        X (last X runs failed, where X > 1)
+            2. DATE:- Last Run Date (datetime.date(YYYY, MM, DD))            
 
 Data Format Used to Display the Information:-
 ```
@@ -84,9 +84,9 @@ Where, *issue_related_class* :- `IssueType.class_for(issue_slug)` ie, name of op
 
 ### Jurisdiction Specific Page
 
-View Name:- `jurisdiction_intro`
+**View Name**:- `jurisdiction_intro`
 
-Purpose:-
+**Purpose**:-
 1. Displays Jurisdiction Specific Information like,
     1. Data Quality Issues
     2. Data Quality Exceptions
@@ -98,7 +98,7 @@ Purpose:-
         - Memberships
     3. Retirement Tool    
 
-Helper Function:-
+**Helper Function**:-
 1. `_jur_dataquality_issues`:- This function returns `Data Quality Issues` and `Data Quality Exceptions` related information in below format
     ```
     {related_class: {issue_slug: {'alert': ALERT,
@@ -118,22 +118,22 @@ Helper Function:-
 
 ### Legislative Session Info Page
 
-View Name:- `legislative_session_info`
+**View Name**:- `legislative_session_info`
 
-Purpose:- Displays Jurisdiction Specific Bills and VoteEvents related information for a session.
+**Purpose**:- Displays Jurisdiction Specific Bills and VoteEvents related information for a session.
 
 ---
 
 ### List Data Quality Issues
 
-View Name:- `list_issue_objects`
+**View Name**:- `list_issue_objects`
 
-Purpose:-
+**Purpose**:-
 1. Displays Information about jurisdiction specific Data Quality Issues for **Particular Issue**
 2. Give User functionality to ignore selected data quality issues ie, to mark them as `data quality exceptions`
 3. User can filter objects by making queries.
 
-Helper Functions:-
+**Helper Functions**:-
 - [_filter_results](#filter-results)
 - [_get_pagination](#get-pagination)
 - [_get_url_slug](#get-url-slug)
@@ -142,11 +142,11 @@ Helper Functions:-
 
 ### Person Resolve Issues
 
-View Name:- `person_resolve_issues`
+**View Name**:- `person_resolve_issues`
 
-Purpose:- Allows user to create `unreviewed` person patches for `missing` values (ie, `alert=warning`) which will be applied_by `admin`. User can create person-patches from `Data Quality Section`.
+**Purpose**:- Allows user to create `unreviewed` person patches for `missing` values (ie, `alert=warning`) which will be applied_by `admin`. User can create person-patches from `Data Quality Section`.
 
-Helper Function:-
+**Helper Function**:-
 1. `_prepare_import`:- This function processes the data posted by user from `Data Quality Section` and format data in below format:-
     - Let's posted data via form is
     ```
@@ -181,9 +181,9 @@ Helper Function:-
 
 ### Review Person Patches
 
-View Name:- `review_person_patches`
+**View Name**:- `review_person_patches`
 
-Purpose:-
+**Purpose**:-
 - lists `unreviewed` person patches for review
 - User can mark a patch as `approved` and `rejected`
 - Allows User to filter results by `Category`, `Alert`, `Created By` and `Person Name`
@@ -192,36 +192,36 @@ Purpose:-
     - Value = `status`
 - If there is a `approved` patch for `image` or `name`. Then it also mark previously `approved` patch as `deprecated`.
 
-Helper Function:-
+**Helper Function**:-
 - [_get_pagination](#get-pagination)
 ---
 
 ### List All Person Patches
 
-View Name:- `list_all_person_patches`
+**View Name**:- `list_all_person_patches`
 
-Purpose:-
+**Purpose**:-
 - lists all person patches for a jurisdiction
 - Allows User to filter results by `Category`, `Alert`, `Created By`, `Status` and `Person Name`
 - Allows User to update the `Status` of a patch
 - if category is `name` or `image` and updated status is `approved`. Then it makes sure to display error if there is already a `approved` patch present for an object
 
-Helper Function:-
+**Helper Function**:-
 - [_get_pagination](#get-pagination)
 ---
 
 ### Retire Legislators
 
-View Name:- `retire_legislators`
+**View Name**:- `retire_legislators`
 
-Purpose:-
+**Purpose**:-
 - Lists all unretired legislators of a jurisdiction.
 - Allows user to enter retirement dates of legislators and bulk retire them.
 - Make sure that provided retirement date is not less than all of the existing membership `end_dates`. If so then displays the error.
 - Allows User to search a legislator by name
 - Make sure to validate date provided by user in `YYYY-MM-DD` format
 
-Helper Functions:-
+**Helper Functions**:-
 - [_get_pagination](#get-pagination)
 - [_validate_date](#validate-date)
 
@@ -229,16 +229,16 @@ Helper Functions:-
 
 ### List Retired Legislators
 
-View Name:- `list_retired_legislators`
+**View Name**:- `list_retired_legislators`
 
-Purpose:-
+**Purpose**:-
 - Lists all retired legislators of a jurisdiction.
 - Allows user to update retirement dates of legislators and bulk update them.
 - Make sure that provided retirement date is not less than the membership `end_date`(other than current `retirement date`)
 - Allows User to search a legislator by name
 - Make sure to validate date provided by user in `YYYY-MM-DD` format
 
-Helper Functions:-
+**Helper Functions**:-
 - [_get_pagination](#get-pagination)
 - [_validate_date](#validate-date)
 
@@ -246,9 +246,9 @@ Helper Functions:-
 
 ### Name Resolution Tool
 
-View Name:- `name_resolution_tool`
+**View Name**:- `name_resolution_tool`
 
-Purpose:-
+**Purpose**:-
 - Allows User to Match
     - Unmatched Bill Sponsors
     - Unmatched Voters
@@ -257,31 +257,31 @@ Purpose:-
   with related `person` object.
 - Users can filter legislators according to legislative session
 
-Helper Function:-
+**Helper Function**:-
 - [_get_pagination](#get-pagination)        
 
 ---
 
 ### Create Person Patch
 
-View Name:- `create_person_patch`
+**View Name**:- `create_person_patch`
 
-Purpose:- Allows User to create a `person-patch` for *wrong values*(ie, alert type is `error`) on openstates.org with status of `unreviewed`
+**Purpose**:- Allows User to create a `person-patch` for *wrong values*(ie, alert type is `error`) on openstates.org with status of `unreviewed`
 
 ---
 
 ### Data Quality Exceptions
 
-View Name:- `dataquality_exceptions`
+**View Name**:- `dataquality_exceptions`
 
-Purpose:-
+**Purpose**:-
 - Allows User to mark a data quality issues as `ignored` from `Data Quality Issue Section` (in this case Django-view will take `action='add'` as argument)
 - Allows User to remove data quality issues which are marked as `ignored` (in this case Django-view will take `action='remove'` as argument)
 - Lists all ignored data quality issues for a jurisdiction
 - Allows User to filter results.
 
 
-Helper Function:-
+**Helper Function**:-
 - [_get_pagination](#get-pagination)   
 - [_get_url_slug](#get-url-slug)
 - [_filter_results](#filter-results)
@@ -291,29 +291,32 @@ Helper Function:-
 
 #### Filter Results
 
-Function Name:- `_filter_results`
+- **Function Name**:- `_filter_results`
 
-Purpose:- Filter the objects according to query of user.
+- **Purpose**:- Filter the objects according to query of user
+
 
 #### Get Pagination
 
-Function Name:- `_get_pagination`
+- **Function Name**:- `_get_pagination`
 
-Purpose:- Paginate the objects (20 objects per page)
+- **Purpose**:- Paginate the objects (20 objects per page)
+
 
 #### Get URL Slug
 
-Function Name:- `_get_url_slug`
+- **Function Name**:- `_get_url_slug`
 
-Purpose:- To links objects to related Django-admin page. It returns a string according to `related_class`.
+- **Purpose**:- To links objects to related Django-admin page. It returns a string according to `related_class`.
 It follows pattern:- `app_label_related_class_change`
 
 Where,
  - app_label = core/legislative
  - related_class = issue related class
+ 
 
 #### Validate Date
 
-Function Name:- `_validate_date`
+- **Function Name**:- `_validate_date`
 
-Purpose:- validate date in `YYYY-MM-DD` format
+- **Purpose**:- validate date in `YYYY-MM-DD` format
