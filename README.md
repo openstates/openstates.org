@@ -310,9 +310,9 @@ Where, *issue_related_class* :- `IssueType.class_for(issue_slug)` ie, name of op
 - **Purpose**:- To links objects to related Django-admin page. It returns a string according to `related_class`.
 It follows pattern:- `app_label_related_class_change`
 
-Where,
- - app_label = core/legislative
- - related_class = issue related class
+    Where,
+     - app_label = core/legislative
+     - related_class = issue related class
  
 
 #### Validate Date
