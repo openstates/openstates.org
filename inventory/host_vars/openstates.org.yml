@@ -10,6 +10,8 @@ django_environment:
     EMAIL_HOST_USER: "{{ lookup('credstash', 'site.EMAIL_HOST_USER') }}"
     EMAIL_HOST_PASSWORD: "{{ lookup('credstash', 'site.EMAIL_HOST_PASSWORD') }}"
     DATABASE_URL: "{{ lookup('credstash', 'site.DATABASE_URL') }}"
+    STRIPE_PUBLIC_KEY: "{{ lookup('credstash', 'site.STRIPE_PUBLIC_KEY') }}"
+    STRIPE_SECRET_KEY: "{{ lookup('credstash', 'site.STRIPE_SECRET_KEY') }}"
 
 newrelic_key: "{{ lookup('credstash', 'newrelic.INI_KEY') }}" 
 server_name: openstates.org
