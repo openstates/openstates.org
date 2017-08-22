@@ -40,29 +40,34 @@
 
 # letsencrypt
 - name: add letsencrypt renewal crontab
-  cron: job="letsencrypt renew" special_time="daily" name='renew certificate'
+  cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
+- name: restart nginx weekly
+  cron: job="systemctl nginx restart" special_time="weekly" name="restart nginx"
+- name: archive letsencrypt stuff
+  cron: job='bash -c "tar cvf /tmp/le$(date +%Y%m%d).gz /etc/letsencrypt/ && aws s3 cp /tmp/le$(date +%Y%m%d).gz s3://openstates-backups/letsencrypt/ && rm /tmp/le$(date +%Y%m%d).gz"' special_time="weekly" name="backup letsencrypt"
 
 # virtualenv
-- name: create virtualenv
-  command: virtualenv -p python2.7 /home/openstates/virt{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}
-  sudo_user: "openstates"
-  notify:
-    - restart django-application
 - name: checkout project directories
   git: repo=https://github.com/openstates/openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=master
   sudo_user: "openstates"
   notify:
     - restart django-application
+  register: gitresult
+- name: create virtualenv
+  command: virtualenv -p python2.7 /home/openstates/virt{{ gitresult.after }}
+  sudo_user: "openstates"
+  notify:
+    - restart django-application
 - name: add checkouts to python path
-  lineinfile: dest=/home/openstates/virt{{ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}/lib/python2.7/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
+  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python2.7/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
   sudo_user: "openstates"
 - name: install requirements
-  pip: requirements=/home/openstates/src/openstates.org/requirements.txt virtualenv=/home/openstates/virt{{ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}
+  pip: requirements=/home/openstates/src/openstates.org/requirements.txt virtualenv=/home/openstates/virt{{ gitresult.after }}
   sudo_user: "openstates"
   notify:
     - restart django-application
 - name: link virtualenv
-  file: src=/home/openstates/virt{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }} dest=/home/openstates/virt state=link
+  file: src=/home/openstates/virt{{ gitresult.after }} dest=/home/openstates/virt state=link
 
 # nginx
 - name: make certs dir
