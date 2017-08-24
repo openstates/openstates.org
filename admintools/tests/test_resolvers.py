@@ -15,7 +15,7 @@ class CommandsTestCase(TestCase):
     def test_resolve_issues_command(self):
         out = StringIO()
         sys.stout = out
-        args = ['issues']
+        args = []
         call_command('resolve', *args, stdout=out)
         self.assertIn('Successfully Imported People Issue Resolver Patches'
                       ' into DB',

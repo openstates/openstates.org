@@ -6,6 +6,10 @@ from opencivicdata.core.models import Jurisdiction
 
 
 class DataQualityIssue(models.Model):
+    STATUS_CHOICES = (
+        ('active', 'Active'),
+        ('ignored', 'Ignored')
+    )
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -15,6 +19,9 @@ class DataQualityIssue(models.Model):
     issue = models.CharField(max_length=150,
                              choices=issues.IssueType.choices())
     reporter = models.CharField(max_length=300, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES,
+                              default='active')
+    message = models.TextField(blank=True)
 
     class Meta:
         db_table = 'opencivicdata_dataqualityissue'
