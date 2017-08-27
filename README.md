@@ -1,10 +1,15 @@
-# admintools
-GSoC 2017 Data Quality &amp; Admin Tools
-
+# Open Civic Data Admin Tools
 [![Build Status](https://travis-ci.org/openstates/admintools.svg?branch=master)](https://travis-ci.org/openstates/admintools)
 
+These tools identify the data quality issues in the database and allow Open States admins to know about the current status of quality of scrapers and to manually fix or modify the data quality issues or mark them as exceptions. These tools will also provide admin the right to consider the requests posted by the users to report any wrong or missing information on [openstates.org](https://openstates.org/).
 
-# Open States Admin Tools Documentation
+**Further Information**
+- [Google Summer of Code - Improved Data Tools](https://blog.openstates.org/post/gsoc-2017-hitesh-intro/)
+- [Progress on the OCD Data Quality Tools](https://blog.openstates.org/post/gsoc-2017-hitesh-one-month/)
+- [Google Summer of Code - Data Quality Tools Update](https://blog.openstates.org/post/gsoc-2017-update-two/)
+
+---
+# Documentation
 
 1. [Management Commands](#management-commands)
 2. [Django Views](#django-views)
@@ -12,7 +17,7 @@ GSoC 2017 Data Quality &amp; Admin Tools
 
 ---
 ## Management Commands
-1. Import Data Quality Issues into Database
+1. To import data quality issues from `opencivicdata` database tables into `opencivicdata_dataqualityissue` table. These commands will first delete all data quality issues with `active` status ignoring issues with `ignored` status and then import all known issues with `active` status. These commands will also make sure to raise an error if any importer needs update for new issue.
     ```
     python manage.py import
     python manage.py import --people
@@ -24,10 +29,12 @@ GSoC 2017 Data Quality &amp; Admin Tools
     ```
     > provide optional arguments to import specific type of data quality issues
 
-2. Import People Related Issue Resolver Patches into Database
+2. To import people related issues resolver patches into `opencivicdata_issue_resolver_patch` database table.  This will apply only `approved` status patches and delete related data quality issues from `opencivicdata_dataqualityissue` table (if exists). This command will also make sure that patch is not applied before and number of approved pathces for `image` and `name` for a person must be one and will show names of such legislators as output. This command will also make sure to raise an error if any resolver needs update for new category.
     ```
     python manage.py resolve
     ```
+    > To import sample patches into database run `populate_issue_resolver_patches.py` script. This script will use `sample-user-patches.csv` file to import sample pathces into database. The `csv` file contains sample data of `IssueResolverPatch` Model fields.
+
 ---
 ## Django Views
 1. [Status Page](#status-page)
@@ -313,7 +320,7 @@ It follows pattern:- `app_label_related_class_change`
     Where,
      - app_label = core/legislative
      - related_class = issue related class
- 
+
 
 #### Validate Date
 
