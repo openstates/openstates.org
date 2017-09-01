@@ -4,9 +4,10 @@
 These tools identify the data quality issues in the database and allow Open States admins to know about the current status of quality of scrapers and to manually fix or modify the data quality issues or mark them as exceptions. These tools will also provide admin the right to consider the requests posted by the users to report any wrong or missing information on [openstates.org](https://openstates.org/).
 
 **Further Information**
-- [Google Summer of Code - Improved Data Tools](https://blog.openstates.org/post/gsoc-2017-hitesh-intro/)
-- [Progress on the OCD Data Quality Tools](https://blog.openstates.org/post/gsoc-2017-hitesh-one-month/)
-- [Google Summer of Code - Data Quality Tools Update](https://blog.openstates.org/post/gsoc-2017-update-two/)
+1. [Google Summer of Code - Improved Data Tools](https://blog.openstates.org/post/gsoc-2017-hitesh-intro/)
+2. [Progress on the OCD Data Quality Tools](https://blog.openstates.org/post/gsoc-2017-hitesh-one-month/)
+3. [Google Summer of Code - Data Quality Tools Update](https://blog.openstates.org/post/gsoc-2017-update-two/)
+4. [Google Summer of Code 2017 Final Update](https://blog.openstates.org/google-summer-of-code-2017-final-update-cf5c14d80c51)
 
 ---
 # Documentation
