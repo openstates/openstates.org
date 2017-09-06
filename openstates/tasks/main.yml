@@ -42,9 +42,9 @@
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
 - name: restart nginx weekly
-  cron: job="systemctl nginx restart" special_time="weekly" name="restart nginx"
+  cron: job="systemctl restart nginx" special_time="weekly" name="restart nginx"
 - name: archive letsencrypt stuff
-  cron: job='bash -c "tar cvf /tmp/le$(date +%Y%m%d).gz /etc/letsencrypt/ && aws s3 cp /tmp/le$(date +%Y%m%d).gz s3://openstates-backups/letsencrypt/ && rm /tmp/le$(date +%Y%m%d).gz"' special_time="weekly" name="backup letsencrypt"
+  cron: job='bash -c "tar cvf /tmp/le$(date +\%Y\%m\%d).gz /etc/letsencrypt/ && aws s3 cp /tmp/le$(date +\%Y\%m\%d).gz s3://openstates-backups/letsencrypt/ && rm /tmp/le$(date +\%Y\%m\%d).gz"' special_time="monthly" name="backup letsencrypt"
 
 # virtualenv
 - name: checkout project directories
