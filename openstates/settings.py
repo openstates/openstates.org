@@ -112,7 +112,7 @@ WSGI_APPLICATION = 'openstates.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'opencivicdata',
+        'NAME': 'openstates',
         'USER': 'test',
         'PASSWORD': 'test',
         'HOST': 'localhost',

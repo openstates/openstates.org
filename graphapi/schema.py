@@ -1,5 +1,5 @@
-from graphene_django import DjangoObjectType
 import graphene
+from graphene_django.types import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from opencivicdata.core.models import (
     Jurisdiction,
@@ -13,8 +13,7 @@ from opencivicdata.core.models import (
 )
 
 
-# override default ID behavior w/ behavior that preserves
-# OCD ids
+# override default ID behavior w/ behavior that preserves OCD ids
 class OCDNode(graphene.relay.Node):
     class Meta:
         name = 'Node'
@@ -32,12 +31,6 @@ class OCDNode(graphene.relay.Node):
         elif id.startswith('ocd-person'):
             return Person.objects.get(id=id)
 
-
-class JurisdictionNode(DjangoObjectType):
-    class Meta:
-        model = Jurisdiction
-        filter_fields = ['id', 'name', 'classification']
-        interfaces = (OCDNode, )
 
 
 class PostType(DjangoObjectType):
@@ -80,7 +73,10 @@ class OrganizationNode(DjangoObjectType):
 class PersonNode(DjangoObjectType):
     class Meta:
         model = Person
-        filter_fields = ['id', 'name']
+        filter_fields = {
+            'name': ['exact', 'istartswith'],
+            'id': ['exact'],
+        }
         interfaces = (OCDNode, )
 
 
@@ -108,14 +104,27 @@ class PersonSourceType(DjangoObjectType):
     class Meta:
         model = PersonSource
 
+#### the good stuff ####
+
+class JurisdictionNode(DjangoObjectType):
+    class Meta:
+        model = Jurisdiction
+        interfaces = (OCDNode, )
+
+
 
 class Query(graphene.ObjectType):
-    jurisdiction = OCDNode.Field(JurisdictionNode)
-    all_jurisdictions = DjangoFilterConnectionField(JurisdictionNode)
-    organization = OCDNode.Field(OrganizationNode)
-    all_organizations = DjangoFilterConnectionField(OrganizationNode)
-    person = OCDNode.Field(PersonNode)
-    all_people = DjangoFilterConnectionField(PersonNode)
+    jurisdiction = graphene.Field(JurisdictionNode,
+                                  id=graphene.String(),
+                                  name=graphene.String())
+
+    def resolve_jurisdiction(self, info, id=None, name=None):
+        if id:
+            return Jurisdiction.objects.get(id=id)
+        if name:
+            return Jurisdiction.objects.get(name=name)
+        else:
+            raise ValueError("Jurisdiction requires id or name")
 
 
 schema = graphene.Schema(query=Query)
