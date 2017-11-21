@@ -1,6 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-#from graphene_django.filter import DjangoFilterConnectionField
+from graphene_django.filter import DjangoFilterConnectionField
 from opencivicdata.core.models import (
     Jurisdiction,
     Organization, OrganizationIdentifier, OrganizationName,
@@ -27,13 +27,15 @@ class OCDNode(graphene.relay.Node):
         return id
 
     @staticmethod
-    def get_node_from_global_id(id, context, info, only_type=None):
+    def get_node_from_global_id(id, info, only_type=None):
         if id.startswith('ocd-jurisdiction'):
             return Jurisdiction.objects.get(id=id)
         elif id.startswith('ocd-organization'):
             return Person.objects.get(id=id)
         elif id.startswith('ocd-person'):
             return Person.objects.get(id=id)
+        elif id.startswith('ocd-bill'):
+            return Bill.objects.get(id=id)
 
 
 class PostType(DjangoObjectType):
@@ -184,6 +186,8 @@ class BillActionNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
+    node = graphene.Field(OCDNode, id=graphene.String())
+
     jurisdiction = graphene.Field(JurisdictionNode,
                                   id=graphene.String(),
                                   name=graphene.String())
@@ -194,6 +198,13 @@ class Query(graphene.ObjectType):
                           session=graphene.String(),
                           )
 
+    legislators = DjangoFilterConnectionField(PersonNode,
+                                              latitude=graphene.Float(),
+                                              longitude=graphene.Float(),
+                                              )
+
+    def resolve_node(self, info, id):
+        return OCDNode.get_node_from_global_id(id, info)
 
     def resolve_jurisdiction(self, info, id=None, name=None):
         if id:
@@ -202,6 +213,16 @@ class Query(graphene.ObjectType):
             return Jurisdiction.objects.get(name=name)
         else:
             raise ValueError("Jurisdiction requires id or name")
+
+    def resolve_legislators(self, info,
+                            first=None,
+                            latitude=None, longitude=None):
+        qs = Person.objects.all()
+
+        if latitude and longitude:
+            qs = qs.filter(name__startswith='Y')
+
+        return qs
 
 
 schema = graphene.Schema(query=Query)
