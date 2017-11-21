@@ -1,15 +1,19 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from graphene_django.filter import DjangoFilterConnectionField
+#from graphene_django.filter import DjangoFilterConnectionField
 from opencivicdata.core.models import (
     Jurisdiction,
     Organization, OrganizationIdentifier, OrganizationName,
     OrganizationLink, OrganizationSource,
     Person, PersonIdentifier, PersonName, PersonContactDetail, PersonLink,
-    PersonSource,
-    Post, Membership,
-    # currently not supporting
-    # (Post|Membership|Organization)(ContactDetail|Link)
+    PersonSource, Post, Membership,
+)
+from opencivicdata.legislative.models import (
+    LegislativeSession,
+    Bill, BillAbstract, BillTitle, BillIdentifier, RelatedBill, BillSponsorship,
+    BillDocument, BillVersion, BillDocumentLink, BillVersionLink, BillSource,
+    BillActionRelatedEntity, BillAction,
+    VoteEvent, VoteCount, PersonVote, VoteSource,
 )
 
 
@@ -30,7 +34,6 @@ class OCDNode(graphene.relay.Node):
             return Person.objects.get(id=id)
         elif id.startswith('ocd-person'):
             return Person.objects.get(id=id)
-
 
 
 class PostType(DjangoObjectType):
@@ -104,7 +107,6 @@ class PersonSourceType(DjangoObjectType):
     class Meta:
         model = PersonSource
 
-#### the good stuff ####
 
 class JurisdictionNode(DjangoObjectType):
     class Meta:
@@ -112,11 +114,86 @@ class JurisdictionNode(DjangoObjectType):
         interfaces = (OCDNode, )
 
 
+class LegislativeSession(DjangoObjectType):
+    class Meta:
+        model = LegislativeSession
+        filter_fields = {
+            'identifier': ['exact'],
+            'classification': ['exact'],
+        }
+        use_connection = True
+
+
+class BillNode(DjangoObjectType):
+    class Meta:
+        model = Bill
+        interfaces = (OCDNode, )
+        filter_fields = {
+            'identifier': ['exact'],
+        }
+
+
+class BillAbstractNode(DjangoObjectType):
+    class Meta:
+        model = BillAbstract
+
+
+class BillTitleNode(DjangoObjectType):
+    class Meta:
+        model = BillTitle
+
+
+class BillIdentifierNode(DjangoObjectType):
+    class Meta:
+        model = BillIdentifier
+
+
+class BillSponsorshipNode(DjangoObjectType):
+    class Meta:
+        model = BillSponsorship
+
+
+class BillDocumentNode(DjangoObjectType):
+    class Meta:
+        model = BillDocument
+
+
+class BillDocumentLinkNode(DjangoObjectType):
+    class Meta:
+        model = BillDocumentLink
+
+
+class BillVersionNode(DjangoObjectType):
+    class Meta:
+        model = BillVersion
+
+
+class BillVersionLinkNode(DjangoObjectType):
+    class Meta:
+        model = BillVersionLink
+
+
+class BillSourceNode(DjangoObjectType):
+    class Meta:
+        model = BillSource
+
+
+class BillActionNode(DjangoObjectType):
+    class Meta:
+        model = BillAction
+
 
 class Query(graphene.ObjectType):
     jurisdiction = graphene.Field(JurisdictionNode,
                                   id=graphene.String(),
                                   name=graphene.String())
+
+    bill = graphene.Field(BillNode,
+                          id=graphene.String(),
+                          jurisdiction=graphene.String(),
+                          session=graphene.String(),
+                          )
+
 
     def resolve_jurisdiction(self, info, id=None, name=None):
         if id:
