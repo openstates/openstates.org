@@ -4,7 +4,7 @@ export default class Legislator extends Component {
   render() {
     return (
       <div className="Legislator">
-        <p>hello!</p>
+        <p>Legislator ID: {this.props.match.params.legislatorID}</p>
       </div>
     );
   }
