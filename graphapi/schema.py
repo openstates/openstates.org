@@ -120,6 +120,7 @@ class JurisdictionNode(DjangoObjectType):
 class LegislativeSession(DjangoObjectType):
     class Meta:
         model = LegislativeSession
+        exclude_fields = ['id']
         filter_fields = {
             'identifier': ['exact'],
             'classification': ['exact'],
@@ -139,51 +140,61 @@ class BillNode(DjangoObjectType):
 class BillAbstractNode(DjangoObjectType):
     class Meta:
         model = BillAbstract
+        exclude_fields = ['id', 'bill']
 
 
 class BillTitleNode(DjangoObjectType):
     class Meta:
         model = BillTitle
+        exclude_fields = ['id', 'bill']
 
 
 class BillIdentifierNode(DjangoObjectType):
     class Meta:
         model = BillIdentifier
+        exclude_fields = ['id', 'bill']
 
 
 class BillSponsorshipNode(DjangoObjectType):
     class Meta:
         model = BillSponsorship
+        exclude_fields = ['id', 'bill']
 
 
 class BillDocumentNode(DjangoObjectType):
     class Meta:
         model = BillDocument
+        exclude_fields = ['id', 'bill']
 
 
 class BillDocumentLinkNode(DjangoObjectType):
     class Meta:
         model = BillDocumentLink
+        exclude_fields = ['id', 'document']
 
 
 class BillVersionNode(DjangoObjectType):
     class Meta:
         model = BillVersion
+        exclude_fields = ['id', 'bill']
 
 
 class BillVersionLinkNode(DjangoObjectType):
     class Meta:
         model = BillVersionLink
+        exclude_fields = ['id', 'version']
 
 
 class BillSourceNode(DjangoObjectType):
     class Meta:
         model = BillSource
+        exclude_fields = ['id', 'bill']
 
 
 class BillActionNode(DjangoObjectType):
     class Meta:
         model = BillAction
+        exclude_fields = ['id', 'bill']
 
 
 class Query(graphene.ObjectType):
