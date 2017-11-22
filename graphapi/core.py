@@ -73,26 +73,31 @@ class PersonNode(DjangoObjectType):
 class PersonIdentifierType(DjangoObjectType):
     class Meta:
         model = PersonIdentifier
+        exclude_fields = ['id', 'person']
 
 
 class PersonNameType(DjangoObjectType):
     class Meta:
         model = PersonName
+        exclude_fields = ['id', 'person']
 
 
 class PersonContactType(DjangoObjectType):
     class Meta:
         model = PersonContactDetail
+        exclude_fields = ['id', 'person']
 
 
 class PersonLinkType(DjangoObjectType):
     class Meta:
         model = PersonLink
+        exclude_fields = ['id', 'person']
 
 
 class PersonSourceType(DjangoObjectType):
     class Meta:
         model = PersonSource
+        exclude_fields = ['id', 'person']
 
 
 class JurisdictionNode(DjangoObjectType):
@@ -119,10 +124,8 @@ class CoreQuery:
                                          latitude=graphene.Float(),
                                          longitude=graphene.Float(),
                                          )
-    person = graphene.Field(PersonNode)
-
-
-    organization = graphene.Field(OrganizationNode)
+    person = graphene.Field(PersonNode, id=graphene.ID())
+    organization = graphene.Field(OrganizationNode, id=graphene.ID())
 
     def resolve_jurisdiction(self, info, id=None, name=None):
         if id:
@@ -168,3 +171,9 @@ class CoreQuery:
             raise ValueError('must provide lat & lon together')
 
         return qs
+
+    def resolve_person(self, info, id):
+        return Person.objects.get(pk=id)
+
+    def resolve_organization(self, info, id):
+        return Organization.objects.get(pk=id)
