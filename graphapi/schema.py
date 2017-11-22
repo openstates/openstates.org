@@ -241,6 +241,7 @@ class Query(graphene.ObjectType):
         # sponsor_id
         # classification
         bills = Bill.objects.all()
+        bills = bills.prefetch_related('actions').prefetch_related('legislative_session')
         if jurisdiction:
             bills = bills.filter(legislative_session__jurisdiction__name=jurisdiction)
         if chamber:
