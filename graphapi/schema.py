@@ -1,5 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
+from graphene_django.fields import DjangoConnectionField
 from graphene_django.filter import DjangoFilterConnectionField
 from opencivicdata.core.models import (
     Jurisdiction,
@@ -191,17 +192,32 @@ class Query(graphene.ObjectType):
     jurisdiction = graphene.Field(JurisdictionNode,
                                   id=graphene.String(),
                                   name=graphene.String())
+    jurisdictions = DjangoConnectionField(JurisdictionNode)
+    # TODO: multiple jurisdictions - but how do we ensure they can't
+    # traverse deep into bills/etc. from that angle?
 
     bill = graphene.Field(BillNode,
                           id=graphene.String(),
                           jurisdiction=graphene.String(),
                           session=graphene.String(),
+                          identifier=graphene.String(),
                           )
+    bills = DjangoConnectionField(BillNode,
+                                  jurisdiction=graphene.String(),
+                                  session=graphene.String(),
+                                  chamber=graphene.String(),
+                                  updated_since=graphene.String(),
+                                  subject=graphene.String(),
+                                  classification=graphene.String(),
+                                  )
 
     legislators = DjangoFilterConnectionField(PersonNode,
                                               latitude=graphene.Float(),
                                               longitude=graphene.Float(),
                                               )
+    legislator = graphene.Field(PersonNode)
+
+    organization = graphene.Field(OrganizationNode)
 
     def resolve_node(self, info, id):
         return OCDNode.get_node_from_global_id(id, info)
@@ -213,6 +229,50 @@ class Query(graphene.ObjectType):
             return Jurisdiction.objects.get(name=name)
         else:
             raise ValueError("Jurisdiction requires id or name")
+
+    def resolve_bills(self, info,
+                      first=None,
+                      jurisdiction=None, chamber=None, session=None,
+                      updated_since=None, classification=None,
+                      #subject=None,
+                      ):
+        # bill_id/bill_id__in
+        # q (full text)
+        # sponsor_id
+        # classification
+        bills = Bill.objects.all()
+        if jurisdiction:
+            bills = bills.filter(legislative_session__jurisdiction__name=jurisdiction)
+        if chamber:
+            bills = bills.filter(from_organization__classification=chamber)
+        if session:
+            bills = bills.filter(legislative_session__identifier=session)
+        if updated_since:
+            bills = bills.filter(updated_at__gte=updated_since)
+        if classification:
+            bills = bills.filter(classification__contains=[classification])
+        # TODO: subject
+        # if subject:
+        #     bills = bills.filter(
+        return bills
+
+    def resolve_bill(self, info,
+                     id=None,
+                     jurisdiction=None, session=None, identifier=None,
+                     # TODO: chamber
+                     ):
+        bill = None
+        if jurisdiction and session and identifier:
+            bill = Bill.objects.get(legislative_session__jurisdiction__name=jurisdiction,
+                                    legislative_session__identifier=session,
+                                    identifier=identifier)
+        if id:
+            bill = Bill.objects.get(id=id)
+
+        if not bill:
+            raise ValueError("must either pass 'id' or 'jurisdiction', 'session', 'identifier'")
+
+        return bill
 
     def resolve_legislators(self, info,
                             first=None,
