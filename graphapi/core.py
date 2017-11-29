@@ -1,33 +1,8 @@
 import datetime
-from django.db.models import Q
 import graphene
-from opencivicdata.core.models import (Jurisdiction, Organization, Person)
-
-# common
-
-
-class OCDBaseNode(graphene.ObjectType):
-    id = graphene.String()
-    created_at = graphene.String()
-    updated_at = graphene.String()
-    extras = graphene.String()
-
-
-class IdentifierNode(graphene.ObjectType):
-    identifier = graphene.String()
-    scheme = graphene.String()
-
-
-class LinkNode(graphene.ObjectType):
-    note = graphene.String()
-    url = graphene.String()
-
-
-class NameNode(graphene.ObjectType):
-    name = graphene.String()
-    note = graphene.String()
-    start_date = graphene.String()
-    end_date = graphene.String()
+from django.db.models import Q
+from opencivicdata.core.models import Jurisdiction, Organization, Person
+from .core import OCDBaseNode, IdentifierNode, NameNode, LinkNode
 
 
 class ContactDetailNode(graphene.ObjectType):
@@ -35,9 +10,6 @@ class ContactDetailNode(graphene.ObjectType):
     value = graphene.String()
     note = graphene.String()
     label = graphene.String()
-
-
-# core
 
 
 class OrganizationNode(OCDBaseNode):
