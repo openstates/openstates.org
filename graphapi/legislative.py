@@ -1,101 +1,113 @@
 import graphene
-from graphene_django.types import DjangoObjectType
-from graphene_django.fields import DjangoConnectionField
-from graphene_django.filter import DjangoFilterConnectionField
-from opencivicdata.legislative.models import (
-    LegislativeSession,
-    Bill, BillAbstract, BillTitle, BillIdentifier, RelatedBill, BillSponsorship,
-    BillDocument, BillVersion, BillDocumentLink, BillVersionLink, BillSource,
-    BillActionRelatedEntity, BillAction,
-    VoteEvent, VoteCount, PersonVote, VoteSource,
-)
-from .common import OCDNode
+from opencivicdata.legislative.models import Bill
+from .common import OCDBaseNode
+from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
+                   PersonNode, LinkNode)
 
 
-class LegislativeSessionNode(graphene.ObjectType):
-    identifier = graphene.String()
+class BillAbstractNode(graphene.ObjectType):
+    abstract = graphene.String()
+    note = graphene.String()
+    date = graphene.String()
+
+
+class BillTitleNode(graphene.ObjectType):
+    title = graphene.String()
+    note = graphene.String()
+
+
+class BillIdentifierNode(IdentifierNode):
+    note = graphene.String()
+
+
+class RelatedEntityNode(graphene.ObjectType):
     name = graphene.String()
+    entity_type = graphene.String()
+    # TODO: revisit w/ union?
+    organization = graphene.Field(OrganizationNode)
+    person = graphene.Field(PersonNode)
+
+
+class BillSponsorshipNode(RelatedEntityNode):
+    primary = graphene.Boolean()
     classification = graphene.String()
-    startDate = graphene.String()
-    endDate = graphene.String()
-
-    # class Meta:
-    #     model = LegislativeSession
-    #     exclude_fields = ['id', '']
-    #     filter_fields = {
-    #         'identifier': ['exact'],
-    #         'classification': ['exact'],
-    #     }
-    #     use_connection = True
 
 
-class BillNode(DjangoObjectType):
+# TODO: RelatedBill identifier, legislative_session, relation_type
+
+
+class BillActionNode(graphene.ObjectType):
+    organization = graphene.Field(OrganizationNode)
+    description = graphene.String()
+    date = graphene.String()
+    classification = graphene.List(graphene.String)
+    order = graphene.Int()
+    extras = graphene.String()
+
+    related_entities = graphene.List(RelatedEntityNode)
+
+
+class MimetypeLinkNode(graphene.ObjectType):
+    media_type = graphene.String()
+    url = graphene.String()
+    text = graphene.String()
+
+
+class BillDocumentNode(graphene.ObjectType):
+    note = graphene.String()
+    date = graphene.String()
+    links = graphene.List(MimetypeLinkNode)
+
+    def resolve_links(self, info):
+        return self.links.all()
+
+
+class BillNode(OCDBaseNode):
+    legislative_session = graphene.Field(LegislativeSessionNode)
+    identifier = graphene.String()
+    title = graphene.String()
+    from_organization = graphene.Field(OrganizationNode)
+    classification = graphene.List(graphene.String)
+    subject = graphene.List(graphene.String)
+
+    # related fields
+    abstracts = graphene.List(BillAbstractNode)
+    other_titles = graphene.List(BillTitleNode)
+    other_identifiers = graphene.List(BillIdentifierNode)
+    actions = graphene.List(BillActionNode)
+    sponsorships = graphene.List(BillSponsorshipNode)
+    documents = graphene.List(BillDocumentNode)
+    versions = graphene.List(BillDocumentNode)
+    sources = graphene.List(LinkNode)
+
+    def resolve_abstracts(self, info):
+        return self.abstracts.all()
+
+    def resolve_other_titles(self, info):
+        return self.other_titles.all()
+
+    def resolve_other_identifiers(self, info):
+        return self.other_identifiers.all()
+
+    def resolve_actions(self, info):
+        return self.actions.all()
+
+    def resolve_sponsorships(self, info):
+        return self.sponsorships.all()
+
+    def resolve_documents(self, info):
+        return self.documents.all()
+
+    def resolve_versions(self, info):
+        return self.versions.all()
+
+    def resolve_sources(self, info):
+        return self.sources.all()
+
+
+class BillConnection(graphene.relay.Connection):
     class Meta:
-        model = Bill
-        interfaces = (OCDNode, )
-        filter_fields = {
-            'identifier': ['exact'],
-        }
-
-
-class BillAbstractNode(DjangoObjectType):
-    class Meta:
-        model = BillAbstract
-        exclude_fields = ['id', 'bill']
-
-
-class BillTitleNode(DjangoObjectType):
-    class Meta:
-        model = BillTitle
-        exclude_fields = ['id', 'bill']
-
-
-class BillIdentifierNode(DjangoObjectType):
-    class Meta:
-        model = BillIdentifier
-        exclude_fields = ['id', 'bill']
-
-
-class BillSponsorshipNode(DjangoObjectType):
-    class Meta:
-        model = BillSponsorship
-        exclude_fields = ['id', 'bill']
-
-
-class BillDocumentNode(DjangoObjectType):
-    class Meta:
-        model = BillDocument
-        exclude_fields = ['id', 'bill']
-
-
-class BillDocumentLinkNode(DjangoObjectType):
-    class Meta:
-        model = BillDocumentLink
-        exclude_fields = ['id', 'document']
-
-
-class BillVersionNode(DjangoObjectType):
-    class Meta:
-        model = BillVersion
-        exclude_fields = ['id', 'bill']
-
-
-class BillVersionLinkNode(DjangoObjectType):
-    class Meta:
-        model = BillVersionLink
-        exclude_fields = ['id', 'version']
-
-
-class BillSourceNode(DjangoObjectType):
-    class Meta:
-        model = BillSource
-        exclude_fields = ['id', 'bill']
-
-
-class BillActionNode(DjangoObjectType):
-    class Meta:
-        model = BillAction
-        exclude_fields = ['id', 'bill']
+        node = BillNode
 
 
 class LegislativeQuery:
@@ -105,14 +117,14 @@ class LegislativeQuery:
                           session=graphene.String(),
                           identifier=graphene.String(),
                           )
-    bills = DjangoConnectionField(BillNode,
-                                  jurisdiction=graphene.String(),
-                                  session=graphene.String(),
-                                  chamber=graphene.String(),
-                                  updated_since=graphene.String(),
-                                  subject=graphene.String(),
-                                  classification=graphene.String(),
-                                  )
+    bills = graphene.relay.ConnectionField(BillConnection,
+                                           jurisdiction=graphene.String(),
+                                           session=graphene.String(),
+                                           chamber=graphene.String(),
+                                           updated_since=graphene.String(),
+                                           subject=graphene.String(),
+                                           classification=graphene.String(),
+                                           )
 
     def resolve_bills(self, info,
                       first=None,

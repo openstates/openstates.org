@@ -2,7 +2,7 @@ import datetime
 import graphene
 from django.db.models import Q
 from opencivicdata.core.models import Jurisdiction, Organization, Person
-from .core import OCDBaseNode, IdentifierNode, NameNode, LinkNode
+from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode
 
 
 class ContactDetailNode(graphene.ObjectType):
@@ -110,6 +110,7 @@ class MembershipNode(OCDBaseNode):
 
 
 class LegislativeSessionNode(graphene.ObjectType):
+    jurisdiction = graphene.Field('graphapi.core.JurisdictionNode')
     identifier = graphene.String()
     name = graphene.String()
     classification = graphene.String()
