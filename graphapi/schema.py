@@ -4,7 +4,7 @@ from .legislative import LegislativeQuery
 from .core import CoreQuery
 
 
-class Query(graphene.ObjectType, LegislativeQuery, CoreQuery):
+class Query(LegislativeQuery, CoreQuery, graphene.ObjectType):
     node = graphene.Field(OCDNode, id=graphene.String())
 
     def resolve_node(self, info, id):

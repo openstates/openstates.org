@@ -1,63 +1,101 @@
 import datetime
 from django.db.models import Q
 import graphene
-from graphene_django.types import DjangoObjectType
-from graphene_django.fields import DjangoConnectionField
-from graphene_django.filter import DjangoFilterConnectionField
-from opencivicdata.core.models import (
-    Jurisdiction,
-    Organization, OrganizationIdentifier, OrganizationName,
-    OrganizationLink, OrganizationSource,
-    Person, PersonIdentifier, PersonName, PersonContactDetail, PersonLink,
-    PersonSource, Post, Membership,
-)
-from .common import OCDNode
+from opencivicdata.core.models import (Jurisdiction, Organization, Person)
+
+# common
 
 
-class PostType(DjangoObjectType):
-    class Meta:
-        model = Post
+class OCDBaseNode(graphene.ObjectType):
+    id = graphene.String()
+    created_at = graphene.String()
+    updated_at = graphene.String()
+    extras = graphene.String()
 
 
-class MembershipType(DjangoObjectType):
-    class Meta:
-        model = Membership
+class IdentifierNode(graphene.ObjectType):
+    identifier = graphene.String()
+    scheme = graphene.String()
 
 
-class OrganizationIdentifierType(DjangoObjectType):
-    class Meta:
-        model = OrganizationIdentifier
+class LinkNode(graphene.ObjectType):
+    note = graphene.String()
+    url = graphene.String()
 
 
-class OrganizationNameType(DjangoObjectType):
-    class Meta:
-        model = OrganizationName
+class NameNode(graphene.ObjectType):
+    name = graphene.String()
+    note = graphene.String()
+    start_date = graphene.String()
+    end_date = graphene.String()
 
 
-class OrganizationLinkType(DjangoObjectType):
-    class Meta:
-        model = OrganizationLink
+class ContactDetailNode(graphene.ObjectType):
+    type = graphene.String()
+    value = graphene.String()
+    note = graphene.String()
+    label = graphene.String()
 
 
-class OrganizationSourceType(DjangoObjectType):
-    class Meta:
-        model = OrganizationSource
+# core
 
 
-class OrganizationNode(DjangoObjectType):
-    class Meta:
-        model = Organization
-        filter_fields = ['id', 'name', 'classification']
-        interfaces = (OCDNode, )
+class OrganizationNode(OCDBaseNode):
+    name = graphene.String()
+    image = graphene.String()
+    # jurisdiction   TODO
+    classification = graphene.String()
+    founding_date = graphene.String()
+    dissolution_date = graphene.String()
+
+    # self-referential relationship
+    parent = graphene.Field('graphapi.core.OrganizationNode')
+    # children = graphene.List('graphapi.core.OrganizationNode')
+    children = graphene.relay.ConnectionField('graphapi.core.OrganizationConnection',
+                                              classification=graphene.String())
+
+    # related objects
+    identifiers = graphene.List(IdentifierNode)
+    other_names = graphene.List(NameNode)
+    links = graphene.List(LinkNode)
+    sources = graphene.List(LinkNode)
+    # contact_details (not used on Org in Open States)
+
+    def resolve_children(self, info):
+        return self.children.all()
 
 
-class PersonNode(DjangoObjectType):
-    class Meta:
-        model = Person
-        filter_fields = []
-        interfaces = (OCDNode, )
+class PostNode(OCDBaseNode):
+    label = graphene.String()
+    role = graphene.String()
+    organization = OrganizationNode()
+    # division = TODO
+    start_date = graphene.String()
+    end_date = graphene.String()
+    maximum_memberships = graphene.String()
 
-    current_memberships = graphene.List(MembershipType,
+    # contact_details and links not used
+
+
+class PersonNode(OCDBaseNode):
+    name = graphene.String()
+    sort_name = graphene.String()
+    family_name = graphene.String()
+    given_name = graphene.String()
+    image = graphene.String()
+    # not used: gender, summary, national_identity, biography
+    birth_date = graphene.String()
+    death_date = graphene.String()
+
+    # related objects
+    identifiers = graphene.List(IdentifierNode)
+    other_names = graphene.List(NameNode)
+    links = graphene.List(LinkNode)
+    sources = graphene.List(LinkNode)
+    contact_details = graphene.List(ContactDetailNode)
+
+    # special attributes
+    current_memberships = graphene.List('graphapi.core.MembershipNode',
                                         classification=graphene.List(graphene.String)
                                         )
 
@@ -70,62 +108,93 @@ class PersonNode(DjangoObjectType):
         return qs
 
 
-class PersonIdentifierType(DjangoObjectType):
+class MembershipNode(OCDBaseNode):
+    organization = OrganizationNode()
+    person = PersonNode()
+    person_name = graphene.String()
+    post = graphene.String()
+    # on_behalf_of  (not used?)
+    label = graphene.String()
+    role = graphene.String()
+    start_date = graphene.String()
+    end_date = graphene.String()
+
+    # contact_details and links not used
+
+
+class LegislativeSessionNode(graphene.ObjectType):
+    identifier = graphene.String()
+    name = graphene.String()
+    classification = graphene.String()
+    start_date = graphene.String()
+    end_date = graphene.String()
+
+
+class LegislativeSessionConnection(graphene.relay.Connection):
     class Meta:
-        model = PersonIdentifier
-        exclude_fields = ['id', 'person']
+        node = LegislativeSessionNode
 
 
-class PersonNameType(DjangoObjectType):
+class OrganizationConnection(graphene.relay.Connection):
     class Meta:
-        model = PersonName
-        exclude_fields = ['id', 'person']
+        node = OrganizationNode
 
 
-class PersonContactType(DjangoObjectType):
+class JurisdictionNode(graphene.ObjectType):
+    id = graphene.String()
+    name = graphene.String()
+    url = graphene.String()
+    classification = graphene.String()
+    feature_flags = graphene.List(graphene.String)
+
+    legislative_sessions = graphene.relay.ConnectionField(LegislativeSessionConnection)
+    organizations = graphene.relay.ConnectionField(OrganizationConnection,
+                                                   classification=graphene.String())
+
+    def resolve_legislative_sessions(self, info, first=None):
+        return self.legislative_sessions.all()
+
+    def resolve_organizations(self, info, first=None, classification=None):
+        qs = self.organizations.all()
+
+        if classification:
+            qs = qs.filter(classification=classification)
+
+        return qs
+
+
+class JurisdictionConnection(graphene.relay.Connection):
     class Meta:
-        model = PersonContactDetail
-        exclude_fields = ['id', 'person']
-
-
-class PersonLinkType(DjangoObjectType):
-    class Meta:
-        model = PersonLink
-        exclude_fields = ['id', 'person']
-
-
-class PersonSourceType(DjangoObjectType):
-    class Meta:
-        model = PersonSource
-        exclude_fields = ['id', 'person']
-
-
-class JurisdictionNode(DjangoObjectType):
-    class Meta:
-        model = Jurisdiction
-        interfaces = (OCDNode, )
+        node = JurisdictionNode
 
 
 class CoreQuery:
     jurisdiction = graphene.Field(JurisdictionNode,
                                   id=graphene.String(),
                                   name=graphene.String())
-    jurisdictions = DjangoConnectionField(JurisdictionNode)
-    # TODO: multiple jurisdictions - but how do we ensure they can't
-    # traverse deep into bills/etc. from that angle?
+    # jurisdictions = graphene.Field(graphene.List(JurisdictionNode))
+    jurisdictions = graphene.relay.ConnectionField(JurisdictionConnection)
 
-    people = DjangoFilterConnectionField(PersonNode,
-                                         member_of=graphene.String(),
-                                         ever_member_of=graphene.String(),
-                                         chamber=graphene.String(),
-                                         district=graphene.String(),
-                                         name=graphene.String(),
-                                         party=graphene.String(),
-                                         latitude=graphene.Float(),
-                                         longitude=graphene.Float(),
-                                         )
+    # people = DjangoFilterConnectionField(PersonNode,
+    #                                      member_of=graphene.String(),
+    #                                      ever_member_of=graphene.String(),
+    #                                      chamber=graphene.String(),
+    #                                      district=graphene.String(),
+    #                                      name=graphene.String(),
+    #                                      party=graphene.String(),
+    #                                      latitude=graphene.Float(),
+    #                                      longitude=graphene.Float(),
+    #                                      )
     person = graphene.Field(PersonNode, id=graphene.ID())
     organization = graphene.Field(OrganizationNode, id=graphene.ID())
+
+    def resolve_jurisdictions(self, info):
+        # info.field_asts[0].selection_set.selections[2]
+        return Jurisdiction.objects.all()
+    #.prefetch_related(#'legislative_sessions',
+                                                           #'organizations',
+                                                           #'organizations__children'
+                                                          # )
 
     def resolve_jurisdiction(self, info, id=None, name=None):
         if id:

@@ -12,15 +12,21 @@ from opencivicdata.legislative.models import (
 from .common import OCDNode
 
 
-class LegislativeSession(DjangoObjectType):
-    class Meta:
-        model = LegislativeSession
-        exclude_fields = ['id']
-        filter_fields = {
-            'identifier': ['exact'],
-            'classification': ['exact'],
-        }
-        use_connection = True
+class LegislativeSessionNode(graphene.ObjectType):
+    identifier = graphene.String()
+    name = graphene.String()
+    classification = graphene.String()
+    startDate = graphene.String()
+    endDate = graphene.String()
+
+    # class Meta:
+    #     model = LegislativeSession
+    #     exclude_fields = ['id', '']
+    #     filter_fields = {
+    #         'identifier': ['exact'],
+    #         'classification': ['exact'],
+    #     }
+    #     use_connection = True
 
 
 class BillNode(DjangoObjectType):
