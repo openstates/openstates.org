@@ -68,7 +68,7 @@ class OrganizationNode(OCDBaseNode):
 class PostNode(OCDBaseNode):
     label = graphene.String()
     role = graphene.String()
-    organization = OrganizationNode()
+    # organization = OrganizationNode()
     # division = TODO
     start_date = graphene.String()
     end_date = graphene.String()
@@ -99,6 +99,21 @@ class PersonNode(OCDBaseNode):
                                         classification=graphene.List(graphene.String)
                                         )
 
+    def resolve_identifiers(self, info):
+        return self.identifiers.all()
+
+    def resolve_other_names(self, info):
+        return self.other_names.all()
+
+    def resolve_links(self, info):
+        return self.links.all()
+
+    def resolve_sources(self, info):
+        return self.sources.all()
+
+    def resolve_contact_details(self, info):
+        return self.contact_details.all()
+
     def resolve_current_memberships(self, info, classification=None):
         today = datetime.date.today().isoformat()
         qs = self.memberships.filter(Q(start_date='') | Q(start_date__lte=today),
@@ -109,10 +124,10 @@ class PersonNode(OCDBaseNode):
 
 
 class MembershipNode(OCDBaseNode):
-    organization = OrganizationNode()
-    person = PersonNode()
+    organization = graphene.Field(OrganizationNode)
+    person = graphene.Field(PersonNode)
     person_name = graphene.String()
-    post = graphene.String()
+    post = graphene.Field(PostNode)
     # on_behalf_of  (not used?)
     label = graphene.String()
     role = graphene.String()
@@ -168,33 +183,36 @@ class JurisdictionConnection(graphene.relay.Connection):
         node = JurisdictionNode
 
 
+class PersonConnection(graphene.relay.Connection):
+    class Meta:
+        node = PersonNode
+
+
 class CoreQuery:
     jurisdiction = graphene.Field(JurisdictionNode,
                                   id=graphene.String(),
                                   name=graphene.String())
-    # jurisdictions = graphene.Field(graphene.List(JurisdictionNode))
     jurisdictions = graphene.relay.ConnectionField(JurisdictionConnection)
 
-    # people = DjangoFilterConnectionField(PersonNode,
-    #                                      member_of=graphene.String(),
-    #                                      ever_member_of=graphene.String(),
-    #                                      chamber=graphene.String(),
-    #                                      district=graphene.String(),
-    #                                      name=graphene.String(),
-    #                                      party=graphene.String(),
-    #                                      latitude=graphene.Float(),
-    #                                      longitude=graphene.Float(),
-    #                                      )
+    people = graphene.relay.ConnectionField(PersonConnection,
+                                            member_of=graphene.String(),
+                                            ever_member_of=graphene.String(),
+                                            chamber=graphene.String(),
+                                            district=graphene.String(),
+                                            name=graphene.String(),
+                                            party=graphene.String(),
+                                            latitude=graphene.Float(),
+                                            longitude=graphene.Float(),
+                                            )
     person = graphene.Field(PersonNode, id=graphene.ID())
     organization = graphene.Field(OrganizationNode, id=graphene.ID())
 
     def resolve_jurisdictions(self, info):
-        # info.field_asts[0].selection_set.selections[2]
         return Jurisdiction.objects.all()
-    #.prefetch_related(#'legislative_sessions',
-                                                           #'organizations',
-                                                           #'organizations__children'
-                                                          # )
+        # info.field_asts[0].selection_set.selections[2]
+        # .prefetch_related(#'legislative_sessions',
+        # 'organizations',
+        # 'organizations__children')
 
     def resolve_jurisdiction(self, info, id=None, name=None):
         if id:
