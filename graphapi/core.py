@@ -3,6 +3,7 @@ import graphene
 from django.db.models import Q
 from opencivicdata.core.models import Jurisdiction, Organization, Person
 from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode
+from .optimization import optimize
 
 
 class ContactDetailNode(graphene.ObjectType):
@@ -92,6 +93,10 @@ class PersonNode(OCDBaseNode):
                                      Q(end_date='') | Q(end_date__gte=today))
         if classification:
             qs = qs.filter(organization__classification__in=classification)
+
+        # if we're getting a membership we're probably going to need org/post
+        qs = qs.select_related('organization', 'post')
+
         return qs
 
 
@@ -145,6 +150,7 @@ class JurisdictionNode(graphene.ObjectType):
     def resolve_organizations(self, info, first=None, classification=None):
         qs = self.organizations.all()
 
+        # TODO: this would need to be optimized w/ a Prefetch() clause
         if classification:
             qs = qs.filter(classification=classification)
 
@@ -162,11 +168,10 @@ class PersonConnection(graphene.relay.Connection):
 
 
 class CoreQuery:
+    jurisdictions = graphene.relay.ConnectionField(JurisdictionConnection)
     jurisdiction = graphene.Field(JurisdictionNode,
                                   id=graphene.String(),
                                   name=graphene.String())
-    jurisdictions = graphene.relay.ConnectionField(JurisdictionConnection)
-
     people = graphene.relay.ConnectionField(PersonConnection,
                                             member_of=graphene.String(),
                                             ever_member_of=graphene.String(),
@@ -181,11 +186,11 @@ class CoreQuery:
     organization = graphene.Field(OrganizationNode, id=graphene.ID())
 
     def resolve_jurisdictions(self, info):
-        return Jurisdiction.objects.all()
-        # info.field_asts[0].selection_set.selections[2]
-        # .prefetch_related(#'legislative_sessions',
-        # 'organizations',
-        # 'organizations__children')
+        qs = Jurisdiction.objects.all()
+        return optimize(qs, info,
+                        {'.legislativeSessions': 'legislative_sessions',
+                         '.organizations': 'organizations',
+                         '.organizations.children': 'organizations__children'})
 
     def resolve_jurisdiction(self, info, id=None, name=None):
         if id:
@@ -229,6 +234,16 @@ class CoreQuery:
                 raise ValueError('invalid lat or lon')
         elif latitude or longitude:
             raise ValueError('must provide lat & lon together')
+
+        qs = optimize(qs, info,
+                      {'.identifiers': 'identifiers',
+                       '.otherNames': 'other_names',
+                       '.links': 'links',
+                       '.sources': 'sources',
+                       '.contactDetails': 'contact_details',
+                       '.currentMemberships': 'memberships',
+                       '.memberships': 'memberships',
+                       })
 
         return qs
 

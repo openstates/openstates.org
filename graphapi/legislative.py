@@ -3,6 +3,7 @@ from opencivicdata.legislative.models import Bill
 from .common import OCDBaseNode
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
+from .optimization import optimize
 
 
 class BillAbstractNode(graphene.ObjectType):
@@ -96,10 +97,10 @@ class BillNode(OCDBaseNode):
         return self.sponsorships.all()
 
     def resolve_documents(self, info):
-        return self.documents.all()
+        return optimize(self.documents.all(), info, {'.links', 'links'})
 
     def resolve_versions(self, info):
-        return self.versions.all()
+        return optimize(self.versions.all(), info, {'.links', 'links'})
 
     def resolve_sources(self, info):
         return self.sources.all()
@@ -150,6 +151,21 @@ class LegislativeQuery:
         # TODO: subject
         # if subject:
         #     bills = bills.filter(
+
+        bills = optimize(bills, info, {'.abstracts': 'abstracts',
+                                       '.other_titles': 'other_titles',
+                                       '.other_identifiers': 'other_identifiers',
+                                       '.actions': 'actions',
+                                       '.sponsorships': 'sponsorships',
+                                       '.documents': 'documents',
+                                       '.versions': 'versions',
+                                       '.documents.links': 'documents__links',
+                                       '.versions.links': 'versions__links',
+                                       '.sources': 'sources'},
+                         {'.legislativeSession': 'legislative_session',
+                          '.legislativeSession.jurisdiction': 'legislative_session__jurisdiction',
+                          },
+                         )
         return bills
 
     def resolve_bill(self, info,
