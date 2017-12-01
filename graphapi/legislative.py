@@ -44,6 +44,7 @@ class BillActionNode(graphene.ObjectType):
     classification = graphene.List(graphene.String)
     order = graphene.Int()
     extras = graphene.String()
+    vote = graphene.Field('graphapi.legislative.VoteEventNode')
 
     related_entities = graphene.List(RelatedEntityNode)
 
@@ -80,6 +81,8 @@ class BillNode(OCDBaseNode):
     documents = graphene.List(BillDocumentNode)
     versions = graphene.List(BillDocumentNode)
     sources = graphene.List(LinkNode)
+    votes = graphene.relay.ConnectionField('graphapi.legislative.VoteConnection')
+
 
     def resolve_abstracts(self, info):
         return self.abstracts.all()
@@ -105,10 +108,59 @@ class BillNode(OCDBaseNode):
     def resolve_sources(self, info):
         return self.sources.all()
 
+    def resolve_votes(self, info):
+        return self.votes.all()
+
 
 class BillConnection(graphene.relay.Connection):
     class Meta:
         node = BillNode
+
+
+class VoteCountNode(graphene.ObjectType):
+    option = graphene.String()
+    value = graphene.Int()
+
+
+class PersonVoteNode(graphene.ObjectType):
+    option = graphene.String()
+    voter_name = graphene.String()
+    voter = graphene.Field(PersonNode)
+    note = graphene.String()
+
+
+class VoteEventNode(OCDBaseNode):
+    identifier = graphene.String()
+    motion_text = graphene.String()
+    motion_classification = graphene.List(graphene.String)
+    start_date = graphene.String()
+    end_date = graphene.String()
+    result = graphene.String()
+
+    organization = graphene.Field(OrganizationNode)
+    bill_action = graphene.Field(BillActionNode)
+    # not used for now since only path into VoteEvent is via Bill
+    # legislative_session = graphene.Field(LegislativeSessionNode)
+    # bill = graphene.Field(BillNode)
+
+    # related entities
+    votes = graphene.List(PersonVoteNode)
+    counts = graphene.List(VoteCountNode)
+    sources = graphene.List(LinkNode)
+
+    def resolve_votes(self, info):
+        return self.votes.all()
+
+    def resolve_counts(self, info):
+        return self.counts.all()
+
+    def resolve_sources(self, info):
+        return self.sources.all()
+
+
+class VoteConnection(graphene.relay.Connection):
+    class Meta:
+        node = VoteEventNode
 
 
 class LegislativeQuery:
@@ -138,6 +190,7 @@ class LegislativeQuery:
         # sponsor_id
         # classification
         bills = Bill.objects.all()
+
         if jurisdiction:
             bills = bills.filter(legislative_session__jurisdiction__name=jurisdiction)
         if chamber:
@@ -161,11 +214,20 @@ class LegislativeQuery:
                                        '.versions': 'versions',
                                        '.documents.links': 'documents__links',
                                        '.versions.links': 'versions__links',
-                                       '.sources': 'sources'},
+                                       '.sources': 'sources',
+                                       '.votes': 'votes',
+                                       '.votes.counts': 'votes__counts',
+                                       '.votes.votes': 'votes__votes',
+                                       },
                          {'.legislativeSession': 'legislative_session',
                           '.legislativeSession.jurisdiction': 'legislative_session__jurisdiction',
                           },
                          )
+
+        # limiting
+        if first:
+            bills = bills[:first]
+
         return bills
 
     def resolve_bill(self, info,
