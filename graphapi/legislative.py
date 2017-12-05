@@ -234,9 +234,13 @@ class LegislativeQuery:
                      ):
         bill = None
         if jurisdiction and session and identifier:
-            bill = Bill.objects.get(legislative_session__jurisdiction__name=jurisdiction,
-                                    legislative_session__identifier=session,
-                                    identifier=identifier)
+            query = dict(legislative_session__identifier=session,
+                         identifier=identifier)
+            if jurisdiction.startswith('ocd-jurisdiction'):
+                query['legislative_session__jurisdiction_id'] = jurisdiction
+            else:
+                query['legislative_session__jurisdiction__name'] = jurisdiction
+            bill = Bill.objects.get(**query)
         if id:
             bill = Bill.objects.get(id=id)
 

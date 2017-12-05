@@ -29,7 +29,7 @@ def setup():
     b1.actions.create(description='Introduced', order=10, organization=house)
     b1.actions.create(description='Amended', order=20, organization=house)
     b1.actions.create(description='Passed House', order=30, organization=house)
-    # add related_entities & related bill
+    # TODO: add related_entities & related bill
     b1.sponsorships.create(primary=True, classification='sponsor', name='Adam One')
     b1.sponsorships.create(primary=False, classification='cosponsor', name='Beth Two')
     d = b1.documents.create(note='Fiscal Note')
@@ -55,8 +55,7 @@ def setup():
 @pytest.mark.django_db
 def test_bill_by_id(django_assert_num_queries):
     with django_assert_num_queries(11):
-        result = schema.execute('''
-        {
+        result = schema.execute(''' {
             bill(id:"ocd-bill/123") {
                 title
                 classification
@@ -106,6 +105,50 @@ def test_bill_by_id(django_assert_num_queries):
     assert len(result.data['bill']['versions'][0]['links']) == 2
     assert len(result.data['bill']['sources']) == 3
 
-# @pytest.mark.django_db
-# def test_bill_by_jurisdiction_session_identifier():
-#     pass
+
+@pytest.mark.django_db
+def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
+    with django_assert_num_queries(1):
+        result = schema.execute(''' {
+            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak",
+                 session:"2018",
+                 identifier:"HB 1") {
+                title
+            }
+        }''')
+        assert result.errors is None
+        assert result.data['bill']['title'] == 'Moose Freedom Act'
+
+
+@pytest.mark.django_db
+def test_bill_by_jurisdiction_name_session_identifier(django_assert_num_queries):
+    with django_assert_num_queries(1):
+        result = schema.execute(''' {
+            bill(jurisdiction:"Alaska", session:"2018", identifier:"HB 1") {
+                title
+            }
+        }''')
+        assert result.errors is None
+        assert result.data['bill']['title'] == 'Moose Freedom Act'
+
+
+@pytest.mark.django_db
+def test_bill_by_jurisdiction_session_identifier_incomplete():
+    result = schema.execute(''' {
+        bill(jurisdiction:"Alaska", identifier:"HB 1") {
+            title
+        }
+    }''')
+    assert len(result.errors) == 1
+    assert 'must either pass' in result.errors[0].message
+
+
+@pytest.mark.django_db
+def test_bill_by_jurisdiction_session_identifier_404():
+    result = schema.execute(''' {
+        bill(jurisdiction:"Alaska", session:"2018" identifier:"HB 404") {
+            title
+        }
+    }''')
+    assert len(result.errors) == 1
+    assert 'does not exist' in result.errors[0].message
