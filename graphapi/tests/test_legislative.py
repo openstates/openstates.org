@@ -74,6 +74,7 @@ def test_bill_by_id(django_assert_num_queries):
                     description
                     organization {
                         name
+                        classification
                     }
                 }
                 sponsorships {
@@ -97,7 +98,13 @@ def test_bill_by_id(django_assert_num_queries):
     assert result.data['bill']['classification'] == ['bill', 'constitutional amendment']
     assert result.data['bill']['subject'] == ['nature']
     assert len(result.data['bill']['abstracts']) == 2
-
+    assert len(result.data['bill']['otherTitles']) == 3
+    assert len(result.data['bill']['actions']) == 3
+    assert result.data['bill']['actions'][0]['organization']['classification'] == 'lower'
+    assert len(result.data['bill']['sponsorships']) == 2
+    assert len(result.data['bill']['documents'][0]['links']) == 1
+    assert len(result.data['bill']['versions'][0]['links']) == 2
+    assert len(result.data['bill']['sources']) == 3
 
 # @pytest.mark.django_db
 # def test_bill_by_jurisdiction_session_identifier():

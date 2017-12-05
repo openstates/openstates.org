@@ -93,7 +93,7 @@ class BillNode(OCDBaseNode):
         return self.other_identifiers.all()
 
     def resolve_actions(self, info):
-        return self.actions.all()
+        return optimize(self.actions.all(), info, [], ['.organization'])
 
     def resolve_sponsorships(self, info):
         return self.sponsorships.all()
