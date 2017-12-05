@@ -1,11 +1,23 @@
+import re
+
+
+def _to_snake(word):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', word)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+def transform_path(path):
+    pieces = path.split('.')
+    if pieces[0] != '':
+        raise ValueError('field path must start with .')
+
+    return '__'.join(_to_snake(piece) for piece in pieces[1:])
 
 
 def get_field_names(info):
     # info.operation has the entire operation, could be used for
     # cross-query optimization potentially
-    return list(_yield_field_names(info.field_asts[0].selection_set,
-                                   ''))
-    # info.field_asts[0].name.value))
+    return list(_yield_field_names(info.field_asts[0].selection_set, ''))
 
 
 def _yield_field_names(selection_set, prefix):
@@ -25,17 +37,15 @@ def optimize(queryset, info, prefetch, select_related=None):
     to_select = set()
     field_names = get_field_names(info)
 
-    for field, prefetch in prefetch.items():
+    for field in prefetch:
         if field in field_names:
-            to_prefetch.add(prefetch)
-
-    print('prefetching', to_prefetch)
+            to_prefetch.add(transform_path(field))
+    queryset = queryset.prefetch_related(*to_prefetch)
 
     if select_related:
-        for field, select in select_related.items():
+        for field in select_related:
             if field in field_names:
-                to_select.add(select)
+                to_select.add(transform_path(field))
         queryset = queryset.select_related(*to_select)
 
-    queryset = queryset.prefetch_related(*to_prefetch)
     return queryset

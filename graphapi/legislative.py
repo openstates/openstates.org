@@ -83,7 +83,6 @@ class BillNode(OCDBaseNode):
     sources = graphene.List(LinkNode)
     votes = graphene.relay.ConnectionField('graphapi.legislative.VoteConnection')
 
-
     def resolve_abstracts(self, info):
         return self.abstracts.all()
 
@@ -100,10 +99,10 @@ class BillNode(OCDBaseNode):
         return self.sponsorships.all()
 
     def resolve_documents(self, info):
-        return optimize(self.documents.all(), info, {'.links', 'links'})
+        return optimize(self.documents.all(), info, ['.links'])
 
     def resolve_versions(self, info):
-        return optimize(self.versions.all(), info, {'.links', 'links'})
+        return optimize(self.versions.all(), info, ['.links'])
 
     def resolve_sources(self, info):
         return self.sources.all()
@@ -180,7 +179,7 @@ class LegislativeQuery:
                                            )
 
     def resolve_bills(self, info,
-                      first=None,
+                      first=None, after=None,
                       jurisdiction=None, chamber=None, session=None,
                       updated_since=None, classification=None,
                       #subject=None,
@@ -205,28 +204,26 @@ class LegislativeQuery:
         # if subject:
         #     bills = bills.filter(
 
-        bills = optimize(bills, info, {'.abstracts': 'abstracts',
-                                       '.other_titles': 'other_titles',
-                                       '.other_identifiers': 'other_identifiers',
-                                       '.actions': 'actions',
-                                       '.sponsorships': 'sponsorships',
-                                       '.documents': 'documents',
-                                       '.versions': 'versions',
-                                       '.documents.links': 'documents__links',
-                                       '.versions.links': 'versions__links',
-                                       '.sources': 'sources',
-                                       '.votes': 'votes',
-                                       '.votes.counts': 'votes__counts',
-                                       '.votes.votes': 'votes__votes',
-                                       },
-                         {'.legislativeSession': 'legislative_session',
-                          '.legislativeSession.jurisdiction': 'legislative_session__jurisdiction',
-                          },
+        bills = optimize(bills, info, ['.abstracts',
+                                       '.otherTitles',
+                                       '.otherIdentifiers',
+                                       '.actions',
+                                       '.sponsorships',
+                                       '.documents',
+                                       '.versions',
+                                       '.documents.links',
+                                       '.versions.links',
+                                       '.sources',
+                                       '.votes',
+                                       '.votes.counts',
+                                       '.votes.votes',
+                                       ],
+                         ['.legislativeSession' '.legislativeSession.jurisdiction'],
                          )
 
         # limiting
         if first:
-            bills = bills[:first]
+            bills = bills[:first+1]
 
         return bills
 

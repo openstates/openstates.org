@@ -188,9 +188,9 @@ class CoreQuery:
     def resolve_jurisdictions(self, info):
         qs = Jurisdiction.objects.all()
         return optimize(qs, info,
-                        {'.legislativeSessions': 'legislative_sessions',
-                         '.organizations': 'organizations',
-                         '.organizations.children': 'organizations__children'})
+                        ['.legislativeSessions',
+                         '.organizations',
+                         '.organizations.children'])
 
     def resolve_jurisdiction(self, info, id=None, name=None):
         if id:
@@ -236,14 +236,14 @@ class CoreQuery:
             raise ValueError('must provide lat & lon together')
 
         qs = optimize(qs, info,
-                      {'.identifiers': 'identifiers',
-                       '.otherNames': 'other_names',
-                       '.links': 'links',
-                       '.sources': 'sources',
-                       '.contactDetails': 'contact_details',
-                       '.currentMemberships': 'memberships',
-                       '.memberships': 'memberships',
-                       })
+                      ['.identifiers',
+                       '.otherNames',
+                       '.links',
+                       '.sources',
+                       '.contactDetails',
+                       # TODO: '.currentMemberships': 'memberships',
+                       '.memberships',
+                       ])
 
         return qs
 
