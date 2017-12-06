@@ -12,7 +12,7 @@ def setup():
 def test_bill_by_id(django_assert_num_queries):
     with django_assert_num_queries(11):
         result = schema.execute(''' {
-            bill(id:"ocd-bill/123") {
+            bill(id:"ocd-bill/1") {
                 title
                 classification
                 subject
@@ -108,3 +108,73 @@ def test_bill_by_jurisdiction_session_identifier_404():
     }''')
     assert len(result.errors) == 1
     assert 'does not exist' in result.errors[0].message
+
+
+@pytest.mark.django_db
+def test_bills_queries():
+    pass
+
+
+@pytest.mark.django_db
+def test_bills_by_jurisdiction(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+            ak: bills(jurisdiction:"Alaska") {
+                edges { node { title } }
+            }
+            wy: bills(jurisdiction:"ocd-jurisdiction/country:us/state:wy") {
+                edges { node { title } }
+            }
+        }''')
+    assert result.errors is None
+    # 26 total bills created
+    assert len(result.data['ak']['edges'] + result.data['wy']['edges']) == 26
+
+
+@pytest.mark.django_db
+def test_bills_by_chamber(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+            lower: bills(chamber:"lower") {
+                edges { node { title } }
+            }
+            upper: bills(chamber:"upper") {
+                edges { node { title } }
+            }
+        }''')
+    assert result.errors is None
+    # 26 total bills created
+    assert len(result.data['lower']['edges'] + result.data['upper']['edges']) == 26
+
+
+@pytest.mark.django_db
+def test_bills_by_session(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+            y2018: bills(session:"2018") {
+                edges { node { title } }
+            }
+            y2017: bills(session:"2017") {
+                edges { node { title } }
+            }
+        }''')
+    assert result.errors is None
+    # 26 total bills created
+    assert len(result.data['y2017']['edges'] + result.data['y2018']['edges']) == 26
+
+
+@pytest.mark.django_db
+def test_bills_by_updated_since():
+    pass
+
+@pytest.mark.django_db
+def test_bills_by_classification():
+    pass
+
+@pytest.mark.django_db
+def test_bills_by_subject():
+    pass
+
+@pytest.mark.django_db
+def test_bills_pagination():
+    pass

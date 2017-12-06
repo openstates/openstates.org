@@ -1,17 +1,46 @@
+import uuid
+import random
 from opencivicdata.core.models import Division, Jurisdiction, Organization
 from opencivicdata.legislative.models import Bill
 
 
+def make_random_bill():
+    state = random.choice(Jurisdiction.objects.all())
+    session = random.choice(state.legislative_sessions.all())
+    org = state.organizations.get(classification=random.choice(('upper', 'lower')))
+    b = Bill.objects.create(id='ocd-bill/' + str(uuid.uuid4()),
+                            title='Bill Title',
+                            identifier=(random.choice(('HB', 'SB', 'HR', 'SR')) +
+                                        str(random.randint(1000, 3000))),
+                            legislative_session=session,
+                            from_organization=org,
+                            classification=[random.choice(['bill', 'resolution'])],
+                            subject=[random.choice('abcdefghijklmnopqrstuvwxyz') for _ in range(10)],
+                            )
+    return b
+
+
 def populate_db():
-    d = Division.objects.create(id='ocd-division/country:us/state:ak', name='Alaska')
-    j = Jurisdiction.objects.create(id='ocd-jurisdiction/country:us/state:ak', name='Alaska',
-                                    division=d)
-    session = j.legislative_sessions.create(identifier='2018', name='2018')
-    legislature = Organization.objects.create(jurisdiction=j, classification='legislature',
-                                              name='Alaska Legislature')
-    house = Organization.objects.create(jurisdiction=j, parent=legislature,
-                                        classification='lower', name='Alaska House')
-    b1 = Bill.objects.create(id='ocd-bill/123', title='Moose Freedom Act', identifier='HB 1',
+    for abbr, state in (('ak', 'Alaska'), ('wy', 'Wyoming')):
+        d = Division.objects.create(id='ocd-division/country:us/state:' + abbr,
+                                    name=state)
+        j = Jurisdiction.objects.create(id='ocd-jurisdiction/country:us/state:' + abbr,
+                                        name=state, division=d)
+        j.legislative_sessions.create(identifier='2017', name='2017')
+        j.legislative_sessions.create(identifier='2018', name='2018')
+
+        leg = Organization.objects.create(jurisdiction=j, classification='legislature',
+                                          name=state + ' Legislature')
+        Organization.objects.create(jurisdiction=j, parent=leg,
+                                    classification='lower', name=state + ' House')
+        Organization.objects.create(jurisdiction=j, parent=leg,
+                                    classification='upper', name=state + ' Senate')
+
+    alaska = Jurisdiction.objects.get(name='Alaska')
+    session = alaska.legislative_sessions.get(identifier='2018')
+    house = alaska.organizations.get(classification='lower')
+
+    b1 = Bill.objects.create(id='ocd-bill/1', title='Moose Freedom Act', identifier='HB 1',
                              legislative_session=session, from_organization=house,
                              classification=['bill', 'constitutional amendment'],
                              subject=['nature'],
@@ -43,7 +72,5 @@ def populate_db():
     b1.sources.create(url='https://example.com/s2')
     b1.sources.create(url='https://example.com/s3')
 
-    b2 = Bill.objects.create(id='ocd-bill/abc', title='North Pole Protection Act',
-                             identifier='HB 2', legislative_session=session,
-                             from_organization=house, classification=['bill'],
-                             subject=['nature', 'holidays'])
+    for x in range(25):
+        make_random_bill()

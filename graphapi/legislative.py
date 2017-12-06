@@ -6,6 +6,16 @@ from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
 from .optimization import optimize
 
 
+def jurisdiction_query(jurisdiction):
+    query = {}
+    if jurisdiction.startswith('ocd-jurisdiction'):
+        query['legislative_session__jurisdiction_id'] = jurisdiction
+    else:
+        query['legislative_session__jurisdiction__name'] = jurisdiction
+    print(query)
+    return query
+
+
 class BillAbstractNode(graphene.ObjectType):
     abstract = graphene.String()
     note = graphene.String()
@@ -191,7 +201,7 @@ class LegislativeQuery:
         bills = Bill.objects.all()
 
         if jurisdiction:
-            bills = bills.filter(legislative_session__jurisdiction__name=jurisdiction)
+            bills = bills.filter(**jurisdiction_query(jurisdiction))
         if chamber:
             bills = bills.filter(from_organization__classification=chamber)
         if session:
@@ -236,10 +246,7 @@ class LegislativeQuery:
         if jurisdiction and session and identifier:
             query = dict(legislative_session__identifier=session,
                          identifier=identifier)
-            if jurisdiction.startswith('ocd-jurisdiction'):
-                query['legislative_session__jurisdiction_id'] = jurisdiction
-            else:
-                query['legislative_session__jurisdiction__name'] = jurisdiction
+            query.update(jurisdiction_query(jurisdiction))
             bill = Bill.objects.get(**query)
         if id:
             bill = Bill.objects.get(id=id)
