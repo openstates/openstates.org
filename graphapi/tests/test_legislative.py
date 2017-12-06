@@ -1,5 +1,7 @@
+import datetime
 import pytest
 from graphapi.schema import schema
+from opencivicdata.legislative.models import Bill
 from .utils import populate_db
 
 
@@ -111,11 +113,6 @@ def test_bill_by_jurisdiction_session_identifier_404():
 
 
 @pytest.mark.django_db
-def test_bills_queries():
-    pass
-
-
-@pytest.mark.django_db
 def test_bills_by_jurisdiction(django_assert_num_queries):
     with django_assert_num_queries(2):
         result = schema.execute(''' {
@@ -163,17 +160,122 @@ def test_bills_by_session(django_assert_num_queries):
     assert len(result.data['y2017']['edges'] + result.data['y2018']['edges']) == 26
 
 
-@pytest.mark.django_db
-def test_bills_by_updated_since():
-    pass
 
 @pytest.mark.django_db
-def test_bills_by_classification():
-    pass
+def test_bills_by_classification(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+            bills: bills(classification: "bill") {
+                edges { node { title } }
+            }
+            resolutions: bills(classification: "resolution") {
+                edges { node { title } }
+            }
+        }''')
+    assert result.errors is None
+    # 26 total bills created
+    assert len(result.data['bills']['edges'] + result.data['resolutions']['edges']) == 26
+
 
 @pytest.mark.django_db
 def test_bills_by_subject():
-    pass
+    result = schema.execute(''' {
+        a: bills(subject:"a") {
+            edges { node { title, subject } }
+        }
+        b: bills(subject:"b") {
+            edges { node { title, subject } }
+        }
+        c: bills(subject:"c") {
+            edges { node { title, subject } }
+        }
+        d: bills(subject:"d") {
+            edges { node { title, subject } }
+        }
+        e: bills(subject:"e") {
+            edges { node { title, subject } }
+        }
+        f: bills(subject:"f") {
+            edges { node { title, subject } }
+        }
+    }''')
+    assert result.errors is None
+
+    # some sanity checking on subject responses
+    count = 0
+    for subj, bills in result.data.items():
+        for bill in bills['edges']:
+            assert subj in bill['node']['subject']
+            count += 1
+    assert count > 0
+
+
+@pytest.mark.django_db
+def test_bills_by_updated_since():
+    # set updated timestamps
+    middle_date = Bill.objects.all().order_by('updated_at')[20].updated_at
+
+    result = schema.execute('''{
+        all: bills(updatedSince: "2017-01-01T00:00:00Z") {
+            edges { node { title } }
+        }
+        some: bills(updatedSince: "%s") {
+            edges { node { title } }
+        }
+        none: bills(updatedSince: "2030-01-01T00:00:00Z") {
+            edges { node { title } }
+        }
+    }''' % middle_date)
+
+    assert result.errors is None
+    assert len(result.data['all']['edges']) == 26
+    assert len(result.data['some']['edges']) == 6
+    assert len(result.data['none']['edges']) == 0
+
+
+@pytest.mark.django_db
+def test_bills_queries(django_assert_num_queries):
+    with django_assert_num_queries(12):
+        result = schema.execute(''' {
+            bills { edges { node {
+                title
+                classification
+                subject
+                abstracts {
+                    abstract
+                }
+                otherTitles {
+                    title
+                }
+                otherIdentifiers {
+                    identifier
+                }
+                actions {
+                    description
+                    organization {
+                        name
+                        classification
+                    }
+                }
+                sponsorships {
+                    name
+                    classification
+                }
+                documents {
+                    note
+                    links { url }
+                }
+                versions {
+                    note
+                    links { url }
+                }
+                sources { url }
+            } } }
+        }''')
+
+    assert result.errors is None
+    assert len(result.data['bills']['edges']) == 26
+
 
 @pytest.mark.django_db
 def test_bills_pagination():

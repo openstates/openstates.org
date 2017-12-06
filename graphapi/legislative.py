@@ -12,7 +12,6 @@ def jurisdiction_query(jurisdiction):
         query['legislative_session__jurisdiction_id'] = jurisdiction
     else:
         query['legislative_session__jurisdiction__name'] = jurisdiction
-    print(query)
     return query
 
 
@@ -103,16 +102,21 @@ class BillNode(OCDBaseNode):
         return self.other_identifiers.all()
 
     def resolve_actions(self, info):
-        return optimize(self.actions.all(), info, [], ['.organization'])
+        if 'actions' not in getattr(self, '_prefetched_objects_cache', []):
+            return optimize(self.actions.all(), info, [], ['.organization'])
+        else:
+            return self.actions.all()
 
     def resolve_sponsorships(self, info):
         return self.sponsorships.all()
 
     def resolve_documents(self, info):
-        return optimize(self.documents.all(), info, ['.links'])
+        if 'documents' not in getattr(self, '_prefetched_objects_cache', []):
+            return optimize(self.documents.all(), info, ['.links'])
 
     def resolve_versions(self, info):
-        return optimize(self.versions.all(), info, ['.links'])
+        if 'versions' not in getattr(self, '_prefetched_objects_cache', []):
+            return optimize(self.versions.all(), info, ['.links'])
 
     def resolve_sources(self, info):
         return self.sources.all()
@@ -192,7 +196,7 @@ class LegislativeQuery:
                       first=None, after=None,
                       jurisdiction=None, chamber=None, session=None,
                       updated_since=None, classification=None,
-                      #subject=None,
+                      subject=None,
                       ):
         # bill_id/bill_id__in
         # q (full text)
@@ -210,14 +214,14 @@ class LegislativeQuery:
             bills = bills.filter(updated_at__gte=updated_since)
         if classification:
             bills = bills.filter(classification__contains=[classification])
-        # TODO: subject
-        # if subject:
-        #     bills = bills.filter(
+        if subject:
+            bills = bills.filter(subject__contains=[subject])
 
         bills = optimize(bills, info, ['.abstracts',
                                        '.otherTitles',
                                        '.otherIdentifiers',
                                        '.actions',
+                                       '.actions.organization',
                                        '.sponsorships',
                                        '.documents',
                                        '.versions',
