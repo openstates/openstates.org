@@ -1,4 +1,3 @@
-import datetime
 import pytest
 from graphapi.schema import schema
 from opencivicdata.legislative.models import Bill
@@ -114,7 +113,8 @@ def test_bill_by_jurisdiction_session_identifier_404():
 
 @pytest.mark.django_db
 def test_bills_by_jurisdiction(django_assert_num_queries):
-    with django_assert_num_queries(2):
+    # 2 bills queries + 2 count queries
+    with django_assert_num_queries(4):
         result = schema.execute(''' {
             ak: bills(jurisdiction:"Alaska") {
                 edges { node { title } }
@@ -130,7 +130,7 @@ def test_bills_by_jurisdiction(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bills_by_chamber(django_assert_num_queries):
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(4):
         result = schema.execute(''' {
             lower: bills(chamber:"lower") {
                 edges { node { title } }
@@ -146,7 +146,7 @@ def test_bills_by_chamber(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bills_by_session(django_assert_num_queries):
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(4):
         result = schema.execute(''' {
             y2018: bills(session:"2018") {
                 edges { node { title } }
@@ -163,7 +163,7 @@ def test_bills_by_session(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bills_by_classification(django_assert_num_queries):
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(4):
         result = schema.execute(''' {
             bills: bills(classification: "bill") {
                 edges { node { title } }
@@ -235,7 +235,7 @@ def test_bills_by_updated_since():
 
 @pytest.mark.django_db
 def test_bills_queries(django_assert_num_queries):
-    with django_assert_num_queries(12):
+    with django_assert_num_queries(13):
         result = schema.execute(''' {
             bills { edges { node {
                 title

@@ -1,4 +1,6 @@
 import graphene
+from collections import Iterable
+from graphql_relay.connection.arrayconnection import connection_from_list_slice
 
 
 class OCDBaseNode(graphene.ObjectType):
@@ -23,3 +25,30 @@ class NameNode(graphene.ObjectType):
     note = graphene.String()
     start_date = graphene.String()
     end_date = graphene.String()
+
+
+class DjangoConnectionField(graphene.relay.ConnectionField):
+    @classmethod
+    def resolve_connection(cls, connection_type, args, resolved):
+        if isinstance(resolved, connection_type):
+            return resolved
+
+        if not isinstance(resolved, Iterable):
+            raise AssertionError('Resolved value from the connection field have to be '
+                                 'iterable or instance of {}. Received "{}"'
+                                 ).format(connection_type, type(resolved))
+
+        _len = resolved.count()
+
+        connection = connection_from_list_slice(
+            list_slice=resolved,
+            args=args,
+            connection_type=connection_type,
+            edge_type=connection_type.Edge,
+            pageinfo_type=graphene.relay.PageInfo,
+            slice_start=0,
+            list_length=_len,
+            list_slice_length=_len,
+        )
+        connection.iterable = resolved
+        return connection

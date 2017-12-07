@@ -1,6 +1,6 @@
 import graphene
 from opencivicdata.legislative.models import Bill
-from .common import OCDBaseNode
+from .common import OCDBaseNode, DjangoConnectionField
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
 from .optimization import optimize
@@ -90,7 +90,7 @@ class BillNode(OCDBaseNode):
     documents = graphene.List(BillDocumentNode)
     versions = graphene.List(BillDocumentNode)
     sources = graphene.List(LinkNode)
-    votes = graphene.relay.ConnectionField('graphapi.legislative.VoteConnection')
+    votes = DjangoConnectionField('graphapi.legislative.VoteConnection')
 
     def resolve_abstracts(self, info):
         return self.abstracts.all()
@@ -183,17 +183,17 @@ class LegislativeQuery:
                           session=graphene.String(),
                           identifier=graphene.String(),
                           )
-    bills = graphene.relay.ConnectionField(BillConnection,
-                                           jurisdiction=graphene.String(),
-                                           session=graphene.String(),
-                                           chamber=graphene.String(),
-                                           updated_since=graphene.String(),
-                                           subject=graphene.String(),
-                                           classification=graphene.String(),
-                                           )
+    bills = DjangoConnectionField(BillConnection,
+                                  jurisdiction=graphene.String(),
+                                  session=graphene.String(),
+                                  chamber=graphene.String(),
+                                  updated_since=graphene.String(),
+                                  subject=graphene.String(),
+                                  classification=graphene.String(),
+                                  )
 
     def resolve_bills(self, info,
-                      first=None, after=None,
+                      before=None, after=None, first=None, last=None,
                       jurisdiction=None, chamber=None, session=None,
                       updated_since=None, classification=None,
                       subject=None,
@@ -234,10 +234,6 @@ class LegislativeQuery:
                                        ],
                          ['.legislativeSession' '.legislativeSession.jurisdiction'],
                          )
-
-        # limiting
-        if first:
-            bills = bills[:first+1]
 
         return bills
 
