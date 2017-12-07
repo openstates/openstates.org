@@ -11,7 +11,3 @@ def test_transform_path():
 
     for input, output in examples:
         assert transform_path(input) == output
-
-
-# def test_optimize_basics():
-#     raise Exception('write this')
