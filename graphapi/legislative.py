@@ -201,7 +201,6 @@ class LegislativeQuery:
         # bill_id/bill_id__in
         # q (full text)
         # sponsor_id
-        # classification
         bills = Bill.objects.all()
 
         if jurisdiction:

@@ -278,5 +278,54 @@ def test_bills_queries(django_assert_num_queries):
 
 
 @pytest.mark.django_db
-def test_bills_pagination():
-    pass
+def test_bills_pagination_forward():
+    bills = []
+
+    result = schema.execute('''{
+        bills(first: 5) {
+            edges { node { identifier } }
+            pageInfo { endCursor hasNextPage }
+        }
+    }''')
+    page = [n['node']['identifier'] for n in result.data['bills']['edges']]
+    bills += page
+
+    while result.data['bills']['pageInfo']['hasNextPage']:
+        result = schema.execute('''{
+            bills(first: 5, after:"%s") {
+                edges { node { identifier } }
+                pageInfo { endCursor hasNextPage }
+            }
+        }''' % result.data['bills']['pageInfo']['endCursor'])
+        page = [n['node']['identifier'] for n in result.data['bills']['edges']]
+        bills += page
+        assert len(page) <= 5
+
+    assert len(bills) == 26
+
+
+@pytest.mark.django_db
+def test_bills_pagination_backward():
+    bills = []
+
+    result = schema.execute('''{
+        bills(last: 5) {
+            edges { node { identifier } }
+            pageInfo { startCursor hasPreviousPage }
+        }
+    }''')
+    page = [n['node']['identifier'] for n in result.data['bills']['edges']]
+    bills += page
+
+    while result.data['bills']['pageInfo']['hasPreviousPage']:
+        result = schema.execute('''{
+            bills(last: 5, before:"%s") {
+                edges { node { identifier } }
+                pageInfo { startCursor hasPreviousPage }
+            }
+        }''' % result.data['bills']['pageInfo']['startCursor'])
+        page = [n['node']['identifier'] for n in result.data['bills']['edges']]
+        bills += page
+        assert len(page) <= 5
+
+    assert len(bills) == 26
