@@ -144,13 +144,21 @@ class JurisdictionNode(graphene.ObjectType):
     organizations = graphene.relay.ConnectionField(OrganizationConnection,
                                                    classification=graphene.String())
 
-    def resolve_legislative_sessions(self, info, first=None):
+    def resolve_legislative_sessions(self, info,
+                                     first=None, last=None, before=None, after=None):
         return self.legislative_sessions.all()
 
-    def resolve_organizations(self, info, first=None, classification=None):
+    def resolve_organizations(self, info,
+                              first=None, last=None, before=None, after=None,
+                              classification=None):
+
+        # special case filtering if organizations are prefetched
+        if classification and 'organizations' in getattr(self, '_prefetched_objects_cache', []):
+            return [o for o in self._prefetched_objects_cache['organizations']
+                    if o.classification == classification]
+
         qs = self.organizations.all()
 
-        # TODO: this would need to be optimized w/ a Prefetch() clause
         if classification:
             qs = qs.filter(classification=classification)
 
