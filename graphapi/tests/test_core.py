@@ -1,5 +1,6 @@
 import pytest
 from graphapi.schema import schema
+from opencivicdata.core.models import Organization
 from .utils import populate_db
 
 
@@ -153,6 +154,36 @@ def test_person_num_queries():
 def test_person_current_memberships():
     pass
 
+
 @pytest.mark.django_db
-def test_organization_num_queries():
-    pass
+def test_organization_num_queries(django_assert_num_queries):
+    # get targets
+    leg = Organization.objects.get(jurisdiction__name='Wyoming', classification='legislature')
+    sen = Organization.objects.get(jurisdiction__name='Wyoming', classification='upper')
+
+    # 1 query for legislature, 1 query each for children, identifier, names, links, sources
+    # 1 query for senate w/ parent
+    with django_assert_num_queries(7):
+        result = schema.execute(''' {
+            leg: organization(id: "%s") {
+                name
+                classification
+                children(classification: "upper") {
+                    edges { node { classification } }
+                }
+                identifiers { identifier }
+                otherNames { name }
+                links { url }
+                sources { url }
+            }
+            senate: organization(id: "%s") {
+                name
+                parent {
+                    name
+                }
+            }
+        }
+    ''' % (leg.id, sen.id))
+    assert result.errors is None
+    assert len(result.data['leg']['children']['edges']) == 1
+    assert result.data['senate']['parent']['name'] == 'Wyoming Legislature'

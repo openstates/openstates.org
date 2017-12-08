@@ -6,6 +6,22 @@ from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode
 from .optimization import optimize
 
 
+def _resolve_suborganizations(root_obj, field_name, classification=None):
+    """ resolve organizations by classification optionally using the prefetch cache """
+
+    # special case filtering if organizations are prefetched
+    if classification and field_name in getattr(root_obj, '_prefetched_objects_cache', []):
+        return [o for o in root_obj._prefetched_objects_cache[field_name]
+                if o.classification == classification]
+
+    qs = getattr(root_obj, field_name).all()
+
+    if classification:
+        qs = qs.filter(classification=classification)
+
+    return qs
+
+
 class ContactDetailNode(graphene.ObjectType):
     type = graphene.String()
     value = graphene.String()
@@ -32,10 +48,21 @@ class OrganizationNode(OCDBaseNode):
     other_names = graphene.List(NameNode)
     links = graphene.List(LinkNode)
     sources = graphene.List(LinkNode)
-    # contact_details (not used on Org in Open States)
 
-    def resolve_children(self, info):
-        return self.children.all()
+    def resolve_children(self, info, classification=None):
+        return _resolve_suborganizations(self, 'children', classification)
+
+    def resolve_identifiers(self, info):
+        return self.identifiers.all()
+
+    def resolve_other_names(self, info):
+        return self.other_names.all()
+
+    def resolve_links(self, info):
+        return self.links.all()
+
+    def resolve_sources(self, info):
+        return self.sources.all()
 
 
 class PostNode(OCDBaseNode):
@@ -151,19 +178,7 @@ class JurisdictionNode(graphene.ObjectType):
     def resolve_organizations(self, info,
                               first=None, last=None, before=None, after=None,
                               classification=None):
-
-        # special case filtering if organizations are prefetched
-        if classification and 'organizations' in getattr(self, '_prefetched_objects_cache', []):
-            return [o for o in self._prefetched_objects_cache['organizations']
-                    if o.classification == classification]
-
-        qs = self.organizations.all()
-
-        if classification:
-            qs = qs.filter(classification=classification)
-
-        return qs
-
+        return _resolve_suborganizations(self, 'organizations', classification)
 
 class JurisdictionConnection(graphene.relay.Connection):
     class Meta:
@@ -259,4 +274,4 @@ class CoreQuery:
         return Person.objects.get(pk=id)
 
     def resolve_organization(self, info, id):
-        return Organization.objects.get(pk=id)
+        return optimize(Organization.objects, info, None, ['.parent']).get(pk=id)
