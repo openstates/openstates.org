@@ -1,6 +1,6 @@
 import pytest
 from graphapi.schema import schema
-from opencivicdata.core.models import Organization
+from opencivicdata.core.models import Organization, Person
 from .utils import populate_db
 
 
@@ -241,17 +241,31 @@ def test_people_num_queries(django_assert_num_queries):
 
 
 @pytest.mark.django_db
-def test_person_num_queries():
-    pass
+def test_person_by_id(django_assert_num_queries):
+    person = Person.objects.get(name='Bob Birch')
+    with django_assert_num_queries(7):
+        result = schema.execute(''' {
+        person(id:"%s") {
+            name
+            image
+            identifiers { identifier }
+            otherNames { name }
+            links { url }
+            sources { url }
+            contactDetails { value label }
+            currentMemberships {
+                post { label }
+                organization { name }
+            }
+        }
+        }''' % person.id)
+    assert result.errors is None
+    assert result.data['person']['name'] == 'Bob Birch'
+    assert len(result.data['person']['currentMemberships']) == 2
 
 
 @pytest.mark.django_db
-def test_person_current_memberships():
-    pass
-
-
-@pytest.mark.django_db
-def test_organization_num_queries(django_assert_num_queries):
+def test_organization_by_id(django_assert_num_queries):
     # get targets
     leg = Organization.objects.get(jurisdiction__name='Wyoming', classification='legislature')
     sen = Organization.objects.get(jurisdiction__name='Wyoming', classification='upper')

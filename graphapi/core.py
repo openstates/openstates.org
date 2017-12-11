@@ -127,8 +127,10 @@ class PersonNode(OCDBaseNode):
         return self.contact_details.all()
 
     def resolve_current_memberships(self, info, classification=None):
-        return self.current_memberships
-        #return _current_membership_filter(self.memberships, classification)
+        if hasattr(self, 'current_memberships'):
+            return self.current_memberships
+        else:
+            return _current_membership_filter(self.memberships, classification)
 
 
 class MembershipNode(OCDBaseNode):
