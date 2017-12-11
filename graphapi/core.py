@@ -1,7 +1,7 @@
 import datetime
 import graphene
-from django.db.models import Q
-from opencivicdata.core.models import Jurisdiction, Organization, Person
+from django.db.models import Q, Prefetch
+from opencivicdata.core.models import Jurisdiction, Organization, Person, Membership
 from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode
 from .optimization import optimize
 
@@ -19,6 +19,18 @@ def _resolve_suborganizations(root_obj, field_name, classification=None):
     if classification:
         qs = qs.filter(classification=classification)
 
+    return qs
+
+
+def _current_membership_filter(qs, classification=None):
+    today = datetime.date.today().isoformat()
+    qs = qs.filter(Q(start_date='') | Q(start_date__lte=today),
+                   Q(end_date='') | Q(end_date__gte=today))
+    if classification:
+        qs = qs.filter(organization__classification__in=classification)
+
+    # if we're getting a membership we're probably going to need org/post
+    qs = qs.select_related('organization', 'post')
     return qs
 
 
@@ -115,16 +127,8 @@ class PersonNode(OCDBaseNode):
         return self.contact_details.all()
 
     def resolve_current_memberships(self, info, classification=None):
-        today = datetime.date.today().isoformat()
-        qs = self.memberships.filter(Q(start_date='') | Q(start_date__lte=today),
-                                     Q(end_date='') | Q(end_date__gte=today))
-        if classification:
-            qs = qs.filter(organization__classification__in=classification)
-
-        # if we're getting a membership we're probably going to need org/post
-        qs = qs.select_related('organization', 'post')
-
-        return qs
+        return self.current_memberships
+        #return _current_membership_filter(self.memberships, classification)
 
 
 class MembershipNode(OCDBaseNode):
@@ -236,11 +240,12 @@ class CoreQuery:
                            Q(other_names__name__icontains=name)
                            )
         if member_of:
-            qs = qs.member_of(member_of)
+            qs = qs.member_of(member_of, post=district)
         if ever_member_of:
-            qs = qs.member_of(ever_member_of, current_only=False)
-
-        # TODO: district
+            qs = qs.member_of(ever_member_of, current_only=False, post=district)
+        if district and not (member_of or ever_member_of):
+            raise ValueError("'district' parameter requires specifying either "
+                             "'memberOf' or 'everMemberOf'")
 
         if party:
             qs = qs.member_of(party)
@@ -258,15 +263,16 @@ class CoreQuery:
         elif latitude or longitude:
             raise ValueError('must provide lat & lon together')
 
-        qs = optimize(qs, info,
-                      ['.identifiers',
-                       '.otherNames',
-                       '.links',
-                       '.sources',
-                       '.contactDetails',
-                       # TODO: '.currentMemberships': 'memberships',
-                       '.memberships',
-                       ])
+        qs = optimize(qs, info, [
+            '.identifiers',
+            '.otherNames',
+            '.links',
+            '.sources',
+            '.contactDetails',
+            ('.currentMemberships',
+             Prefetch('memberships', queryset=_current_membership_filter(Membership.objects),
+                      to_attr='current_memberships')),
+        ])
 
         return qs
 

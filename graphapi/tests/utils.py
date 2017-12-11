@@ -1,6 +1,6 @@
 import uuid
 import random
-from opencivicdata.core.models import Division, Jurisdiction, Organization
+from opencivicdata.core.models import Division, Jurisdiction, Organization, Person
 from opencivicdata.legislative.models import Bill
 
 
@@ -18,6 +18,16 @@ def make_random_bill():
                             subject=[random.choice('abcdefghijklmnopqrstuvwxyz') for _ in range(10)],
                             )
     return b
+
+
+def make_person(name, state, chamber, district, party):
+    org = Organization.objects.get(jurisdiction__name=state, classification=chamber)
+    party, _ = Organization.objects.get_or_create(classification='party', name=party)
+    post = org.posts.create(label=district)
+    p = Person.objects.create(name=name)
+    p.memberships.create(post=post, organization=org)
+    p.memberships.create(organization=party)
+    return p
 
 
 def populate_db():
@@ -39,6 +49,22 @@ def populate_db():
     alaska = Jurisdiction.objects.get(name='Alaska')
     session = alaska.legislative_sessions.get(identifier='2018')
     house = alaska.organizations.get(classification='lower')
+
+    # AK House
+    make_person('Amanda Adams', 'Alaska', 'lower', '1', 'Republican')
+    make_person('Bob Birch', 'Alaska', 'lower', '2', 'Republican')
+    make_person('Carrie Carr', 'Alaska', 'lower', '3', 'Democratic')
+    make_person('Don Dingle', 'Alaska', 'lower', '4', 'Republican')
+    # AK Senate
+    ellen = make_person('Ellen Evil', 'Alaska', 'upper', 'A', 'Independent')
+    make_person('Frank Fur', 'Alaska', 'upper', 'B', 'Democratic')
+    # Ellen used to be a house member
+    post = house.posts.create(label='5')
+    ellen.memberships.create(post=post, organization=house, end_date='2017-01-01')
+
+    # WY House (multi-member districts)
+    make_person('Greta Gonzalez', 'Wyoming', 'lower', '1', 'Democratic')
+    make_person('Hank Horn', 'Wyoming', 'lower', '1', 'Republican')
 
     b1 = Bill.objects.create(id='ocd-bill/1', title='Moose Freedom Act', identifier='HB 1',
                              legislative_session=session, from_organization=house,

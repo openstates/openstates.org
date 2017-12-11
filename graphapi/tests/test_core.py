@@ -119,36 +119,131 @@ def test_jurisdiction_by_name(django_assert_num_queries):
 
 
 @pytest.mark.django_db
-def test_people_by_member_of():
-    pass
+def test_people_by_member_of(django_assert_num_queries):
+    ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
+    with django_assert_num_queries(1):
+        result = schema.execute(''' {
+            people(memberOf: "%s") {
+                edges {
+                    node {
+                        name
+                    }
+                }
+            }
+        }
+    ''' % ak_house.id)
+    assert result.errors is None
+    assert len(result.data['people']['edges']) == 4
+
 
 @pytest.mark.django_db
-def test_people_by_ever_member_of():
-    pass
+def test_people_by_ever_member_of(django_assert_num_queries):
+    ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
+    with django_assert_num_queries(1):
+        result = schema.execute(''' {
+            people(everMemberOf: "%s") {
+                edges {
+                    node {
+                        name
+                    }
+                }
+            }
+        }
+    ''' % ak_house.id)
+    assert result.errors is None
+    # one extra person (Ellen Evil) is added as a former member of the House
+    assert len(result.data['people']['edges']) == 5
+
 
 @pytest.mark.django_db
 def test_people_by_district():
-    pass
+    ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
+    result = schema.execute(''' {
+        ones: people(memberOf: "%s", district: "1") {
+            edges { node { name } }
+        }
+        fives: people(everMemberOf: "%s", district: "5") {
+            edges { node { name } }
+        }
+        bad: people(district: "1") {
+            edges { node { name } }
+        }
+    }
+    ''' % (ak_house.id, ak_house.id))
+    assert "'district' parameter requires" in result.errors[0].message
+    assert len(result.data['ones']['edges']) == 1
+    assert len(result.data['fives']['edges']) == 1
+    assert result.data['bad'] is None
+
 
 @pytest.mark.django_db
 def test_people_by_name():
-    pass
+    result = schema.execute(''' {
+        people(name: "Hank") {
+            edges { node { name } }
+        }
+    }
+    ''')
+    assert result.errors is None
+    assert len(result.data['people']['edges']) == 1
+
 
 @pytest.mark.django_db
 def test_people_by_party():
-    pass
+    result = schema.execute(''' {
+        dems: people(party: "Democratic") {
+            edges { node { name } }
+        }
+        reps: people(party: "Republican") {
+            edges { node { name } }
+        }
+    }
+    ''')
+    assert result.errors is None
+    assert len(result.data['dems']['edges']) == 3
+    assert len(result.data['reps']['edges']) == 4
+
+
+# @pytest.mark.django_db
+# def test_people_by_location():
+#     # TODO: not implemented yet
+#     pass
+
 
 @pytest.mark.django_db
-def test_people_by_location():
-    pass
+def test_people_num_queries(django_assert_num_queries):
+    with django_assert_num_queries(7):
+        result = schema.execute(''' {
+        people {
+            edges {
+                node {
+                    name
+                    image
+                    identifiers { identifier }
+                    otherNames { name }
+                    links { url }
+                    sources { url }
+                    contactDetails { value label }
+                    currentMemberships {
+                        post { label }
+                        organization { name }
+                    }
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert len(result.data['people']['edges']) == 8
+    total_memberships = 0
+    for person in result.data['people']['edges']:
+        total_memberships += len(person['node']['currentMemberships'])
+    assert total_memberships == 16      # 8 chambers + 8 parties
 
-@pytest.mark.django_db
-def test_people_num_queries():
-    pass
 
 @pytest.mark.django_db
 def test_person_num_queries():
     pass
+
 
 @pytest.mark.django_db
 def test_person_current_memberships():

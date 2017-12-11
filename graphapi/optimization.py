@@ -39,8 +39,13 @@ def optimize(queryset, info, prefetch, select_related=None):
 
     if prefetch:
         for field in prefetch:
-            if field in field_names:
-                to_prefetch.add(transform_path(field))
+            if isinstance(field, tuple):
+                field, prefetch_name = field
+                if field in field_names:
+                    to_prefetch.add(prefetch_name)
+            elif isinstance(field, str):
+                if field in field_names:
+                    to_prefetch.add(transform_path(field))
         queryset = queryset.prefetch_related(*to_prefetch)
 
     if select_related:
