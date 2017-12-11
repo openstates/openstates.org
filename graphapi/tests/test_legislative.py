@@ -11,7 +11,7 @@ def setup():
 
 @pytest.mark.django_db
 def test_bill_by_id(django_assert_num_queries):
-    with django_assert_num_queries(12):
+    with django_assert_num_queries(13):
         result = schema.execute(''' {
             bill(id:"ocd-bill/1") {
                 title
@@ -31,6 +31,12 @@ def test_bill_by_id(django_assert_num_queries):
                     organization {
                         name
                         classification
+                    }
+                    relatedEntities {
+                        name
+                        entityType
+                        organization { name }
+                        person { name }
                     }
                 }
                 sponsorships {
@@ -65,6 +71,8 @@ def test_bill_by_id(django_assert_num_queries):
     assert len(result.data['bill']['otherTitles']) == 3
     assert len(result.data['bill']['actions']) == 3
     assert result.data['bill']['actions'][0]['organization']['classification'] == 'lower'
+    assert result.data['bill']['actions'][0]['relatedEntities'][0]['person']['name'] != ''
+    assert result.data['bill']['actions'][0]['relatedEntities'][0]['organization'] is None
     assert len(result.data['bill']['sponsorships']) == 2
     assert len(result.data['bill']['documents'][0]['links']) == 1
     assert len(result.data['bill']['versions'][0]['links']) == 2
@@ -244,7 +252,7 @@ def test_bills_by_updated_since():
 
 @pytest.mark.django_db
 def test_bills_queries(django_assert_num_queries):
-    with django_assert_num_queries(14):
+    with django_assert_num_queries(17):
         result = schema.execute(''' {
             bills { edges { node {
                 title
@@ -264,6 +272,12 @@ def test_bills_queries(django_assert_num_queries):
                     organization {
                         name
                         classification
+                    }
+                    relatedEntities {
+                        name
+                        entityType
+                        organization { name }
+                        person { name }
                     }
                 }
                 sponsorships {

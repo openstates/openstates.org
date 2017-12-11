@@ -1,5 +1,6 @@
 import graphene
-from opencivicdata.legislative.models import Bill
+from django.db.models import Prefetch
+from opencivicdata.legislative.models import Bill, BillActionRelatedEntity
 from .common import OCDBaseNode, DjangoConnectionField
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
@@ -62,6 +63,12 @@ class BillActionNode(graphene.ObjectType):
 
     related_entities = graphene.List(RelatedEntityNode)
 
+    def resolve_related_entities(self, info):
+        if 'related_entities' not in getattr(self, '_prefetched_objects_cache', []):
+            return optimize(self.related_entities.all(), info, None, ['organization', 'person'])
+        else:
+            return self.related_entities.all()
+
 
 class MimetypeLinkNode(graphene.ObjectType):
     media_type = graphene.String()
@@ -109,7 +116,9 @@ class BillNode(OCDBaseNode):
 
     def resolve_actions(self, info):
         if 'actions' not in getattr(self, '_prefetched_objects_cache', []):
-            return optimize(self.actions.all(), info, [], ['.organization'])
+            return optimize(self.actions.all(), info,
+                            [('.relatedEntities', Prefetch('related_entities', BillActionRelatedEntity.objects.all().select_related('organization', 'person')))],
+                            ['.organization'])
         else:
             return self.actions.all()
 
@@ -231,6 +240,9 @@ class LegislativeQuery:
                                        '.otherIdentifiers',
                                        '.actions',
                                        '.actions.organization',
+                                       '.actions.relatedEntities',
+                                       '.actions.relatedEntities.organization',
+                                       '.actions.relatedEntities.person',
                                        '.sponsorships',
                                        '.documents',
                                        '.versions',
@@ -253,6 +265,7 @@ class LegislativeQuery:
                      # TODO: chamber
                      ):
         bill = None
+
         if jurisdiction and session and identifier:
             query = dict(legislative_session__identifier=session,
                          identifier=identifier)

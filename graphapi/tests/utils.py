@@ -18,6 +18,7 @@ def make_random_bill():
                             subject=[random.choice('abcdefghijklmnopqrstuvwxyz')
                                      for _ in range(10)],
                             )
+    b.actions.create(description='Introduced', order=10, organization=org)
     return b
 
 
