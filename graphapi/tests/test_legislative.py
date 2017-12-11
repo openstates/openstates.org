@@ -11,7 +11,7 @@ def setup():
 
 @pytest.mark.django_db
 def test_bill_by_id(django_assert_num_queries):
-    with django_assert_num_queries(11):
+    with django_assert_num_queries(12):
         result = schema.execute(''' {
             bill(id:"ocd-bill/1") {
                 title
@@ -45,6 +45,14 @@ def test_bill_by_id(django_assert_num_queries):
                     note
                     links { url }
                 }
+                relatedBills {
+                    legislativeSession
+                    identifier
+                    relationType
+                    relatedBill {
+                        title
+                    }
+                }
                 sources { url }
             }
         }''')
@@ -61,6 +69,8 @@ def test_bill_by_id(django_assert_num_queries):
     assert len(result.data['bill']['documents'][0]['links']) == 1
     assert len(result.data['bill']['versions'][0]['links']) == 2
     assert len(result.data['bill']['sources']) == 3
+    assert len(result.data['bill']['relatedBills']) == 1
+    assert 'Alces' in result.data['bill']['relatedBills'][0]['relatedBill']['title']
 
 
 @pytest.mark.django_db
@@ -158,7 +168,6 @@ def test_bills_by_session(django_assert_num_queries):
     assert result.errors is None
     # 26 total bills created
     assert len(result.data['y2017']['edges'] + result.data['y2018']['edges']) == 26
-
 
 
 @pytest.mark.django_db

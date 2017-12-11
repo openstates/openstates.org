@@ -15,7 +15,8 @@ def make_random_bill():
                             legislative_session=session,
                             from_organization=org,
                             classification=[random.choice(['bill', 'resolution'])],
-                            subject=[random.choice('abcdefghijklmnopqrstuvwxyz') for _ in range(10)],
+                            subject=[random.choice('abcdefghijklmnopqrstuvwxyz')
+                                     for _ in range(10)],
                             )
     return b
 
@@ -47,11 +48,10 @@ def populate_db():
                                     classification='upper', name=state + ' Senate')
 
     alaska = Jurisdiction.objects.get(name='Alaska')
-    session = alaska.legislative_sessions.get(identifier='2018')
     house = alaska.organizations.get(classification='lower')
 
     # AK House
-    make_person('Amanda Adams', 'Alaska', 'lower', '1', 'Republican')
+    amanda = make_person('Amanda Adams', 'Alaska', 'lower', '1', 'Republican')
     make_person('Bob Birch', 'Alaska', 'lower', '2', 'Republican')
     make_person('Carrie Carr', 'Alaska', 'lower', '3', 'Democratic')
     make_person('Don Dingle', 'Alaska', 'lower', '4', 'Republican')
@@ -67,7 +67,9 @@ def populate_db():
     make_person('Hank Horn', 'Wyoming', 'lower', '1', 'Republican')
 
     b1 = Bill.objects.create(id='ocd-bill/1', title='Moose Freedom Act', identifier='HB 1',
-                             legislative_session=session, from_organization=house,
+                             legislative_session=alaska.legislative_sessions.get(
+                                 identifier='2018'),
+                             from_organization=house,
                              classification=['bill', 'constitutional amendment'],
                              subject=['nature'],
                              )
@@ -78,10 +80,12 @@ def populate_db():
     b1.other_titles.create(title='M.O.O.S.E.')
     b1.other_identifiers.create(identifier='HCA 1')
     b1.other_identifiers.create(identifier='SB 1')
-    b1.actions.create(description='Introduced', order=10, organization=house)
+    a = b1.actions.create(description='Introduced', order=10, organization=house)
+    a.related_entities.create(name='Amanda Adams', entity_type='person', person=amanda)
     b1.actions.create(description='Amended', order=20, organization=house)
-    b1.actions.create(description='Passed House', order=30, organization=house)
-    # TODO: add related_entities & related bill
+    a = b1.actions.create(description='Passed House', order=30, organization=house)
+    a.related_entities.create(name='House', entity_type='organization', organization=house)
+
     b1.sponsorships.create(primary=True, classification='sponsor', name='Adam One')
     b1.sponsorships.create(primary=False, classification='cosponsor', name='Beth Two')
     d = b1.documents.create(note='Fiscal Note')
@@ -98,5 +102,17 @@ def populate_db():
     b1.sources.create(url='https://example.com/s2')
     b1.sources.create(url='https://example.com/s3')
 
-    for x in range(25):
+    rb = Bill.objects.create(id='ocd-bill/3', title='Alces alces Freedom Act',
+                             identifier='SB 9',
+                             legislative_session=alaska.legislative_sessions.get(
+                                 identifier='2018'),
+                             from_organization=alaska.organizations.get(classification='upper'),
+                             classification=['bill', 'constitutional amendment'],
+                             subject=['nature'],
+                             )
+    b1.related_bills.create(related_bill=rb, identifier='SB 9', legislative_session='2018',
+                            relation_type='companion'
+                            )
+
+    for x in range(24):
         make_random_bill()

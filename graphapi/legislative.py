@@ -43,7 +43,12 @@ class BillSponsorshipNode(RelatedEntityNode):
     classification = graphene.String()
 
 
-# TODO: RelatedBill identifier, legislative_session, relation_type
+class RelatedBillNode(graphene.ObjectType):
+    identifier = graphene.String()
+    legislative_session = graphene.String()
+    relation_type = graphene.String()
+
+    related_bill = graphene.Field('graphapi.legislative.BillNode')
 
 
 class BillActionNode(graphene.ObjectType):
@@ -87,6 +92,7 @@ class BillNode(OCDBaseNode):
     other_identifiers = graphene.List(BillIdentifierNode)
     actions = graphene.List(BillActionNode)
     sponsorships = graphene.List(BillSponsorshipNode)
+    related_bills = graphene.List(RelatedBillNode)
     documents = graphene.List(BillDocumentNode)
     versions = graphene.List(BillDocumentNode)
     sources = graphene.List(LinkNode)
@@ -123,6 +129,9 @@ class BillNode(OCDBaseNode):
 
     def resolve_votes(self, info):
         return self.votes.all()
+
+    def resolve_related_bills(self, info):
+        return optimize(self.related_bills.all(), info, None, ['.relatedBill'])
 
 
 class BillConnection(graphene.relay.Connection):

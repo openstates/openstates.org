@@ -80,12 +80,12 @@ class OrganizationNode(OCDBaseNode):
 class PostNode(OCDBaseNode):
     label = graphene.String()
     role = graphene.String()
-    # organization = OrganizationNode()
     # division = TODO
     start_date = graphene.String()
     end_date = graphene.String()
     maximum_memberships = graphene.String()
 
+    # organization excluded from this direction
     # contact_details and links not used
 
 
@@ -185,6 +185,7 @@ class JurisdictionNode(graphene.ObjectType):
                               first=None, last=None, before=None, after=None,
                               classification=None):
         return _resolve_suborganizations(self, 'organizations', classification)
+
 
 class JurisdictionConnection(graphene.relay.Connection):
     class Meta:
