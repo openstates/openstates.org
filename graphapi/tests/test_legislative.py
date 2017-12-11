@@ -244,7 +244,7 @@ def test_bills_by_updated_since():
 
 @pytest.mark.django_db
 def test_bills_queries(django_assert_num_queries):
-    with django_assert_num_queries(13):
+    with django_assert_num_queries(14):
         result = schema.execute(''' {
             bills { edges { node {
                 title
@@ -277,6 +277,14 @@ def test_bills_queries(django_assert_num_queries):
                 versions {
                     note
                     links { url }
+                }
+                relatedBills {
+                    legislativeSession
+                    identifier
+                    relationType
+                    relatedBill {
+                        title
+                    }
                 }
                 sources { url }
             } } }

@@ -131,7 +131,8 @@ class BillNode(OCDBaseNode):
         return self.votes.all()
 
     def resolve_related_bills(self, info):
-        return optimize(self.related_bills.all(), info, None, ['.relatedBill'])
+        if 'related_bills' not in getattr(self, '_prefetched_objects_cache', []):
+            return optimize(self.related_bills.all(), info, None, ['.relatedBill'])
 
 
 class BillConnection(graphene.relay.Connection):
@@ -236,6 +237,7 @@ class LegislativeQuery:
                                        '.documents.links',
                                        '.versions.links',
                                        '.sources',
+                                       '.relatedBills',
                                        '.votes',
                                        '.votes.counts',
                                        '.votes.votes',
