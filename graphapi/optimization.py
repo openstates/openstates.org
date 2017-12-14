@@ -32,10 +32,14 @@ def _yield_field_names(selection_set, prefix):
             yield from _yield_field_names(selection.selection_set, prefix)
 
 
-def optimize(queryset, info, prefetch, select_related=None):
+def optimize(queryset, info, prefetch, select_related=None, *, prefix=None):
     to_prefetch = set()
     to_select = set()
     field_names = get_field_names(info)
+
+    # only take fields that are within prefix (used for Prefetch() sub-field optimization)
+    if prefix:
+        field_names = [fn.replace(prefix, '') for fn in field_names if fn.startswith(prefix)]
 
     if prefetch:
         for field in prefetch:

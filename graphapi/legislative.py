@@ -34,7 +34,6 @@ class BillIdentifierNode(IdentifierNode):
 class RelatedEntityNode(graphene.ObjectType):
     name = graphene.String()
     entity_type = graphene.String()
-    # TODO: revisit w/ union?
     organization = graphene.Field(OrganizationNode)
     person = graphene.Field(PersonNode)
 
@@ -262,7 +261,6 @@ class LegislativeQuery:
     def resolve_bill(self, info,
                      id=None,
                      jurisdiction=None, session=None, identifier=None,
-                     # TODO: chamber
                      ):
         bill = None
 

@@ -25,7 +25,11 @@ def make_random_bill():
 def make_person(name, state, chamber, district, party):
     org = Organization.objects.get(jurisdiction__name=state, classification=chamber)
     party, _ = Organization.objects.get_or_create(classification='party', name=party)
-    post = org.posts.create(label=district)
+    div, _ = Division.objects.get_or_create(
+        id='ocd-division/country:us/state:{}/district:{}'.format(state, district),
+        name='Division ' + district
+    )
+    post = org.posts.create(label=district, division=div)
     p = Person.objects.create(name=name)
     p.memberships.create(post=post, organization=org)
     p.memberships.create(organization=party)

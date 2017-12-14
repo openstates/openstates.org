@@ -225,7 +225,12 @@ def test_people_num_queries(django_assert_num_queries):
                     sources { url }
                     contactDetails { value label }
                     currentMemberships {
-                        post { label }
+                        post {
+                            label
+                            division {
+                                id
+                            }
+                        }
                         organization { name }
                     }
                 }
@@ -254,7 +259,12 @@ def test_person_by_id(django_assert_num_queries):
             sources { url }
             contactDetails { value label }
             currentMemberships {
-                post { label }
+                post {
+                    label
+                    division {
+                        id
+                    }
+                }
                 organization { name }
             }
         }
@@ -262,6 +272,13 @@ def test_person_by_id(django_assert_num_queries):
     assert result.errors is None
     assert result.data['person']['name'] == 'Bob Birch'
     assert len(result.data['person']['currentMemberships']) == 2
+
+    division = None
+    for membership in result.data['person']['currentMemberships']:
+        if membership['post']:
+            division = membership['post']['division']
+            break
+    assert division['id'] == 'ocd-division/country:us/state:Alaska/district:2'
 
 
 @pytest.mark.django_db

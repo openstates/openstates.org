@@ -22,7 +22,7 @@ def _resolve_suborganizations(root_obj, field_name, classification=None):
     return qs
 
 
-def _current_membership_filter(qs, classification=None):
+def _current_membership_filter(qs, info, classification=None, prefix=None):
     today = datetime.date.today().isoformat()
     qs = qs.filter(Q(start_date='') | Q(start_date__lte=today),
                    Q(end_date='') | Q(end_date__gte=today))
@@ -30,7 +30,7 @@ def _current_membership_filter(qs, classification=None):
         qs = qs.filter(organization__classification__in=classification)
 
     # if we're getting a membership we're probably going to need org/post
-    qs = qs.select_related('organization', 'post')
+    qs = optimize(qs, info, None, ['.organization', '.post', '.post.division'], prefix=prefix)
     return qs
 
 
@@ -44,7 +44,7 @@ class ContactDetailNode(graphene.ObjectType):
 class OrganizationNode(OCDBaseNode):
     name = graphene.String()
     image = graphene.String()
-    # jurisdiction   TODO
+    # jurisdiction left out for now since traversing up can lead to query explosion
     classification = graphene.String()
     founding_date = graphene.String()
     dissolution_date = graphene.String()
@@ -77,10 +77,16 @@ class OrganizationNode(OCDBaseNode):
         return self.sources.all()
 
 
+class DivisionNode(OCDBaseNode):
+    name = graphene.String()
+    redirect = graphene.Field('graphapi.core.DivisionNode')
+    country = graphene.String()
+
+
 class PostNode(OCDBaseNode):
     label = graphene.String()
     role = graphene.String()
-    # division = TODO
+    division = graphene.Field(DivisionNode)
     start_date = graphene.String()
     end_date = graphene.String()
     maximum_memberships = graphene.String()
@@ -130,7 +136,7 @@ class PersonNode(OCDBaseNode):
         if hasattr(self, 'current_memberships'):
             return self.current_memberships
         else:
-            return _current_membership_filter(self.memberships, classification)
+            return _current_membership_filter(self.memberships, info, classification)
 
 
 class MembershipNode(OCDBaseNode):
@@ -273,7 +279,9 @@ class CoreQuery:
             '.sources',
             '.contactDetails',
             ('.currentMemberships',
-             Prefetch('memberships', queryset=_current_membership_filter(Membership.objects),
+             Prefetch('memberships',
+                      queryset=_current_membership_filter(Membership.objects, info,
+                                                          prefix='.currentMemberships'),
                       to_attr='current_memberships')),
         ])
 
