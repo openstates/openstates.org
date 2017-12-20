@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -58,6 +59,17 @@ else:
         'django.template.loaders.app_directories.Loader',
     ]
 
+DATABASE_URL = os.environ.get(
+    'DATABASE_URL',
+    'sqlite:///' + os.path.join(os.path.dirname(__file__), 'openstates.sqlite3')
+)
+DATABASES = {'default': dj_database_url.parse(DATABASE_URL)}
+CONN_MAX_AGE = 60
+
+if 'RAVEN_DSN' in os.environ:
+    RAVEN_CONFIG = {
+        'dsn': os.environ['RAVEN_DSN']
+    }
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -87,20 +99,7 @@ ROOT_URLCONF = 'openstates.urls'
 WSGI_APPLICATION = 'openstates.wsgi.application'
 
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'openstates',
-        'USER': 'test',
-        'PASSWORD': 'test',
-        'HOST': 'localhost',
-    }
-}
-
-
 # Password validation
-# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -118,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -126,12 +124,9 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_URL = '/static/'
 
 GRAPHENE = {
     'SCHEMA': 'graphapi.schema.schema',
-    'MIDDLEWARE': [
-    ]
+    'MIDDLEWARE': []
 }

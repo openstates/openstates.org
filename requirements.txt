@@ -2,7 +2,11 @@ Django==2.0
 graphene==2.0.1
 graphene-django==2.0.0
 opencivicdata==2.1.1
+dj-database-url
 
-django-silk
+# django-silk
+
 newrelic
+raven
+
 # -e git+git@github.com:pytest-dev/pytest-django.git#egg=pytest-django
