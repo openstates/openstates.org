@@ -2,4 +2,4 @@ Django==2.0
 graphene==2.0.1
 graphene-django==2.0.0
 django-silk
--e git+git@github.com:pytest-dev/pytest-django.git#egg=pytest-django
+# -e git+git@github.com:pytest-dev/pytest-django.git#egg=pytest-django

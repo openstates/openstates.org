@@ -1,0 +1,13 @@
+language: python
+python:
+    - "3.6"
+install: 
+    - pip install -rrequirements.txt
+    - pip install -e git+git@github.com:pytest-dev/pytest-django.git#egg=pytest-django
+before_script: flake8
+script: 
+    - pytest --ds=openstates.settings --reuse-db -v
+    - flake8
+notifications:
+    email:
+        - james@openstates.org
