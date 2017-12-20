@@ -1,0 +1,7 @@
+---
+- name: Install alpha.openstates.org
+  hosts: alpha.openstates.org
+  user: ubuntu
+  become: yes
+  roles:
+    - role: new-openstates
