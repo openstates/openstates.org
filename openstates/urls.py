@@ -10,5 +10,5 @@ urlpatterns = [
 ]
 
 
-if settings.DEBUG:
-    urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
+# if settings.DEBUG:
+#     urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
