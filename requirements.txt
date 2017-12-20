@@ -6,8 +6,8 @@ dj-database-url
 django-cors-headers==2.1.0
 
 # django-silk
+flake8
+-e git+https://github.com/pytest-dev/pytest-django.git#egg=pytest-django
 
 newrelic
 raven
-
-# -e git+git@github.com:pytest-dev/pytest-django.git#egg=pytest-django
