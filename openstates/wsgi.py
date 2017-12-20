@@ -1,15 +1,12 @@
-"""
-WSGI config for openstates project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
-"""
-
 import os
 
 from django.core.wsgi import get_wsgi_application
+
+try:
+    import newrelic.agent
+    newrelic.agent.initialize('/home/openstates/newrelic.ini')
+except Exception as e:
+    print("newrelic couldn't be initialized:", e)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openstates.settings")
 
