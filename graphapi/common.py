@@ -41,7 +41,8 @@ class DjangoConnectionField(graphene.relay.ConnectionField):
         if getattr(connection_type, 'max_items', None):
             total_size = args.get('first') or args.get('last')
             if not total_size or total_size > connection_type.max_items:
-                raise ValueError('must specify a first/last parameter <= 100')
+                raise ValueError("must specify a 'first' or 'last' parameter <= {}".format(
+                    connection_type.max_items))
 
         if isinstance(resolved, list):
             _len = len(resolved)

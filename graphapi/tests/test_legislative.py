@@ -398,3 +398,22 @@ def test_bills_pagination_backward():
         assert len(page) <= 5
 
     assert len(bills) == 26
+
+
+@pytest.mark.django_db
+def test_bills_max_items():
+    result = schema.execute('''{
+        bills {
+            edges { node { identifier } }
+        }
+    }''')
+    assert len(result.errors) == 1
+    assert 'first' in result.errors[0].message
+
+    result = schema.execute('''{
+        bills(first: 9001) {
+            edges { node { identifier } }
+        }
+    }''')
+    assert len(result.errors) == 1
+    assert 'first' in result.errors[0].message
