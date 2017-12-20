@@ -2,7 +2,7 @@ import datetime
 import graphene
 from django.db.models import Q, Prefetch
 from opencivicdata.core.models import Jurisdiction, Organization, Person, Membership
-from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode
+from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode, DjangoConnectionField
 from .optimization import optimize
 
 
@@ -52,8 +52,8 @@ class OrganizationNode(OCDBaseNode):
     # self-referential relationship
     parent = graphene.Field('graphapi.core.OrganizationNode')
     # children = graphene.List('graphapi.core.OrganizationNode')
-    children = graphene.relay.ConnectionField('graphapi.core.OrganizationConnection',
-                                              classification=graphene.String())
+    children = DjangoConnectionField('graphapi.core.OrganizationConnection',
+                                     classification=graphene.String())
 
     # related objects
     identifiers = graphene.List(IdentifierNode)
@@ -179,9 +179,9 @@ class JurisdictionNode(graphene.ObjectType):
     classification = graphene.String()
     feature_flags = graphene.List(graphene.String)
 
-    legislative_sessions = graphene.relay.ConnectionField(LegislativeSessionConnection)
-    organizations = graphene.relay.ConnectionField(OrganizationConnection,
-                                                   classification=graphene.String())
+    legislative_sessions = DjangoConnectionField(LegislativeSessionConnection)
+    organizations = DjangoConnectionField(OrganizationConnection,
+                                          classification=graphene.String())
 
     def resolve_legislative_sessions(self, info,
                                      first=None, last=None, before=None, after=None):
@@ -204,20 +204,20 @@ class PersonConnection(graphene.relay.Connection):
 
 
 class CoreQuery:
-    jurisdictions = graphene.relay.ConnectionField(JurisdictionConnection)
+    jurisdictions = DjangoConnectionField(JurisdictionConnection)
     jurisdiction = graphene.Field(JurisdictionNode,
                                   id=graphene.String(),
                                   name=graphene.String())
-    people = graphene.relay.ConnectionField(PersonConnection,
-                                            member_of=graphene.String(),
-                                            ever_member_of=graphene.String(),
-                                            chamber=graphene.String(),
-                                            district=graphene.String(),
-                                            name=graphene.String(),
-                                            party=graphene.String(),
-                                            latitude=graphene.Float(),
-                                            longitude=graphene.Float(),
-                                            )
+    people = DjangoConnectionField(PersonConnection,
+                                   member_of=graphene.String(),
+                                   ever_member_of=graphene.String(),
+                                   chamber=graphene.String(),
+                                   district=graphene.String(),
+                                   name=graphene.String(),
+                                   party=graphene.String(),
+                                   latitude=graphene.Float(),
+                                   longitude=graphene.Float(),
+                                   )
     person = graphene.Field(PersonNode, id=graphene.ID())
     organization = graphene.Field(OrganizationNode, id=graphene.ID())
 

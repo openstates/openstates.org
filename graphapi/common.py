@@ -38,7 +38,15 @@ class DjangoConnectionField(graphene.relay.ConnectionField):
                                  'iterable or instance of {}. Received "{}"'
                                  ).format(connection_type, type(resolved))
 
-        _len = resolved.count()
+        total_size = args.get('first') or args.get('last')
+        # if not total_size or total_size > 100:
+        #     raise ValueError('must specify a first/last parameter <= 100')
+
+        if isinstance(resolved, list):
+            _len = len(resolved)
+        else:
+            # Django QuerySet
+            _len = resolved.count()
 
         connection = connection_from_list_slice(
             list_slice=resolved,

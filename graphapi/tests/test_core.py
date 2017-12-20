@@ -11,7 +11,7 @@ def setup():
 
 @pytest.mark.django_db
 def test_jurisdictions(django_assert_num_queries):
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(2):
         result = schema.execute(''' {
             jurisdictions {
                 edges {
@@ -29,7 +29,7 @@ def test_jurisdictions(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_jurisdictions_num_queries(django_assert_num_queries):
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(4):
         result = schema.execute(''' {
             jurisdictions {
                 edges {
@@ -55,7 +55,7 @@ def test_jurisdictions_num_queries(django_assert_num_queries):
 @pytest.mark.django_db
 def test_jurisdictions_num_queries_subquery(django_assert_num_queries):
     # same as test_jurisdictions_num_queries but with slightly more complex filtering on nodes
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(4):
         result = schema.execute(''' {
             jurisdictions {
                 edges {
@@ -80,7 +80,7 @@ def test_jurisdictions_num_queries_subquery(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_jurisdiction_by_id(django_assert_num_queries):
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(5):
         result = schema.execute(''' {
             jurisdiction(id:"ocd-jurisdiction/country:us/state:wy") {
                 name
@@ -100,7 +100,7 @@ def test_jurisdiction_by_id(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_jurisdiction_by_name(django_assert_num_queries):
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(5):
         result = schema.execute(''' {
             jurisdiction(name:"Wyoming") {
                 name
@@ -121,7 +121,7 @@ def test_jurisdiction_by_name(django_assert_num_queries):
 @pytest.mark.django_db
 def test_people_by_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(2):
         result = schema.execute(''' {
             people(memberOf: "%s") {
                 edges {
@@ -139,7 +139,7 @@ def test_people_by_member_of(django_assert_num_queries):
 @pytest.mark.django_db
 def test_people_by_ever_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(2):
         result = schema.execute(''' {
             people(everMemberOf: "%s") {
                 edges {
@@ -212,7 +212,7 @@ def test_people_by_party():
 
 @pytest.mark.django_db
 def test_people_num_queries(django_assert_num_queries):
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(8):
         result = schema.execute(''' {
         people {
             edges {
@@ -289,7 +289,7 @@ def test_organization_by_id(django_assert_num_queries):
 
     # 1 query for legislature, 1 query each for children, identifier, names, links, sources
     # 1 query for senate w/ parent
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(8):
         result = schema.execute(''' {
             leg: organization(id: "%s") {
                 name
