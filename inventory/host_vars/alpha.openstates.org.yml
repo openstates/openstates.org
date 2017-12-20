@@ -1,6 +1,6 @@
 ---
 django_environment:
-    DEBUG: true
+    DEBUG: false
     ADMINS: James Turk james@openstates.org
     BOUNDARY_SERVICE_URL: http://geo.openstates.org/
     SECRET_KEY: "{{ lookup('credstash', 'site.SECRET_KEY') }}"
@@ -10,7 +10,7 @@ django_environment:
     DATABASE_URL: "{{ lookup('credstash', 'site.DATABASE_URL') }}"
     # STRIPE_PUBLIC_KEY: "{{ lookup('credstash', 'site.STRIPE_PUBLIC_KEY') }}"
     # STRIPE_SECRET_KEY: "{{ lookup('credstash', 'site.STRIPE_SECRET_KEY') }}"
-    # RAVEN_DSN: "{{ lookup('credstash', 'site.RAVEN_DSN') }}"
+    RAVEN_DSN: "{{ lookup('credstash', 'alpha.RAVEN_DSN') }}"
 
 newrelic_key: "{{ lookup('credstash', 'newrelic.INI_KEY') }}" 
 server_name: alpha.openstates.org

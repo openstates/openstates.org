@@ -86,7 +86,7 @@
 - name: generate new relic config
   command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
 - name: rename new relic app
-  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='openstates.org'
+  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='alpha.openstates.org'
 
 # django
 # - name: collectstatic
@@ -105,4 +105,4 @@
   notify:
     - restart django-application
 - name: start uwsgi
-  service: name=uwsgi state=started args=openstates
+  service: name=uwsgi state=started
