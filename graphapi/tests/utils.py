@@ -1,7 +1,7 @@
 import uuid
 import random
 from opencivicdata.core.models import Division, Jurisdiction, Organization, Person
-from opencivicdata.legislative.models import Bill
+from opencivicdata.legislative.models import Bill, VoteEvent
 
 
 def make_random_bill():
@@ -19,6 +19,17 @@ def make_random_bill():
                                      for _ in range(10)],
                             )
     b.actions.create(description='Introduced', order=10, organization=org)
+
+    for n in range(random.randint(1,  2)):
+        ve = VoteEvent.objects.create(bill=b, legislative_session=session,
+                                      motion_text='Motion Text',
+                                      organization=org,
+                                      result=random.choice(('failed', 'passed')))
+        ve.counts.create(option='yes', value=random.randint(0, 10))
+        ve.counts.create(option='no', value=random.randint(0, 10))
+        for m in range(random.randint(1, 5)):
+            ve.votes.create(option=random.choice(('yes', 'no')),
+                            voter_name='Voter')
     return b
 
 
@@ -57,7 +68,7 @@ def populate_db():
 
     # AK House
     amanda = make_person('Amanda Adams', 'Alaska', 'lower', '1', 'Republican')
-    make_person('Bob Birch', 'Alaska', 'lower', '2', 'Republican')
+    birch = make_person('Bob Birch', 'Alaska', 'lower', '2', 'Republican')
     make_person('Carrie Carr', 'Alaska', 'lower', '3', 'Democratic')
     make_person('Don Dingle', 'Alaska', 'lower', '4', 'Republican')
     # AK Senate
@@ -71,9 +82,9 @@ def populate_db():
     make_person('Greta Gonzalez', 'Wyoming', 'lower', '1', 'Democratic')
     make_person('Hank Horn', 'Wyoming', 'lower', '1', 'Republican')
 
+    session = alaska.legislative_sessions.get(identifier='2018')
     b1 = Bill.objects.create(id='ocd-bill/1', title='Moose Freedom Act', identifier='HB 1',
-                             legislative_session=alaska.legislative_sessions.get(
-                                 identifier='2018'),
+                             legislative_session=session,
                              from_organization=house,
                              classification=['bill', 'constitutional amendment'],
                              subject=['nature'],
@@ -107,10 +118,21 @@ def populate_db():
     b1.sources.create(url='https://example.com/s2')
     b1.sources.create(url='https://example.com/s3')
 
+    ve = VoteEvent.objects.create(bill=b1, legislative_session=session,
+                                  motion_text='Vote on House Passage',
+                                  organization=house,
+                                  result='failed')
+    ve.counts.create(option='yes', value=1)
+    ve.counts.create(option='no', value=4)
+    ve.votes.create(option='yes', voter_name='Amanda Adams', voter=amanda)
+    ve.votes.create(option='no', voter_name='Birch', voter=birch)
+    ve.votes.create(option='no', voter_name='Carr')
+    ve.votes.create(option='no', voter_name='Dingle')
+    ve.votes.create(option='no', voter_name='Speaker')
+
     rb = Bill.objects.create(id='ocd-bill/3', title='Alces alces Freedom Act',
                              identifier='SB 9',
-                             legislative_session=alaska.legislative_sessions.get(
-                                 identifier='2018'),
+                             legislative_session=session,
                              from_organization=alaska.organizations.get(classification='upper'),
                              classification=['bill', 'constitutional amendment'],
                              subject=['nature'],

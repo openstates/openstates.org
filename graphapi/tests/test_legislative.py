@@ -11,7 +11,7 @@ def setup():
 
 @pytest.mark.django_db
 def test_bill_by_id(django_assert_num_queries):
-    with django_assert_num_queries(13):
+    with django_assert_num_queries(17):
         result = schema.execute(''' {
             bill(id:"ocd-bill/1") {
                 title
@@ -60,6 +60,21 @@ def test_bill_by_id(django_assert_num_queries):
                     }
                 }
                 sources { url }
+                votes {
+                    edges {
+                        node {
+                            votes {
+                                option
+                                voterName
+                                voter { id name }
+                            }
+                            counts {
+                                option
+                                value
+                            }
+                        }
+                    }
+                }
             }
         }''')
 
@@ -79,6 +94,14 @@ def test_bill_by_id(django_assert_num_queries):
     assert len(result.data['bill']['sources']) == 3
     assert len(result.data['bill']['relatedBills']) == 1
     assert 'Alces' in result.data['bill']['relatedBills'][0]['relatedBill']['title']
+    assert len(result.data['bill']['votes']['edges']) == 1
+
+    for vote in result.data['bill']['votes']['edges'][0]['node']['votes']:
+        if vote['voterName'] == 'Amanda Adams':
+            assert vote['voter']['name'] == 'Amanda Adams'
+            break
+    else:
+        assert False, 'never found amanda'
 
 
 @pytest.mark.django_db
@@ -252,7 +275,7 @@ def test_bills_by_updated_since():
 
 @pytest.mark.django_db
 def test_bills_queries(django_assert_num_queries):
-    with django_assert_num_queries(17):
+    with django_assert_num_queries(21):
         result = schema.execute(''' {
             bills { edges { node {
                 title
@@ -301,6 +324,21 @@ def test_bills_queries(django_assert_num_queries):
                     }
                 }
                 sources { url }
+                votes {
+                    edges {
+                        node {
+                            votes {
+                                option
+                                voterName
+                                voter { id }
+                            }
+                            counts {
+                                option
+                                value
+                            }
+                        }
+                    }
+                }
             } } }
         }''')
 

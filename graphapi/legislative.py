@@ -1,6 +1,6 @@
 import graphene
 from django.db.models import Prefetch
-from opencivicdata.legislative.models import Bill, BillActionRelatedEntity
+from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
@@ -115,9 +115,15 @@ class BillNode(OCDBaseNode):
 
     def resolve_actions(self, info):
         if 'actions' not in getattr(self, '_prefetched_objects_cache', []):
-            return optimize(self.actions.all(), info,
-                            [('.relatedEntities', Prefetch('related_entities', BillActionRelatedEntity.objects.all().select_related('organization', 'person')))],
-                            ['.organization'])
+            return optimize(
+                self.actions.all(), info,
+                [('.relatedEntities',
+                  Prefetch('related_entities',
+                           BillActionRelatedEntity.objects.all().select_related(
+                               'organization', 'person')
+                           )
+                  )],
+                ['.organization'])
         else:
             return self.actions.all()
 
@@ -127,20 +133,32 @@ class BillNode(OCDBaseNode):
     def resolve_documents(self, info):
         if 'documents' not in getattr(self, '_prefetched_objects_cache', []):
             return optimize(self.documents.all(), info, ['.links'])
+        else:
+            return self.documents.all()
 
     def resolve_versions(self, info):
         if 'versions' not in getattr(self, '_prefetched_objects_cache', []):
             return optimize(self.versions.all(), info, ['.links'])
+        else:
+            return self.documents.all()
 
     def resolve_sources(self, info):
         return self.sources.all()
 
     def resolve_votes(self, info):
-        return self.votes.all()
+        if 'votes' not in getattr(self, '_prefetched_objects_cache', []):
+            return optimize(self.votes.all(), info, [
+                '.counts',
+                ('.votes', Prefetch('votes', PersonVote.objects.all().select_related('voter'))),
+             ])
+        else:
+            return self.votes.all()
 
     def resolve_related_bills(self, info):
         if 'related_bills' not in getattr(self, '_prefetched_objects_cache', []):
             return optimize(self.related_bills.all(), info, None, ['.relatedBill'])
+        else:
+            return self.related_bills.all()
 
 
 class BillConnection(graphene.relay.Connection):
@@ -234,27 +252,29 @@ class LegislativeQuery:
         if subject:
             bills = bills.filter(subject__contains=[subject])
 
-        bills = optimize(bills, info, ['.abstracts',
-                                       '.otherTitles',
-                                       '.otherIdentifiers',
-                                       '.actions',
-                                       '.actions.organization',
-                                       '.actions.relatedEntities',
-                                       '.actions.relatedEntities.organization',
-                                       '.actions.relatedEntities.person',
-                                       '.sponsorships',
-                                       '.documents',
-                                       '.versions',
-                                       '.documents.links',
-                                       '.versions.links',
-                                       '.sources',
-                                       '.relatedBills',
-                                       '.votes',
-                                       '.votes.counts',
-                                       '.votes.votes',
-                                       ],
-                         ['.legislativeSession' '.legislativeSession.jurisdiction'],
-                         )
+        bills = optimize(bills, info, [
+            '.abstracts',
+            '.otherTitles',
+            '.otherIdentifiers',
+            '.actions',
+            '.actions.organization',
+            '.actions.relatedEntities',
+            '.actions.relatedEntities.organization',
+            '.actions.relatedEntities.person',
+            '.sponsorships',
+            '.documents',
+            '.versions',
+            '.documents.links',
+            '.versions.links',
+            '.sources',
+            '.relatedBills',
+            '.votes',
+            '.votes.counts',
+            ('.votes.votes', Prefetch('votes__votes',
+                                      PersonVote.objects.all().select_related('voter'))),
+        ],
+            ['.legislativeSession' '.legislativeSession.jurisdiction'],
+        )
 
         return bills
 
