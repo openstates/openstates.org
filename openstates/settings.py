@@ -86,6 +86,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -126,6 +127,13 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
+
+# API
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/graphql/.*$'
+CORS_ALLOW_METHODS = ['GET', 'POST', 'OPTIONS']
+
 
 GRAPHENE = {
     'SCHEMA': 'graphapi.schema.schema',

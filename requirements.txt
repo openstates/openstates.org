@@ -3,6 +3,7 @@ graphene==2.0.1
 graphene-django==2.0.0
 opencivicdata==2.1.1
 dj-database-url
+django-cors-headers==2.1.0
 
 # django-silk
 
