@@ -61,7 +61,8 @@ class OrganizationNode(OCDBaseNode):
     links = graphene.List(LinkNode)
     sources = graphene.List(LinkNode)
 
-    def resolve_children(self, info, classification=None):
+    def resolve_children(self, info, classification=None,
+                         first=None, last=None, before=None, after=None):
         return _resolve_suborganizations(self, 'children', classification)
 
     def resolve_identifiers(self, info):
@@ -171,6 +172,8 @@ class OrganizationConnection(graphene.relay.Connection):
     class Meta:
         node = OrganizationNode
 
+    max_items = 100
+
 
 class JurisdictionNode(graphene.ObjectType):
     id = graphene.String()
@@ -201,6 +204,8 @@ class JurisdictionConnection(graphene.relay.Connection):
 class PersonConnection(graphene.relay.Connection):
     class Meta:
         node = PersonNode
+
+    max_items = 100
 
 
 class CoreQuery:

@@ -38,7 +38,7 @@ def test_jurisdictions_num_queries(django_assert_num_queries):
                         legislativeSessions {
                             edges { node { identifier } }
                         }
-                        organizations {
+                        organizations(first: 50) {
                             edges { node { name } }
                         }
                     }
@@ -64,7 +64,7 @@ def test_jurisdictions_num_queries_subquery(django_assert_num_queries):
                         legislativeSessions(first: 1) {
                             edges { node { identifier } }
                         }
-                        organizations(classification: "legislature") {
+                        organizations(classification: "legislature", first: 50) {
                             edges { node { name } }
                         }
                     }
@@ -87,7 +87,7 @@ def test_jurisdiction_by_id(django_assert_num_queries):
                 legislativeSessions(first: 1) {
                     edges { node { identifier } }
                 }
-                organizations(classification: "legislature") {
+                organizations(classification: "legislature", first: 50) {
                     edges { node { name } }
                 }
             }
@@ -107,7 +107,7 @@ def test_jurisdiction_by_name(django_assert_num_queries):
                 legislativeSessions(first: 1) {
                     edges { node { identifier } }
                 }
-                organizations(classification: "legislature") {
+                organizations(classification: "legislature", first: 50) {
                     edges { node { name } }
                 }
             }
@@ -123,7 +123,7 @@ def test_people_by_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
     with django_assert_num_queries(2):
         result = schema.execute(''' {
-            people(memberOf: "%s") {
+            people(memberOf: "%s", first: 50) {
                 edges {
                     node {
                         name
@@ -141,7 +141,7 @@ def test_people_by_ever_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
     with django_assert_num_queries(2):
         result = schema.execute(''' {
-            people(everMemberOf: "%s") {
+            people(everMemberOf: "%s", first:50) {
                 edges {
                     node {
                         name
@@ -159,13 +159,13 @@ def test_people_by_ever_member_of(django_assert_num_queries):
 def test_people_by_district():
     ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
     result = schema.execute(''' {
-        ones: people(memberOf: "%s", district: "1") {
+        ones: people(memberOf: "%s", district: "1", first: 50) {
             edges { node { name } }
         }
-        fives: people(everMemberOf: "%s", district: "5") {
+        fives: people(everMemberOf: "%s", district: "5", first: 50) {
             edges { node { name } }
         }
-        bad: people(district: "1") {
+        bad: people(district: "1", first: 50) {
             edges { node { name } }
         }
     }
@@ -179,7 +179,7 @@ def test_people_by_district():
 @pytest.mark.django_db
 def test_people_by_name():
     result = schema.execute(''' {
-        people(name: "Hank") {
+        people(name: "Hank", first: 50) {
             edges { node { name } }
         }
     }
@@ -191,10 +191,10 @@ def test_people_by_name():
 @pytest.mark.django_db
 def test_people_by_party():
     result = schema.execute(''' {
-        dems: people(party: "Democratic") {
+        dems: people(party: "Democratic", first: 50) {
             edges { node { name } }
         }
-        reps: people(party: "Republican") {
+        reps: people(party: "Republican", first: 50) {
             edges { node { name } }
         }
     }
@@ -214,7 +214,7 @@ def test_people_by_party():
 def test_people_num_queries(django_assert_num_queries):
     with django_assert_num_queries(8):
         result = schema.execute(''' {
-        people {
+        people(first: 50) {
             edges {
                 node {
                     name
@@ -294,7 +294,7 @@ def test_organization_by_id(django_assert_num_queries):
             leg: organization(id: "%s") {
                 name
                 classification
-                children(classification: "upper") {
+                children(classification: "upper", first: 50) {
                     edges { node { classification } }
                 }
                 identifiers { identifier }

@@ -165,6 +165,8 @@ class BillConnection(graphene.relay.Connection):
     class Meta:
         node = BillNode
 
+    max_items = 100
+
 
 class VoteCountNode(graphene.ObjectType):
     option = graphene.String()

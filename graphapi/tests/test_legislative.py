@@ -157,10 +157,10 @@ def test_bills_by_jurisdiction(django_assert_num_queries):
     # 2 bills queries + 2 count queries
     with django_assert_num_queries(4):
         result = schema.execute(''' {
-            ak: bills(jurisdiction:"Alaska") {
+            ak: bills(jurisdiction:"Alaska", first: 50) {
                 edges { node { title } }
             }
-            wy: bills(jurisdiction:"ocd-jurisdiction/country:us/state:wy") {
+            wy: bills(jurisdiction:"ocd-jurisdiction/country:us/state:wy", first: 50) {
                 edges { node { title } }
             }
         }''')
@@ -173,10 +173,10 @@ def test_bills_by_jurisdiction(django_assert_num_queries):
 def test_bills_by_chamber(django_assert_num_queries):
     with django_assert_num_queries(4):
         result = schema.execute(''' {
-            lower: bills(chamber:"lower") {
+            lower: bills(chamber:"lower", first:50) {
                 edges { node { title } }
             }
-            upper: bills(chamber:"upper") {
+            upper: bills(chamber:"upper", first:50) {
                 edges { node { title } }
             }
         }''')
@@ -189,10 +189,10 @@ def test_bills_by_chamber(django_assert_num_queries):
 def test_bills_by_session(django_assert_num_queries):
     with django_assert_num_queries(4):
         result = schema.execute(''' {
-            y2018: bills(session:"2018") {
+            y2018: bills(session:"2018", first:50) {
                 edges { node { title } }
             }
-            y2017: bills(session:"2017") {
+            y2017: bills(session:"2017", first:50) {
                 edges { node { title } }
             }
         }''')
@@ -205,10 +205,10 @@ def test_bills_by_session(django_assert_num_queries):
 def test_bills_by_classification(django_assert_num_queries):
     with django_assert_num_queries(4):
         result = schema.execute(''' {
-            bills: bills(classification: "bill") {
+            bills: bills(classification: "bill", first:50) {
                 edges { node { title } }
             }
-            resolutions: bills(classification: "resolution") {
+            resolutions: bills(classification: "resolution", first:50) {
                 edges { node { title } }
             }
         }''')
@@ -220,22 +220,22 @@ def test_bills_by_classification(django_assert_num_queries):
 @pytest.mark.django_db
 def test_bills_by_subject():
     result = schema.execute(''' {
-        a: bills(subject:"a") {
+        a: bills(subject:"a", first:50) {
             edges { node { title, subject } }
         }
-        b: bills(subject:"b") {
+        b: bills(subject:"b", first:50) {
             edges { node { title, subject } }
         }
-        c: bills(subject:"c") {
+        c: bills(subject:"c", first:50) {
             edges { node { title, subject } }
         }
-        d: bills(subject:"d") {
+        d: bills(subject:"d", first:50) {
             edges { node { title, subject } }
         }
-        e: bills(subject:"e") {
+        e: bills(subject:"e", first:50) {
             edges { node { title, subject } }
         }
-        f: bills(subject:"f") {
+        f: bills(subject:"f", first:50) {
             edges { node { title, subject } }
         }
     }''')
@@ -256,13 +256,13 @@ def test_bills_by_updated_since():
     middle_date = Bill.objects.all().order_by('updated_at')[20].updated_at
 
     result = schema.execute('''{
-        all: bills(updatedSince: "2017-01-01T00:00:00Z") {
+        all: bills(updatedSince: "2017-01-01T00:00:00Z", first:50) {
             edges { node { title } }
         }
-        some: bills(updatedSince: "%s") {
+        some: bills(updatedSince: "%s", first:50) {
             edges { node { title } }
         }
-        none: bills(updatedSince: "2030-01-01T00:00:00Z") {
+        none: bills(updatedSince: "2030-01-01T00:00:00Z", first:50) {
             edges { node { title } }
         }
     }''' % middle_date)
@@ -277,7 +277,7 @@ def test_bills_by_updated_since():
 def test_bills_queries(django_assert_num_queries):
     with django_assert_num_queries(21):
         result = schema.execute(''' {
-            bills { edges { node {
+            bills(first: 50) { edges { node {
                 title
                 classification
                 subject
