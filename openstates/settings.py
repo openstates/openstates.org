@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'opencivicdata.core.apps.BaseConfig',
     'opencivicdata.legislative.apps.BaseConfig',
     'graphene_django',
-    'silk',
+    # 'silk',
 ]
 
 MIDDLEWARE = [
@@ -80,7 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'silk.middleware.SilkyMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'openstates.urls'
