@@ -38,8 +38,8 @@ if os.environ.get('DEBUG', 'true').lower() == 'false':
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
     EMAIL_PORT = '587'
     EMAIL_USE_TLS = True
-    REGISTRATION_DEFAULT_FROM_EMAIL = DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ[
-        'DEFAULT_FROM_EMAIL']
+    REGISTRATION_DEFAULT_FROM_EMAIL = DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ.get(
+        'DEFAULT_FROM_EMAIL', 'contact@openstates.org')
     # enable once SSL is ready
     # SECURE_HSTS_SECONDS = 3600
     # SECURE_SSL_REDIRECT = True
