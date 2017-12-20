@@ -1,6 +1,7 @@
 Django==2.0
 graphene==2.0.1
 graphene-django==2.0.0
+opencivicdata==2.1.0
 
 django-silk
 newrelic

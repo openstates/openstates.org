@@ -1,7 +1,0 @@
-[[source]]
-url = "https://pypi.python.org/simple"
-verify_ssl = true
-
-[packages]
-Django = ">1.11"
-opencivicdata = { git = 'git://github.com/opencivicdata/python-opencivicdata.git', editable = true }
