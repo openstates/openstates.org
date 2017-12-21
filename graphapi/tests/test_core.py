@@ -191,10 +191,10 @@ def test_people_by_name():
 @pytest.mark.django_db
 def test_people_by_party():
     result = schema.execute(''' {
-        dems: people(party: "Democratic", first: 50) {
+        dems: people(memberOf: "Democratic", first: 50) {
             edges { node { name } }
         }
-        reps: people(party: "Republican", first: 50) {
+        reps: people(memberOf: "Republican", first: 50) {
             edges { node { name } }
         }
     }

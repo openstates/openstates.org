@@ -179,7 +179,8 @@ class JurisdictionNode(graphene.ObjectType):
     id = graphene.String()
     name = graphene.String()
     url = graphene.String()
-    classification = graphene.String()
+    # always Government within OS
+    # classification = graphene.String()
     feature_flags = graphene.List(graphene.String)
 
     legislative_sessions = DjangoConnectionField(LegislativeSessionConnection)
@@ -216,10 +217,8 @@ class CoreQuery:
     people = DjangoConnectionField(PersonConnection,
                                    member_of=graphene.String(),
                                    ever_member_of=graphene.String(),
-                                   chamber=graphene.String(),
                                    district=graphene.String(),
                                    name=graphene.String(),
-                                   party=graphene.String(),
                                    latitude=graphene.Float(),
                                    longitude=graphene.Float(),
                                    )
@@ -244,7 +243,7 @@ class CoreQuery:
     def resolve_people(self, info,
                        first=None,
                        member_of=None, ever_member_of=None,
-                       district=None, name=None, party=None,
+                       district=None, name=None,
                        latitude=None, longitude=None,
                        ):
         qs = Person.objects.all()
@@ -260,9 +259,6 @@ class CoreQuery:
         if district and not (member_of or ever_member_of):
             raise ValueError("'district' parameter requires specifying either "
                              "'memberOf' or 'everMemberOf'")
-
-        if party:
-            qs = qs.member_of(party)
 
         if latitude and longitude:
             try:

@@ -295,6 +295,7 @@ class LegislativeQuery:
             bill = Bill.objects.get(id=id)
 
         if not bill:
-            raise ValueError("must either pass 'id' or 'jurisdiction', 'session', 'identifier'")
+            raise ValueError("must either pass 'id' or 'jurisdiction', 'session', "
+                             "and 'identifier' together")
 
         return bill
