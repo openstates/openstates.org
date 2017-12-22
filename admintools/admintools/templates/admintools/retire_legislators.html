@@ -1,0 +1,104 @@
+{% extends 'admintools/base.html' %}
+{% load staticfiles %}
+{% load tags %}
+{% block body %}
+<div class="container">
+    <!--Page padding-->
+    <br /><br /><br />
+    <div class="row">
+      <h2><strong>Retire Legislators</strong></h2>
+
+    <form class="form-inline" method="get" action="{% url 'retire_legislators' jur_id %}" style="margin-left: 190px;">
+        <div class="md-form form-group">
+            <i class="fa fa-user prefix"></i>
+            <input type="text" name="person" value="{{ request.GET.person }}" id="form92" class="form-control validate">
+        </div>
+        <div class="md-form form-group">
+            <a href="" class="btn btn-primary btn-md">Search</a>
+        </div>
+    </form>
+    <h3 style="margin-top: 8px;width: 250px;">
+      <a href="{% url 'list_retired_legislators' jur_id %}"> > Retired Legislators</a>
+    </h3>
+    </div>
+  {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-success alert-dismissable" style="margin-bottom: 10px;margin-top: 0px;">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              {{ message }}
+          </div>
+      {% endfor %}
+  {% endif %}
+  <form method="post" action="{% url 'retire_legislators' jur_id %}" id="retire_form">{% csrf_token %}</form>
+  <table class="table table-bordered table-striped table-sm">
+    <thead>
+      <tr class="table-active">
+        <th style="text-align: center;">Person</th>
+        <th style="text-align: center;">Retirement Date</th>
+      </tr>
+    </thead>
+    <tbody>
+       {% for person in people %}
+          <tr class="hoverable">
+            <td style="text-align: center;"><a href="{% url 'admin:core_person_change' person.id %}">{{ person.name }}</a></td>
+            <td style="text-align: center;"><input style="text-align: center;" type="text" id="datepcik" name="{{person.id}}" form="retire_form" /></td>
+          </tr>
+      {% empty %}
+       <h3>No Results Found!</h3><br />
+      {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn btn-cyan" style="margin-left: 900px;" form="retire_form" type="submit">
+      Retire
+  </button>
+  {% if people.has_other_pages %}
+      <br />
+      <nav>
+      <ul class="pagination pagination-md">
+      {% if people.has_previous %}
+      <li class="page-item ">
+          <a class="page-link" href="?{% url_replace request 'page' 1 %}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+      {% endif %} {% for i in page_range %} {% if people.number == i %}
+      <li class="page-item active">
+          <a class="page-link" href="#">{{ i }}<span class="sr-only">(current)</span></a>
+      </li>
+      {% else %}
+      <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' i %}">{{i}}</a></li>
+      {% endif %} {% endfor %} {% if people.has_next %}
+      <li class="page-item">
+          <a class="page-link" href="?{% url_replace request 'page' people.paginator.num_pages %}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+      </li>
+      {% endif %}
+      </ul>
+      <span>
+      Page {{ people.number }} of {{ people.paginator.num_pages }}. (Total {{ people.paginator.count }} Results)
+      </span>
+      </nav>
+  {% endif %}<br /><br />
+  </div>
+  {% endblock %}
+  {% block custom_scripts %}
+  <script type="text/javascript" src="{% static "js/bootstrap-datepicker.min.js" %}"></script>
+  <link rel="stylesheet" href="{% static "css/bootstrap-datepicker3.css" %}"/>
+  <script>
+          $(document).ready(function(){
+            var date_input=$('input[id="datepcik"]');
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            var options={
+              format: 'yyyy/mm/dd',
+              container: container,
+              orientation: "top right",
+              clearBtn: true,
+              autoclose: true,
+            };
+            date_input.datepicker(options);
+          })
+      </script>
+  {% endblock %}

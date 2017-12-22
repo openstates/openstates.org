@@ -1,0 +1,43 @@
+{% extends 'admintools/base.html' %}
+
+{% block body %}
+<div class="container">
+    <!--Page padding-->
+    <br /><br /><br />
+    <a href="#" class="list-group-item active teal lighten-1">
+        Session: {{ session.name }}
+    </a>
+    <br />
+    <div class="row wow fadeIn" data-wow-delay="0.2s">
+        <div class="col-lg-6">
+            <div class="card">
+
+                <h3 class="card-header default-color white-text">Bills</h3>
+                <div class="card-block">
+                    {% for organization in bill_orgs %}
+                    <p><a href="{% url 'admin:legislative_bill_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}&legislative_session_identifier={{session.identifier}}&from_organization__name={{organization.from_organization__name}}">{{ forloop.counter }}. {{organization.from_organization__name|title}} Bills</a></p>
+                    {% empty %}
+                    <p>Organizations Not Found For Any Bills</p>
+                    {% endfor %}
+                    <a class="btn btn-primary" href="{% url 'admin:legislative_bill_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}&legislative_session_identifier={{session.identifier}}">View All</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+
+                <h3 class="card-header default-color white-text">VoteEvents</h3>
+                <div class="card-block">
+                    {% for organization in voteevent_orgs %}
+                    <p><a href="{% url 'admin:legislative_voteevent_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}&legislative_session_identifier={{session.identifier}}&organization__name={{organization.organization__name}}">{{ forloop.counter }}. {{organization.organization__name|title}} Vote Events</a></p>
+                    {% empty %}
+                    <p>Organizations Not Found For Any Vote Events</p>
+                    {% endfor %}
+                    <a class="btn btn-primary" href="{% url 'admin:legislative_voteevent_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}&legislative_session_identifier={{session.identifier}}">View All</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br /><br />
+</div>
+{% endblock %}

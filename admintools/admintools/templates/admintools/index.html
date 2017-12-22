@@ -1,0 +1,142 @@
+{% extends 'admintools/base.html' %}
+{% load tags %}
+{% load staticfiles %}
+{% block navbar_header %}
+<a class="navbar-brand" href="#">
+        <img src="{% static 'img/openstates_logo.png' %}" style="height: 30px" class="d-inline-block align-top" alt="Open:States">
+    </a>
+{% endblock %}
+{% block navclass %}
+{% endblock %}
+{% block custom_css %}
+<style>
+    .thead-default th {
+        background-color: #CCCC99;
+    }
+
+    .good {
+        color: green;
+    }
+
+    .bad {
+        color: #ff5050;
+    }
+
+    .warning {
+        color: #ffcc00;
+    }
+</style>
+{% endblock %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-sm">
+                <thead class="thead-default">
+                    <tr>
+                        <th style="width:14%">
+                            <center>Jurisdiction</center>
+                        </th>
+                        <th style="width:12%">
+                            <center>Last Run</center>
+                        </th>
+                        <th style="width:10%">
+                            <center>People</center>
+                        </th>
+                        <th style="width:12%">
+                            <center>Organization</center>
+                        </th>
+                        <th style="width:10%">
+                            <center>Membership</center>
+                        </th>
+                        <th style="width:10%">
+                            <center>Post</center>
+                        </th>
+                        <th style="width:15%">
+                            <center>Bill</center>
+                        </th>
+                        <th style="width:15%">
+                            <center>VoteEvent</center>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for id_, values in rows %}
+                    <tr class="hoverable">
+                        <th><a href="{% url 'jurisdiction_intro' id_ %}">{% jurisdiction_name_from_id id_ %}</a></th>
+                        <!-- Last Run -->
+                        <td align="center">
+                            {% if values.run.count or values.run.count == None %}
+                            <div data-toggle="tooltip" data-placement="bottom" title="Last {{values.run.count|default_if_none:" 1 "}} Run{{values.run.count|pluralize}} Failed">
+                                {% endif %}
+                                <i class="fa fa-lg {{ values.run.count|yesno:" fa-close bad, fa-check-circle good, fa-warning warning "}}"></i> {{ values.run.date }}
+                            </div>
+
+                        </td>
+
+                        <!-- People -->
+                        <td align="center">
+                            <i class="fa fa-lg {{ values.person.warning|yesno:" fa-warning warning,fa-check-square-o good "}}"></i> {{ values.person.warning }}
+                        </td>
+
+                        <!-- Organization -->
+                        <td align="center">
+                            {% if values.organization.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.organization.error}}{% endif %}
+                            {% if values.organization.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.organization.warning }}{% endif %}
+                            {% if not values.organization.warning and not values.organization.error %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                        </td>
+
+                        <!-- Membership -->
+                        <td align="center">
+                            {% if values.membership.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.membership.error}}{% endif %}
+                            {% if values.membership.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.membership.warning }}{% endif %}
+                            {% if not values.membership.warning and not values.membership.error %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                        </td>
+
+                        <!-- Post -->
+                        <td align="center">
+                            {% if values.post.error %}
+                                <i class="fa fa-lg fa-close bad"></i> {{ values.post.error}}{% endif %}
+                            {% if values.post.warning %}
+                                <i class="fa fa-lg fa-warning warning"></i> {{ values.post.warning }}{% endif %}
+                            {% if not values.post.warning and not values.post.error %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                        </td>
+
+                        <!-- Bill -->
+                        <td align="center">
+                            {% if values.bill.error %}
+                            <i class="fa fa-lg fa-close bad"></i> {{ values.bill.error }} {% endif %} {% if values.bill.warning %}
+                            <i class="fa fa-lg fa-warning warning"></i> {{ values.bill.warning }} {% endif %} {% if not values.bill.warning and not values.bill.error %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                        </td>
+
+                        <!-- VoteEvent -->
+                        <td align="center">
+                            {% if values.voteevent.error %}
+                            <i class="fa fa-lg fa-close bad"></i> {{ values.voteevent.error }} {% endif %} {% if values.voteevent.warning %}
+                            <i class="fa fa-lg fa-warning warning"></i> {{ values.voteevent.warning }} {% endif %} {% if not values.voteevent.error and not values.voteevent.warning %}
+                            <i class="fa fa-lg fa-check-square-o good"></i> {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{%endblock%}
+{% block custom_sctipts %}
+<script>
+    // Tooltips Initialization
+    $(function() {
+        $('[data-toggle="tooltip"]').tooltip('toggle')
+    })
+</script>
+{% endblock %}
