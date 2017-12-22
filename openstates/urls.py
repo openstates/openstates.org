@@ -6,8 +6,10 @@ from graphene_django.views import GraphQLView
 
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^djadmin/', admin.site.urls),
+    url(r'^djadmin/', include('opencivicdata.core.admin.urls')),
     url(r'^graphql', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    url(r'^reports/', include('admintools.urls'))
 ]
 
 

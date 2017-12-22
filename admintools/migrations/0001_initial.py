@@ -27,9 +27,6 @@ class Migration(migrations.Migration):
                 ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
                 ('jurisdiction', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dataquality_issues', to='core.Jurisdiction')),
             ],
-            options={
-                'db_table': 'opencivicdata_dataqualityissue',
-            },
         ),
         migrations.AlterIndexTogether(
             name='dataqualityissue',

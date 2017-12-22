@@ -12,7 +12,7 @@ def url_replace(request, field, value):
     return dict_.urlencode()
 
 
-@register.assignment_tag
+@register.simple_tag
 def legislative_session_list(jur_id):
     legislative_sessions = LegislativeSession.objects.filter(
         jurisdiction_id=jur_id).values('name', 'identifier') \

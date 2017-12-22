@@ -11,7 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from collections import defaultdict, Counter
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db import transaction

@@ -10,11 +10,11 @@ class DataQualityIssue(models.Model):
         ('active', 'Active'),
         ('ignored', 'Ignored')
     )
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
-    jurisdiction = models.ForeignKey(Jurisdiction,
-                                     related_name="dataquality_issues")
+    jurisdiction = models.ForeignKey(Jurisdiction, related_name="dataquality_issues",
+                                     on_delete=models.CASCADE)
     alert = models.CharField(max_length=50)
     issue = models.CharField(max_length=150,
                              choices=issues.IssueType.choices())
@@ -24,14 +24,12 @@ class DataQualityIssue(models.Model):
     message = models.TextField(blank=True)
 
     class Meta:
-        db_table = 'opencivicdata_dataqualityissue'
         index_together = [
             ['alert', 'issue']
         ]
 
     def __str__(self):
-        return '{} issue type - {}'.format(self.issue,
-                                           self.alert)
+        return '{} issue type - {}'.format(self.issue, self.alert)
 
 
 class IssueResolverPatch(models.Model):
@@ -52,11 +50,13 @@ class IssueResolverPatch(models.Model):
         ('deprecated', 'Deprecated'),
         ('rejected', 'Rejected')
     )
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
     jurisdiction = models.ForeignKey(Jurisdiction,
-                                     related_name="issue_resolver_patches")
+                                     related_name="issue_resolver_patches",
+                                     on_delete=models.CASCADE
+                                     )
     status = models.CharField(max_length=100, choices=STATUS_CHOICES)
     old_value = models.CharField(max_length=2250, blank=True)
     new_value = models.CharField(max_length=2250)
@@ -67,9 +67,6 @@ class IssueResolverPatch(models.Model):
     reporter_email = models.EmailField(blank=True)
     reporter_name = models.CharField(max_length=500, blank=True)
     applied_by = models.CharField(max_length=205)  # user/admin  (choices ??)
-
-    class Meta:
-        db_table = 'opencivicdata_issue_resolver_patch'
 
     def __str__(self):
         return '{} patch of {} by {} ({})'.format(self.applied_by,

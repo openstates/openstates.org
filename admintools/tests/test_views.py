@@ -6,7 +6,7 @@ from opencivicdata.legislative.models import (Bill, VoteEvent, BillSponsorship,
                                               LegislativeSession, PersonVote)
 from django.utils import timezone
 from admintools.models import DataQualityIssue, IssueResolverPatch
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import QueryDict
 from django.template import Template, Context
 
