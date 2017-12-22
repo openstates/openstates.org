@@ -81,7 +81,10 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'opencivicdata.core.apps.BaseConfig',
     'opencivicdata.legislative.apps.BaseConfig',
+    'pupa',
     'graphene_django',
+    'graphapi',
+    'admintools',
     # 'silk',
 ]
 
