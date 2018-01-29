@@ -241,7 +241,7 @@ class CoreQuery:
             raise ValueError("Jurisdiction requires id or name")
 
     def resolve_people(self, info,
-                       first=None,
+                       first=None, last=None,
                        member_of=None, ever_member_of=None,
                        district=None, name=None,
                        latitude=None, longitude=None,
