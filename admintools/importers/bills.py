@@ -23,13 +23,11 @@ def bills_issues():
                 count += create_issues(queryset, issue, jur)
             elif issue == 'unmatched-person-sponsor':
                 queryset = bills.filter(sponsorships__entity_type='person',
-                                        sponsorships__person__isnull=True) \
-                                        .distinct()
+                                        sponsorships__person__isnull=True).distinct()
                 count += create_issues(queryset, issue, jur)
             elif issue == 'unmatched-org-sponsor':
-                queryset = bills \
-                    .filter(sponsorships__entity_type='organization',
-                            sponsorships__organization__isnull=True).distinct()
+                queryset = bills.filter(sponsorships__entity_type='organization',
+                                        sponsorships__organization__isnull=True).distinct()
                 count += create_issues(queryset, issue, jur)
             elif issue == 'no-versions':
                 queryset = bills.filter(versions__isnull=True)

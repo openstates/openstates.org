@@ -59,9 +59,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if True not in [options['people'], options['organization'],
-                        options['vote_event'], options['bills'],
-                        options['membership'], options['post']]:
+        if not any([options['people'], options['organization'],
+                    options['vote_event'], options['bills'],
+                    options['membership'], options['post']]):
                 options['people'] = True
                 options['organization'] = True
                 options['vote_event'] = True

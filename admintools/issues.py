@@ -44,35 +44,34 @@ class IssueType:
         return issues
 
 
-def main():
-    # Person Related Issues
-    IssueType('missing-phone', 'Missing Phone Number', 'person', 'warning')
-    IssueType('missing-email', 'Missing Email', 'person', 'warning')
-    IssueType('missing-address', 'Missing Postal Address', 'person', 'warning')
-    IssueType('missing-photo', 'Missing Photo', 'person', 'warning')
+# Person Related Issues
+IssueType('missing-phone', 'Missing Phone Number', 'person', 'warning')
+IssueType('missing-email', 'Missing Email', 'person', 'warning')
+IssueType('missing-address', 'Missing Postal Address', 'person', 'warning')
+IssueType('missing-photo', 'Missing Photo', 'person', 'warning')
 
-    # Organization Related Issues
-    IssueType('no-memberships', 'No Memberships', 'organization', 'error')
+# Organization Related Issues
+IssueType('no-memberships', 'No Memberships', 'organization', 'error')
 
-    # Membership Related Issues
-    IssueType('unmatched-person', 'Unmatched Person', 'membership', 'warning')
+# Membership Related Issues
+IssueType('unmatched-person', 'Unmatched Person', 'membership', 'warning')
 
-    # Post Related Issues
-    IssueType('many-memberships', 'Too Many People', 'post', 'error')
-    IssueType('few-memberships', 'Too Few people', 'post', 'warning')
+# Post Related Issues
+IssueType('many-memberships', 'Too Many People', 'post', 'error')
+IssueType('few-memberships', 'Too Few people', 'post', 'warning')
 
-    # Bill Related Issues
-    IssueType('no-actions', 'Missing Actions', 'bill', 'error')
-    IssueType('no-sponsors', 'Missing Sponsors', 'bill', 'warning')
-    IssueType('no-versions', 'Missing Versions', 'bill', 'warning')
-    IssueType('unmatched-person-sponsor', 'Sponsor With Unmatched Person',
-              'bill', 'warning')
-    IssueType('unmatched-org-sponsor', 'Sponsor With Unmatched Organization',
-              'bill', 'warning')
+# Bill Related Issues
+IssueType('no-actions', 'Missing Actions', 'bill', 'error')
+IssueType('no-sponsors', 'Missing Sponsors', 'bill', 'warning')
+IssueType('no-versions', 'Missing Versions', 'bill', 'warning')
+IssueType('unmatched-person-sponsor', 'Sponsor With Unmatched Person',
+          'bill', 'warning')
+IssueType('unmatched-org-sponsor', 'Sponsor With Unmatched Organization',
+          'bill', 'warning')
 
-    # VoteEvent Related Issues
-    IssueType('missing-bill', 'Missing Bill', 'voteevent', 'error')
-    IssueType('missing-voters', 'Missing Voters', 'voteevent', 'warning')
-    IssueType('missing-counts', 'Missing Counts', 'voteevent', 'error')
-    IssueType('bad-counts', 'Bad Counts', 'voteevent', 'warning')
-    IssueType('unmatched-voter', 'Unmatched Voter', 'voteevent', 'warning')
+# VoteEvent Related Issues
+IssueType('missing-bill', 'Missing Bill', 'voteevent', 'error')
+IssueType('missing-voters', 'Missing Voters', 'voteevent', 'warning')
+IssueType('missing-counts', 'Missing Counts', 'voteevent', 'error')
+IssueType('bad-counts', 'Bad Counts', 'voteevent', 'warning')
+IssueType('unmatched-voter', 'Unmatched Voter', 'voteevent', 'warning')
