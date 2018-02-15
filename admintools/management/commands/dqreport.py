@@ -1,13 +1,18 @@
 from django.core.management.base import BaseCommand
-from ...reports import (people_issues, bills_issues, memberships_issues,
-                        vote_events_issues, organizations_issues,
-                        posts_issues)
+from opencivicdata.core.models import Jurisdiction
+from ...reports import (people_report, bills_report, memberships_report,
+                        vote_events_report, organizations_report, posts_report)
 
 
 class Command(BaseCommand):
     help = 'Import Data Quality Issues into DB'
 
     def add_arguments(self, parser):
+        parser.add_argument(
+            'jurisdictions',
+            type=str, nargs='+',
+            help='jurisdiction to import'
+        )
 
         # Optional arguments
         parser.add_argument(
@@ -50,28 +55,22 @@ class Command(BaseCommand):
                 options['vote_event'] = True
                 options['bills'] = True
 
-        if options['people']:
-            people_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported People'
-                                                 ' DataQualityIssues into DB'))
-            memberships_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported '
-                                                 'Membership DataQualityIssues into DB'))
-            posts_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported '
-                                                 'Post DataQualityIssues into DB'))
+        for jname in options['jurisdictions']:
+            try:
+                jur = Jurisdiction.objects.get(id__contains=':' + jname + '/')
+            except Jurisdiction.DoesNotExist:
+                self.stderr.write(self.style.ERROR("no such jurisdiction: " + jname))
+                return
 
-        if options['organization']:
-            organizations_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported '
-                                                 'Organization DataQualityIssues into DB'))
-
-        if options['vote_event']:
-            vote_events_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported '
-                                                 'VoteEvent DataQualityIssues into DB'))
-
-        if options['bills']:
-            bills_issues()
-            self.stdout.write(self.style.SUCCESS('Successfully Imported Bill'
-                                                 ' DataQualityIssues into DB'))
+            if options['people']:
+                people_report(jur)
+                memberships_report(jur)
+                posts_report(jur)
+            if options['organization']:
+                organizations_report(jur)
+                # self.stdout.write(self.style.SUCCESS('Successfully Imported '
+                #                                      'Organization DataQualityIssues into DB'))
+            if options['vote_event']:
+                vote_events_report(jur)
+            if options['bills']:
+                bills_report(jur)
