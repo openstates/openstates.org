@@ -20,15 +20,8 @@ These tools identify the data quality issues in the database and allow Open Stat
 ## Management Commands
 1. To import data quality issues from `opencivicdata` database tables into `opencivicdata_dataqualityissue` table. These commands will first delete all data quality issues with `active` status ignoring issues with `ignored` status and then import all known issues with `active` status. These commands will also make sure to raise an error if any importer needs update for new issue.
     ```
-    python manage.py import
-    python manage.py import --people
-    python manage.py import --organizations
-    python manage.py import --membership
-    python manage.py import --posts
-    python manage.py import --vote_events
-    python manage.py import --bills
+    python manage.py dqreport
     ```
-    > provide optional arguments to import specific type of data quality issues
 
 2. To import people related issues resolver patches into `opencivicdata_issue_resolver_patch` database table.  This will apply only `approved` status patches and delete related data quality issues from `opencivicdata_dataqualityissue` table (if exists). This command will also make sure that patch is not applied before and number of approved pathces for `image` and `name` for a person must be one and will show names of such legislators as output. This command will also make sure to raise an error if any resolver needs update for new category.
     ```
