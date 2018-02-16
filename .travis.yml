@@ -9,6 +9,10 @@ python:
     - "3.6"
 install: 
     - pip install -rrequirements.txt
+before_script:
+    - psql -c "CREATE USER test with PASSWORD 'test' CREATEDB SUPERUSER;" -U postgres
+    - psql -c "CREATE DATABASE test;" -U postgres
+    - psql -c "CREATE EXTENSION postgis;" -U postgres -d test
 script: 
     - pytest --ds=openstates.settings --reuse-db -v
     - flake8

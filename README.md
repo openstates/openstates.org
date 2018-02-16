@@ -1,5 +1,6 @@
 # The new openstates.org
 
+
 ## Front-end
 
 The front-end is bootstrapped using `create-react-app` for React.js. To run locally, run `yarn` or `npm install`, and then `yarn run start` or `npm run start`. This will build all Sass files to CSS, then serve the React app located in `src`.
