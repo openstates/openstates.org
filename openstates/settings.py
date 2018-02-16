@@ -84,7 +84,7 @@ INSTALLED_APPS = [
     'pupa',
     'graphene_django',
     'graphapi',
-    'admintools',
+    'dataquality',
     # 'silk',
 ]
 
