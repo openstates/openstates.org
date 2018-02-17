@@ -27,13 +27,13 @@ The database in the OCD schema, managed by Django and powered by PostGIS.
 pip install -r requirements.txt
 
 # Set up the database
+# Alternatively, skip this, and just load a database dump that already contains scraped data
 createdb openstates
 psql postgres://localhost/openstates -c "CREATE EXTENSION postgis;"
 export DATABASE_URL=postgis://localhost/openstates
 ./manage.py migrate
 ./manage.py loaddivisions us
 # Now, run any `pupa update` scrapes you need to import data into the database
-# Alternatively, load a database dump that already contains scraped data
 
 # Run the server; now, open up the API or front-end locally!
 ./manage.py runserver
