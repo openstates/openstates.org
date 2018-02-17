@@ -8,7 +8,7 @@ python:
     - "3.5"
     - "3.6"
 install: 
-    - pip install -rrequirements.txt
+    - pip install -requirements.txt
 script: 
     - pytest --ds=openstates.settings --reuse-db -v
     - flake8
