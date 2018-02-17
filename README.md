@@ -1,32 +1,40 @@
-# The new openstates.org
+# The new openstates.org, and API v2
 
-## Front-end
+## Summary
 
-The front-end is bootstrapped using `create-react-app` for React.js. To run locally, run `yarn` or `npm install`, and then `yarn run start` or `npm run start`. This will build all Sass files to CSS, then serve the React app located in `src`.
+### Front-end
 
-For issues with the build system, check [the user guide](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
+The front-end is a Django site, augmented by React for particular pages that require state management.
 
-## Back-end
+### API
 
-The back-end consists of an OCD Python database. While this project is under heavy development it is recommended you install as follows:
+_Needs to be filled out by @jamesturk_
+
+### Database
+
+The database in the OCD schema, managed by Django and powered by PostGIS.
+
+## Dependencies
+
+- Python 3.5
+- PostgreSQL 9.4
+- PostGIS 2.3
+
+## Running locally
 
 ```
-$ mkvirtualenv newos
+# Install dependencies, ideally within a virtual environment
+pip install -r requirements.txt
 
-$ git clone git@github.com:opencivicdata/python-opencivicdata.git
-$ cd python-opencivicdata
-$ python setup.py develop
-$ cd ..
+# Set up the database
+createdb openstates
+psql postgres://localhost/openstates -c "CREATE EXTENSION postgis;"
+export DATABASE_URL=postgis://localhost/openstates
+./manage.py migrate
+./manage.py loaddivisions us
+# Now, run any `pupa update` scrapes you need to import data into the database
+# Alternatively, load a database dump that already contains scraped data
 
-$ git clone git@github.com:opencivicdata/pupa.git
-$ cd pupa
-$ python setup.py develop
-$ cd ..
-
-$ git clone git@github.com:openstates/new-openstates.org.git
-$ cd new-openstates.org
-$ pip install -r requirements.txt
-
-$ ./manage.py migrate
-$ ./manage.py runserver
+# Run the server; now, open up the API or front-end locally!
+./manage.py runserver
 ```

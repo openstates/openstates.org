@@ -1,0 +1,56 @@
+{% extends "../components/base.html" %}
+
+{% block content %}
+	<section>
+		<h2>{{ name }}</h2>
+		<span>{{ party }} · {{ title }} · District {{ district }}</span>
+
+		{% if email or capitol_address or capitol_phone or district_address or district_phone %}
+			<address>
+				<dl>
+					{% if email %}<dt>Email</dt><dd><a href='mailto:{{ email }}'>{{ email }}</a></dd>{% endif %}
+
+					{% if capitol_address %}<dt>Capitol Address</dt><dd>{{ capitol_address }}</dd>{% endif %}
+					{% if capitol_phone %}<dt>Capitol Phone</dt><dd>{{ capitol_phone }}</dd>{% endif %}
+
+					{% if district_address %}<dt>District Address</dt><dd>{{ district_address }}</dd>{% endif %}
+					{% if district_phone %}<dt>District Phone</dt><dd>{{ district_phone }}</dd>{% endif %}
+				</dl>
+			</address>
+		{% endif %}
+
+		{% if committee_memberships %}
+			<h1>Committee Memberships</h1>
+			{% for committee in committee_memberships %}
+				<button>{{ committee }}</button>
+			{% endfor %}
+		{% endif %}
+	</section>
+
+	<section>
+		<h1>Sponsored Bills</h1>
+		{% for bill in sponsored_bills %}
+			<div>
+				<h2>{{ bill.identifier }}</h2>
+				<span>{{ bill.title }}</span>
+			</div>
+		{% endfor %}
+		{% if sponsored_bills %}<button>View more bills</button>{% endif %}
+	</section>
+
+	<section>
+		<h1>Recent Votes</h1>
+		<!-- TO DO -->
+	</section>
+
+	<section>
+		<h1>Sources</h1>
+		{% if sources %}
+			<ul>
+				{% for source in sources %}
+					<li><a href="{{ source }}">{{ source }}</a></li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	</section>
+{% endblock %}
