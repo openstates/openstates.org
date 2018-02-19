@@ -8,6 +8,7 @@ module.exports = {
       filename: "[name]-[hash].js",
   },
 
+ 	devtool: "source-map", // enable source-maps
   module: {
     loaders: [
       { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader'},
@@ -17,9 +18,13 @@ module.exports = {
         use: [{
             loader: "style-loader"
         }, {
-            loader: "css-loader"
+            loader: "css-loader", options: {
+              sourceMap: true
+            }
         }, {
-            loader: "sass-loader"
+            loader: "sass-loader", options: {
+              sourceMap: true
+            }
         }]
     }]
   },
