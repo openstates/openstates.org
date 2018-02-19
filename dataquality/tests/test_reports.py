@@ -7,8 +7,8 @@ from opencivicdata.legislative.models import (Bill, VoteEvent,
 from dataquality.issues import IssueType
 from dataquality.models import DataQualityIssue
 from dataquality.reports import (people_report, organizations_report,
-                                bills_report, vote_events_report,
-                                posts_report, memberships_report)
+                                 bills_report, vote_events_report,
+                                 posts_report, memberships_report)
 
 
 class BaseReportTestCase(TestCase):

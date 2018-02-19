@@ -22,12 +22,17 @@ def legislator(request, legislator_id):
     ).post
 
     email = getattr(person.contact_details.filter(type='email').first(), 'value', None)
-    capitol_address = getattr(person.contact_details.filter(note='Capitol Office').first(), 'value', None)
-    capitol_phone = getattr(person.contact_details.filter(note='Capitol Office Phone').first(), 'value', None)
-    district_address = getattr(person.contact_details.filter(note='District Office').first(), 'value', None)
-    district_phone = getattr(person.contact_details.filter(note='District Office Phone').first(), 'value', None)
+    capitol_address = getattr(person.contact_details.filter(note='Capitol Office').first(),
+                              'value', None)
+    capitol_phone = getattr(person.contact_details.filter(note='Capitol Office Phone').first(),
+                            'value', None)
+    district_address = getattr(person.contact_details.filter(note='District Office').first(),
+                               'value', None)
+    district_phone = getattr(person.contact_details.filter(note='District Office Phone').first(),
+                             'value', None)
 
-    committee_memberships = person.memberships.filter(organization__classification='committee').all()
+    committee_memberships = person.memberships.filter(
+        organization__classification='committee').all()
 
     sponsored_bills = [
         sponsorship.bill for sponsorship in
