@@ -110,17 +110,14 @@ class PeopleReportTests(BaseReportTestCase):
         # Some Data Quality Issues
         DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
                                         content_object=p,
-                                        alert='warning',
                                         issue='person-missing-phone',
                                         status='active')
         DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
                                         content_object=p,
-                                        alert='warning',
                                         issue='person-missing-address',
                                         status='ignored')
         DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
                                         content_object=p,
-                                        alert='warning',
                                         issue='person-missing-email',
                                         status='active')
         people_report(self.jur)
@@ -178,12 +175,10 @@ class OrganizationReportTests(BaseReportTestCase):
         # Some Data Quality Issues
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         content_object=org1,
-                                        alert='error',
                                         issue='organization-no-memberships',
                                         status='ignored')
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         content_object=org,
-                                        alert='error',
                                         issue='organization-no-memberships',
                                         status='active')
         organizations_report(self.jur)
@@ -231,12 +226,10 @@ class MembershipsReportTests(BaseReportTestCase):
         # Some Data Quality Issues
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         content_object=mem1,
-                                        alert='warning',
                                         issue='membership-unmatched-person',
                                         status='ignored')
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         content_object=mem2,
-                                        alert='warning',
                                         issue='membership-unmatched-person',
                                         status='active')
         memberships_report(self.jur)
@@ -431,17 +424,14 @@ class BillsReportTests(BaseReportTestCase):
         # Some Data Quality Issues
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         content_object=bill,
-                                        alert='error',
                                         issue='bill-no-actions',
                                         status='ignored')
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         content_object=bill,
-                                        alert='warning',
                                         issue='bill-no-sponsors',
                                         status='active')
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         content_object=bill,
-                                        alert='warning',
                                         issue='bill-no-versions',
                                         status='active')
         bills_report(self.jur)
@@ -596,12 +586,10 @@ class VoteEventReportTests(BaseReportTestCase):
         # Some Data Quality Issues
         DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
                                         content_object=voteevent,
-                                        alert='error',
                                         issue='voteevent-missing-bill',
                                         status='ignored')
         DataQualityIssue.objects.create(jurisdiction=org.jurisdiction,
                                         content_object=voteevent,
-                                        alert='warning',
                                         issue='voteevent-missing-voters',
                                         status='active')
         vote_events_report(self.jur)

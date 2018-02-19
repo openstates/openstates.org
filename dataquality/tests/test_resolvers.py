@@ -46,7 +46,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='Wrong Name',
                                           new_value='Garg',
                                           category='name',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
@@ -54,7 +53,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='Wrong Name',
                                           new_value='Hitesh',
                                           category='name',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
@@ -62,7 +60,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='Wrong Name',
                                           new_value='Hitesh Garg',
                                           category='name',
-                                          alert='error',
                                           applied_by='admin')
         setup_person_resolver()
         # getting updated object
@@ -81,7 +78,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='http://www.image.png',
                                           new_value='http://www.ht.png',
                                           category='image',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
@@ -89,7 +85,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='http://www.image.png',
                                           new_value='http://www.rt.png',
                                           category='image',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
@@ -97,7 +92,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='http://www.image.png',
                                           new_value='http://www.right.png',
                                           category='image',
-                                          alert='error',
                                           applied_by='admin')
         setup_person_resolver()
         # getting updated object
@@ -119,7 +113,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='New York',
                                           new_value='Ma',
                                           category='address',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
@@ -127,7 +120,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='New York',
                                           new_value='Maine',
                                           category='address',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
@@ -135,7 +127,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='Wyoming',
                                           new_value='W',
                                           category='address',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
@@ -143,7 +134,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='Wyoming',
                                           new_value='WY',
                                           category='address',
-                                          alert='error',
                                           applied_by='admin')
         setup_person_resolver()
         # getting updated object
@@ -161,32 +151,27 @@ class PeoplePatchesTest(TestCase):
                                           status='deprecated',
                                           new_value='321',
                                           category='voice',
-                                          alert='warning',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
                                           status='approved',
                                           new_value='456',
                                           category='voice',
-                                          alert='warning',
                                           applied_by='user')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
                                           status='rejected',
                                           new_value='753',
                                           category='voice',
-                                          alert='warning',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person,
                                           jurisdiction=jur,
                                           status='approved',
                                           new_value='852',
                                           category='voice',
-                                          alert='warning',
                                           applied_by='user')
         DataQualityIssue.objects.create(content_object=person,
                                         jurisdiction=jur,
-                                        alert='warning',
                                         issue='person-missing-phone')
         setup_person_resolver()
         # getting updated object
@@ -211,14 +196,12 @@ class PeoplePatchesTest(TestCase):
                                           status='deprecated',
                                           new_value='correct@gmail.com',
                                           category='email',
-                                          alert='warning',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=person1,
                                           jurisdiction=jur,
                                           status='approved',
                                           new_value='right@gmail.com',
                                           category='email',
-                                          alert='warning',
                                           applied_by='user')
         IssueResolverPatch.objects.create(content_object=person2,
                                           jurisdiction=jur,
@@ -226,7 +209,6 @@ class PeoplePatchesTest(TestCase):
                                           old_value='wrong@gmail.com',
                                           new_value='xyz@gmail.com',
                                           category='email',
-                                          alert='error',
                                           applied_by='user')
         IssueResolverPatch.objects.create(content_object=person2,
                                           jurisdiction=jur,
@@ -234,11 +216,9 @@ class PeoplePatchesTest(TestCase):
                                           old_value='wrong@gmail.com',
                                           new_value='right@gmail.com',
                                           category='email',
-                                          alert='error',
                                           applied_by='admin')
         DataQualityIssue.objects.create(content_object=person1,
                                         jurisdiction=jur,
-                                        alert='warning',
                                         issue='person-missing-email')
         setup_person_resolver()
         # getting updated object

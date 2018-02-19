@@ -15,28 +15,17 @@ class DataQualityIssue(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     jurisdiction = models.ForeignKey(Jurisdiction, related_name="dataquality_issues",
                                      on_delete=models.CASCADE)
-    alert = models.CharField(max_length=50)
-    issue = models.CharField(max_length=150,
-                             choices=issues.IssueType.choices())
+    issue = models.CharField(max_length=150, choices=issues.IssueType.choices())
     reporter = models.CharField(max_length=300, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default='active')
     message = models.TextField(blank=True)
 
-    class Meta:
-        index_together = [
-            ['alert', 'issue']
-        ]
-
     def __str__(self):
-        return '{} issue type - {}'.format(self.issue, self.alert)
+        return '{} issue type'.format(self.issue)
 
 
 class IssueResolverPatch(models.Model):
-    ALERT_CHOICES = (
-        ('warning', 'Missing Value'),
-        ('error', 'Wrong Value'),
-    )
     CATEGORY_CHOICES = (
         ('name', 'Name'),
         ('address', 'Address'),
@@ -61,7 +50,6 @@ class IssueResolverPatch(models.Model):
     old_value = models.CharField(max_length=2250, blank=True)
     new_value = models.CharField(max_length=2250)
     category = models.CharField(max_length=500, choices=CATEGORY_CHOICES)
-    alert = models.CharField(max_length=500, choices=ALERT_CHOICES)
     note = models.TextField(blank=True)
     source = models.URLField(max_length=2250, blank=True)
     reporter_email = models.EmailField(blank=True)
@@ -69,7 +57,4 @@ class IssueResolverPatch(models.Model):
     applied_by = models.CharField(max_length=205)  # user/admin  (choices ??)
 
     def __str__(self):
-        return '{} patch of {} by {} ({})'.format(self.applied_by,
-                                                  self.category,
-                                                  self.reporter_name,
-                                                  self.alert)
+        return '{} patch of {} by {}'.format(self.applied_by, self.category, self.reporter_name)

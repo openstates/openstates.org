@@ -91,20 +91,28 @@ def _get_pagination(objects_list, request):
 def overview(request):
     rows = {}
     all_counts = DataQualityIssue.objects.filter(status='active').values(
-        'jurisdiction', 'issue', 'alert').annotate(Count('issue'))
+        'jurisdiction', 'issue').annotate(Count('issue'))
     for counts in all_counts:
         jur = Jurisdiction.objects.get(id=counts['jurisdiction'])
-        rows.setdefault(counts['jurisdiction'], {})['jur_name'] = jur.name
-        rows[counts['jurisdiction']].setdefault(
-            counts['issue'].split('-')[0], {})
-        rows[counts['jurisdiction']][counts['issue'].split('-')[0]][
-            counts['alert']] = rows[counts['jurisdiction']][
-                counts['issue'].split('-')[0]].get(
-                    counts['alert'], 0) + counts['issue__count']
 
-        if not rows[counts['jurisdiction']].get('run'):
-            rows[counts['jurisdiction']]['run'] = _get_run_status(jur)
+        # create initial entry for jurisdiction
+        if counts['jurisdiction'] not in rows:
+            rows[counts['jurisdiction']] = {
+                'jur_name': jur.name,
+                'run': _get_run_status(jur),
+                'person': {'warning': 0, 'error': 0},
+                'organization': {'warning': 0, 'error': 0},
+                'membership': {'warning': 0, 'error': 0},
+                'post': {'warning': 0, 'error': 0},
+                'bill': {'warning': 0, 'error': 0},
+                'voteevent': {'warning': 0, 'error': 0},
+            }
 
+        objtype = counts['issue'].split('-')[0]
+        severity = IssueType.level_for(counts['issue'])
+        rows[counts['jurisdiction']][objtype][severity] += counts['issue__count']
+
+    # TODO: combine this w/ upper loop
     # RunPlan For those who don't have any type of dataquality_issues
     rest_jurs = Jurisdiction.objects.exclude(id__in=rows.keys())
     for jur in rest_jurs:
@@ -125,9 +133,9 @@ def _jur_dataquality_issues(jur_id):
         cards[related_class][issue] = {}
         exceptions[related_class][issue] = {}
         issue_type = IssueType.class_for(issue) + '-' + issue
-        alert = IssueType.level_for(issue)
-        cards[related_class][issue]['alert'] = (alert == 'error')
-        exceptions[related_class][issue]['alert'] = (alert == 'error')
+        severity = IssueType.level_for(issue)
+        cards[related_class][issue]['alert'] = (severity == 'error')
+        exceptions[related_class][issue]['alert'] = (severity == 'error')
         cards[related_class][issue]['description'] = description
         exceptions[related_class][issue]['description'] = description
         ct_obj = ContentType.objects.get_for_model(upstream[related_class])
@@ -308,7 +316,6 @@ def person_resolve_issues(request, jur_id, issue_slug):
                 new_value=new_value,
                 note=note,
                 category=category,
-                alert='warning',
                 applied_by='admin',
             )
             patch.save()
@@ -351,7 +358,6 @@ def review_person_patches(request, jur_id):
 
     # To maintain applied filter in template
     category_search = False
-    alert_search = False
     applied_by_search = False
     # Filters Results
     if request.GET.get('person'):
@@ -362,9 +368,6 @@ def review_person_patches(request, jur_id):
     if request.GET.get('category'):
         patches = patches.filter(category=request.GET.get('category'))
         category_search = request.GET.get('category')
-    if request.GET.get('alert'):
-        patches = patches.filter(alert=request.GET.get('alert'))
-        alert_search = request.GET.get('alert')
     if request.GET.get('applied_by'):
         patches = patches.filter(applied_by=request.GET.get('applied_by'))
         applied_by_search = request.GET.get('applied_by')
@@ -372,17 +375,14 @@ def review_person_patches(request, jur_id):
     objects, page_range = _get_pagination(patches.order_by('id'), request)
     categories_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'category').choices).items())
-    alerts_ = sorted(dict(IssueResolverPatch._meta.get_field(
-        'alert').choices).items())
 
     context = {'jur_id': jur_id,
                'patches': objects,
                'page_range': page_range,
-               'alert_search': alert_search,
                'category_search': category_search,
                'applied_by_search': applied_by_search,
                'categories_': categories_,
-               'alerts_': alerts_}
+               }
     return render(request, 'dataquality/review_person_patches.html', context)
 
 
@@ -420,7 +420,6 @@ def list_all_person_patches(request, jur_id):
         .filter(jurisdiction_id=jur_id)
     # To maintain applied filter in template
     category_search = False
-    alert_search = False
     applied_by_search = False
     status_search = False
     # Filter Results
@@ -432,9 +431,6 @@ def list_all_person_patches(request, jur_id):
     if request.GET.get('category'):
         patches = patches.filter(category=request.GET.get('category'))
         category_search = request.GET.get('category')
-    if request.GET.get('alert'):
-        patches = patches.filter(alert=request.GET.get('alert'))
-        alert_search = request.GET.get('alert')
     if request.GET.get('applied_by'):
         patches = patches.filter(applied_by=request.GET.get('applied_by'))
         applied_by_search = request.GET.get('applied_by')
@@ -446,21 +442,17 @@ def list_all_person_patches(request, jur_id):
 
     categories_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'category').choices).items())
-    alerts_ = sorted(dict(IssueResolverPatch._meta.get_field(
-        'alert').choices).items())
     status_ = sorted(dict(IssueResolverPatch._meta.get_field(
         'status').choices).items())
 
     context = {'jur_id': jur_id,
                'patches': objects,
                'page_range': page_range,
-               'alert_search': alert_search,
                'category_search': category_search,
                'applied_by_search': applied_by_search,
                'status_search': status_search,
                'categories_': categories_,
-               'status_': status_,
-               'alerts_': alerts_}
+               'status_': status_}
     return render(request, 'dataquality/list_person_patches.html', context)
 
 
@@ -688,7 +680,6 @@ def create_person_patch(request, jur_id):
             new_value=request.POST['new_value'],
             source=request.POST.get('source'),
             category=request.POST['category'],
-            alert='error',
             note=request.POST.get('note'),
             applied_by='admin',
         )

@@ -106,7 +106,6 @@ class OverviewViewTests(TestCase):
         person = Person.objects.create(name="Hitesh Garg")
         DataQualityIssue.objects.create(content_object=person,
                                         issue='missing-photo',
-                                        alert='warning',
                                         jurisdiction=jur1,
                                         status='active')
         response = self.client.get(reverse('overview'))
@@ -123,13 +122,11 @@ class OverviewViewTests(TestCase):
         person1 = Person.objects.create(name="Hitesh Garg")
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='missing-photo',
-                                        alert='warning',
                                         jurisdiction=jur1,
                                         status='active')
         person2 = Person.objects.create(name="Garg Hitesh")
         DataQualityIssue.objects.create(content_object=person2,
                                         issue='missing-photo',
-                                        alert='warning',
                                         jurisdiction=jur2,
                                         status='active')
         response = self.client.get(reverse('overview'))
@@ -172,13 +169,11 @@ class JurisdictionintroViewTests(TestCase):
         # Data Quality Issue
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='person-missing-photo',
-                                        alert='warning',
                                         jurisdiction=jur1,
                                         status='active')
         # Data Quality Exception
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='person-missing-phone',
-                                        alert='warning',
                                         jurisdiction=jur1,
                                         status='ignored')
 
@@ -367,7 +362,6 @@ class ListissueobjectsViewTests(TestCase):
         person1 = Person.objects.create(name="Hitesh Garg")
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='person-missing-photo',
-                                        alert='warning',
                                         jurisdiction=jur,
                                         status='active')
         response = self.client.get(reverse('list_issue_objects',
@@ -384,7 +378,6 @@ class ListissueobjectsViewTests(TestCase):
         person1 = Person.objects.create(name="Hitesh Garg")
         DataQualityIssue.objects.create(content_object=person1,
                                         issue='person-missing-photo',
-                                        alert='warning',
                                         jurisdiction=jur)
         query_dict = QueryDict('', mutable=True)
         # When Number of search results > 0
@@ -420,7 +413,6 @@ class ListissueobjectsViewTests(TestCase):
                                           jurisdiction=jur)
         DataQualityIssue.objects.create(content_object=org,
                                         issue='organization-no-memberships',
-                                        alert='error',
                                         jurisdiction=jur)
         query_dict = QueryDict('', mutable=True)
         # When Number of search results > 0
@@ -465,7 +457,6 @@ class ListissueobjectsViewTests(TestCase):
                                         organization=org)
         DataQualityIssue.objects.create(content_object=mem,
                                         issue='membership-unmatched-person',
-                                        alert='warning',
                                         jurisdiction=jur)
         query_dict = QueryDict('', mutable=True)
         # When Number of search results > 0
@@ -520,7 +511,6 @@ class ListissueobjectsViewTests(TestCase):
                     entity_type='organization')
         DataQualityIssue.objects.create(content_object=bill,
                                         issue='bill-unmatched-person-sponsor',
-                                        alert='warning',
                                         jurisdiction=jur)
         query_dict = QueryDict('', mutable=True)
         # When Number of search results > 0
@@ -572,7 +562,6 @@ class ListissueobjectsViewTests(TestCase):
                     bill=bill)
         DataQualityIssue.objects.create(content_object=voteevent,
                                         issue='voteevent-missing-voters',
-                                        alert='error',
                                         jurisdiction=jur)
         query_dict = QueryDict('', mutable=True)
         # When Number of search results > 0
@@ -1147,7 +1136,6 @@ class ReviewPatchesViewTest(TestCase):
                                           old_value='Hitesh Garg',
                                           new_value='Garg',
                                           category='name',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=p,
                                           jurisdiction=jur,
@@ -1155,21 +1143,18 @@ class ReviewPatchesViewTest(TestCase):
                                           old_value='Hitesh Garg',
                                           new_value='Ga',
                                           category='name',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=p,
                                           jurisdiction=jur,
                                           status='unreviewed',
                                           new_value='http://www/image.png',
                                           category='image',
-                                          alert='warning',
                                           applied_by='user')
         IssueResolverPatch.objects.create(content_object=p,
                                           jurisdiction=jur,
                                           status='deprecated',
                                           new_value='http://www/right.png',
                                           category='image',
-                                          alert='warning',
                                           applied_by='user')
 
     def test_view_response(self):
@@ -1233,7 +1218,6 @@ class ListAllPersonPatchesViewTest(TestCase):
                                           old_value='Hitesh Garg',
                                           new_value='Garg',
                                           category='name',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=p,
                                           jurisdiction=jur,
@@ -1241,21 +1225,18 @@ class ListAllPersonPatchesViewTest(TestCase):
                                           old_value='Hitesh Garg',
                                           new_value='Ga',
                                           category='name',
-                                          alert='error',
                                           applied_by='admin')
         IssueResolverPatch.objects.create(content_object=p,
                                           jurisdiction=jur,
                                           status='approved',
                                           new_value='http://www/image.png',
                                           category='image',
-                                          alert='warning',
                                           applied_by='user')
         IssueResolverPatch.objects.create(content_object=p,
                                           jurisdiction=jur,
                                           status='deprecated',
                                           new_value='http://www/right.png',
                                           category='image',
-                                          alert='warning',
                                           applied_by='user')
 
     def test_view_response(self):
@@ -1440,13 +1421,11 @@ class DataQualityExceptionsViewTest(TestCase):
         # some data quality exceptions
         DataQualityIssue.objects.create(jurisdiction=jur,
                                         content_object=p1,
-                                        alert='warning',
                                         issue='person-missing-address',
                                         status='ignored',
                                         message='missing on remote site')
         DataQualityIssue.objects.create(jurisdiction=jur,
                                         content_object=p2,
-                                        alert='warning',
                                         issue='person-missing-address',
                                         status='ignored',
                                         message='missing on openstates.org')
@@ -1464,7 +1443,6 @@ class DataQualityExceptionsViewTest(TestCase):
         Membership.objects.create(person=p1, organization=org)
         DataQualityIssue.objects.create(jurisdiction=jur,
                                         content_object=p1,
-                                        alert='warning',
                                         issue='person-missing-address',
                                         status='active')
         data = {'message': 'remote site don\'t have address',
@@ -1486,7 +1464,6 @@ class DataQualityExceptionsViewTest(TestCase):
         Membership.objects.create(person=p1, organization=org)
         DataQualityIssue.objects.create(jurisdiction=jur,
                                         content_object=p1,
-                                        alert='warning',
                                         issue='person-missing-address',
                                         status='ignored',
                                         message='error on website')

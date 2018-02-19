@@ -18,13 +18,12 @@ def apply_person_patches(patches, jur_name):
                     person.image = patch.new_value
                     person.save()
                     count += 1
-                    if patch.alert == 'warning':
-                        dqi = DataQualityIssue.objects \
-                            .filter(object_id=person.id,
-                                    issue='person-missing-photo')
-                        assert dqi.count() <= 1, "Not more than one Data" \
-                            " Quality Issue must be deleted."
-                        dqi.delete()
+                    dqi = DataQualityIssue.objects \
+                        .filter(object_id=person.id,
+                                issue='person-missing-photo')
+                    assert dqi.count() <= 1, "Not more than one Data" \
+                        " Quality Issue must be deleted."
+                    dqi.delete()
             else:
                 if patch.object_id not in image_duplicates:
                     p = Person.objects.get(id=patch.object_id).name
@@ -58,14 +57,13 @@ def apply_person_patches(patches, jur_name):
                                       defaults={'value': patch.new_value,
                                                 'note': patch.note})
                 count += 1
-            if patch.alert == 'warning':
-                dqi = DataQualityIssue.objects \
-                    .filter(object_id=person.id, issue='person-missing-{}'
-                            .format('phone' if patch.category == 'voice'
-                                    else patch.category))
-                assert dqi.count() <= 1, "Not more than one Data Quality " \
-                    "Issue must be deleted."
-                dqi.delete()
+            dqi = DataQualityIssue.objects \
+                .filter(object_id=person.id, issue='person-missing-{}'
+                        .format('phone' if patch.category == 'voice'
+                                else patch.category))
+            assert dqi.count() <= 1, "Not more than one Data Quality " \
+                "Issue must be deleted."
+            dqi.delete()
         else:
             raise ValueError("Resolvers Needs Update For New Category!")
     return count
