@@ -1,5 +1,6 @@
 # build artifacts
-src/**/*.css
+/public/static/bundles
+webpack-stats.json
 *.pyc
 __pycache__
 

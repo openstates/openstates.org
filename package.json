@@ -1,0 +1,21 @@
+{
+  "name": "openstates.org",
+  "version": "0.1.0",
+  "description": "",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "css-loader": "^0.28.9",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.20.2",
+    "webpack": "^3.11.0",
+    "webpack-bundle-tracker": "^0.2.1"
+  },
+  "scripts": {
+    "start": "webpack --watch"
+  }
+}
