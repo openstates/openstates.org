@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "dependencies": {
+    "foundation-sites": "^6.4.4-rc1"
   },
   "devDependencies": {
     "babel": "^6.23.0",
