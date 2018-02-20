@@ -12,6 +12,9 @@ graphene-django==2.0.0
 dj-database-url
 django-cors-headers==2.1.0
 
+# Metadata
+us==1.0.0
+
 # Testing and debugging
 # django-silk
 flake8

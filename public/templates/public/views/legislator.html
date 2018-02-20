@@ -11,11 +11,11 @@
 				<dl>
 					{% if email %}<dt>Email</dt><dd>{{ email|urlize }}</dd>{% endif %}
 
-					{% if capitol_address %}<dt>Capitol Address</dt><dd>{{ capitol_address }}</dd>{% endif %}
-					{% if capitol_phone %}<dt>Capitol Phone</dt><dd>{{ capitol_phone }}</dd>{% endif %}
+					{% if capitol_address %}<dt>Capitol Address</dt><dd>{{ capitol_address|linebreaks }}</dd>{% endif %}
+					{% if capitol_phone %}<dt>Capitol Phone</dt><dd><a href="tel:{{ capitol_phone }}">{{ capitol_phone }}</a></dd>{% endif %}
 
-					{% if district_address %}<dt>District Address</dt><dd>{{ district_address }}</dd>{% endif %}
-					{% if district_phone %}<dt>District Phone</dt><dd>{{ district_phone }}</dd>{% endif %}
+					{% if district_address %}<dt>District Address</dt><dd>{{ district_address|linebreaks }}</dd>{% endif %}
+					{% if district_phone %}<dt>District Phone</dt><dd><a href="tel:{{ district_phone }}">{{ district_phone }}</a></dd>{% endif %}
 				</dl>
 			</address>
 		{% endif %}

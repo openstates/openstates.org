@@ -4,15 +4,11 @@ from django.shortcuts import get_object_or_404, render
 from opencivicdata.core.models import Person
 
 
-def base(request):
-    return render(request, 'public/components/base.html')
-
-
-def legislators(request):
+def legislators(request, state):
     return render(request, 'public/views/legislators.html')
 
 
-def legislator(request, legislator_id):
+def legislator(request, state, legislator_id):
     person = get_object_or_404(Person, pk=legislator_id)
     party = person.memberships.get(organization__classification='party').organization.name
     legislative_membership = person.memberships.get(
