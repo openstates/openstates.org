@@ -1,4 +1,5 @@
 {% extends "../components/base.html" %}
+{% load custom_tags %}
 
 {% block content %}
 	<section>
@@ -8,7 +9,7 @@
 		{% if email or capitol_address or capitol_phone or district_address or district_phone %}
 			<address>
 				<dl>
-					{% if email %}<dt>Email</dt><dd><a href='mailto:{{ email }}'>{{ email }}</a></dd>{% endif %}
+					{% if email %}<dt>Email</dt><dd>{{ email|urlize }}</dd>{% endif %}
 
 					{% if capitol_address %}<dt>Capitol Address</dt><dd>{{ capitol_address }}</dd>{% endif %}
 					{% if capitol_phone %}<dt>Capitol Phone</dt><dd>{{ capitol_phone }}</dd>{% endif %}
@@ -43,14 +44,5 @@
 		<!-- TO DO -->
 	</section>
 
-	<section>
-		<h1>Sources</h1>
-		{% if sources %}
-			<ul>
-				{% for source in sources %}
-					<li><a href="{{ source }}">{{ source }}</a></li>
-				{% endfor %}
-			</ul>
-		{% endif %}
-	</section>
+	{% sources sources %}
 {% endblock %}

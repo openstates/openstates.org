@@ -21,6 +21,7 @@ def legislator(request, legislator_id):
         Q(organization__classification='upper')
     ).post
 
+    # These contact information values may not exist, so allow database fetch to find nothing
     email = getattr(person.contact_details.filter(type='email').first(), 'value', None)
     capitol_address = getattr(person.contact_details.filter(note='Capitol Office').first(), 'value', None)
     capitol_phone = getattr(person.contact_details.filter(note='Capitol Office Phone').first(), 'value', None)
@@ -37,7 +38,11 @@ def legislator(request, legislator_id):
     # TO DO
     votes = []
 
-    sources = [source.url for source in person.sources.all()]
+    legislature = legislative_membership.organization.parent or legislative_membership.organization
+    sources = {
+        'legislature_name': legislature.name,
+        'urls': person.sources.all()
+    }
 
     return render(
         request,
