@@ -66,13 +66,15 @@ def _get_url_slug(related_class):
 # get pagination of results upto 20 objects
 def _get_pagination(objects_list, request):
     paginator = Paginator(objects_list, 20)
+
     try:
-        page = int(request.GET.get('page', '1'))
-    except:
+        page = int(request.GET.get('page', 1))
+    except ValueError:
         page = 1
+
     try:
         objects = paginator.page(page)
-    except(EmptyPage, InvalidPage):
+    except (EmptyPage, InvalidPage):
         objects = paginator.page(1)
 
     # page_range to show at bottom of table
