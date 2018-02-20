@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from opencivicdata.core.models import Organization
 from .common import create_issues
 from ..issues import IssueType
@@ -6,9 +5,8 @@ from ..models import DataQualityIssue
 
 
 def organizations_report(jur):
-    org_contenttype_obj = ContentType.objects.get_for_model(Organization)
     DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
-                                    content_type=org_contenttype_obj
+                                    issue__startswith='organization-'
                                     ).delete()
     count = 0
     issues = IssueType.get_issues_for('organization')

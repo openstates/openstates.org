@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, F, Subquery, OuterRef, Q
 from opencivicdata.legislative.models import VoteEvent, VoteCount, PersonVote
 from .common import create_issues, create_name_issues
@@ -7,9 +6,8 @@ from ..models import DataQualityIssue
 
 
 def vote_events_report(jur):
-    contenttype_obj = ContentType.objects.get_for_model(VoteEvent)
     DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
-                                    content_type=contenttype_obj
+                                    issue__startswith='voteevent-'
                                     ).delete()
     voteevents = VoteEvent.objects.filter(legislative_session__jurisdiction=jur)
     count = 0

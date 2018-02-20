@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, F
 from opencivicdata.core.models import Person, Membership, Post
 from .common import create_issues, create_name_issues
@@ -7,9 +6,8 @@ from ..models import DataQualityIssue
 
 
 def people_report(jur):
-    contenttype_obj = ContentType.objects.get_for_model(Person)
     DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
-                                    content_type=contenttype_obj).delete()
+                                    issue__startswith='person-').delete()
     count = 0
     people = Person.objects.filter(memberships__organization__jurisdiction=jur).distinct()
     for issue in IssueType.get_issues_for('person'):
@@ -28,9 +26,8 @@ def people_report(jur):
 
 
 def memberships_report(jur):
-    mem_contenttype_obj = ContentType.objects.get_for_model(Membership)
     DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
-                                    content_type=mem_contenttype_obj
+                                    issue__startswith='membership-'
                                     ).delete()
     count = 0
     issues = IssueType.get_issues_for('membership')
@@ -50,6 +47,9 @@ def memberships_report(jur):
 def posts_report(jur):
     count = 0
     issues = IssueType.get_issues_for('post')
+    DataQualityIssue.objects.filter(jurisdiction=jur, status='active',
+                                    issue__startswith='post-'
+                                    ).delete()
     for issue in issues:
         if issue == 'many-memberships':
             queryset = Post.objects.filter(organization__jurisdiction=jur).annotate(

@@ -2,7 +2,6 @@ import datetime
 from collections import defaultdict, Counter
 from django.shortcuts import render
 from django.db.models import Count
-from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
 from django.urls import reverse
@@ -92,34 +91,26 @@ def overview(request):
     rows = {}
     all_counts = DataQualityIssue.objects.filter(status='active').values(
         'jurisdiction', 'issue').annotate(Count('issue'))
+
+    for jur in Jurisdiction.objects.all():
+        rows[jur.id] = {
+            'jur_name': jur.name,
+            'run': _get_run_status(jur),
+            'person': {'warning': 0, 'error': 0},
+            'organization': {'warning': 0, 'error': 0},
+            'membership': {'warning': 0, 'error': 0},
+            'post': {'warning': 0, 'error': 0},
+            'bill': {'warning': 0, 'error': 0},
+            'voteevent': {'warning': 0, 'error': 0},
+        }
+
     for counts in all_counts:
-        jur = Jurisdiction.objects.get(id=counts['jurisdiction'])
-
-        # create initial entry for jurisdiction
-        if counts['jurisdiction'] not in rows:
-            rows[counts['jurisdiction']] = {
-                'jur_name': jur.name,
-                'run': _get_run_status(jur),
-                'person': {'warning': 0, 'error': 0},
-                'organization': {'warning': 0, 'error': 0},
-                'membership': {'warning': 0, 'error': 0},
-                'post': {'warning': 0, 'error': 0},
-                'bill': {'warning': 0, 'error': 0},
-                'voteevent': {'warning': 0, 'error': 0},
-            }
-
         objtype = counts['issue'].split('-')[0]
         severity = IssueType.level_for(counts['issue'].split('-', 1)[1])
         rows[counts['jurisdiction']][objtype][severity] += counts['issue__count']
 
-    # TODO: combine this w/ upper loop
-    # RunPlan For those who don't have any type of dataquality_issues
-    rest_jurs = Jurisdiction.objects.exclude(id__in=rows.keys())
-    for jur in rest_jurs:
-        rows[jur.id] = {}
-        rows[jur.id]['jur_name'] = jur.name
-        rows[jur.id]['run'] = _get_run_status(jur)
-    rows = sorted(rows.items(),  key=lambda v: v[1]['jur_name'])
+    rows = sorted(rows.items(), key=lambda v: v[1]['jur_name'])
+
     return render(request, 'dataquality/index.html', {'rows': rows})
 
 
@@ -138,19 +129,13 @@ def _jur_dataquality_issues(jur_id):
         exceptions[related_class][issue]['alert'] = (severity == 'error')
         cards[related_class][issue]['description'] = description
         exceptions[related_class][issue]['description'] = description
-        ct_obj = ContentType.objects.get_for_model(upstream[related_class])
-        j = Jurisdiction.objects.filter(
-            id=jur_id, dataquality_issues__status='active',
-            dataquality_issues__content_type=ct_obj,
-            dataquality_issues__issue=issue_type).annotate(_issues=Count(
-                'dataquality_issues'))
-        cards[related_class][issue]['count'] = j[0]._issues if j else 0
-        je = Jurisdiction.objects.filter(
-            id=jur_id, dataquality_issues__status='ignored',
-            dataquality_issues__content_type=ct_obj,
-            dataquality_issues__issue=issue_type).annotate(_issues=Count(
-                'dataquality_issues'))
-        exceptions[related_class][issue]['count'] = je[0]._issues if je else 0
+
+        count = DataQualityIssue.objects.filter(jurisdiction_id=jur_id, status='active',
+                                                issue=issue_type).count()
+        ignored = DataQualityIssue.objects.filter(jurisdiction_id=jur_id, status='active',
+                                                  issue=issue_type).count()
+        cards[related_class][issue]['count'] = count
+        exceptions[related_class][issue]['count'] = ignored
     return dict(cards), dict(exceptions)
 
 
@@ -158,12 +143,10 @@ def _jur_dataquality_issues(jur_id):
 def jurisdiction_intro(request, jur_id):
     issues, exceptions = _jur_dataquality_issues(jur_id)
     bill_from_orgs_list = Bill.objects.filter(
-        legislative_session__jurisdiction__id=jur_id) \
-        .values('from_organization__name').distinct()
+        legislative_session__jurisdiction__id=jur_id).values('from_organization__name').distinct()
 
     voteevent_orgs_list = VoteEvent.objects.filter(
-        legislative_session__jurisdiction__id=jur_id) \
-        .values('organization__name').distinct()
+        legislative_session__jurisdiction__id=jur_id).values('organization__name').distinct()
 
     orgs_list = Organization.objects.filter(
         jurisdiction__id=jur_id).values('classification').distinct()
