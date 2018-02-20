@@ -10,15 +10,16 @@ class DataQualityIssue(models.Model):
         ('active', 'Active'),
         ('ignored', 'Ignored')
     )
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.CharField(max_length=300)
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    unmatched_name = models.CharField(max_length=2000, blank=True)
+
     jurisdiction = models.ForeignKey(Jurisdiction, related_name="dataquality_issues",
                                      on_delete=models.CASCADE)
     issue = models.CharField(max_length=150, choices=issues.IssueType.choices())
-    reporter = models.CharField(max_length=300, blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES,
-                              default='active')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     message = models.TextField(blank=True)
 
     def __str__(self):
