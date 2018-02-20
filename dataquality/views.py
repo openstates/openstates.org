@@ -109,7 +109,7 @@ def overview(request):
             }
 
         objtype = counts['issue'].split('-')[0]
-        severity = IssueType.level_for(counts['issue'])
+        severity = IssueType.level_for(counts['issue'].split('-', 1)[1])
         rows[counts['jurisdiction']][objtype][severity] += counts['issue__count']
 
     # TODO: combine this w/ upper loop

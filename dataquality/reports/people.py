@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, F
 from opencivicdata.core.models import Person, Membership, Post
-from .common import create_issues
+from .common import create_issues, create_name_issues
 from ..issues import IssueType
 from ..models import DataQualityIssue
 
@@ -37,8 +37,11 @@ def memberships_report(jur):
     for issue in issues:
         if issue == 'unmatched-person':
             queryset = Membership.objects.filter(organization__jurisdiction=jur,
-                                                 person__isnull=True)
-            count += create_issues(queryset, issue, jur)
+                                                 person__isnull=True).values(name=F('person_name')
+                                                                             ).annotate(
+                                                     num=Count('name')
+                                                 )
+            count += create_name_issues(queryset, issue, jur)
         else:
             raise ValueError("Memberships Importer needs update for new issue.")
     print("Imported Memberships Related {} Issues for {}".format(count, jur.name))
