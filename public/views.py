@@ -4,6 +4,10 @@ from django.shortcuts import get_object_or_404, render
 from opencivicdata.core.models import Person
 
 
+def styleguide(request):
+    return render(request, 'public/views/styleguide.html')
+
+
 def legislators(request, state):
     return render(request, 'public/views/legislators.html')
 
