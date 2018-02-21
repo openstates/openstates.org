@@ -1,7 +1,7 @@
 import datetime
 from collections import defaultdict, Counter
 from django.shortcuts import render
-from django.db.models import Count
+from django.db.models import Count, F
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
 from django.urls import reverse
@@ -114,49 +114,68 @@ def overview(request):
     return render(request, 'dataquality/index.html', {'rows': rows})
 
 
-# Calculates all active dataquality_issues in given jurisdiction
-def _jur_dataquality_issues(jur_id):
-    cards = defaultdict(dict)
-    exceptions = defaultdict(dict)
-    issues = IssueType.choices()
-    for issue, description in issues:
-        related_class = IssueType.class_for(issue)
-        cards[related_class][issue] = {}
-        exceptions[related_class][issue] = {}
-        issue_type = IssueType.class_for(issue) + '-' + issue
-        severity = IssueType.level_for(issue)
-        cards[related_class][issue]['alert'] = (severity == 'error')
-        exceptions[related_class][issue]['alert'] = (severity == 'error')
-        cards[related_class][issue]['description'] = description
-        exceptions[related_class][issue]['description'] = description
+def _object_summary(queryset, org_field):
+    stats = queryset.values(
+        session=F('legislative_session__identifier'),
+        org_name=F(org_field + '__name')).annotate(count=Count('pk'))
 
-        count = DataQualityIssue.objects.filter(jurisdiction_id=jur_id, status='active',
-                                                issue=issue_type).count()
-        ignored = DataQualityIssue.objects.filter(jurisdiction_id=jur_id, status='active',
-                                                  issue=issue_type).count()
-        cards[related_class][issue]['count'] = count
-        exceptions[related_class][issue]['count'] = ignored
-    return dict(cards), dict(exceptions)
+    summary = defaultdict(dict)
+    orgs = set()
+    for val in stats:
+        summary[val['session']][val['org_name']] = val['count']
+        orgs.add(val['org_name'])
+    orgs = sorted(orgs)
+    summary = [[key] + [value[org] for org in orgs]
+               for key, value in summary.items()]
+    return orgs, summary
 
 
 # Jurisdiction Specific Page
 def jurisdiction_overview(request, jur_id):
-    issues, exceptions = _jur_dataquality_issues(jur_id)
-    bill_from_orgs_list = Bill.objects.filter(
-        legislative_session__jurisdiction__id=jur_id).values('from_organization__name').distinct()
+    # get issues for jurisdiction
+    issues = defaultdict(dict)
+    exceptions = defaultdict(dict)
+    for issue, description in IssueType.choices():
+        related_class = IssueType.class_for(issue)
+        issues[related_class][issue] = {}
+        exceptions[related_class][issue] = {}
+        issue_type = IssueType.class_for(issue) + '-' + issue
+        severity = IssueType.level_for(issue)
+        issues[related_class][issue]['alert'] = (severity == 'error')
+        exceptions[related_class][issue]['alert'] = (severity == 'error')
+        issues[related_class][issue]['description'] = description
+        exceptions[related_class][issue]['description'] = description
 
-    voteevent_orgs_list = VoteEvent.objects.filter(
-        legislative_session__jurisdiction__id=jur_id).values('organization__name').distinct()
+        count = DataQualityIssue.objects.filter(jurisdiction_id=jur_id, status='active',
+                                                issue=issue_type).count()
+        ignored = DataQualityIssue.objects.filter(jurisdiction_id=jur_id, status='ignored',
+                                                  issue=issue_type).count()
+        issues[related_class][issue]['count'] = count
+        exceptions[related_class][issue]['count'] = ignored
 
-    orgs_list = Organization.objects.filter(
-        jurisdiction__id=jur_id).values('classification').distinct()
+    bill_qs = Bill.objects.filter(legislative_session__jurisdiction_id=jur_id)
+    bill_orgs, bill_summary = _object_summary(bill_qs, 'from_organization')
+
+    vote_qs = VoteEvent.objects.filter(legislative_session__jurisdiction__id=jur_id)
+    vote_orgs, vote_summary = _object_summary(vote_qs, 'organization')
+
+    orgs_list = Organization.objects.filter(jurisdiction__id=jur_id).values(
+        'classification', 'parent__classification').annotate(count=Count('pk'))
+    orgs_readable = {}
+    for val in orgs_list:
+        if val['classification'] == 'committee' and val['parent__classification'] == 'committee':
+            orgs_readable['Subcommittee'] = val['count']
+        else:
+            orgs_readable[val['classification'].title()] = val['count']
 
     context = {'jur_id': jur_id,
-               'cards': issues,
-               'exceptions': exceptions,
-               'bill_orgs': bill_from_orgs_list,
-               'voteevent_orgs': voteevent_orgs_list,
-               'orgs': orgs_list,
+               'cards': dict(issues),
+               'exceptions': dict(exceptions),
+               'bill_orgs': bill_orgs,
+               'bill_summary': bill_summary,
+               'vote_orgs': vote_orgs,
+               'vote_summary': vote_summary,
+               'orgs': orgs_readable,
                }
     return render(request, 'dataquality/jurisdiction_overview.html', context)
 

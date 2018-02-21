@@ -72,7 +72,6 @@
                 <h3 class="card-header default-color white-text">Legislators</h3>
                 <div class="card-block">
                     <ol style="padding-left: 20px;">
-                        <li><a href="{% url 'merge' jur_id %}"> Merge Tool</a></li>
                     </ol>
                     <a class="btn btn-primary" href="{% url 'admin:core_person_changelist' %}?memberships__organization__jurisdiction_id={{jur_id}}">View All</a>
                 </div>
@@ -83,11 +82,11 @@
 
                 <h3 class="card-header default-color white-text">Organizations</h3>
                 <div class="card-block">
-                    <ol style="padding-left: 20px;">
-                        {% for org in orgs %}
-                        <li><a href="{% url 'admin:core_organization_changelist' %}?jurisdiction_id={{jur_id}}&classification={{org.classification}}"> {{org.classification|title}}</a></li>
+                    <ul style="padding-left: 20px;">
+                        {% for org, count in orgs.items %}
+                        <li><a href="{% url 'admin:core_organization_changelist' %}?jurisdiction_id={{jur_id}}&classification={{org.classification}}"> {{org}}</a> ({{count}})</li>
                         {% endfor %}
-                    </ol>
+                    </ul>
                     <a class="btn btn-primary" href="{% url 'admin:core_organization_changelist' %}?jurisdiction_id={{jur_id}}">View All</a>
                 </div>
             </div>
@@ -103,13 +102,25 @@
 
                 <h3 class="card-header default-color white-text">Bills</h3>
                 <div class="card-block">
-                    <ol style="padding-left: 20px;">
-                        {% for organization in bill_orgs %}
-                        <li><a href="{% url 'admin:legislative_bill_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}&from_organization__name={{organization.from_organization__name}}"> {{organization.from_organization__name|title}} Bills</a></li>
-                        {% empty %}
-                        <li>Organizations Not Found For Any Bills</li>
-                        {% endfor %}
-                    </ol>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Session</td>
+                                {% for org in bill_orgs %}
+                                    <th>{{org}}</td>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in bill_summary %}
+                                <tr>
+                                {% for item in row %}
+                                    <td> {{ item }} </td>        
+                                {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                     <a class="btn btn-primary" href="{% url 'admin:legislative_bill_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}">View All</a>
                 </div>
             </div>
@@ -119,13 +130,25 @@
 
                 <h3 class="card-header default-color white-text">Vote Events</h3>
                 <div class="card-block">
-                    <ol style="padding-left: 20px;">
-                        {% for organization in voteevent_orgs %}
-                        <li><a href="{% url 'admin:legislative_voteevent_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}&organization__name={{organization.organization__name}}"> {{organization.organization__name|title}} Vote Events</a></li>
-                        {% empty %}
-                        <li>Organizations Not Found For Any Vote Events</li>
-                        {% endfor %}
-                    </ol>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Session</td>
+                                {% for org in vote_orgs %}
+                                    <th>{{org}}</td>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in vote_summary %}
+                                <tr>
+                                {% for item in row %}
+                                    <td> {{ item }} </td>        
+                                {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                     <a class="btn btn-primary" href="{% url 'admin:legislative_voteevent_changelist' %}?legislative_session__jurisdiction_id={{jur_id}}">View All</a>
                 </div>
             </div>
