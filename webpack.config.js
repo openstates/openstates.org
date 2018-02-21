@@ -1,5 +1,7 @@
 const path = require("path")
 const BundleTracker = require('webpack-bundle-tracker')
+const LiveReloadPlugin = require('webpack-livereload-plugin')
+
 
 module.exports = {
   entry: './public/static/js/index',
@@ -32,5 +34,6 @@ module.exports = {
 
   plugins: [
     new BundleTracker({filename: './webpack-stats.json'}),
+    new LiveReloadPlugin({appendScriptTag: 'true'}),
   ]
 }
