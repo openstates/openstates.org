@@ -12,10 +12,11 @@ module.exports = {
 
  	devtool: "source-map", // enable source-maps
   module: {
-    loaders: [
-      { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader'},
-    ],
-    rules: [{
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/, loader: "babel-loader"
+      }, {
         test: /\.scss$/,
         use: [{
             loader: "style-loader"

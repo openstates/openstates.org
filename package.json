@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "description": "",
   "dependencies": {
-    "foundation-sites": "^6.4.4-rc1"
+    "foundation-sites": "^6.4.4-rc1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
   },
   "devDependencies": {
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
     "css-loader": "^0.28.9",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
