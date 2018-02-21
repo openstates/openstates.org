@@ -63,7 +63,7 @@
                 <tbody>
                     {% for id_, values in rows %}
                     <tr class="hoverable">
-                        <th><a href="{% url 'jurisdiction_intro' id_ %}">{% jurisdiction_name_from_id id_ %}</a></th>
+                        <th><a href="{% url 'jurisdiction_overview' id_ %}">{% jurisdiction_name_from_id id_ %}</a></th>
                         <!-- Last Run -->
                         <td align="center">
                             {% if values.run.count or values.run.count == None %}

@@ -143,7 +143,7 @@ class OverviewViewTests(TestCase):
         self.assertContains(response, "Missouri State Senate")
 
 
-class JurisdictionintroViewTests(TestCase):
+class JurisdictionOverviewViewTests(TestCase):
 
     def setUp(self):
         division = Division.objects.create(
@@ -179,7 +179,7 @@ class JurisdictionintroViewTests(TestCase):
 
     def test_view_response(self):
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
-        response = self.client.get(reverse('jurisdiction_intro',
+        response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
 
@@ -195,7 +195,7 @@ class JurisdictionintroViewTests(TestCase):
         will be greater than zero otherwise count will be zero.
         """
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
-        response = self.client.get(reverse('jurisdiction_intro',
+        response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -214,7 +214,7 @@ class JurisdictionintroViewTests(TestCase):
         will be greater than zero otherwise count will be zero.
         """
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
-        response = self.client.get(reverse('jurisdiction_intro',
+        response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -233,7 +233,7 @@ class JurisdictionintroViewTests(TestCase):
         To check that important context values are present.
         """
         jur = Jurisdiction.objects.get(name="Missouri State Senate")
-        response = self.client.get(reverse('jurisdiction_intro',
+        response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('exceptions' in response.context)
@@ -251,7 +251,7 @@ class JurisdictionintroViewTests(TestCase):
                                     classification='executive')
         orgs_list = Organization.objects.filter(
             jurisdiction=jur).values('classification').distinct()
-        response = self.client.get(reverse('jurisdiction_intro',
+        response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['orgs'],
@@ -273,7 +273,7 @@ class JurisdictionintroViewTests(TestCase):
         voteevent_orgs_list = VoteEvent.objects.filter(
             legislative_session__jurisdiction=jur) \
             .values('organization__name').distinct()
-        response = self.client.get(reverse('jurisdiction_intro',
+        response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['voteevent_orgs'],
@@ -295,7 +295,7 @@ class JurisdictionintroViewTests(TestCase):
         bill_from_orgs_list = Bill.objects.filter(
             legislative_session__jurisdiction=jur) \
             .values('from_organization__name').distinct()
-        response = self.client.get(reverse('jurisdiction_intro',
+        response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['bill_orgs'],

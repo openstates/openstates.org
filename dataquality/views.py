@@ -140,7 +140,7 @@ def _jur_dataquality_issues(jur_id):
 
 
 # Jurisdiction Specific Page
-def jurisdiction_intro(request, jur_id):
+def jurisdiction_overview(request, jur_id):
     issues, exceptions = _jur_dataquality_issues(jur_id)
     bill_from_orgs_list = Bill.objects.filter(
         legislative_session__jurisdiction__id=jur_id).values('from_organization__name').distinct()
@@ -158,7 +158,7 @@ def jurisdiction_intro(request, jur_id):
                'voteevent_orgs': voteevent_orgs_list,
                'orgs': orgs_list,
                }
-    return render(request, 'dataquality/jurisdiction_intro.html', context)
+    return render(request, 'dataquality/jurisdiction_overview.html', context)
 
 
 # Bills and VoteEvents related info for a session
