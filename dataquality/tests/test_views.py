@@ -271,8 +271,8 @@ class JurisdictionOverviewViewTests(TestCase):
         VoteEvent.objects.create(identifier="V1", organization=org,
                                  legislative_session=ls)
         voteevent_orgs_list = VoteEvent.objects.filter(
-            legislative_session__jurisdiction=jur) \
-            .values('organization__name').distinct()
+            legislative_session__jurisdiction=jur
+        ).values('organization__name').distinct()
         response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
@@ -293,8 +293,8 @@ class JurisdictionOverviewViewTests(TestCase):
         Bill.objects.create(legislative_session=ls, identifier="SB 1",
                             title="Test Bill", from_organization=org)
         bill_from_orgs_list = Bill.objects.filter(
-            legislative_session__jurisdiction=jur) \
-            .values('from_organization__name').distinct()
+            legislative_session__jurisdiction=jur
+        ).values('from_organization__name').distinct()
         response = self.client.get(reverse('jurisdiction_overview',
                                            args=(jur.id,)))
         self.assertEqual(response.status_code, 200)
@@ -382,11 +382,10 @@ class ListissueobjectsViewTests(TestCase):
         query_dict = QueryDict('', mutable=True)
         # When Number of search results > 0
         query_dict.update({'person': "Hitesh"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'person', 'missing-photo')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(base_url=reverse(
+            'list_issue_objects', args=(jur.id, 'person', 'missing-photo')),
+            querystring=query_dict.urlencode()
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'], 'core_person_change')
@@ -395,11 +394,10 @@ class ListissueobjectsViewTests(TestCase):
 
         # When Number of search results = 0
         query_dict.update({'person': "unknown person"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'person', 'missing-photo')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects', args=(jur.id, 'person', 'missing-photo')),
+            querystring=query_dict.urlencode()
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'], 'core_person_change')
@@ -418,29 +416,24 @@ class ListissueobjectsViewTests(TestCase):
         # When Number of search results > 0
         query_dict.update({'organization': "No",
                            'org_classification': "Test"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'organization',
-                                           'no-memberships')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects',
+                             args=(jur.id, 'organization', 'no-memberships')),
+            querystring=query_dict.urlencode()
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['url_slug'],
-                         'core_organization_change')
-        self.assertEqual(response.context['issue_slug'],
-                         'no-memberships')
+        self.assertEqual(response.context['url_slug'], 'core_organization_change')
+        self.assertEqual(response.context['issue_slug'], 'no-memberships')
         self.assertEqual(response.context['objects'].paginator.count, 1)
 
         # When Number of search results = 0
         query_dict.update({'organization': "unknown",
                            'org_classification': "unknown"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'organization',
-                                           'no-memberships')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects', args=(jur.id, 'organization', 'no-memberships')
+                             ),
+            querystring=query_dict.urlencode())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'],
@@ -462,12 +455,10 @@ class ListissueobjectsViewTests(TestCase):
         # When Number of search results > 0
         query_dict.update({'membership_org': "Unmatched Person Memberships",
                            'membership': "Unmatched Person"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'membership',
-                                           'unmatched-person')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects',
+                             args=(jur.id, 'membership', 'unmatched-person')),
+            querystring=query_dict.urlencode())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'], None)
@@ -478,12 +469,10 @@ class ListissueobjectsViewTests(TestCase):
         # When Number of search results = 0
         query_dict.update({'membership_org': "unknown",
                            'membership': "unknown"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'membership',
-                                           'unmatched-person')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects',
+                             args=(jur.id, 'membership', 'unmatched-person')),
+            querystring=query_dict.urlencode())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'], None)
@@ -502,13 +491,11 @@ class ListissueobjectsViewTests(TestCase):
                             date="2017-06-28", order=2)
         bill.versions.create(note="Bill with version",
                              date="2017-06-28")
-        bill.sponsorships \
-            .create(classification="Bill with unmatched person sponsor",
-                    name="Unmatched Person Sponsor", entity_type='person')
-        bill.sponsorships \
-            .create(classification="Bill with matched organization sponsor",
-                    name="matched Organization Sponsor", organization=org,
-                    entity_type='organization')
+        bill.sponsorships.create(classification="Bill with unmatched person sponsor",
+                                 name="Unmatched Person Sponsor", entity_type='person')
+        bill.sponsorships.create(classification="Bill with matched organization sponsor",
+                                 name="matched Organization Sponsor", organization=org,
+                                 entity_type='organization')
         DataQualityIssue.objects.create(content_object=bill,
                                         issue='bill-unmatched-person-sponsor',
                                         jurisdiction=jur)
@@ -516,12 +503,10 @@ class ListissueobjectsViewTests(TestCase):
         # When Number of search results > 0
         query_dict.update({'bill_identifier': "Bill:",
                            "bill_session": "2017"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'bill',
-                                           'unmatched-person-sponsor')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects',
+                             args=(jur.id, 'bill', 'unmatched-person-sponsor')),
+            querystring=query_dict.urlencode())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'],
@@ -533,12 +518,10 @@ class ListissueobjectsViewTests(TestCase):
         # When Number of search results = 0
         query_dict.update({'bill_identifier': "unknown",
                            "bill_session": "unknown"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'bill',
-                                           'unmatched-person-sponsor')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects',
+                             args=(jur.id, 'bill', 'unmatched-person-sponsor')),
+            querystring=query_dict.urlencode())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'],
@@ -553,13 +536,13 @@ class ListissueobjectsViewTests(TestCase):
         ls = LegislativeSession.objects.get(identifier="2017")
         bill = Bill.objects.create(legislative_session=ls,
                                    identifier="Bill for VoteEvent")
-        voteevent = VoteEvent.objects \
-            .create(identifier="vote1",
-                    motion_text="VoteEvent with missing-voters",
-                    start_date="2017-06-26",
-                    result='pass', legislative_session=ls,
-                    organization=org,
-                    bill=bill)
+        voteevent = VoteEvent.objects.create(
+            identifier="vote1",
+            motion_text="VoteEvent with missing-voters",
+            start_date="2017-06-26",
+            result='pass', legislative_session=ls,
+            organization=org,
+            bill=bill)
         DataQualityIssue.objects.create(content_object=voteevent,
                                         issue='voteevent-missing-voters',
                                         jurisdiction=jur)
@@ -567,12 +550,10 @@ class ListissueobjectsViewTests(TestCase):
         # When Number of search results > 0
         query_dict.update({'voteevent_org': "Democratic",
                            'voteevent_bill': "Bill"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'voteevent',
-                                           'missing-voters')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects',
+                             args=(jur.id, 'voteevent', 'missing-voters')),
+            querystring=query_dict.urlencode())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'],
@@ -584,12 +565,10 @@ class ListissueobjectsViewTests(TestCase):
         # When Number of search results = 0
         query_dict.update({'voteevent_org': "unknown",
                            "voteevent_bill": "unknown"})
-        url = '{base_url}?{querystring}' \
-            .format(base_url=reverse('list_issue_objects',
-                                     args=(jur.id, 'voteevent',
-                                           'missing-voters')
-                                     ),
-                    querystring=query_dict.urlencode())
+        url = '{base_url}?{querystring}'.format(
+            base_url=reverse('list_issue_objects', args=(jur.id, 'voteevent', 'missing-voters')),
+            querystring=query_dict.urlencode()
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['url_slug'],
@@ -641,8 +620,8 @@ class LegislativesessioninfoViewTest(TestCase):
                             title="Test Bill", from_organization=org)
         bill_from_orgs_list = Bill.objects.filter(
             legislative_session__jurisdiction=jur,
-            legislative_session__identifier=ls.identifier) \
-            .values('from_organization__name').distinct()
+            legislative_session__identifier=ls.identifier
+        ).values('from_organization__name').distinct()
 
         response = self.client.get(reverse('legislative_session_info',
                                            args=(jur.id,
@@ -666,8 +645,8 @@ class LegislativesessioninfoViewTest(TestCase):
                             title="Test Bill", from_organization=org)
         bill_from_orgs_list = Bill.objects.filter(
             legislative_session__jurisdiction=jur,
-            legislative_session__identifier=ls_2016.identifier) \
-            .values('from_organization__name').distinct()
+            legislative_session__identifier=ls_2016.identifier
+        ).values('from_organization__name').distinct()
 
         response = self.client.get(reverse('legislative_session_info',
                                            args=(jur.id,
@@ -685,8 +664,8 @@ class LegislativesessioninfoViewTest(TestCase):
         VoteEvent.objects.create(identifier="V1", organization=org,
                                  legislative_session=ls)
         voteevent_orgs_list = VoteEvent.objects.filter(
-            legislative_session__jurisdiction=jur) \
-            .values('organization__name').distinct()
+            legislative_session__jurisdiction=jur
+        ).values('organization__name').distinct()
         response = self.client.get(reverse('legislative_session_info',
                                            args=(jur.id,
                                                  ls.identifier)))
@@ -707,8 +686,8 @@ class LegislativesessioninfoViewTest(TestCase):
                                  legislative_session=ls)
         voteevent_orgs_list = VoteEvent.objects.filter(
             legislative_session__jurisdiction=jur,
-            legislative_session__identifier=ls_2016.identifier) \
-            .values('organization__name').distinct()
+            legislative_session__identifier=ls_2016.identifier
+        ).values('organization__name').distinct()
         response = self.client.get(reverse('legislative_session_info',
                                            args=(jur.id,
                                                  ls_2016.identifier)))
@@ -971,13 +950,14 @@ class NameResolutionToolViewTest(TestCase):
                                        name='Unmatched Sponsor 1')
         BillSponsorship.objects.create(bill=bill, entity_type='person',
                                        name='Unmatched Sponsor 2')
-        voteevent = VoteEvent.objects \
-            .create(identifier="vote1",
-                    motion_text="VoteEvent with missing-voters",
-                    start_date="2017-06-26",
-                    result='pass', legislative_session=ls,
-                    organization=org,
-                    bill=bill)
+        voteevent = VoteEvent.objects.create(
+            identifier="vote1",
+            motion_text="VoteEvent with missing-voters",
+            start_date="2017-06-26",
+            result='pass', legislative_session=ls,
+            organization=org,
+            bill=bill
+        )
         PersonVote.objects.create(vote_event=voteevent,
                                   voter_name='Unmatched Voter 1')
         PersonVote.objects.create(vote_event=voteevent,
@@ -986,8 +966,7 @@ class NameResolutionToolViewTest(TestCase):
     def test_unmatched_memberships_view_response(self):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         response = self.client.get(reverse('name_resolution_tool',
-                                           args=(jur.id,
-                                                 'unmatched_memberships')))
+                                           args=(jur.id, 'unmatched_memberships')))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('jur_id' in response.context)
         self.assertTrue('page_range' in response.context)
@@ -1169,8 +1148,8 @@ class ReviewPatchesViewTest(TestCase):
         jur = Jurisdiction.objects.get(id='ocd-division/country:us/state:mo')
         response = self.client.get(reverse('review_person_patches',
                                            args=(jur.id,)))
-        unreviewed_patches = IssueResolverPatch.objects \
-            .filter(jurisdiction=jur, status='unreviewed').count()
+        unreviewed_patches = IssueResolverPatch.objects.filter(
+            jurisdiction=jur, status='unreviewed').count()
         self.assertEqual(len(response.context['patches'].object_list),
                          unreviewed_patches)
 
@@ -1445,15 +1424,14 @@ class DataQualityExceptionsViewTest(TestCase):
                                         content_object=p1,
                                         issue='person-missing-address',
                                         status='active')
-        data = {'message': 'remote site don\'t have address',
-                p1.id: 'on'}
+        data = {'message': "remote site doesn't have address", p1.id: 'on'}
         url = reverse('dataquality_exceptions', args=(jur.id,
                                                       'missing-address',
                                                       'add'))
         self.client.post(url, data)
         dqe = DataQualityIssue.objects.get(object_id=p1.id)
         self.assertEqual(dqe.status, 'ignored')
-        self.assertEqual(dqe.message, 'remote site don\'t have address')
+        self.assertEqual(dqe.message, "remote site doesn't have address")
         self.assertQuerysetEqual(DataQualityIssue.objects.filter(
             status='active'), [])
 

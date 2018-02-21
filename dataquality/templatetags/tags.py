@@ -15,8 +15,8 @@ def url_replace(request, field, value):
 @register.simple_tag
 def legislative_session_list(jur_id):
     legislative_sessions = LegislativeSession.objects.filter(
-        jurisdiction_id=jur_id).values('name', 'identifier') \
-        .order_by('-identifier')
+        jurisdiction_id=jur_id
+    ).values('name', 'identifier').order_by('-identifier')
     return legislative_sessions
 
 
