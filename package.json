@@ -19,6 +19,7 @@
     "style-loader": "^0.20.2",
     "webpack": "^3.11.0",
     "webpack-bundle-tracker": "^0.2.1",
+    "webpack-cleanup-plugin": "^0.5.1",
     "webpack-livereload-plugin": "^1.0.0"
   },
   "scripts": {

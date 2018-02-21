@@ -1,6 +1,7 @@
 const path = require("path")
 const BundleTracker = require('webpack-bundle-tracker')
 const LiveReloadPlugin = require('webpack-livereload-plugin')
+const WebpackCleanupPlugin = require('webpack-cleanup-plugin')
 
 
 module.exports = {
@@ -35,6 +36,7 @@ module.exports = {
 
   plugins: [
     new BundleTracker({filename: './webpack-stats.json'}),
-    new LiveReloadPlugin({appendScriptTag: 'true'}),
+    new LiveReloadPlugin({appendScriptTag: true}),
+    new WebpackCleanupPlugin({quiet: true})
   ]
 }
