@@ -2,7 +2,7 @@
 
 ## Summary
 
-### Frontend 
+### FrontEnd 
 The frontend is a Django site, augmented by React for particular pages that require state management.
 
 ### API
@@ -18,22 +18,24 @@ The database in the OCD schema, managed by Django and powered by PostGIS.
 * [Python 3.5](https://www.python.org/) (with [pip](https://pip.pypa.io/en/stable/) and [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/))
 * PostgreSQL 9.4
 * PostGIS 2.3
-* Node
+* [nvm](https://github.com/creationix/nvm#install-script)
+
 
 ### Installing
-Create a Python 3 virtual environment:
+
+#### Python & Django
+Create a Python 3 virtual environment
 ```
 mkvirtualenv --python=$(which python3) openstates
 ```
 
-Install dependencies:
+Install dependencies
 ```
 pip install -r requirements.txt
-npm install
 ```
 
-Set up the database:
-_Skip this if you can load a database dump that already contains scraped data_
+Set up the database
+_Skip this step if you can load a database dump that already contains scraped data_
 ```
 createdb openstates
 psql postgres://localhost/openstates -c "CREATE EXTENSION postgis;"
@@ -43,7 +45,20 @@ export DATABASE_URL=postgis://localhost/openstates
 ```
 Now, run any `pupa update` scrapes you need to import data into the database
 
-Do an initial build of assets:
+
+#### Frontend 
+
+Use nvm to install the correct version of Node.js
+```
+nvm install
+```
+
+Install frontend dependencies
+```
+npm install
+```
+
+Do an initial build of assets
 ```
 npm run build
 ```
@@ -54,8 +69,10 @@ Start up the Django webserver.
 ```
 ./manage.py runserver
 ```
+
 Start up webpack to watch and build any changes to static files.
 ```
 npm run start
 ```
+
 Now you can open up `localhost:8000` in your browser to see the project running locally.
