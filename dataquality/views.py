@@ -168,13 +168,13 @@ def legislative_session_info(request, jur_id, identifier):
 
     bill_from_orgs_list = Bill.objects.filter(
         legislative_session__jurisdiction__id=jur_id,
-        legislative_session__identifier=identifier) \
-        .values('from_organization__name').distinct()
+        legislative_session__identifier=identifier
+    ).values('from_organization__name').distinct()
 
     voteevent_orgs_list = VoteEvent.objects.filter(
         legislative_session__jurisdiction__id=jur_id,
-        legislative_session__identifier=identifier) \
-        .values('organization__name').distinct()
+        legislative_session__identifier=identifier
+    ).values('organization__name').distinct()
 
     context = {
         'jur_id': jur_id,
@@ -336,8 +336,7 @@ def review_person_patches(request, jur_id):
             messages.success(request, 'Successfully updated status of {} '
                              'Patch(es)'.format(len(request.POST)-1))
 
-    patches = IssueResolverPatch.objects \
-        .filter(status='unreviewed', jurisdiction_id=jur_id)
+    patches = IssueResolverPatch.objects.filter(status='unreviewed', jurisdiction_id=jur_id)
 
     # To maintain applied filter in template
     category_search = False
@@ -379,16 +378,14 @@ def list_all_person_patches(request, jur_id):
                 # if category is `name` or `image` and updated status is
                 # approved then make sure to display error if there is already
                 # a approved patch is present.
-                if pa.category in ['image', 'name'] and v == 'approved' \
-                        and pa.status != v:
-                    hg = IssueResolverPatch.objects \
-                        .filter(jurisdiction_id=jur_id, object_id=pa.object_id,
-                                category=pa.category, status='approved')
+                if pa.category in ['image', 'name'] and v == 'approved' and pa.status != v:
+                    hg = IssueResolverPatch.objects.filter(
+                        jurisdiction_id=jur_id, object_id=pa.object_id,
+                        category=pa.category, status='approved')
                     if hg:
                         per = Person.objects.get(id=pa.object_id)
-                        messages.error(request, "Multiple Approved Pathces for"
-                                       " {} ({})".format(per.name, pa.category)
-                                       )
+                        messages.error(request, "Multiple Approved Patches for {} ({})".format(
+                            per.name, pa.category))
                         continue
                 # if `status` is changed.
                 if pa.status != v:
@@ -396,11 +393,9 @@ def list_all_person_patches(request, jur_id):
                     pa.save()
                     count += 1
         if count:
-            messages.success(request, "Successfully Updated Status of "
-                             "{} Patch(es)".format(count))
+            messages.success(request, "Successfully Updated Status of {} Patch(es)".format(count))
 
-    patches = IssueResolverPatch.objects \
-        .filter(jurisdiction_id=jur_id)
+    patches = IssueResolverPatch.objects.filter(jurisdiction_id=jur_id)
     # To maintain applied filter in template
     category_search = False
     applied_by_search = False
@@ -468,13 +463,12 @@ def retire_legislators(request, jur_id):
                              'legislator(s)'.format(count))
     if request.GET.get('person'):
         people = Person.objects.filter(
-            memberships__organization__jurisdiction_id=jur_id) \
-                .filter(memberships__end_date='',
-                        name__icontains=request.GET.get('person')).distinct()
+            memberships__organization__jurisdiction_id=jur_id
+        ).filter(memberships__end_date='', name__icontains=request.GET.get('person')).distinct()
     else:
         people = Person.objects.filter(
-            memberships__organization__jurisdiction_id=jur_id) \
-            .filter(memberships__end_date='').distinct()
+            memberships__organization__jurisdiction_id=jur_id
+        ).filter(memberships__end_date='').distinct()
 
     objects, page_range = _get_pagination(people.order_by('name'), request)
     context = {'jur_id': jur_id,
@@ -515,8 +509,7 @@ def list_retired_legislators(request, jur_id):
                                            'Provide a valid Retirement Date'
                                            ' for {}'.format(p.name))
                     if prev_retirement_date != v:
-                        p.memberships.filter(end_date=prev_retirement_date) \
-                            .update(end_date=v)
+                        p.memberships.filter(end_date=prev_retirement_date).update(end_date=v)
                         count += 1
                 else:
                     messages.error(request,
@@ -528,13 +521,13 @@ def list_retired_legislators(request, jur_id):
 
     if request.GET.get('person'):
         people = Person.objects.filter(
-            memberships__organization__jurisdiction_id=jur_id) \
-            .filter(~Q(memberships__end_date=''),
-                    Q(name__icontains=request.GET.get('person'))).distinct()
+            memberships__organization__jurisdiction_id=jur_id
+        ).filter(~Q(memberships__end_date=''),
+                 Q(name__icontains=request.GET.get('person'))).distinct()
     else:
         people = Person.objects.filter(
-            memberships__organization__jurisdiction_id=jur_id) \
-            .filter(~Q(memberships__end_date='')).distinct()
+            memberships__organization__jurisdiction_id=jur_id
+        ).filter(~Q(memberships__end_date='')).distinct()
 
     people_with_end_date = {}
     for person in people:
@@ -585,18 +578,15 @@ def name_resolution_tool(request, jur_id, category):
     session_search = False
     session_id = request.GET.get('session_id')
 
-    if category != 'unmatched_memberships' and \
-            not session_id and not session_id == 'all':
+    if (category != 'unmatched_memberships' and not session_id and not session_id == 'all'):
         # By Default:- Filter By Latest Legislative Session
         session_id = LegislativeSession.objects.filter(
-            jurisdiction_id=jur_id).order_by('-identifier') \
-            .first().identifier
+            jurisdiction_id=jur_id).order_by('-identifier').first().identifier
     if category == 'unmatched_bill_sponsors':
-        queryset = BillSponsorship.objects \
-            .filter(
-                bill__legislative_session__jurisdiction_id=jur_id,
-                entity_type='person',
-                person_id=None).annotate(num=Count('name'))
+        queryset = BillSponsorship.objects.filter(
+            bill__legislative_session__jurisdiction_id=jur_id,
+            entity_type='person',
+            person_id=None).annotate(num=Count('name'))
         if session_id != 'all':
             queryset = queryset.filter(
                 bill__legislative_session__identifier=session_id)
@@ -606,10 +596,10 @@ def name_resolution_tool(request, jur_id, category):
             unresolved[obj.name] += obj.num
 
     elif category == 'unmatched_voteevent_voters':
-        queryset = PersonVote.objects \
-            .filter(
-                vote_event__legislative_session__jurisdiction_id=jur_id,
-                voter_id=None).annotate(num=Count('voter_name'))
+        queryset = PersonVote.objects.filter(
+            vote_event__legislative_session__jurisdiction_id=jur_id,
+            voter_id=None
+        ).annotate(num=Count('voter_name'))
         if session_id != 'all':
             queryset = queryset.filter(
                 vote_event__legislative_session__identifier=session_id)
@@ -637,8 +627,8 @@ def name_resolution_tool(request, jur_id, category):
 
     objects, page_range = _get_pagination(unresolved, request)
     people = Person.objects.filter(
-        memberships__organization__jurisdiction_id=jur_id) \
-        .order_by('name').distinct()
+        memberships__organization__jurisdiction_id=jur_id
+    ).order_by('name').distinct()
     context = {
         'jur_id': jur_id,
         'people': people,
