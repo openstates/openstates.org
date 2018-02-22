@@ -1,5 +1,6 @@
 # build artifacts
-src/**/*.css
+/public/static/bundles
+webpack-stats.json
 *.pyc
 __pycache__
 
@@ -18,6 +19,7 @@ __pycache__
 .env.development.local
 .env.test.local
 .env.production.local
+openstates.sqlite
 
 .cache
 

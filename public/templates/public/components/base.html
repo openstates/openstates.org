@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
 <html>
@@ -6,13 +7,16 @@
 		<meta charset="utf-8">
 
 		<title>{% block title %}{% endblock %}</title>
+		{% render_bundle 'main' 'css' %}
 	</head>
 
 	<body>
+		<div id="react-mount"></div>
 		{% include "./header.html" %}
 
 		{% block content %}{% endblock %}
 
 		{% include "./footer.html" %}
+		{% render_bundle 'main' 'js' %}
 	</body>
 </html>
