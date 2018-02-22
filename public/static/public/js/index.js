@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 
 ReactDOM.render(
   <p>Open States + React!</p>,
-  document.getElementById('root')
+  document.getElementById('react-mount')
 );
 
 
