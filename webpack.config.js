@@ -5,9 +5,9 @@ const WebpackCleanupPlugin = require('webpack-cleanup-plugin')
 
 
 module.exports = {
-  entry: './public/static/js/index',
+  entry: './public/static/public/js/index',
   output: {
-      path: path.resolve('./public/static/bundles'),
+      path: path.resolve('./public/static/public/bundles/'),
       filename: "[name]-[hash].js",
   },
 
