@@ -1,5 +1,5 @@
 # build artifacts
-/public/static/bundles
+/public/static/public/bundles
 webpack-stats.json
 *.pyc
 __pycache__
