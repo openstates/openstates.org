@@ -1,6 +1,31 @@
 // Global sass variables
+
+
+// Typography
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
-
-
 $source-sans-pro: 'Source Sans Pro';
 
+// Colors
+$orange: #EB8552; // logo fill
+
+$darknavy: #233240; // logo fill, nav block color
+$royalblue: #1B4CC1; // 10% of this is used for hollow button hovers
+
+$palemint: #F9FDFF; // section bg, also bill summary card bg
+$gray: #D7E0E9; // 35% of this is used for person cards, 25% of this is used for table row hover bgs
+$lightgray: #E4EBF2; // borders, labels and tags bg (50% lighter by default, 100% on hover)
+
+$blue: #179EE0;
+$red: #FF5D40; //E86662
+$yellow: #EEC232;
+$green: #30C170;
+
+.u-fill--royalblue { background-color: $royalblue; }
+.u-fill--darknavy { background-color: $darknavy; }
+.u-fill--palemint { background-color: $palemint; }
+.u-fill--gray { background-color: $gray; }
+.u-fill--lightgray { background-color: $lightgray; }
+.u-fill--blue { background-color: $blue; }
+.u-fill--red { background-color: $red; }
+.u-fill--yellow { background-color: $yellow; }
+.u-fill--green { background-color: $green; }
