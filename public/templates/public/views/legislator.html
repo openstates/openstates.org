@@ -1,8 +1,14 @@
 {% extends "../components/base.html" %}
+{% load static %}
 {% load custom_tags %}
 
 {% block content %}
 	<section>
+		{% if headshot_url %}
+			<img src="{{ headshot_url }}" alt="legislator headshot"/>
+		{% else %}
+			<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot"/>
+		{% endif %}
 		<h2>{{ name }}</h2>
 		<span>{{ party }} · {{ title }} · District {{ district }}</span>
 

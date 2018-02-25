@@ -14,6 +14,8 @@ def legislators(request, state):
 
 def legislator(request, state, legislator_id):
     person = get_object_or_404(Person, pk=legislator_id)
+    # TO DO
+    headshot_url = ''
     party = person.memberships.get(organization__classification='party').organization.name
     legislative_membership = person.memberships.get(
         Q(organization__classification='legislature') |
@@ -56,6 +58,7 @@ def legislator(request, state, legislator_id):
         'public/views/legislator.html',
         {
             'name': person.name,
+            'headshot_url': headshot_url,
             'party': party,
             'title': legislative_membership.role,
             'district': legislative_membership.label,
