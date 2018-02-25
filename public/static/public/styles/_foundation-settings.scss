@@ -69,17 +69,17 @@ $global-font-size: 100%;
 $global-width: rem-calc(1200);
 $global-lineheight: 1.5;
 $foundation-palette: (
-  primary: $royalblue,
-  secondary: $darknavy,
+  primary: $color-primary,
+  secondary: $color-secondary,
   success: #3adb76,
   warning: #ffae00,
   alert: #cc4b37,
 );
-$light-gray: $gray-light;
-$medium-gray: #cacaca;
+$light-gray: $color-gray-light;
+$medium-gray: $color-gray;
 $dark-gray: #8a8a8a;
-$black: #222222;
-$white: #ffffff;
+$black: $color-black;
+$white: $color-white;
 $body-background: $white;
 $body-font-color: $black;
 $body-font-family: $source-sans-pro, 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
@@ -329,7 +329,7 @@ $callout-link-tint: 30%;
 $card-background: $white;
 $card-font-color: $body-font-color;
 $card-divider-background: $light-gray;
-$card-border: 1px solid $light-gray;
+$card-border: 1px solid $medium-gray;
 $card-shadow: none;
 $card-border-radius: $global-radius;
 $card-padding: $global-padding;

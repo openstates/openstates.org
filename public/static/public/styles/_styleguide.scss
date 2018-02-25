@@ -2,6 +2,7 @@
 
 .swatch {
     padding-top: 75%;
+    border-bottom: 1px solid $color-gray;
 
     @include breakpoint(large) {
         padding-top: 50%;
