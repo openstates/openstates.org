@@ -41,12 +41,14 @@
 @include foundation-visibility-classes;
 @include foundation-float-classes;
 
-
+// Components
 @import 'typography';
 @import 'styleguide';
 
-$background-color: #f0f0f0;
 
-body {
-	background: $background-color;
-}
+// Utilities
+@import 'utilities/colors';
+@import 'utilities/measure';
+
+
+
