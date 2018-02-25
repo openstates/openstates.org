@@ -44,8 +44,10 @@ def legislator(request, state, legislator_id):
     votes = []
 
     legislature = legislative_membership.organization.parent or legislative_membership.organization
+    jurisdiction = legislature.jurisdiction
     sources = {
         'legislature_name': legislature.name,
+        'jurisdiction_url': jurisdiction.url,
         'urls': person.sources.all()
     }
 
