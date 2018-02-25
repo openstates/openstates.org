@@ -1,0 +1,18 @@
+// Styleguide
+
+.swatch {
+    padding-top: 75%;
+
+    @include breakpoint(large) {
+        padding-top: 50%;
+    }
+}
+.swatch__label {
+    border: 0;
+    background-color: initial;
+    padding: initial;
+}
+
+.section {
+    margin-bottom: 8rem;
+}
