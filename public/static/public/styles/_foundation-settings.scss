@@ -88,8 +88,8 @@ $global-margin: 1rem;
 $global-padding: 1rem;
 $global-position: 1rem;
 $global-weight-normal: normal;
-$global-weight-bold: bold;
-$global-radius: 0;
+$global-weight-bold: 700;
+$global-radius: 0.25rem;
 $global-menu-padding: 0.7rem 1rem;
 $global-menu-nested-margin: 1rem;
 $global-text-direction: ltr;
@@ -279,7 +279,7 @@ $breadcrumbs-item-separator-color: $medium-gray;
 // ----------
 
 $button-font-family: inherit;
-$button-padding: 0.85em 1em;
+$button-padding: 0.75em 1.5em;
 $button-margin: 0 0 $global-margin 0;
 $button-fill: solid;
 $button-background: $primary-color;
@@ -287,7 +287,7 @@ $button-background-hover: scale-color($button-background, $lightness: -15%);
 $button-color: $white;
 $button-color-alt: $black;
 $button-radius: $global-radius;
-$button-hollow-border-width: 1px;
+$button-hollow-border-width: $global-border-width;
 $button-sizes: (
   tiny: 0.6rem,
   small: 0.75rem,
@@ -297,7 +297,7 @@ $button-sizes: (
 $button-palette: $foundation-palette;
 $button-opacity-disabled: 0.25;
 $button-background-hover-lightness: -20%;
-$button-hollow-hover-lightness: -50%;
+$button-hollow-hover-lightness: 0;
 $button-transition: background-color 0.25s ease-out, color 0.25s ease-out;
 $button-responsive-expanded: false;
 
@@ -305,10 +305,10 @@ $button-responsive-expanded: false;
 // ----------------
 
 $buttongroup-margin: 1rem;
-$buttongroup-spacing: 1px;
+$buttongroup-spacing: -$global-border-width;
 $buttongroup-child-selector: '.button';
 $buttongroup-expand-max: 6;
-$buttongroup-radius-on-each: true;
+$buttongroup-radius-on-each: false;
 
 // 13. Callout
 // -----------

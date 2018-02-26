@@ -1,0 +1,39 @@
+// Buttons
+
+/**
+Custom button classes using Foundation's button mixins
+For more on button mixins, see https://foundation.zurb.com/sites/docs/button.html
+**/
+
+.button {
+    @include button(false, $white, $color-gray-light, $primary-color, solid);
+    font-weight: $global-weight-bold;
+    border: $global-border-width solid $primary-color;
+}
+
+.button--primary {
+    @include button(false, $primary-color, auto, auto, solid);
+    font-weight: $global-weight-bold;
+    border: $global-border-width solid $primary-color;
+}
+
+
+/**
+Custom button-group classes using Foundation's button-group mixins
+For more on button group mixins, see: https://foundation.zurb.com/sites/docs/button-group.html
+**/
+
+
+.button-group {
+    @include button-group(button, -$global-border-width);
+
+    .button--active {
+        background-color: $primary-color;
+        color: $button-color;
+    }
+
+    .button--active:hover,
+    .button--active:active {
+        background-color: $button-background-hover;
+    }
+}
