@@ -6,15 +6,21 @@ For more on button mixins, see https://foundation.zurb.com/sites/docs/button.htm
 **/
 
 .button {
-    @include button(false, $white, $color-gray-light, $primary-color, solid);
+    @include button(false, $white, $color-gray-light, $color-primary, solid);
     font-weight: $global-weight-bold;
-    border: $global-border-width solid $primary-color;
+    border: $global-border-width solid $color-primary;
 }
 
 .button--primary {
-    @include button(false, $primary-color, auto, auto, solid);
-    font-weight: $global-weight-bold;
-    border: $global-border-width solid $primary-color;
+    background-color: $color-primary;
+    color: $color-white;
+
+    &:hover,
+    &:active,
+    &:focus {
+        background-color: $button-background-hover;
+        color: $color-white;
+    }
 }
 
 
