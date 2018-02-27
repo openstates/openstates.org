@@ -12,6 +12,8 @@
 		<h2>{{ name }}</h2>
 		<span>{{ party }} · {{ title }} · District {{ district }}</span>
 
+		<div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ division_id }}"></div>
+
 		{% if email or capitol_address or capitol_phone or district_address or district_phone %}
 			<address>
 				<dl>

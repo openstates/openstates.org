@@ -8,10 +8,13 @@
 
         <title>{% block title %}{% endblock %}</title>
         {% render_bundle 'main' 'css' %}
+
+        <!-- CSS required by MapBox GL JS; could alternatively be copied and saved to the local styles directory -->
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
     </head>
 
     <body>
-        <div id="react-mount"></div>
+        <div data-hook="react-mount"></div>
         {% include "./header.html" %}
 
         <div class="grid-container">

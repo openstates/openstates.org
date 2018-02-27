@@ -62,6 +62,7 @@ def legislator(request, state, legislator_id):
             'party': party,
             'title': legislative_membership.role,
             'district': legislative_membership.label,
+            'division_id': legislative_membership.division_id,
 
             'email': email,
             'capitol_address': capitol_address,

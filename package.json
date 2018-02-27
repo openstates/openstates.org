@@ -4,6 +4,7 @@
   "description": "",
   "dependencies": {
     "foundation-sites": "^6.4.4-rc1",
+    "mapbox-gl": "^0.44.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
   },
@@ -21,6 +22,9 @@
     "webpack-bundle-tracker": "^0.2.1",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-livereload-plugin": "^1.0.0"
+  },
+  "engines" : {
+    "node" : "^8.9"
   },
   "scripts": {
     "start": "webpack --watch",
