@@ -1,0 +1,37 @@
+// Labels
+
+.label {
+    display: inline-block;
+    background: $color-gray-light;
+    border-radius: 3px;
+    color: $color-primary;
+    font-size: 0.8rem;
+    font-weight: $global-weight-bold;
+    line-height: 1;
+    margin-bottom: 1rem;
+    padding: 0.75em 1rem;
+    transition: background-color 200ms ease;
+    white-space: nowrap;
+
+    &:hover {
+        background-color: $color-gray;
+    }
+}
+
+.label--static {
+    font-weight: normal;
+
+    &:hover {
+        background-color: $color-gray-light;
+        cursor: default;
+    }
+}
+
+    .label__icon {
+        fill: $color-primary;
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-left: -0.25rem;
+        margin-right: 0.25rem;
+        vertical-align: middle;
+    }

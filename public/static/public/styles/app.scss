@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
+
 @import "settings";
 @import "foundation-settings";
 @import '~foundation-sites/scss/foundation';
@@ -7,7 +9,7 @@
 @include foundation-xy-grid-classes;
 @include foundation-typography;
 @include foundation-forms;
-@include foundation-button;
+// @include foundation-button;
 // @include foundation-accordion;
 // @include foundation-accordion-menu;
 // @include foundation-badge;
@@ -44,6 +46,8 @@
 // Components
 @import 'typography';
 @import 'styleguide';
+@import 'components/buttons';
+@import 'components/labels';
 
 
 // Utilities
