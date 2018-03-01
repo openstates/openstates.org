@@ -49,7 +49,12 @@
 
 	<section>
 		<h1>Recent Votes</h1>
-		<!-- TO DO -->
+		{% for start_date, vote_events in votes.items %}
+			<span>{{ start_date }}</span>
+			{% for vote_event in vote_events %}
+				{% vote_card vote_event %}
+			{% endfor %}
+		{% endfor %}
 	</section>
 
 	{% sources sources %}

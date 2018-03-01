@@ -1,0 +1,23 @@
+<div>
+	<span>{{ bill_identifier }}</span>
+	<span>{{ motion_text }}</span>
+	<!-- If used on in a legislator view -->
+	{% if voter_name %}
+		<span>{{ voter_name }} <span class="{{ legislator_vote }}">voted {{ legislator_vote|title }}</span></span>
+	{% endif %}
+	<div style="width:100%;height:25px;">
+		<!-- Scaling the bars to a total of 100% width is causing visual issues before styling is applied, so using 99% for now -->
+		{% if counts.yes %}
+			<span style="position:absolute;">Yes</span>
+			<div style="width:{% widthratio counts.yes counts.total 99 %}%;height:100%;display:inline-block;background-color:green;"><span>{{ counts.yes }}</span></div>
+		{% endif %}
+		{% if counts.no %}
+			<span style="position:absolute;">No</span>
+			<div style="width:{% widthratio counts.no counts.total 99 %}%;height:100%;display:inline-block;background-color:red;"><span>{{ counts.no }}</span></div>
+		{% endif %}
+		{% if counts.other %}
+			<span style="position:absolute;">Other</span>
+			<div style="width:{% widthratio counts.other counts.total 99 %}%;height:100%;display:inline-block;background-color:gray;"><span>{{ counts.other }}</span></div>
+		{% endif %}
+	</div>
+</div>
