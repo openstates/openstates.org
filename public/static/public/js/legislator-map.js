@@ -46,7 +46,10 @@ export default () => {
         'line-opacity': 0.2,
         'line-width': 1.0
       },
-      filter: ['==', 'type', districtType]
+      filter: ['all',
+        ['==', 'type', districtType],
+        ['==', 'state', state]
+      ]
     })
 
     map.addLayer({

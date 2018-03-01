@@ -23,8 +23,8 @@
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-livereload-plugin": "^1.0.0"
   },
-  "engines" : {
-    "node" : "^8.9"
+  "engines": {
+    "node": "^8.9"
   },
   "scripts": {
     "start": "webpack --watch",
