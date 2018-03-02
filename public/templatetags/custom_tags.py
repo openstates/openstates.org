@@ -1,6 +1,6 @@
 from django import template
 
-from ..utils import states
+from ..utils import get_legislature_from_state_abbr, states
 
 
 register = template.Library()
@@ -15,8 +15,13 @@ def header(state):
 
 
 @register.inclusion_tag('public/components/sources.html')
-def sources(sources_object):
-    return sources_object
+def sources(state, sources):
+    legislature = get_legislature_from_state_abbr(state)
+    return {
+        'legislature_name': legislature.name,
+        'legislature_url': legislature.jurisdiction.url,
+        'sources': sources
+    }
 
 
 @register.inclusion_tag('public/components/vote-card.html')

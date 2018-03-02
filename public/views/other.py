@@ -13,7 +13,5 @@ def jurisdiction(request, state):
     return render(
         request,
         'public/views/jurisdiction.html',
-        {
-            'state': state
-        }
+        {'state': state}
     )

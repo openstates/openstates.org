@@ -5,9 +5,9 @@
 {% block content %}
 	<section>
 		{% if headshot_url %}
-			<img src="{{ headshot_url }}" alt="legislator headshot"/>
+			<img src="{{ headshot_url }}" alt="legislator headshot" />
 		{% else %}
-			<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot"/>
+			<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
 		{% endif %}
 		<h2>{{ name }}</h2>
 		<span>{{ party }} · {{ title }} · District {{ district }}</span>
@@ -57,5 +57,5 @@
 		{% endfor %}
 	</section>
 
-	{% sources sources %}
+	{% sources state sources %}
 {% endblock %}

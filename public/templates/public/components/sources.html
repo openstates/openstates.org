@@ -1,12 +1,12 @@
 <section>
 	<h1>Sources</h1>
 
-	<p>Data on Open States is automatically collected nightly from the official website of the <a href="{{ jurisdiction_url }}">{{ legislature_name }}</a>, at the URLs listed below. If you notice any inconsistencies with these official sources, feel free to <a href="mailto:contact@openstates.org">contact us</a>.</p>
+	<p>Data on Open States is automatically collected nightly from the official website of the <a href="{{ legislature_url }}">{{ legislature_name }}</a>, at the URLs listed below. If you notice any inconsistencies with these official sources, feel free to <a href="mailto:contact@openstates.org">contact us</a>.</p>
 
-	{% if urls %}
+	{% if sources %}
 	<ul>
-		{% for url in urls %}
-			<li>{{ url|urlize }}</li>
+		{% for source in sources %}
+			<li>{{ source|urlize }}</li>
 		{% endfor %}
 	</ul>
 	{% endif %}

@@ -1,16 +1,41 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from opencivicdata.core.models import Person
+import us
 
 from .mock import LEGISLATOR_VOTES
+from ..utils import get_legislative_post, get_legislature_from_state_abbr
 
 
 def legislators(request, state):
+    legislature = get_legislature_from_state_abbr(state)
+    chambers = legislature.children.filter(
+        Q(classification='lower') |
+        Q(classification='upper')
+    )
+
+    legislators = [
+        {
+            'headshot_url': '',
+            'name': p.name,
+            'party': p.memberships.get(organization__classification='party').organization.name,
+            'district': get_legislative_post(p).label,
+            'chamber': get_legislative_post(p).organization.classification
+        }
+        for p
+        in Person.objects.filter(
+            Q(memberships__organization=legislature) |
+            Q(memberships__organization__in=chambers)
+        )
+    ]
+
     return render(
         request,
         'public/views/legislators.html',
         {
-            'state': state
+            'state': state,
+            'state_name': us.states.lookup(state).name,
+            'legislators': legislators
         }
     )
 
@@ -20,7 +45,7 @@ def legislator(request, state, legislator_id):
     # TO DO
     headshot_url = ''
     party = person.memberships.get(organization__classification='party').organization.name
-    legislative_membership = person.memberships.get(
+    legislative_post = person.memberships.get(
         Q(organization__classification='legislature') |
         Q(organization__classification='lower') |
         Q(organization__classification='upper')
@@ -48,13 +73,7 @@ def legislator(request, state, legislator_id):
     # TO DO
     votes = LEGISLATOR_VOTES
 
-    legislature = legislative_membership.organization.parent or legislative_membership.organization
-    jurisdiction = legislature.jurisdiction
-    sources = {
-        'legislature_name': legislature.name,
-        'jurisdiction_url': jurisdiction.url,
-        'urls': person.sources.all()
-    }
+    sources = person.sources.all()
 
     return render(
         request,
@@ -65,9 +84,9 @@ def legislator(request, state, legislator_id):
             'name': person.name,
             'headshot_url': headshot_url,
             'party': party,
-            'title': legislative_membership.role,
-            'district': legislative_membership.label,
-            'division_id': legislative_membership.division_id,
+            'title': legislative_post.role,
+            'district': legislative_post.label,
+            'division_id': legislative_post.division_id,
 
             'email': email,
             'capitol_address': capitol_address,

@@ -1,5 +1,5 @@
 <header>
-	<a href="{% url 'home' %}"><img alt="Open States logo"><img></a>
+	<a href="{% url 'home' %}"><img alt="Open States logo" /></a>
 	<nav>
 		<select onchange="window.location.href = {% url 'home' %} + this.value">
 			{% if not state %}
