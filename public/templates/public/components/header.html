@@ -1,7 +1,7 @@
 <header>
 	<a href="{% url 'home' %}"><img alt="Open States logo"><img></a>
 	<nav>
-		<select onchange="window.location.href = '/public/' + this.value">
+		<select onchange="window.location.href = {% url 'home' %} + this.value">
 			{% if not state %}
 				<option value=""></option>
 			{% endif %}
