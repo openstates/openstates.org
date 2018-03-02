@@ -1,25 +1,8 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
-
 from opencivicdata.core.models import Person
 
-
-def styleguide(request):
-    return render(request, 'public/views/styleguide.html')
-
-
-def home(request):
-    return render(request, 'public/views/home.html')
-
-
-def jurisdiction(request, state):
-    return render(
-        request,
-        'public/views/jurisdiction.html',
-        {
-            'state': state
-        }
-    )
+from .mock import LEGISLATOR_VOTES
 
 
 def legislators(request, state):
@@ -63,7 +46,7 @@ def legislator(request, state, legislator_id):
     ]
 
     # TO DO
-    votes = MOCK_VOTES
+    votes = LEGISLATOR_VOTES
 
     legislature = legislative_membership.organization.parent or legislative_membership.organization
     jurisdiction = legislature.jurisdiction
@@ -101,87 +84,3 @@ def legislator(request, state, legislator_id):
             'sources': sources
         }
     )
-
-
-def bills(request, state):
-    return render(
-        request,
-        'public/views/bills.html',
-        {
-            'state': state
-        }
-    )
-
-
-def bill(request, state):
-    return render(
-        request,
-        'public/views/bill.html',
-        {
-            'state': state
-        }
-    )
-
-
-def committees(request, state):
-    return render(
-        request,
-        'public/views/committees.html',
-        {
-            'state': state
-        }
-    )
-
-
-def committee(request, state):
-    return render(
-        request,
-        'public/views/committee.html',
-        {
-            'state': state
-        }
-    )
-
-
-MOCK_VOTES = {
-    '2018-02-15': [
-        {
-            'bill_identifier': 'HB 1012',
-            'motion_text': 'Read the third time and passed and ordered transmitted to the Senate.',
-            'voter_name': 'Olszewski',
-            'legislator_vote': 'yes',
-            'counts': {
-                'yes': 86,
-                'no': 1,
-                'other': 0,
-                'total': 87
-            }
-        }
-    ],
-    '2017-04-11': [
-        {
-            'bill_identifier': 'HB 6',
-            'motion_text': 'Do Concur',
-            'voter_name': 'Olszewski',
-            'legislator_vote': 'yes',
-            'counts': {
-                'yes': 50,
-                'no': 0,
-                'other': 0,
-                'total': 50
-            }
-        },
-        {
-            'bill_identifier': 'HB 83',
-            'motion_text': 'Passage, Third Reading',
-            'voter_name': 'Olszewski',
-            'legislator_vote': 'no',
-            'counts': {
-                'yes': 110,
-                'no': 4,
-                'other': 6,
-                'total': 120
-            }
-        }
-    ]
-}

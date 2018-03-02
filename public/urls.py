@@ -1,6 +1,9 @@
 from django.urls import path, re_path
 
-from . import views
+from .views.other import styleguide, home, jurisdiction
+from .views.legislators import legislators, legislator
+from .views.bills import bills, bill
+from .views.committees import committees, committee
 from .utils import states
 
 
@@ -10,18 +13,18 @@ state_abbrs = [s.abbr.lower() for s in states]
 state_abbr_pattern = r'({})'.format('|'.join(state_abbrs))
 
 urlpatterns = [
-    path('styleguide', views.styleguide, name='styleguide'),
+    path('styleguide', styleguide, name='styleguide'),
 
-    path('', views.home, name='home'),
+    path('', home, name='home'),
 
-    re_path(r'^(?P<state>{})$'.format(state_abbr_pattern), views.jurisdiction, name='jurisdiction'),
+    re_path(r'^(?P<state>{})$'.format(state_abbr_pattern), jurisdiction, name='jurisdiction'),
 
-    re_path(r'^(?P<state>{})/legislators$'.format(state_abbr_pattern), views.legislators, name='legislators'),
-    re_path(r'^(?P<state>{})/legislators/(?P<legislator_id>ocd-person/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), views.legislator, name='legislator'),
+    re_path(r'^(?P<state>{})/legislators$'.format(state_abbr_pattern), legislators, name='legislators'),
+    re_path(r'^(?P<state>{})/legislators/(?P<legislator_id>ocd-person/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), legislator, name='legislator'),
 
-    re_path(r'^(?P<state>{})/bills$'.format(state_abbr_pattern), views.bills, name='bills'),
-    re_path(r'^(?P<state>{})/bills/(?P<bill_id>ocd-bill/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), views.bill, name='bill'),
+    re_path(r'^(?P<state>{})/bills$'.format(state_abbr_pattern), bills, name='bills'),
+    re_path(r'^(?P<state>{})/bills/(?P<bill_id>ocd-bill/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), bill, name='bill'),
 
-    re_path(r'^(?P<state>{})/committees$'.format(state_abbr_pattern), views.committees, name='committees'),
-    re_path(r'^(?P<state>{})/committees/(?P<bill_id>ocd-organization/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), views.committee, name='committee'),
+    re_path(r'^(?P<state>{})/committees$'.format(state_abbr_pattern), committees, name='committees'),
+    re_path(r'^(?P<state>{})/committees/(?P<bill_id>ocd-organization/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), committee, name='committee'),
 ]
