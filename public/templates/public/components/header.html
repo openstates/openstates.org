@@ -1,11 +1,22 @@
 <header>
-	<span>LOGO<span>
+	<a href="{% url 'home' %}"><img alt="Open States logo"><img></a>
 	<nav>
-		<ul>
-			<li><a href="{% url 'jurisdiction' state %}">Overview</a></li>
-			<li><a href="{% url 'legislators' state %}">Legislators</a></li>
-			<li><a href="{% url 'bills' state %}">Bills</a></li>
-			<li><a href="{% url 'committees' state %}">Committees</a></li>
-		</ul>
+		<select onchange="window.location.href = '/public/' + this.value">
+			{% if not state %}
+				<option value=""></option>
+			{% endif %}
+			{% for st in states %}
+				<option value="{{ st.abbr|lower }}" {% if st.abbr|lower == state %}selected{% endif %}>{{ st.name }}</option>
+			{% endfor %}
+		</select>
+
+		{% if state %}
+			<ul>
+				<li><a href="{% url 'jurisdiction' state %}">Overview</a></li>
+				<li><a href="{% url 'legislators' state %}">Legislators</a></li>
+				<li><a href="{% url 'bills' state %}">Bills</a></li>
+				<li><a href="{% url 'committees' state %}">Committees</a></li>
+			</ul>
+		{% endif %}
 	</nav>
 </header>

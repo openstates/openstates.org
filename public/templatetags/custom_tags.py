@@ -1,7 +1,17 @@
 from django import template
 
+from ..utils import states
+
 
 register = template.Library()
+
+
+@register.inclusion_tag('public/components/header.html')
+def header(state):
+    return {
+        'state': state,
+        'states': states
+    }
 
 
 @register.inclusion_tag('public/components/sources.html')

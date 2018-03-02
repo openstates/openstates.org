@@ -1,16 +1,18 @@
 from django.urls import path, re_path
-import us
 
 from . import views
+from .utils import states
 
 
 OCD_ID_PATTERN = r'[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}'
 # Only allow valid state abbreviations
-all_state_abbrs = [s.abbr.lower() for s in us.STATES_AND_TERRITORIES]
-state_abbr_pattern = r'({})'.format('|'.join(all_state_abbrs))
+state_abbrs = [s.abbr.lower() for s in states]
+state_abbr_pattern = r'({})'.format('|'.join(state_abbrs))
 
 urlpatterns = [
     path('styleguide', views.styleguide, name='styleguide'),
+
+    path('', views.home, name='home'),
 
     re_path(r'^(?P<state>{})$'.format(state_abbr_pattern), views.jurisdiction, name='jurisdiction'),
 
