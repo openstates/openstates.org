@@ -8,8 +8,24 @@ def styleguide(request):
     return render(request, 'public/views/styleguide.html')
 
 
+def jurisdiction(request, state):
+    return render(
+        request,
+        'public/views/jurisdiction.html',
+        {
+            'state': state
+        }
+    )
+
+
 def legislators(request, state):
-    return render(request, 'public/views/legislators.html')
+    return render(
+        request,
+        'public/views/legislators.html',
+        {
+            'state': state
+        }
+    )
 
 
 def legislator(request, state, legislator_id):
@@ -57,6 +73,8 @@ def legislator(request, state, legislator_id):
         request,
         'public/views/legislator.html',
         {
+            'state': state,
+
             'name': person.name,
             'headshot_url': headshot_url,
             'party': party,
@@ -77,6 +95,46 @@ def legislator(request, state, legislator_id):
             'votes': votes,
 
             'sources': sources
+        }
+    )
+
+
+def bills(request, state):
+    return render(
+        request,
+        'public/views/bills.html',
+        {
+            'state': state
+        }
+    )
+
+
+def bill(request, state):
+    return render(
+        request,
+        'public/views/bill.html',
+        {
+            'state': state
+        }
+    )
+
+
+def committees(request, state):
+    return render(
+        request,
+        'public/views/committees.html',
+        {
+            'state': state
+        }
+    )
+
+
+def committee(request, state):
+    return render(
+        request,
+        'public/views/committee.html',
+        {
+            'state': state
         }
     )
 

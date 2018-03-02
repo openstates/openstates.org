@@ -2,10 +2,10 @@
 	<span>LOGO<span>
 	<nav>
 		<ul>
-			<li><a href="">Overview</a></li>
-			<li><a href="">Legislators</a></li>
-			<li><a href="">Bills</a></li>
-			<li><a href="">Committees</a></li>
+			<li><a href="{% url 'jurisdiction' state %}">Overview</a></li>
+			<li><a href="{% url 'legislators' state %}">Legislators</a></li>
+			<li><a href="{% url 'bills' state %}">Bills</a></li>
+			<li><a href="{% url 'committees' state %}">Committees</a></li>
 		</ul>
 	</nav>
 </header>
