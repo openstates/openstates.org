@@ -17,6 +17,7 @@ def legislators(request, state):
     legislators = (
         {
             'headshot_url': '',
+            'id': p.id,
             'name': p.name,
             'party': p.memberships.get(organization__classification='party').organization.name,
             'district': get_legislative_post(p).label,

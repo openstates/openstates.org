@@ -30,7 +30,7 @@
 							<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
 						{% endif %}
 					</td>
-					<td>{{ legislator.name }}</td>
+					<td><a href="{% url 'legislator' state legislator.id %}">{{ legislator.name }}</a></td>
 					<td>{{ legislator.party }}</td>
 					<td>{{ legislator.district }}</td>
 					<td>{{ legislator.chamber|title }}</td>
