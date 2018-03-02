@@ -14,7 +14,7 @@ def legislators(request, state):
         Q(classification='upper')
     )
 
-    legislators = [
+    legislators = (
         {
             'headshot_url': '',
             'name': p.name,
@@ -27,7 +27,7 @@ def legislators(request, state):
             Q(memberships__organization=legislature) |
             Q(memberships__organization__in=chambers)
         )
-    ]
+    )
 
     return render(
         request,

@@ -3,7 +3,7 @@
 	<nav>
 		<select onchange="window.location.href = {% url 'home' %} + this.value">
 			{% if not state %}
-				<option value=""></option>
+				<option value="">Select a state</option>
 			{% endif %}
 			{% for st in states %}
 				<option value="{{ st.abbr|lower }}" {% if st.abbr|lower == state %}selected{% endif %}>{{ st.name }}</option>

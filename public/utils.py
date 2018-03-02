@@ -3,8 +3,8 @@ from opencivicdata.core.models import Organization
 import us
 
 
-# List of jurisdictions are available in the platform
-states = us.STATES + [us.states.PR]
+# Metadata for states that are available in the platform
+states = sorted(us.STATES + [us.states.PR], key=lambda s: s.name)
 
 
 def get_legislature_from_state_abbr(state):
