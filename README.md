@@ -38,22 +38,22 @@ Create the database
 
 ```
 createdb openstates
-psql postgres://localhost/openstates -c "CREATE EXTENSION postgis;"
 ```
 
 Populate the database
 
-If you have access to an Open Civic Data `pgdump` file, then you can load the data from that:
+If you have access to an Open Civic Data `pgdump` file (for example, from the `openstates-backups` AWS S3 bucket with a filename ending in `openstatesorg.pgdump`), then you can load the data from that:
 
 ```
-pg_restore --dbname $DATABASE_URL PATH_TO_PGDUMP_FILE
+pg_restore --dbname openstates PATH_TO_PGDUMP_FILE
 ```
 
-Without a `pgdump` file to restore from, you can instantiate an Open Civic Data database yourself and afterwards use `pupa update` scrapes to populate it with data. Note that these require your `DATABASE_URL` environment variable to start with `postgis://` instead of `postgres://`:
+Without a `pgdump` file to restore from, you can instantiate an Open Civic Data database yourself and afterwards use `pupa update` scrapes to populate it with data:
 
 ```
-./manage.py migrate
-./manage.py loaddivisions us
+psql openstates -c "CREATE EXTENSION postgis;"
+DATABASE_URL=postgis://localhost/openstates ./manage.py migrate
+DATABASE_URL=postgis://localhost/openstates ./manage.py loaddivisions us
 ```
 
 #### Frontend 
