@@ -34,17 +34,29 @@ Install dependencies
 pip install -r requirements.txt
 ```
 
-Set up the database
-_Skip this step if you can load a database dump that already contains scraped data_
+Create the database
+
 ```
 createdb openstates
 psql postgres://localhost/openstates -c "CREATE EXTENSION postgis;"
+
 export DATABASE_URL=postgis://localhost/openstates
+```
+
+Populate the database (for either of the below, make sure `DATABASE_URL` is set in the environment!)
+
+If you have access to an Open Civic Data `pgdump` file, then you can load the data from that:
+
+```
+pg_restore --dbname $DATABASE_URL PATH_TO_PGDUMP_FILE
+```
+
+Without a `pgdump` file to restore from, you can instantiate an Open Civic Data database yourself and afterwards use `pupa update` scrapes to populate it with data:
+
+```
 ./manage.py migrate
 ./manage.py loaddivisions us
 ```
-Now, run any `pupa update` scrapes you need to import data into the database
-
 
 #### Frontend 
 
