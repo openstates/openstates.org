@@ -1,9 +1,10 @@
-from django.db.models import Q
+from itertools import groupby
+
+from django.db.models import F, Q
 from django.shortcuts import get_object_or_404, render
 from opencivicdata.core.models import Person
 import us
 
-from .mock import LEGISLATOR_VOTES
 from ..utils import get_legislative_post, get_legislature_from_state_abbr
 
 
@@ -71,8 +72,31 @@ def legislator(request, state, legislator_id):
         person.billsponsorship_set.all().order_by('bill__created_at', 'bill_id')[:4]
     ]
 
-    # TO DO
-    votes = LEGISLATOR_VOTES
+    votes = person.votes.order_by('-vote_event__start_date')[:3].annotate(
+        start_date=F('vote_event__start_date'),
+        bill_identifier=F('vote_event__bill__identifier'),
+        motion_text=F('vote_event__motion_text'),
+        legislator_vote=F('option'),
+        result=F('vote_event__result')
+    ).values(
+        'start_date',
+        'bill_identifier',
+        'motion_text',
+        'voter_name',
+        'legislator_vote',
+        'result'
+    )
+    # Group votes by date, for the sake of front-end presentation
+    votes_by_date = {
+        # Have to dump the `groupby` result from a generator to a list,
+        # otherwise the template only reads the first item
+        k: list(v) for k, v
+        in groupby(
+            votes,
+            # First 10 characters are the date portion of the datetime string
+            lambda x: x['start_date'][:10]
+        )
+    }
 
     sources = person.sources.all()
 
@@ -99,7 +123,7 @@ def legislator(request, state, legislator_id):
 
             'sponsored_bills': sponsored_bills,
 
-            'votes': votes,
+            'votes': votes_by_date,
 
             'sources': sources
         }
