@@ -1,4 +1,5 @@
 from django import template
+import us
 
 from ..utils import get_legislature_from_state_abbr, states
 
@@ -27,3 +28,8 @@ def sources(state, sources):
 @register.inclusion_tag('public/components/vote-card.html')
 def vote_card(vote_card_object):
     return vote_card_object
+
+
+@register.filter()
+def state_name(state_abbr):
+    return us.states.lookup(state_abbr).name

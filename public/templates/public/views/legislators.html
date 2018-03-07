@@ -1,8 +1,9 @@
 {% extends "../components/base.html" %}
+{% load custom_tags %}
 {% load static %}
 
 {% block content %}
-	<h1>{{ state_name }} Legislators</h1>
+	<h1>{{ state|state_name }} Legislators</h1>
 
     <div class="button-group">
         <button type="button" class="button">Senate</button>
@@ -39,4 +40,8 @@
 			{% endfor %}
 		</tbody>
 	</table>
+
+	<div>
+		FIND MY LEGISLATOR WIDGET; NOT DESIGNED YET
+	</div>
 {% endblock %}

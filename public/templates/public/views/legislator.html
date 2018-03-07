@@ -49,9 +49,10 @@
 
 	<section>
 		<h1>Recent Votes</h1>
-		{% for start_date, vote_events in votes.items %}
-			<span>{{ start_date }}</span>
-			{% for vote_event in vote_events %}
+		{% regroup votes by start_date as votes_by_date %}
+		{% for start_date in votes_by_date %}
+			<span>{{ start_date.grouper }}</span>
+			{% for vote_event in start_date.list %}
 				{% vote_card vote_event %}
 			{% endfor %}
 		{% endfor %}

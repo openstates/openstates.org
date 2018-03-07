@@ -1,1 +1,100 @@
 {% extends "../components/base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+	<h1>{{ state|state_name }} Bills</h1>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Bill Title</th>
+				<th>Introduced</th>
+				<th>Latest Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for bill in bills %}
+				<tr>
+					<td>
+						<span>{{ bill.identifier }}</span>
+						<span>({{ bill.legislative_session }})</span>
+						<span>{{ bill.title }}</span>
+					</td>
+					<td>{{ bill.introduced }}</td>
+					<td>
+						<span>{{ bill.latest_action.description }}</span>
+						<span>{{ bill.latest_action.date }}</span>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<div>
+		<div>
+			<span>Bills Search</span>
+			<span>Clear filters</span>
+		</div>
+		<form>
+			<label for="search-text">Search text</label>
+			<input id="search-text" type="text" placeholder="Search text" />
+
+			<span>Bill Status</span>
+			<div>
+				<input type="checkbox" name="bill-status" id="passed-lower-chamber" value="passed-lower-chamber" />
+				<label for="passed-lower-chamber">Passed Lower Chamber</label>
+
+				<input type="checkbox" name="bill-status" id="passed-upper-chamber" value="passed-upper-chamber" />
+				<label for="passed-upper-chamber">Passed Upper Chamber</label>
+
+				<input type="checkbox" name="bill-status" id="signed-into-law" value="signed-into-law" />
+				<label for="signed-into-law">Signed into Law</label>
+			</div>
+
+			<label for="session">Session</label>
+			<select id="session">
+				<option value=""></option>
+				{% for session in sessions %}
+					<option value="{{ session }}">{{ session }}</option>
+				{% endfor %}
+			</select>
+
+			<span>Chamber of Origin</span>
+			<div>
+				<input type="radio" name="chamber-of-origin" id="either-chamber" value="either-chamber" />
+				<label for="either-chamber">Either Chamber</label>
+
+				<input type="radio" name="chamber-of-origin" id="lower-chamber" value="lower-chamber" />
+				<label for="lower-chamber">Lower Chamber</label>
+
+				<input type="radio" name="chamber-of-origin" id="upper-chamber" value="upper-chamber" />
+				<label for="upper-chamber">Upper Chamber</label>
+			</div>
+
+			<label for="sponsor-name">Sponsor Name</label>
+			<select id="sponsor-name">
+				<option value=""></option>
+				{% for legislator_name in legislator_names %}
+					<option value="{{ legislator_name }}">{{ legislator_name }}</option>
+				{% endfor %}
+			</select>
+
+			<label for="type">Type</label>
+			<select id="type">
+				<option value=""></option>
+				{% for legislation_type in legislation_types %}
+					<option value="{{ legislation_type }}">{{ legislation_type }}</option>
+				{% endfor %}
+			</select>
+
+			<label for="subjects">Subjects</label>
+			<select id="subjects" multiple>
+				{% for subject in subjects %}
+					<option value="{{ subject }}">{{ subject }}</option>
+				{% endfor %}
+			</select>
+
+			<input type="submit" value="Submit" />
+		</form>
+	</div>
+{% endblock %}

@@ -1,34 +1,29 @@
-from itertools import groupby
-
-from django.db.models import F, Q
+from django.db.models import F
+from django.db.models.functions import Substr
 from django.shortcuts import get_object_or_404, render
 from opencivicdata.core.models import Person
-import us
 
-from ..utils import get_legislative_post, get_legislature_from_state_abbr
+from ..utils import (
+    get_chambers_from_state_abbr,
+    get_legislative_post
+)
 
 
 def legislators(request, state):
-    legislature = get_legislature_from_state_abbr(state)
-    chambers = legislature.children.filter(
-        Q(classification='lower') |
-        Q(classification='upper')
-    )
+    chambers = get_chambers_from_state_abbr(state)
 
     legislators = (
         {
             'headshot_url': '',
             'id': p.id,
             'name': p.name,
-            'party': p.memberships.get(organization__classification='party').organization.name,
+            'party': p.memberships.filter(
+                organization__classification='party').last().organization.name,
             'district': get_legislative_post(p).label,
             'chamber': get_legislative_post(p).organization.classification
         }
         for p
-        in Person.objects.filter(
-            Q(memberships__organization=legislature) |
-            Q(memberships__organization__in=chambers)
-        )
+        in Person.objects.filter(memberships__organization__in=chambers)
     )
 
     return render(
@@ -36,22 +31,20 @@ def legislators(request, state):
         'public/views/legislators.html',
         {
             'state': state,
-            'state_name': us.states.lookup(state).name,
             'legislators': legislators
         }
     )
 
 
 def legislator(request, state, legislator_id):
+    SPONSORED_BILLS_TO_SHOW = 4
+    RECENT_VOTES_TO_SHOW = 3
+
     person = get_object_or_404(Person, pk=legislator_id)
     # TO DO
     headshot_url = ''
     party = person.memberships.get(organization__classification='party').organization.name
-    legislative_post = person.memberships.get(
-        Q(organization__classification='legislature') |
-        Q(organization__classification='lower') |
-        Q(organization__classification='upper')
-    ).post
+    legislative_post = get_legislative_post(person)
 
     # These contact information values may not exist, so allow database fetch to find nothing
     email = getattr(person.contact_details.filter(type='email').first(), 'value', None)
@@ -69,34 +62,18 @@ def legislator(request, state, legislator_id):
 
     sponsored_bills = [
         sponsorship.bill for sponsorship in
-        person.billsponsorship_set.all().order_by('bill__created_at', 'bill_id')[:4]
+        person.billsponsorship_set.all().order_by(
+            'bill__created_at', 'bill_id'
+        )[:SPONSORED_BILLS_TO_SHOW]
     ]
 
-    votes = person.votes.order_by('-vote_event__start_date')[:3].annotate(
-        start_date=F('vote_event__start_date'),
+    votes = person.votes.order_by('-vote_event__start_date')[:RECENT_VOTES_TO_SHOW].annotate(
+        start_date=Substr(F('vote_event__start_date'), 1, 10),
         bill_identifier=F('vote_event__bill__identifier'),
         motion_text=F('vote_event__motion_text'),
         legislator_vote=F('option'),
         result=F('vote_event__result')
-    ).values(
-        'start_date',
-        'bill_identifier',
-        'motion_text',
-        'voter_name',
-        'legislator_vote',
-        'result'
-    )
-    # Group votes by date, for the sake of front-end presentation
-    votes_by_date = {
-        # Have to dump the `groupby` result from a generator to a list,
-        # otherwise the template only reads the first item
-        k: list(v) for k, v
-        in groupby(
-            votes,
-            # First 10 characters are the date portion of the datetime string
-            lambda x: x['start_date'][:10]
-        )
-    }
+    ).values()
 
     sources = person.sources.all()
 
@@ -123,7 +100,7 @@ def legislator(request, state, legislator_id):
 
             'sponsored_bills': sponsored_bills,
 
-            'votes': votes_by_date,
+            'votes': votes,
 
             'sources': sources
         }
