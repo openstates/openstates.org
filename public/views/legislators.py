@@ -41,10 +41,14 @@ def legislator(request, state, legislator_id):
     RECENT_VOTES_TO_SHOW = 3
 
     person = get_object_or_404(Person, pk=legislator_id)
+
     # TO DO
-    headshot_url = ''
-    party = person.memberships.get(organization__classification='party').organization.name
-    legislative_post = get_legislative_post(person)
+    person.headshot_url = ''
+
+    person.party = person.memberships.get(organization__classification='party').organization.name
+    person.legislative_post = get_legislative_post(person)
+    person.committee_memberships = person.memberships.filter(
+        organization__classification='committee').all()
 
     # These contact information values may not exist, so allow database fetch to find nothing
     email = getattr(person.contact_details.filter(type='email').first(), 'value', None)
@@ -57,25 +61,19 @@ def legislator(request, state, legislator_id):
     district_phone = getattr(person.contact_details.filter(note='District Office Phone').first(),
                              'value', None)
 
-    committee_memberships = person.memberships.filter(
-        organization__classification='committee').all()
-
-    sponsored_bills = [
+    person.sponsored_bills = [
         sponsorship.bill for sponsorship in
         person.billsponsorship_set.all().order_by(
             'bill__created_at', 'bill_id'
         )[:SPONSORED_BILLS_TO_SHOW]
     ]
 
-    votes = person.votes.order_by('-vote_event__start_date')[:RECENT_VOTES_TO_SHOW].annotate(
-        start_date=Substr(F('vote_event__start_date'), 1, 10),
-        bill_identifier=F('vote_event__bill__identifier'),
-        motion_text=F('vote_event__motion_text'),
-        legislator_vote=F('option'),
-        result=F('vote_event__result')
-    ).values()
-
-    sources = person.sources.all()
+    votes = person.votes.all()[:RECENT_VOTES_TO_SHOW]
+    person.vote_events = []
+    for vote in votes:
+        vote_event = vote.vote_event
+        vote_event.legislator_vote = vote
+        person.vote_events.append(vote_event)
 
     return render(
         request,
@@ -83,25 +81,12 @@ def legislator(request, state, legislator_id):
         {
             'state': state,
 
-            'name': person.name,
-            'headshot_url': headshot_url,
-            'party': party,
-            'title': legislative_post.role,
-            'district': legislative_post.label,
-            'division_id': legislative_post.division_id,
+            'person': person,
 
             'email': email,
             'capitol_address': capitol_address,
             'capitol_phone': capitol_phone,
             'district_address': district_address,
-            'district_phone': district_phone,
-
-            'committees': committee_memberships,
-
-            'sponsored_bills': sponsored_bills,
-
-            'votes': votes,
-
-            'sources': sources
+            'district_phone': district_phone
         }
     )

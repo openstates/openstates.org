@@ -1,5 +1,5 @@
 from django.db.models import Min
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from opencivicdata.legislative.models import Bill
 
 from ..utils import get_chambers_from_state_abbr
@@ -7,20 +7,11 @@ from ..utils import get_chambers_from_state_abbr
 
 def bills(request, state):
     chambers = get_chambers_from_state_abbr(state)
-    # import pdb; pdb.set_trace()
-    bills = [
-        # Doing this in a list comprehension instead of an `annotate`
-        # because syntax is way simpler in this construction
-        {
-            'identifier': bill.identifier,
-            'legislative_session': bill.legislative_session.name,
-            'title': bill.title,
-            'introduced': bill.actions.aggregate(Min('date')).get('date__min'),
-            'latest_action': bill.actions.order_by('date').last()
-        }
-        for bill
-        in Bill.objects.filter(from_organization__in=chambers)[:8]
-    ]
+
+    bills = Bill.objects.filter(from_organization__in=chambers)[:8]
+    for bill in bills:
+        bill.introduced = bill.actions.aggregate(Min('date')).get('date__min')
+        bill.latest_action = bill.actions.order_by('date').last()
 
     return render(
         request,
@@ -32,11 +23,14 @@ def bills(request, state):
     )
 
 
-def bill(request, state):
+def bill(request, state, bill_id):
+    bill = get_object_or_404(Bill, pk=bill_id)
+
     return render(
         request,
         'public/views/bill.html',
         {
-            'state': state
+            'state': state,
+            'bill': bill
         }
     )

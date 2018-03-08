@@ -1,9 +1,9 @@
 <div>
-	<span>{{ bill_identifier }}</span>
-	<span>{{ motion_text }}</span>
-	<span>{{ result|title }}</span>
+	<span>{{ vote.bill.identifier }}</span>
+	<span>{{ vote.motion_text }}</span>
+	<span>{{ vote.result|title }}</span>
 	<!-- If used on in a legislator view -->
-	{% if voter_name %}
-		<span>{{ voter_name }} <span class="{{ legislator_vote }}">voted {{ legislator_vote|title }}</span></span>
+	{% if vote.legislator_vote %}
+		<span>{{ vote.legislator_vote.voter_name }} <span>voted {{ vote.legislator_vote.option|title }}</span></span>
 	{% endif %}
 </div>

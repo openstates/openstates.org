@@ -26,8 +26,15 @@ def sources(state, sources):
 
 
 @register.inclusion_tag('public/components/vote-card.html')
-def vote_card(vote_card_object):
-    return vote_card_object
+def vote_card(vote):
+    # Model needs to be wrapped in a dict, per custom-tag requirements
+    return {'vote': vote}
+
+
+@register.inclusion_tag('public/components/action-card.html')
+def action_card(action):
+    # Model needs to be wrapped in a dict, per custom-tag requirements
+    return {'action': action}
 
 
 @register.filter()

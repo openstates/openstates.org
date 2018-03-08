@@ -4,15 +4,15 @@
 
 {% block content %}
 	<section>
-		{% if headshot_url %}
-			<img src="{{ headshot_url }}" alt="legislator headshot" />
+		{% if person.headshot_url %}
+			<img src="{{ person.headshot_url }}" alt="legislator headshot" />
 		{% else %}
 			<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
 		{% endif %}
-		<h2>{{ name }}</h2>
-		<span>{{ party }} · {{ title }} · District {{ district }}</span>
+		<h2>{{ person.name }}</h2>
+		<span>{{ person.party }} · {{ person.legislative_post.role }} · District {{ person.legislative_post.label }}</span>
 
-		<div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ division_id }}"></div>
+		<div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.legislative_post.division_id }}"></div>
 
 		{% if email or capitol_address or capitol_phone or district_address or district_phone %}
 			<address>
@@ -28,29 +28,29 @@
 			</address>
 		{% endif %}
 
-		{% if committee_memberships %}
+		{% if person.committee_memberships %}
 			<h1>Committee Memberships</h1>
-			{% for committee in committee_memberships %}
-				<button>{{ committee }}</button>
+			{% for committee in person.committee_memberships %}
+				<a class="button">{{ committee }}</a>
 			{% endfor %}
 		{% endif %}
 	</section>
 
 	<section>
 		<h1>Sponsored Bills</h1>
-		{% for bill in sponsored_bills %}
+		{% for bill in person.sponsored_bills %}
 			<div>
-				<h2>{{ bill.identifier }}</h2>
+				<h2><a href="{% url 'bill' state bill.id %}">{{ bill.identifier }}</a></h2>
 				<span>{{ bill.title }}</span>
 			</div>
 		{% endfor %}
-		{% if sponsored_bills %}<button>View more bills</button>{% endif %}
+		{% if person.sponsored_bills %}<a class="button">View more bills</a>{% endif %}
 	</section>
 
 	<section>
 		<h1>Recent Votes</h1>
-		{% regroup votes by start_date as votes_by_date %}
-		{% for start_date in votes_by_date %}
+		{% regroup person.vote_events by start_date as votes_by_date %}
+		{% for start_date in votes_by_date reversed %}
 			<span>{{ start_date.grouper }}</span>
 			{% for vote_event in start_date.list %}
 				{% vote_card vote_event %}
@@ -58,5 +58,5 @@
 		{% endfor %}
 	</section>
 
-	{% sources state sources %}
+	{% sources state person.sources.all %}
 {% endblock %}

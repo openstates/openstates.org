@@ -16,8 +16,8 @@
 			{% for bill in bills %}
 				<tr>
 					<td>
-						<span>{{ bill.identifier }}</span>
-						<span>({{ bill.legislative_session }})</span>
+						<a href="{% url 'bill' state bill.id %}">{{ bill.identifier }}</a>
+						<span>({{ bill.legislative_session.name }})</span>
 						<span>{{ bill.title }}</span>
 					</td>
 					<td>{{ bill.introduced }}</td>
