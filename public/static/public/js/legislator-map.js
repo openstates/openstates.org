@@ -4,7 +4,7 @@ import stateBounds from './state-bounds'
 
 export default () => {
   mapboxgl.accessToken = 'pk.eyJ1Ijoib3BlbnN0YXRlcyIsImEiOiJjamU2NmJ2dmsxdTFzMzRycTNhejNjdTUzIn0.QHziTq0NGFutvZzo9Wmc0w'
-  
+
   const container = document.querySelector('[data-hook="legislator-map"]')
   const districtId = container.getAttribute('data-value')
 
@@ -37,7 +37,7 @@ export default () => {
       id: 'sld',
       type: 'line',
       source: {
-        type: 'vector', 
+        type: 'vector',
         url: 'mapbox://openstates.sld'
       },
       'source-layer': 'sld',
@@ -56,13 +56,13 @@ export default () => {
       id: 'district-fill',
       type: 'fill',
       source: {
-        type: 'vector', 
+        type: 'vector',
         url: 'mapbox://openstates.sld'
       },
       'source-layer': 'sld',
       paint: {
         'fill-color': 'black',
-        'fill-opacity': 0.2,
+        'fill-opacity': 0.2
       },
       filter: ['==', 'ocdid', districtId]
     })
@@ -71,7 +71,7 @@ export default () => {
       id: 'district-stroke',
       type: 'line',
       source: {
-        type: 'vector', 
+        type: 'vector',
         url: 'mapbox://openstates.sld'
       },
       'source-layer': 'sld',

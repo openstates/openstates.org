@@ -31,7 +31,7 @@
 		{% if person.committee_memberships %}
 			<h1>Committee Memberships</h1>
 			{% for committee in person.committee_memberships %}
-				<a class="button">{{ committee }}</a>
+				<a class="button">{{ committee.organization.name }}</a>
 			{% endfor %}
 		{% endif %}
 	</section>

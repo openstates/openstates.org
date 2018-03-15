@@ -5,43 +5,11 @@
 {% block content %}
 	<h1>{{ state|state_name }} Legislators</h1>
 
-    <div class="button-group">
-        <button type="button" class="button">Senate</button>
-        <button type="button" class="button">House</button>
-        <button type="button" class="button">Both Chambers</button>
-    </div>
+	<div data-hook="legislator-list"></div>
 
-	<table>
-		<thead>
-			<tr>
-				<th></th>
-				<th>Name</th>
-				<th>Party</th>
-				<th>District</th>
-				<th>Chamber</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for legislator in legislators %}
-				<tr>
-					<td>
-						{% if legislator.headshot_url %}
-							<img src="{{ legislator.headshot_url }}" alt="headshot for {{ legislator.name }}" />
-						{% else %}
-							<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
-						{% endif %}
-					</td>
-					<td><a href="{% url 'legislator' state legislator.id %}">{{ legislator.name }}</a></td>
-					<td>{{ legislator.party }}</td>
-					<td>{{ legislator.district }}</td>
-					<td>{{ legislator.chamber|title }}</td>
-				</tr>
-				{{ l }}
-			{% endfor %}
-		</tbody>
-	</table>
+	<script>
+		window.props = {{ legislators|jsonify }};
+		window.reactMount = document.querySelector('[data-hook="legislator-list"]');
+	</script>
 
-	<div>
-		FIND MY LEGISLATOR WIDGET; NOT DESIGNED YET
-	</div>
 {% endblock %}

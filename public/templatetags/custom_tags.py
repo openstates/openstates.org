@@ -1,4 +1,8 @@
+import json as jsonlib
+
+import bleach
 from django import template
+from django.utils.safestring import mark_safe
 import us
 
 from ..utils import get_legislature_from_state_abbr, states
@@ -40,3 +44,13 @@ def action_card(action):
 @register.filter()
 def state_name(state_abbr):
     return us.states.lookup(state_abbr).name
+
+
+@register.filter()
+def jsonify(data):
+    # Source: https://gist.github.com/pirate/c18bfe4fd96008ffa0aef25001a2e88f
+    uncleaned = jsonlib.dumps(data)
+    clean = bleach.clean(uncleaned)
+    # If this function fails, then there was a serialization issue
+    assert jsonlib.loads(clean)
+    return mark_safe(clean)

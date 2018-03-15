@@ -1,5 +1,3 @@
-from django.db.models import F
-from django.db.models.functions import Substr
 from django.shortcuts import get_object_or_404, render
 from opencivicdata.core.models import Person
 
@@ -12,7 +10,7 @@ from ..utils import (
 def legislators(request, state):
     chambers = get_chambers_from_state_abbr(state)
 
-    legislators = (
+    legislators = [
         {
             'headshot_url': '',
             'id': p.id,
@@ -24,7 +22,7 @@ def legislators(request, state):
         }
         for p
         in Person.objects.filter(memberships__organization__in=chambers)
-    )
+    ]
 
     return render(
         request,

@@ -5,7 +5,7 @@ const WebpackCleanupPlugin = require('webpack-cleanup-plugin')
 
 
 module.exports = {
-  entry: './public/static/public/js/index',
+  entry: ['babel-polyfill', './public/static/public/js/index'],
   output: {
       path: path.resolve('./public/static/public/bundles/'),
       filename: "[name]-[hash].js",
@@ -16,7 +16,11 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/, loader: "babel-loader"
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        query: {
+          plugins: ['transform-runtime']
+        }
       }, {
         test: /\.scss$/,
         use: [{

@@ -4,16 +4,17 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import legislatorMap from './legislator-map'
+import LegislatorList from './legislator-list'
 
+window.addEventListener('load', () => {
+  if (document.querySelector('[data-hook="legislator-map"]')) {
+    legislatorMap()
+  }
 
-ReactDOM.render(
-  <p>Open States + React!</p>,
-  document.querySelector('[data-hook="react-mount"]')
-);
-
-
-console.log('Hello, Open States!')
-
-if (document.querySelector('[data-hook="legislator-map"]')) {
-  legislatorMap()
-}
+  if (document.querySelector('[data-hook="legislator-list"]')) {
+    ReactDOM.render(
+      React.createElement(LegislatorList, {legislators: window.props}),
+      window.reactMount
+    )
+  }
+})
