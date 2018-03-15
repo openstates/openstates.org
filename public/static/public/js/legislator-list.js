@@ -4,10 +4,11 @@ import React from 'react'
 export default class LegislatorList extends React.Component {
   constructor (props) {
     super(props)
+    const queryParams = new URLSearchParams(window.location.search)
     this.state = {
       order: 'asc',
       orderBy: 'name',
-      chamber: null
+      chamber: queryParams.get('chamber') || null
     }
   }
 
@@ -41,8 +42,8 @@ export default class LegislatorList extends React.Component {
     return (
       <div>
         <div className="button-group">
-          <button type="button" onClick={() => this.setChamber('upper')} className={`button ${this.state.chamber === 'upper' ? 'button--active' : ''}`}>Senate</button>
-          <button type="button" onClick={() => this.setChamber('lower')} className={`button ${this.state.chamber === 'lower' ? 'button--active' : ''}`}>House</button>
+          <button type="button" onClick={() => this.setChamber('upper')} className={`button ${this.state.chamber === 'upper' ? 'button--active' : ''}`}>Upper Chamber</button>
+          <button type="button" onClick={() => this.setChamber('lower')} className={`button ${this.state.chamber === 'lower' ? 'button--active' : ''}`}>Lower Chamber</button>
           <button type="button" onClick={() => this.setChamber(null)} className={`button ${this.state.chamber === null ? 'button--active' : ''}`}>Both Chambers</button>
         </div>
 
