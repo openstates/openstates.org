@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 
-from .views.other import styleguide, home, jurisdiction
+from .views.other import styleguide, home, state
 from .views.legislators import legislators, legislator
 from .views.bills import bills, bill
 from .views.committees import committees, committee
@@ -17,7 +17,7 @@ urlpatterns = [
 
     path('', home, name='home'),
 
-    re_path(r'^(?P<state>{})$'.format(state_abbr_pattern), jurisdiction, name='jurisdiction'),
+    re_path(r'^(?P<state>{})$'.format(state_abbr_pattern), state, name='state'),
 
     re_path(r'^(?P<state>{})/legislators$'.format(state_abbr_pattern), legislators, name='legislators'),
     re_path(r'^(?P<state>{})/legislators/(?P<legislator_id>ocd-person/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), legislator, name='legislator'),
