@@ -1,1 +1,17 @@
 {% extends "../components/base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+	<h1>{{ state|state_name }} Legislators</h1>
+
+	<div data-hook="legislator-list"></div>
+
+	<div>
+		TO DO: FIND MY LEGISLATOR WIDGET
+	</div>
+
+	<script>
+		window.props = {{ legislators|jsonify }};
+		window.reactMount = document.querySelector('[data-hook="legislator-list"]');
+	</script>
+{% endblock %}

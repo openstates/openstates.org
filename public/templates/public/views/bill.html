@@ -1,0 +1,87 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+	<section>
+		<h1>{{ bill.identifier }}</h1>
+		<span>{{ bill.from_organization.name }} {{ bill.classification.0|title }} · {{ bill.legislative_session.name }}</span>
+
+		<div>
+			TO-DO: BILL STATUS PROGRESS BAR
+		</div>
+
+		<span>{{ bill.title }}</span>
+		<a class="button" href="{{ bill.versions.last.links.first.url }}">View Latest Bill Text</a>
+
+		{% if bill.subject %}
+			<h2>Bill Subjects</h2>
+			{% for subject in bill.subject %}
+				<a class="button">{{ subject }}</a>
+			{% endfor %}
+		{% endif %}
+
+		<h2>Bill Sponsors</h2>
+		{% for sponsor in bill.sponsorships.all|dictsortreversed:"primary" %}
+			<div>
+				<!-- Can offer much more information if the Person object is properly linked -->
+				{% if sponsor.person %}
+					{% if sponsor.person.headshot_url %}
+						<img src="{{ sponsor.person.headshot_url }}" alt="headshot for {{ sponsor.person.name }}" />
+					{% else %}
+						<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
+					{% endif %}
+
+					<span>{{ sponsor.person.name }}</span>
+					<span>TO-DO (PARTY) DISTRICT</span>
+
+					<span>{{ sponsor.classification|title }}</span>
+				{% else %}
+					<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
+
+					<span>{{ sponsor.name }}</span>
+
+					<span>{{ sponsor.classification|title }}</span>
+				{% endif %}
+			</div>
+		{% endfor %}
+	</section>
+
+	<section>
+		<h1>Recent Votes</h1>
+		{% regroup bill.votes.all by start_date as votes_by_date %}
+		{% for start_date in votes_by_date reversed %}
+			<span>{{ start_date.grouper }}</span>
+			{% for vote_event in start_date.list %}
+				{% vote_card vote_event %}
+			{% endfor %}
+		{% endfor %}
+	</section>
+
+	<section>
+		<h1>Actions</h1>
+		{% regroup bill.actions.all by date as actions_by_date %}
+		{% for date in actions_by_date reversed %}
+			<span>{{ date.grouper }}</span>
+			{% for action in date.list %}
+				{% action_card action %}
+			{% endfor %}
+		{% endfor %}
+	</section>
+
+	<section>
+		<h1>Bill Text</h1>
+		<table>
+			<tbody>
+				{% for version in bill.versions.all reversed %}
+					<tr>
+						<td><a href="{{ version.links.first.url }}">{{ version.note }}</a></td>
+						<td>{{ version.links.first.media_type }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+
+	{% sources state bill.sources.all %}
+{% endblock %}

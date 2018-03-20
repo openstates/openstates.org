@@ -1,0 +1,44 @@
+// Typography
+
+
+.heading--large {
+    font-family: $body-font-family;
+    font-weight: $global-weight-bold;
+    font-size: 2.5rem;
+
+    @include breakpoint(medium) {
+        font-size: 3rem;
+    }
+}
+
+.heading--medium {
+    font-family: $body-font-family;
+    font-weight: $global-weight-bold;
+    font-size: 1.75rem;
+
+    @include breakpoint(medium) {
+        font-size: 2rem;
+    }
+}
+
+.heading--small {
+    font-family: $body-font-family;
+    font-weight: $global-weight-bold;
+    font-size: 1rem;
+
+    @include breakpoint(medium) {
+        font-size: 1.25rem;
+    }
+}
+.heading--xsmall {
+    font-family: $body-font-family;
+    font-weight: $global-weight-bold;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.type--xsmall {
+    font-family: $body-font-family;
+    font-size: 0.875rem;
+}

@@ -1,4 +1,6 @@
+{% load custom_tags %}
 {% load staticfiles %}
+{% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
 <html>
@@ -6,13 +8,25 @@
 		<meta charset="utf-8">
 
 		<title>{% block title %}{% endblock %}</title>
+		{% render_bundle 'main' 'css' %}
+
+		<!-- CSS required by utilized libraries; could alternatively be copied and saved to the local styles directory -->
+		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+		<link rel="stylesheet" href="https://unpkg.com/react-table@6.8.0/react-table.css" />
 	</head>
 
 	<body>
-		{% include "./header.html" %}
+		{% header state %}
 
-		{% block content %}{% endblock %}
+		<div class="grid-container">
+			<div class="grid-x grid-padding-x">
+				<div class="cell medium-12">
+					{% block content %}{% endblock %}
+				</div>
+			</div>
+		</div>
 
 		{% include "./footer.html" %}
+		{% render_bundle 'main' 'js' %}
 	</body>
 </html>

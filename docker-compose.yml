@@ -5,3 +5,14 @@ services:
     volumes:
       - .:/opt/openstates/openstates.org/
     entrypoint: ['/bin/bash']
+
+  database:
+    # With this service up, your host can use a database URL of
+    # `postgres://openstates@localhost:5433/openstates`
+    image: mdillon/postgis:9.6
+    ports:
+      # Avoid conflict with the host's Postgres port
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=openstates
+      - POSTGRES_USER=openstates
