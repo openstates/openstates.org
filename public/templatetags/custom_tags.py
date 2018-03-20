@@ -20,12 +20,20 @@ def header(state):
 
 
 @register.inclusion_tag('public/components/sources.html')
-def sources(state, sources):
+def sources(state, sources=None):
     legislature = get_legislature_from_state_abbr(state)
     return {
         'legislature_name': legislature.name,
         'legislature_url': legislature.jurisdiction.url,
         'sources': sources
+    }
+
+
+@register.inclusion_tag('public/components/bill-card.html')
+def bill_card(state, bill):
+    return {
+        'state': state,
+        'bill': bill
     }
 
 

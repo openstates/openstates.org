@@ -1,8 +1,8 @@
 from collections import Counter
 
+from django.db.models import Min, Max
 from django.shortcuts import render
-from opencivicdata.core.models import Person, Organization
-from opencivicdata.legislative.models import Bill, VoteEvent
+from opencivicdata.legislative.models import Bill, LegislativeSession
 
 from ..utils import (
     get_chambers_from_state_abbr
@@ -18,6 +18,9 @@ def home(request):
 
 
 def state(request, state):
+    RECENTLY_INTRODUCED_BILLS_TO_SHOW = 4
+    RECENTLY_PASSED_BILLS_TO_SHOW = 4
+
     chambers = get_chambers_from_state_abbr(state)
     legislature = chambers[0].parent if chambers[0].parent else chambers[0]
 
@@ -26,7 +29,10 @@ def state(request, state):
         chamber.seats = sum([post.maximum_memberships for post in chamber.posts.all()])
         legislators = chamber.get_current_members()
         parties = [
-            legislator.memberships.filter(organization__classification='party').last().organization.name
+            # After resolving multiple-party individuals, we'll have
+            # a simpler way to return party
+            legislator.memberships.filter(
+                organization__classification='party').last().organization.name
             for legislator in legislators
         ]
         chamber.parties = dict(Counter(parties))
@@ -37,6 +43,20 @@ def state(request, state):
     # This will re-assign for unicameral legislatures, but that's okay
     legislature.committee_count = legislature.children.filter(classification='committee').count()
 
+    bills = Bill.objects.filter(from_organization__in=chambers)
+
+    recently_introduced_bills = bills.filter(
+        actions__isnull=False
+    ).annotate(
+        introduced_date=Min('actions__date'),
+    ).order_by('-introduced_date')[:RECENTLY_INTRODUCED_BILLS_TO_SHOW]
+
+    recently_passed_bills = bills.filter(
+        actions__classification__contains=['passage']
+    ).annotate(
+        passed_date=Max('actions__date')
+    ).order_by('-passed_date')[:RECENTLY_PASSED_BILLS_TO_SHOW]
+
     return render(
         request,
         'public/views/state.html',
@@ -45,5 +65,8 @@ def state(request, state):
 
             'legislature': legislature,
             'chambers': chambers,
+
+            'recently_introduced_bills': recently_introduced_bills,
+            'recently_passed_bills': recently_passed_bills
         }
     )
