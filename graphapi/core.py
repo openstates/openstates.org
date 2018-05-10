@@ -219,6 +219,7 @@ class CoreQuery:
                                    ever_member_of=graphene.String(),
                                    district=graphene.String(),
                                    name=graphene.String(),
+                                   updated_since=graphene.String(),
                                    latitude=graphene.Float(),
                                    longitude=graphene.Float(),
                                    )
@@ -243,7 +244,7 @@ class CoreQuery:
     def resolve_people(self, info,
                        first=None, last=None, before=None, after=None,
                        member_of=None, ever_member_of=None,
-                       district=None, name=None,
+                       district=None, name=None, updated_since=None,
                        latitude=None, longitude=None,
                        ):
         qs = Person.objects.all()
@@ -256,6 +257,8 @@ class CoreQuery:
             qs = qs.member_of(member_of, post=district)
         if ever_member_of:
             qs = qs.member_of(ever_member_of, current_only=False, post=district)
+        if updated_since:
+            qs = qs.filter(updated_at__gte=updated_since)
         if district and not (member_of or ever_member_of):
             raise ValueError("'district' parameter requires specifying either "
                              "'memberOf' or 'everMemberOf'")

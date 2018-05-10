@@ -313,3 +313,25 @@ def test_organization_by_id(django_assert_num_queries):
     assert result.errors is None
     assert len(result.data['leg']['children']['edges']) == 1
     assert result.data['senate']['parent']['name'] == 'Wyoming Legislature'
+
+
+@pytest.mark.django_db
+def test_people_by_updated_since():
+    middle_date = Person.objects.all().order_by('updated_at')[2].updated_at
+
+    result = schema.execute('''{
+        all: people(updatedSince: "2017-01-01T00:00:00Z", last:50) {
+            edges { node { name } }
+        }
+        some: people(updatedSince: "%s", first:50) {
+            edges { node { name } }
+        }
+        none: people(updatedSince: "2030-01-01T00:00:00Z", first:50) {
+            edges { node { name } }
+        }
+    }''' % middle_date)
+
+    assert result.errors is None
+    assert len(result.data['all']['edges']) == 8
+    assert len(result.data['some']['edges']) == 6
+    assert len(result.data['none']['edges']) == 0
