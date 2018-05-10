@@ -1,9 +1,9 @@
 # Database schema
--e git+https://github.com/opencivicdata/python-opencivicdata.git@1679a4e5df381c777c3e6c53d7c056321662e99a#egg=opencivicdata
--e git+https://github.com/opencivicdata/pupa.git@c0dbe820821caa66f1cb02675dfdcd3df22307b7#egg=pupa
+-e git+https://github.com/opencivicdata/python-opencivicdata.git#egg=opencivicdata
+-e git+https://github.com/opencivicdata/pupa.git#egg=pupa
 
 # Django and related API tooling
-Django==2.0
+Django<=2.1
 django-webpack-loader==0.5.0
 graphene==2.0.1
 graphene-django==2.0.0
