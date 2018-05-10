@@ -214,6 +214,12 @@ class VoteConnection(graphene.relay.Connection):
         node = VoteEventNode
 
 
+class SponsorInput(graphene.InputObjectType):
+    name = graphene.String(required=False)
+    primary = graphene.Boolean(required=False)
+    person = graphene.String(required=False)
+
+
 class LegislativeQuery:
     bill = graphene.Field(BillNode,
                           id=graphene.String(),
@@ -227,6 +233,7 @@ class LegislativeQuery:
                                   chamber=graphene.String(),
                                   updated_since=graphene.String(),
                                   subject=graphene.String(),
+                                  sponsor=SponsorInput(),
                                   classification=graphene.String(),
                                   )
 
@@ -234,11 +241,10 @@ class LegislativeQuery:
                       before=None, after=None, first=None, last=None,
                       jurisdiction=None, chamber=None, session=None,
                       updated_since=None, classification=None,
-                      subject=None,
+                      subject=None, sponsor=None,
                       ):
         # bill_id/bill_id__in
         # q (full text)
-        # sponsor_id
         bills = Bill.objects.all()
 
         if jurisdiction:
@@ -253,6 +259,16 @@ class LegislativeQuery:
             bills = bills.filter(classification__contains=[classification])
         if subject:
             bills = bills.filter(subject__contains=[subject])
+        if sponsor:
+            sponsor_args = {}
+            if 'primary' in sponsor:
+                sponsor_args['sponsorships__primary'] = sponsor['primary']
+            if sponsor.get('person'):
+                sponsor_args['sponsorships__person_id'] = sponsor['person']
+            elif sponsor.get('name'):
+                sponsor_args['sponsorships__name'] = sponsor['name']
+            bills = bills.filter(**sponsor_args)
+
 
         bills = optimize(bills, info, [
             '.abstracts',

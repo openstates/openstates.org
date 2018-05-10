@@ -1,6 +1,7 @@
 import pytest
 from graphapi.schema import schema
 from opencivicdata.legislative.models import Bill
+from opencivicdata.core.models import Person
 from .utils import populate_db
 
 
@@ -417,3 +418,34 @@ def test_bills_max_items():
     }''')
     assert len(result.errors) == 1
     assert 'first' in result.errors[0].message
+
+
+@pytest.mark.django_db
+def test_bills_by_sponsorships():
+    result = schema.execute('''{
+        bills(sponsor: {name: "Beth Two"}, first: 100) {
+            edges { node { identifier } }
+        }
+    }''')
+    bills = [n['node']['identifier'] for n in result.data['bills']['edges']]
+    assert len(bills) == 1
+
+    # ensure primary w/ a secondary sponsor returns zero results
+    result = schema.execute('''{
+        bills(sponsor: {name: "Beth Two", primary: true}, first: 100) {
+            edges { node { identifier } }
+        }
+    }''')
+    bills = [n['node']['identifier'] for n in result.data['bills']['edges']]
+    assert len(bills) == 0
+
+    # ensure primary w/ a secondary sponsor returns zero results
+
+    person = Person.objects.get(name='Amanda Adams')
+    result = schema.execute('''{
+        bills(sponsor: {person: "%s"}, first: 100) {
+            edges { node { identifier } }
+        }
+    }''' % person.id)
+    bills = [n['node']['identifier'] for n in result.data['bills']['edges']]
+    assert len(bills) == 1

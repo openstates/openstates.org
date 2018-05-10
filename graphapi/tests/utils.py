@@ -103,7 +103,9 @@ def populate_db():
     a.related_entities.create(name='House', entity_type='organization', organization=house)
 
     b1.sponsorships.create(primary=True, classification='sponsor', name='Adam One')
-    b1.sponsorships.create(primary=False, classification='cosponsor', name='Beth Two')
+    b1.sponsorships.create(primary=False, classification='cosponsor', name='Beth Two',
+                           person=amanda)
+
     d = b1.documents.create(note='Fiscal Note')
     d.links.create(url='https://example.com/fn')
     d = b1.documents.create(note='Legal Justification')
