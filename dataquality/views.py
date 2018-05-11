@@ -105,8 +105,8 @@ def overview(request):
         }
 
     for counts in all_counts:
-        objtype = counts['issue'].split('-')[0]
-        severity = IssueType.level_for(counts['issue'].split('-', 1)[1])
+        objtype = IssueType.class_for(counts['issue'])
+        severity = IssueType.level_for(counts['issue'])
         rows[counts['jurisdiction']][objtype][severity] += counts['issue__count']
 
     rows = sorted(rows.items(), key=lambda v: v[1]['jur_name'])
