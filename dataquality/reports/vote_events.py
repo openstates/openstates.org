@@ -44,7 +44,6 @@ def vote_events_report(jur):
                 other_count=Subquery(VoteCount.objects.filter(vote_event=OuterRef('pk'),
                                                               option='other').values('value')),
             )
-            print(queryset[0].__dict__)
             bad_counts = []
             for vote in queryset:
                 if vote.yes_count is None:

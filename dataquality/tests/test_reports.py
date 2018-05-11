@@ -514,12 +514,9 @@ class VoteEventReportTests(BaseReportTestCase):
         voteevent.votes.create(option="yes", voter_name="unmatched-voter")
         voteevent.counts.create(option="yes", value=1)
         vote_events_report(self.jur)
-        h = DataQualityIssue.objects.filter(object_id=voteevent.id,
+        issues = DataQualityIssue.objects.filter(unmatched_name='unmatched-voter',
                                             issue='voteevent-unmatched-voter').count()
-        rest = DataQualityIssue.objects.exclude(object_id=voteevent.id,
-                                                issue='voteevent-unmatched-voter')
-        self.assertEqual(h, 1)
-        self.assertQuerysetEqual(rest, [])
+        self.assertEqual(issues, 1)
 
     def test_voteevent_missing_counts(self):
         org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
