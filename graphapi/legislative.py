@@ -269,7 +269,6 @@ class LegislativeQuery:
                 sponsor_args['sponsorships__name'] = sponsor['name']
             bills = bills.filter(**sponsor_args)
 
-
         bills = optimize(bills, info, [
             '.abstracts',
             '.otherTitles',

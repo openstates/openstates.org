@@ -218,10 +218,8 @@ class MembershipsReportTests(BaseReportTestCase):
                                            jurisdiction=self.jur)
         org = Organization.objects.create(name="Test Org",
                                           jurisdiction=self.jur)
-        mem1 = Membership.objects.create(person_name='Unmatched Person1',
-                                         organization=org)
-        mem2 = Membership.objects.create(person_name='Unmatched Person2',
-                                         organization=org1)
+        Membership.objects.create(person_name='Unmatched Person1', organization=org)
+        Membership.objects.create(person_name='Unmatched Person2', organization=org1)
         # Some Data Quality Issues
         DataQualityIssue.objects.create(jurisdiction=self.jur,
                                         issue='membership-unmatched-person',
@@ -515,7 +513,7 @@ class VoteEventReportTests(BaseReportTestCase):
         voteevent.counts.create(option="yes", value=1)
         vote_events_report(self.jur)
         issues = DataQualityIssue.objects.filter(unmatched_name='unmatched-voter',
-                                            issue='voteevent-unmatched-voter').count()
+                                                 issue='voteevent-unmatched-voter').count()
         self.assertEqual(issues, 1)
 
     def test_voteevent_missing_counts(self):
@@ -560,7 +558,7 @@ class VoteEventReportTests(BaseReportTestCase):
         voteevent.counts.create(option="other", value=1)
         vote_events_report(self.jur)
         issues = DataQualityIssue.objects.filter(object_id=voteevent.id,
-                                            issue='voteevent-bad-counts').count()
+                                                 issue='voteevent-bad-counts').count()
         rest = DataQualityIssue.objects.exclude(object_id=voteevent.id,
                                                 issue='voteevent-bad-counts')
         self.assertEqual(issues, 1)

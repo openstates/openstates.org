@@ -19,12 +19,18 @@ urlpatterns = [
 
     re_path(r'^(?P<state>{})$'.format(state_abbr_pattern), state, name='state'),
 
-    re_path(r'^(?P<state>{})/legislators$'.format(state_abbr_pattern), legislators, name='legislators'),
-    re_path(r'^(?P<state>{})/legislators/(?P<legislator_id>ocd-person/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), legislator, name='legislator'),
+    re_path(r'^(?P<state>{})/legislators$'.format(state_abbr_pattern), legislators,
+            name='legislators'),
+    re_path(r'^(?P<state>{})/legislators/(?P<legislator_id>ocd-person/{})$'.format(
+        state_abbr_pattern, OCD_ID_PATTERN), legislator, name='legislator'),
 
-    re_path(r'^(?P<state>{})/bills$'.format(state_abbr_pattern), bills, name='bills'),
-    re_path(r'^(?P<state>{})/bills/(?P<bill_id>ocd-bill/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), bill, name='bill'),
+    re_path(r'^(?P<state>{})/bills$'.format(state_abbr_pattern),
+            bills, name='bills'),
+    re_path(r'^(?P<state>{})/bills/(?P<bill_id>ocd-bill/{})$'.format(
+        state_abbr_pattern, OCD_ID_PATTERN), bill, name='bill'),
 
-    re_path(r'^(?P<state>{})/committees$'.format(state_abbr_pattern), committees, name='committees'),
-    re_path(r'^(?P<state>{})/committees/(?P<bill_id>ocd-organization/{})$'.format(state_abbr_pattern, OCD_ID_PATTERN), committee, name='committee'),
+    re_path(r'^(?P<state>{})/committees$'.format(state_abbr_pattern), committees,
+            name='committees'),
+    re_path(r'^(?P<state>{})/committees/(?P<bill_id>ocd-organization/{})$'.format(
+        state_abbr_pattern, OCD_ID_PATTERN), committee, name='committee'),
 ]

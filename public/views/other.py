@@ -2,7 +2,7 @@ from collections import Counter
 
 from django.db.models import Min, Max
 from django.shortcuts import render
-from opencivicdata.legislative.models import Bill, LegislativeSession
+from opencivicdata.legislative.models import Bill
 
 from ..utils import (
     get_chambers_from_state_abbr
