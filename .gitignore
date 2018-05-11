@@ -3,6 +3,8 @@
 webpack-stats.json
 *.pyc
 __pycache__
+.pytest_cache
+.vscode
 
 # dependencies
 /node_modules

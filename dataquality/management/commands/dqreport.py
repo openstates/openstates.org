@@ -22,7 +22,6 @@ class Command(BaseCommand):
             default=False,
             help='import Person Related Issues',
         )
-
         parser.add_argument(
             '--organizations',
             action='store_true',
@@ -30,7 +29,6 @@ class Command(BaseCommand):
             default=False,
             help='import Organization Related Issues',
         )
-
         parser.add_argument(
             '--vote_events',
             action='store_true',
@@ -38,7 +36,6 @@ class Command(BaseCommand):
             default=False,
             help='import Vote Event Related Issues',
         )
-
         parser.add_argument(
             '--bills',
             action='store_true',
@@ -48,6 +45,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        # if no flags are passed, we'll do all reports
         if not any([options['people'], options['organization'],
                     options['vote_event'], options['bills']]):
                 options['people'] = True
@@ -68,8 +66,6 @@ class Command(BaseCommand):
                 posts_report(jur)
             if options['organization']:
                 organizations_report(jur)
-                # self.stdout.write(self.style.SUCCESS('Successfully Imported '
-                #                                      'Organization DataQualityIssues into DB'))
             if options['vote_event']:
                 vote_events_report(jur)
             if options['bills']:
