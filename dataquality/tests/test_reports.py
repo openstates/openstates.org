@@ -22,13 +22,12 @@ class BaseReportTestCase(TestCase):
             url="http://www.senate.mo.gov",
             division=division,
         )
-        Organization.objects.create(name="Democratic", jurisdiction=self.jur)
 
 
 class PeopleReportTests(BaseReportTestCase):
 
     def test_people_missing_photo(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
 
         person = Person.objects.create(name="Missing Photo")
         PersonContactDetail.objects.create(person=person, type='address',
@@ -50,7 +49,7 @@ class PeopleReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_people_missing_email(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         person = Person.objects.create(name="Missing Email",
                                        image="http://personimage.png")
         PersonContactDetail.objects.create(person=person, type='address',
@@ -68,7 +67,7 @@ class PeopleReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_people_missing_phone(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         person = Person.objects.create(name="Missing Phone",
                                        image="http://personimage.png")
         PersonContactDetail.objects.create(person=person, type='address',
@@ -86,7 +85,7 @@ class PeopleReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_people_missing_address(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         person = Person.objects.create(name="Missing Address",
                                        image="http://personimage.png")
         PersonContactDetail.objects.create(person=person, type='email',
@@ -104,7 +103,7 @@ class PeopleReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_people_delete_active_dqis(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         p = Person.objects.create(name="John Snow")
         Membership.objects.create(person=p, organization=org)
         # Some Data Quality Issues
@@ -225,13 +224,15 @@ class MembershipsReportTests(BaseReportTestCase):
                                          organization=org1)
         # Some Data Quality Issues
         DataQualityIssue.objects.create(jurisdiction=self.jur,
-                                        content_object=mem1,
                                         issue='membership-unmatched-person',
-                                        status='ignored')
+                                        status='ignored',
+                                        unmatched_name='Unmatched Person1',
+                                        )
         DataQualityIssue.objects.create(jurisdiction=self.jur,
-                                        content_object=mem2,
                                         issue='membership-unmatched-person',
-                                        status='active')
+                                        status='active',
+                                        unmatched_name='Unmatched Person2',
+                                        )
         memberships_report(self.jur)
 
         ignored_issues = DataQualityIssue.objects.filter(status='ignored',
@@ -383,16 +384,13 @@ class BillsReportTests(BaseReportTestCase):
                                  name="matched Person Sponsor", entity_type='person',
                                  person=p)
         bill.sponsorships.create(classification="Bill with matched organization sponsor",
-                                 name="matched Organization Sponsor",
+                                 name="unmatched Organization Sponsor",
                                  entity_type='organization')
         bills_report(self.jur)
-        h = DataQualityIssue.objects.filter(object_id=bill.id,
-                                            issue='bill-unmatched-org-sponsor')
-        rest = DataQualityIssue.objects.exclude(
-            object_id=bill.id, issue='bill-unmatched-org-sponsor')
+        issues = DataQualityIssue.objects.filter(unmatched_name='unmatched Organization Sponsor',
+                                                 issue='bill-unmatched-org-sponsor')
 
-        self.assertEqual(len(h), 1)
-        self.assertQuerysetEqual(rest, [])
+        self.assertEqual(len(issues), 1)
 
     def test_bill_unmatched_person_sponsor(self):
         org = Organization.objects.create(name="Org: Unmatched person sponsor",
@@ -410,12 +408,9 @@ class BillsReportTests(BaseReportTestCase):
                                  name="matched Organization Sponsor", organization=org,
                                  entity_type='organization')
         bills_report(self.jur)
-        h = DataQualityIssue.objects.filter(object_id=bill.id,
+        h = DataQualityIssue.objects.filter(unmatched_name='Unmatched Person Sponsor',
                                             issue='bill-unmatched-person-sponsor')
-        rest = DataQualityIssue.objects.exclude(object_id=bill.id,
-                                                issue='bill-unmatched-person-sponsor')
         self.assertEqual(len(h), 1)
-        self.assertQuerysetEqual(rest, [])
 
     def test_bill_delete_active_dqis(self):
         ls = LegislativeSession.objects.get(identifier="2017")
@@ -466,7 +461,7 @@ class VoteEventReportTests(BaseReportTestCase):
         Bill.objects.create(legislative_session=ls, identifier="Bill for VoteEvent")
 
     def test_voteevent_missing_voters(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         bill = Bill.objects.get(identifier="Bill for VoteEvent")
         ls = LegislativeSession.objects.get(identifier="2017")
         voteevent = VoteEvent.objects.create(
@@ -489,7 +484,7 @@ class VoteEventReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_voteevent_missing_bill(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         p = Person.objects.get(name="Voter")
         ls = LegislativeSession.objects.get(identifier="2017")
         voteevent = VoteEvent.objects.create(identifier="vote1",
@@ -508,7 +503,7 @@ class VoteEventReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_voteevent_unmatched_voter(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         bill = Bill.objects.get(identifier="Bill for VoteEvent")
         ls = LegislativeSession.objects.get(identifier="2017")
         voteevent = VoteEvent.objects.create(identifier="vote1",
@@ -527,7 +522,7 @@ class VoteEventReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_voteevent_missing_counts(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         p = Person.objects.get(name="Voter")
         bill = Bill.objects.get(identifier="Bill for VoteEvent")
         ls = LegislativeSession.objects.get(identifier="2017")
@@ -551,7 +546,7 @@ class VoteEventReportTests(BaseReportTestCase):
         self.assertQuerysetEqual(rest, [])
 
     def test_voteevent_bad_counts(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         p = Person.objects.get(name="Voter")
         bill = Bill.objects.get(identifier="Bill for VoteEvent")
         ls = LegislativeSession.objects.get(identifier="2017")
@@ -567,15 +562,15 @@ class VoteEventReportTests(BaseReportTestCase):
         voteevent.counts.create(option="no", value=1)
         voteevent.counts.create(option="other", value=1)
         vote_events_report(self.jur)
-        h = DataQualityIssue.objects.filter(object_id=voteevent.id,
+        issues = DataQualityIssue.objects.filter(object_id=voteevent.id,
                                             issue='voteevent-bad-counts').count()
         rest = DataQualityIssue.objects.exclude(object_id=voteevent.id,
                                                 issue='voteevent-bad-counts')
-        self.assertEqual(h, 1)
+        self.assertEqual(issues, 1)
         self.assertQuerysetEqual(rest, [])
 
     def test_bill_delete_active_dqis(self):
-        org = Organization.objects.get(name="Democratic")
+        org = Organization.objects.create(name="Democratic", jurisdiction=self.jur)
         ls = LegislativeSession.objects.get(identifier="2017")
         voteevent = VoteEvent.objects.create(
             identifier="vote1",

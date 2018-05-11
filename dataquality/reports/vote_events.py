@@ -44,11 +44,18 @@ def vote_events_report(jur):
                 other_count=Subquery(VoteCount.objects.filter(vote_event=OuterRef('pk'),
                                                               option='other').values('value')),
             )
+            print(queryset[0].__dict__)
             bad_counts = []
             for vote in queryset:
+                if vote.yes_count is None:
+                    vote.yes_count = 0
+                if vote.no_count is None:
+                    vote.no_count = 0
+                if vote.other_count is None:
+                    vote.other_count = 0
                 if (vote.yes_sum != vote.yes_count or
-                        vote.no_sum != vote.no_sum or
-                        vote.other_sum != vote.other_sum):
+                        vote.no_sum != vote.no_count or
+                        vote.other_sum != vote.other_count):
                     bad_counts.append(vote)
             count += create_issues(bad_counts, issue, jur)
         else:
