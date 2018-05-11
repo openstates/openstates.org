@@ -5,8 +5,9 @@ addons:
         packages:
             - "postgresql-9.4-postgis-2.3"
 python:
-    - "3.5"
     - "3.6"
+env:
+  - DATABASE_URL="postgis://test:test@localhost/test"
 install: 
     - pip install -r requirements.txt
 before_script:
