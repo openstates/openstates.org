@@ -145,7 +145,9 @@ class BillNode(OCDBaseNode):
     def resolve_sources(self, info):
         return self.sources.all()
 
-    def resolve_votes(self, info):
+    def resolve_votes(self, info,
+                      first=None, last=None, before=None, after=None,
+                      ):
         if 'votes' not in getattr(self, '_prefetched_objects_cache', []):
             return optimize(self.votes.all(), info, [
                 '.counts',
