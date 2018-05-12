@@ -1,18 +1,36 @@
 version: "3"
 services:
-  website:
-    image: openstates/new-openstates.org
-    volumes:
-      - .:/opt/openstates/openstates.org/
-    entrypoint: ['/bin/bash']
-
   database:
     # With this service up, your host can use a database URL of
     # `postgres://openstates@localhost:5433/openstates`
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:9.4-alpine
     ports:
       # Avoid conflict with the host's Postgres port
       - "5433:5432"
     environment:
       - POSTGRES_DB=openstates
       - POSTGRES_USER=openstates
+  website:
+    build:
+      context: .
+      dockerfile: python.Dockerfile
+    command: bash ./scripts/docker_python.sh
+    environment:
+      - DATABASE_URL=postgis://openstates@database:5432/openstates
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    volumes:
+      - .:/opt/openstates
+  frontend:
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    command: npm run start
+    ports:
+      - "3000:3000"
+      - "35729:35729"
+    volumes:
+      - .:/opt/openstates
+    # entrypoint: ['/bin/bash']
