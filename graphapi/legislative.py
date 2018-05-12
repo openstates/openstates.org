@@ -175,11 +175,20 @@ class VoteCountNode(graphene.ObjectType):
     value = graphene.Int()
 
 
+# PersonVoteNode & BillVoteNode are the same underlying data, but only allow traversing
+# in a single direction -- it would be possible to combine these into a single object
+# but would lead to more loop potential
 class PersonVoteNode(graphene.ObjectType):
     option = graphene.String()
     voter_name = graphene.String()
     voter = graphene.Field(PersonNode)
     note = graphene.String()
+
+
+class BillVoteNode(graphene.ObjectType):
+    option = graphene.String()
+    note = graphene.String()
+    vote_event = graphene.Field('graphapi.legislative.VoteEventNode')
 
 
 class VoteEventNode(OCDBaseNode):
@@ -192,9 +201,9 @@ class VoteEventNode(OCDBaseNode):
 
     organization = graphene.Field(OrganizationNode)
     bill_action = graphene.Field(BillActionNode)
-    # not used for now since only path into VoteEvent is via Bill
-    # legislative_session = graphene.Field(LegislativeSessionNode)
-    # bill = graphene.Field(BillNode)
+
+    legislative_session = graphene.Field(LegislativeSessionNode)
+    bill = graphene.Field(BillNode)
 
     # related entities
     votes = graphene.List(PersonVoteNode)

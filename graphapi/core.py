@@ -117,6 +117,7 @@ class PersonNode(OCDBaseNode):
     current_memberships = graphene.List('graphapi.core.MembershipNode',
                                         classification=graphene.List(graphene.String)
                                         )
+    votes = graphene.List('graphapi.legislative.BillVoteNode')
 
     def resolve_identifiers(self, info):
         return self.identifiers.all()
@@ -138,6 +139,9 @@ class PersonNode(OCDBaseNode):
             return self.current_memberships
         else:
             return _current_membership_filter(self.memberships, info, classification)
+
+    def resolve_votes(self, info):
+        return self.votes.all()
 
 
 class MembershipNode(OCDBaseNode):
