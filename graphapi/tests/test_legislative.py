@@ -449,3 +449,27 @@ def test_bills_by_sponsorships():
     }''' % person.id)
     bills = [n['node']['identifier'] for n in result.data['bills']['edges']]
     assert len(bills) == 1
+
+
+@pytest.mark.django_db
+def test_votes_via_person():
+    result = schema.execute('''{
+        people(name: "Amanda", first:100) {
+            edges {node {
+              votes {
+                option
+                voteEvent {
+                  motionText
+                  bill {
+                    identifier
+                  }
+                }
+              }
+            }}
+          }
+        }''')
+    assert result.errors is None
+    people = [n['node'] for n in result.data['people']['edges']]
+    assert len(people) == 1
+    assert people[0]['votes'][0]['option'] == 'yes'
+    assert people[0]['votes'][0]['voteEvent']['bill']['identifier'] == 'HB 1'
