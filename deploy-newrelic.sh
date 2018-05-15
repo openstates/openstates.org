@@ -1,6 +1,6 @@
 #!/bin/sh
-NEWRELIC_APP_ID=$(credstash get newrelic.OPENSTATES_APP_ID)
-NEWRELIC_API_KEY=$(credstash get newrelic.API_KEY)
+NEWRELIC_APP_ID=$(aws ssm get-parameter --name /site/NEWRELIC_OPENSTATES_APP_ID --with-decryption | jq -r .Parameter.Value)
+NEWRELIC_API_KEY=$(aws ssm get-parameter --name /site/NEWRELIC_API_KEY --with-decryption | jq -r .Parameter.Value)
 REV="deploy $(date)"
 CHANGELOG=""
 DESCRIPTION=""
