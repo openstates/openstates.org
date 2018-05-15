@@ -2,7 +2,7 @@
 django_environment:
     DJANGO_DEBUG: false
     ADMINS: James Turk james@openstates.org
-    SECRET_KEY: "{{ lookup('credstash', 'geo.SECRET_KEY') }}"
-    DATABASE_URL: "{{ lookup('credstash', 'geo.DATABASE_URL') }}"
-    TEST_VALUE: "{{ lookup('credstash', 'newrelic.OPENSTATES_APP_ID') }}"
-newrelic_key: "{{ lookup('credstash', 'newrelic.INI_KEY') }}"
+    SECRET_KEY: "{{ lookup('aws_ssm', '/geo/SECRET_KEY') }}"
+    DATABASE_URL: "{{ lookup('aws_ssm', '/geo/DATABASE_URL') }}"
+    TEST_VALUE: "{{ lookup('aws_ssm', '/site/NEWRELIC_OPENSTATES_APP_ID') }}"
+newrelic_key: "{{ lookup('aws_ssm', '/site/NEWRELIC_INI_KEY') }}"
