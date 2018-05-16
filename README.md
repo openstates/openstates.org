@@ -7,11 +7,11 @@ The frontend is a Django site, augmented by React for particular pages that requ
 
 ### API
 
-_Needs to be filled out by @jamesturk_
+GraphQL-based API, using Graphene.
 
 ### Database
 
-The database in the OCD schema, managed by Django and powered by PostGIS.
+The database is in [Open Civic Data](https://github.com/opencivicdata] format, managed by Django and powered by PostGIS.
 
 ## Developing
 ### Dependencies
