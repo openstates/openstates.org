@@ -11,7 +11,7 @@ GraphQL-based API, using Graphene.
 
 ### Database
 
-The database is in [Open Civic Data](https://github.com/opencivicdata] format, managed by Django and powered by PostGIS.
+The database is in [Open Civic Data](https://github.com/opencivicdata) format, managed by Django and powered by PostGIS.
 
 ## Developing
 ### Dependencies
