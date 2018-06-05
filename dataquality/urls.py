@@ -49,6 +49,4 @@ urlpatterns = [
     # name resolution
     url(r'^(?P<jur_id>[\w\-\:\/]+)/(?P<category>[-\w]+)/$',
         views.name_resolution_tool, name='name_resolution_tool'),
-
-   
 ]
