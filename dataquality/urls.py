@@ -39,14 +39,14 @@ urlpatterns = [
         '(?P<issue_slug>[-\w]+)/(?P<action>[-\w]+)/$',
         views.dataquality_exceptions, name='dataquality_exceptions'),
 
-    # name resolution
-    url(r'^(?P<jur_id>[\w\-\:\/]+)/(?P<category>[-\w]+)/$',
-        views.name_resolution_tool, name='name_resolution_tool'),
-
     # retirement
     url(r'^(?P<jur_id>[\w\-\:\/]+)/retire-legislators/$',
         views.retire_legislators, name="retire_legislators"),
 
     url(r'^(?P<jur_id>[\w\-\:\/]+)/all-retired-legislators/$',
         views.list_retired_legislators, name="list_retired_legislators"),
+
+    # name resolution
+    url(r'^(?P<jur_id>[\w\-\:\/]+)/(?P<category>[-\w]+)/$',
+        views.name_resolution_tool, name='name_resolution_tool'),
 ]
