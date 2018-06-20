@@ -43,6 +43,10 @@ class IssueType:
                 issues.append(i.slug)
         return issues
 
+    @classmethod
+    def related_class_choices(cls):
+        return list(set([i.related_class for i in cls._types]))
+
 
 # Person Related Issues
 IssueType('missing-phone', 'Missing Phone Number', 'person', 'warning')
