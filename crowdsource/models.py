@@ -26,3 +26,24 @@ class CrowdSourceIssue(models.Model):
 
     def __str__(self):
         return '{} issue type'.format(self.issue)
+
+class CrowdSourceIssueResolver(models.model):
+    STATUS_CHOICES = (
+        ('approved', 'Approved'),
+        ('unreviewed', 'Unreviewed'),
+        ('deprecated', 'Deprecated'),
+        ('rejected', 'Rejected')
+    )
+
+    issue = models.ForeignKey(CrowdSourceIssue, on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES)
+    old_value = models.TextField(blank=True)
+    new_value = models.TextField()
+    note = models.TextField(blank=True)
+    source = models.URLField(max_length=2250, blank=True)
+    reporter_email = models.EmailField(blank=True)
+    reporter_name = models.CharField(max_length=500, blank=True)
+    applied_by = models.CharField(max_length=205)  # user/admin  (choices ??)
+
+    def __str__(self):
+        return '{} patch of {} by {}'.format(self.applied_by, self.issue, self.reporter_name)
