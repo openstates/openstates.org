@@ -26,9 +26,9 @@ class CrowdSourceIssue(models.Model):
     reporter_name = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
-        return '{} issue type'.format(self.issue)
+        return '{} {} {}'.format(self.issue, self.content_object, self.jurisdiction)
 
-class CrowdSourceIssueResolver(models.model):
+class CrowdSourceIssueResolver(models.Model):
     STATUS_CHOICES = (
         ('approved', 'Approved'),
         ('unreviewed', 'Unreviewed'),
@@ -44,7 +44,7 @@ class CrowdSourceIssueResolver(models.model):
     source = models.URLField(max_length=2250, blank=True)
     reporter_email = models.EmailField(blank=True)
     reporter_name = models.CharField(max_length=500, blank=True)
-    applied_by = models.ForeignKey(User, blank=True)  # user/admin 
+    applied_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)  # user/admin 
 
     def __str__(self):
         return '{} patch of {} by {}'.format(self.applied_by, self.issue, self.reporter_name)
