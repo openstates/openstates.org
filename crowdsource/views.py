@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.db.models import Count
+from django.db.models import Q
 from opencivicdata.legislative.models import Bill, VoteEvent
 
 from .issues import IssueType
@@ -61,8 +61,9 @@ def submit_resolve(request):
         post_form = ResolverForm(post)
         if post_form.is_valid():
             resolver = post_form.save(commit=False)
-            exist_resolver = CrowdSourceIssueResolver.objects.filter(issue = resolver.issue,
-                                                new_value=resolver.new_value)
+            exist_resolver = CrowdSourceIssueResolver.objects.filter(Q(issue = resolver.issue,
+                                                new_value=resolver.new_value) | Q(issue = resolver.issue,
+                                                reporter_email=resolver.reporter_email))
             if exist_resolver.count() > 0:
                 messages.error(request, "Resolver with the updates already exists.")
                 return render(request, 'report.html', {'form': post_form, 'headline': "New Resolver"})
@@ -77,3 +78,4 @@ def submit_resolve(request):
         
     else:
         return render(request, 'report.html', {'form': form, 'headline': "New Resolver"})
+
