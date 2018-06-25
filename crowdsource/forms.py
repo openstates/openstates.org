@@ -13,5 +13,6 @@ class ResolverForm(forms.ModelForm):
 
     class Meta:
         model = CrowdSourceIssueResolver
-        fields = ('issue', 'new_value', 'note', 'source', 
-                  'reporter_name', 'reporter_email')
+        fields = ('issue', 'old_value', 'new_value', 'note',
+                  'source', 'reporter_name', 'reporter_email')
+
