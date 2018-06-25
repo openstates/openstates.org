@@ -4,6 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from opencivicdata.core.models import Jurisdiction
 
 from . import issues
+from django.contrib.auth.models import User
 
 
 class CrowdSourceIssue(models.Model):
@@ -36,14 +37,14 @@ class CrowdSourceIssueResolver(models.model):
     )
 
     issue = models.ForeignKey(CrowdSourceIssue, on_delete=models.CASCADE)
-    status = models.CharField(max_length=100, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='unreviewed')
     old_value = models.TextField(blank=True)
     new_value = models.TextField()
     note = models.TextField(blank=True)
     source = models.URLField(max_length=2250, blank=True)
     reporter_email = models.EmailField(blank=True)
     reporter_name = models.CharField(max_length=500, blank=True)
-    applied_by = models.CharField(max_length=205)  # user/admin  (choices ??)
+    applied_by = models.ForeignKey(User, blank=True)  # user/admin 
 
     def __str__(self):
         return '{} patch of {} by {}'.format(self.applied_by, self.issue, self.reporter_name)
