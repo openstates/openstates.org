@@ -4,5 +4,5 @@ from . import views
 urlpatterns = [
 
     url(r'^report/$', views.report_issue, name='report'),
-    
+    url(r'^resolve/$', views.submit_resolve, name='resolve'),
 ]
