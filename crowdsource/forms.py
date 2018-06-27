@@ -1,7 +1,7 @@
 from django import forms
 
-from .models import CrowdSourceIssue, CrowdSourceIssueResolver
 from dataquality.models import DataQualityIssue, IssueResolverPatch
+
 class IssueForm(forms.ModelForm):
 
     class Meta:
@@ -12,7 +12,7 @@ class IssueForm(forms.ModelForm):
 class ResolverForm(forms.ModelForm):
 
     class Meta:
-        model = CrowdSourceIssueResolver
-        fields = ('issue', 'old_value', 'new_value', 'note',
-                  'source', 'reporter_name', 'reporter_email')
+        model = IssueResolverPatch
+        fields = ('jurisdiction', 'object_id', 'category',
+                  'new_value', 'note', 'source', 'reporter_name', 'reporter_email')
 
