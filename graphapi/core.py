@@ -136,6 +136,9 @@ class PersonNode(OCDBaseNode):
 
     def resolve_current_memberships(self, info, classification=None):
         if hasattr(self, 'current_memberships'):
+            if classification:
+                return [m for m in self.current_memberships
+                        if m.organization.classification in classification]
             return self.current_memberships
         else:
             return _current_membership_filter(self.memberships, info, classification)
