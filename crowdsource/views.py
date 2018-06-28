@@ -1,14 +1,15 @@
 from django.shortcuts import render
-
 from django.db.models import Q
-from opencivicdata.legislative.models import Bill, VoteEvent
-from opencivicdata.core.models import Jurisdiction, Person
-
-from .issues import IssueType
-from dataquality.models import DataQualityIssue, IssueResolverPatch
-from .forms import IssueForm, ResolverForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
+
+from opencivicdata.legislative.models import Bill, VoteEvent
+from opencivicdata.core.models import Jurisdiction, Person
+from dataquality.models import DataQualityIssue, IssueResolverPatch
+
+from .issues import IssueType
+from .forms import IssueForm, ResolverForm
+
 
 
 def get_object_by_identifier(issue_type, identifier):
@@ -28,6 +29,20 @@ def already_exists(object_id,issue):
             return True
         except:
             return False
+
+def fetch_old_value_person(person, category):
+    old_value = None
+    if category == 'name':
+        old_value = person.name
+    elif category == 'image':
+        old_value = person.image
+    else:
+        contact = person.contact_details.filter(type=category)
+        if contact:
+            old_value = contact[0].value
+        else:
+            old_value = ""
+    return old_value
 
 @csrf_exempt
 def report_issue(request):
@@ -69,13 +84,29 @@ def submit_resolve(request):
         post_form = ResolverForm(post)
         if post_form.is_valid():
             resolver = post_form.save(commit=False)
-            # user with one email can only create one resolver for a particular issue, otherwise he can edit it
-            exist_resolver = CrowdSourceIssueResolver.objects.filter(Q(issue = resolver.issue,
-                                                new_value=resolver.new_value) | Q(issue = resolver.issue,
+
+            # Right now only resolves(as seen in category) for Person is there
+            content_object = Person.objects.filter(id = resolver.object_id)
+            
+            if content_object:
+                resolver.content_object = content_object[0]
+            else:
+                messages.error(request, "Object with '%s' object id not found."%resolver.object_id) 
+                return render(request, 'report.html', {'form': post_form, 'headline': "New Resolver"})
+
+            resolver.old_value = fetch_old_value_person(resolver.content_object, resolver.category)
+            # user with one email can only create only one resolver for an object with unreviewed status
+            # same set of old_value and new_value can't be created with unreviewed status(default after creation)
+            exist_resolver = IssueResolverPatch.objects.filter(Q(old_value=resolver.old_value, status="unreviewed",
+                                                new_value=resolver.new_value, object_id=resolver.object_id) |
+                                                Q(object_id=resolver.object_id, status="unreviewed",
                                                 reporter_email=resolver.reporter_email))
             if exist_resolver.count() > 0:
-                messages.error(request, "Resolver with the updates already exists.")
+                messages.error(request, "Either Same new value has already been requested or"
+                                        " you already have resolver with the given object_id")
                 return render(request, 'report.html', {'form': post_form, 'headline': "New Resolver"})
+
+            resolver.status = "unreviewed"
             resolver.save()
             messages.success(request, "Resolve Submitted Successfully !")
             return render(request, 'report.html', {'form': form, 'headline': "New Resolver"})
@@ -87,5 +118,3 @@ def submit_resolve(request):
         
     else:
         return render(request, 'report.html', {'form': form, 'headline': "New Resolver"})
-
-
