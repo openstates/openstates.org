@@ -13,6 +13,6 @@ class ResolverForm(forms.ModelForm):
 
     class Meta:
         model = IssueResolverPatch
-        fields = ('jurisdiction', 'object_id', 'category',
+        fields = ('jurisdiction', 'object_id', 'category', 'old_value',
                   'new_value', 'note', 'source', 'reporter_name', 'reporter_email')
 
