@@ -4,22 +4,21 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 
 from opencivicdata.legislative.models import Bill, VoteEvent
-from opencivicdata.core.models import Jurisdiction, Person
+from opencivicdata.core.models import Person
 from dataquality.models import DataQualityIssue, IssueResolverPatch
 
 from .issues import IssueType
 from .forms import IssueForm, ResolverForm
 
 
-
 def get_object_by_identifier(issue_type, identifier):
     content_object = None
-    if issue_type == 'bill':
-        content_object = Bill.objects.filter(id=identifier)
-    elif issue_type == 'voteevent':
-        content_object = VoteEvent.objects.filter(id=identifier)
-    elif issue_type == 'person':
+    if issue_type == 'community-person':
         content_object = Person.objects.filter(id=identifier)
+    if issue_type == 'community-bill':
+        content_object = Bill.objects.filter(id=identifier)
+    elif issue_type == 'commmunity-voteevent':
+        content_object = VoteEvent.objects.filter(id=identifier)
     return content_object
 
 def already_exists(object_id,issue):
@@ -38,7 +37,6 @@ def check_old_value_person(person, category, old_value):
     else:
         contacts = person.contact_details.filter(type=category)
         for contact in contacts:
-            print(contact.value, old_value)
             if contact.value == old_value:
                 return True
     return False
