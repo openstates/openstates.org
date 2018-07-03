@@ -30,19 +30,18 @@ def already_exists(object_id,issue):
         except:
             return False
 
-def fetch_old_value_person(person, category):
-    old_value = None
+def check_old_value_person(person, category, old_value):
     if category == 'name':
-        old_value = person.name
+        return (old_value==person.name)
     elif category == 'image':
-        old_value = person.image
+        return (old_value==person.image)
     else:
-        contact = person.contact_details.filter(type=category)
-        if contact:
-            old_value = contact[0].value
-        else:
-            old_value = ""
-    return old_value
+        contacts = person.contact_details.filter(type=category)
+        for contact in contacts:
+            print(contact.value, old_value)
+            if contact.value == old_value:
+                return True
+    return False
 
 @csrf_exempt
 def report_issue(request):
@@ -84,17 +83,18 @@ def submit_resolve(request):
         post_form = ResolverForm(post)
         if post_form.is_valid():
             resolver = post_form.save(commit=False)
-
-            # Right now only resolves(as seen in category) for Person is there
-            content_object = Person.objects.filter(id = resolver.object_id)
             
-            if content_object:
-                resolver.content_object = content_object[0]
-            else:
+            try:
+                content_object = Person.objects.get(id = resolver.object_id)
+                resolver.content_object = content_object
+            except:
                 messages.error(request, "Object with '%s' object id not found."%resolver.object_id) 
+                return render(request, 'report.html', {'form': post_form, 'headline': "New Resolver"})    
+
+            if not check_old_value_person(resolver.content_object, resolver.category, resolver.old_value):
+                messages.error(request, "Old value doesn't match with value in database")
                 return render(request, 'report.html', {'form': post_form, 'headline': "New Resolver"})
 
-            resolver.old_value = fetch_old_value_person(resolver.content_object, resolver.category)
             # user with one email can only create only one resolver for an object with unreviewed status
             # same set of old_value and new_value can't be created with unreviewed status(default after creation)
             exist_resolver = IssueResolverPatch.objects.filter(Q(old_value=resolver.old_value, status="unreviewed",
