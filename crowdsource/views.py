@@ -41,7 +41,6 @@ def check_old_value_person(person, category, old_value):
                 return True
     return False
 
-@csrf_exempt
 def report_issue(request):
 
     form = IssueForm()
@@ -115,4 +114,14 @@ def submit_resolve(request):
             return render(request, 'report.html', {'form': post_form, 'headline': "New Resolver"})
         
     else:
+        object_id = request.GET.get('object_id')
+        jurisdiction = request.GET.get('jurisdiction')
+        form.initial = {
+            'object_id': object_id,
+            'jurisdiction': jurisdiction
+        }
         return render(request, 'report.html', {'form': form, 'headline': "New Resolver"})
+
+def list_issues(request):
+    issues = DataQualityIssue.objects.filter(issue__in=IssueType.get_issues_for("community-person"))
+    return render(request, 'list_issues.html', {'issues': issues})
