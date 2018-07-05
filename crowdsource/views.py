@@ -63,7 +63,7 @@ def report_issue(request):
         else:
             errors = post_form.errors.as_data()
             for error in errors:
-                messages.error(request, error+": "+errors[error])
+                messages.error(request, error+": "+str(errors[error]))
             if active_issue_exists:
                 messages.error(request, "Issue for the object already exists.")
             return render(request, 'report.html', {'form': post_form, 'headline': "New Issue"})
