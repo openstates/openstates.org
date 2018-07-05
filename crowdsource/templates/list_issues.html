@@ -4,7 +4,7 @@
     <ol>
     {% for issue in issues %}
         <li> {{ issue.issue }} 
-            <a href="{% url "resolve" object_id=issue.object_id jurisdiction=issue.jurisdiction.id %}">Solve it !</a>
+            <a href="{% url 'resolve' %}?object_id={{issue.object_id}}&jurisdiction={{issue.jurisdiction.id}}">Solve it !</a>
         </li>
 
     {% endfor %}
