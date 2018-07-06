@@ -95,9 +95,9 @@ def submit_resolve(request):
             # user with one email can only create only one resolver for an object with unreviewed status
             # same set of old_value and new_value can't be created with unreviewed status(default after creation)
             exist_resolver = IssueResolverPatch.objects.filter(Q(old_value=resolver.old_value, status="unreviewed",
-                                                new_value=resolver.new_value, object_id=resolver.object_id) |
+                                                new_value=resolver.new_value, category=resolver.category, object_id=resolver.object_id) |
                                                 Q(object_id=resolver.object_id, status="unreviewed",
-                                                reporter_email=resolver.reporter_email))
+                                                reporter_email=resolver.reporter_email, category=resolver.category))
             if exist_resolver.count() > 0:
                 messages.error(request, "Either Same new value has already been requested or"
                                         " you already have resolver with the given object_id")
@@ -110,7 +110,7 @@ def submit_resolve(request):
         else:
             errors = post_form.errors.as_data()
             for error in errors:
-                messages.error(request, error+": "+errors[error])
+                messages.error(request, error+": "+str(errors[error]))
             return render(request, 'report.html', {'form': post_form, 'headline': "New Resolver"})
         
     else:
