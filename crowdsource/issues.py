@@ -1,6 +1,6 @@
 from dataquality.issues import IssueType
 
-# Issues with related_class "community-person"f
+# Issues with related_class "community-person"
 
 IssueType('wrong-phone', 'Wrong Phone Number', 'community-person', 'error')
 IssueType('wrong-email', 'Wrong Email', 'community-person', 'error')

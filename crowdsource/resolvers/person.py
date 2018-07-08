@@ -1,4 +1,4 @@
-from opencivicdata.core.models import Jurisdiction, Person
+from opencivicdata.core.models import Person
 from dataquality.models import DataQualityIssue, IssueResolverPatch
 
 
@@ -7,7 +7,7 @@ from dataquality.models import DataQualityIssue, IssueResolverPatch
 def apply_person_patches(jur_name):
     count = 0
     patches = IssueResolverPatch.objects.filter(jurisdiction__name=jur_name,
-                                                status = 'approved')
+                                                status='approved')
     image_duplicates = []
     name_duplicates = []
     for patch in patches:
@@ -47,7 +47,7 @@ def apply_person_patches(jur_name):
                         person.save()
                         count += 1
                 else:
-                    issue = 'wrong-name'    
+                    issue = 'wrong-name'
             else:
                 if patch.object_id not in name_duplicates:
                     p = Person.objects.get(id=patch.object_id).name
@@ -61,7 +61,7 @@ def apply_person_patches(jur_name):
             if contact:
                 if not person.contact_details.filter(type=patch.category,
                                                      value=patch.new_value):
-                    contact.update(value = patch.new_value) 
+                    contact.update(value=patch.new_value)
                     count += 1
             elif patch.old_value == '':
                 if not person.contact_details.filter(type=patch.category,
@@ -80,11 +80,11 @@ def apply_person_patches(jur_name):
             raise ValueError("Resolvers Needs Update For New Category!")
 
         if issue:
-            over_ride_issue = DataQualityIssue.objects.create(content_object=person,
-                                                              issue=issue,
-                                                              jurisdiction=patch.jurisdiction,
-                                                              message="Resolver over-ridden"
-                                                              )
+            DataQualityIssue.objects.create(content_object=person,
+                                            issue=issue,
+                                            jurisdiction=patch.jurisdiction,
+                                            message="Resolver over-ridden"
+                                            )
 
             patch.status = 'deprecated'
             patch.save()

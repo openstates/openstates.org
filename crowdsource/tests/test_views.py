@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.template import Template, Context
 
 from opencivicdata.core.models import Jurisdiction, Person, Division
 from dataquality.models import DataQualityIssue, IssueResolverPatch
@@ -24,7 +23,7 @@ class BaseViewTestCase(TestCase):
 
 
 class ReportTests(BaseViewTestCase):
-    
+
     def test_view_response(self):
         response = self.client.get(reverse('report'))
         self.assertEqual(response.status_code, 200)
@@ -37,17 +36,17 @@ class ReportTests(BaseViewTestCase):
             'object_id': self.person.id,
             'issue': 'wrong-email'
         }
-        response = self.client.post(reverse('report'), data)
+        self.client.post(reverse('report'), data)
 
         post_issue_count = DataQualityIssue.objects.all().count()
-        issue = DataQualityIssue.objects.get(jurisdiction = self.jur.id, 
-                                             object_id=self.person.id,
-                                             issue='wrong-email')
+        DataQualityIssue.objects.get(jurisdiction=self.jur.id,
+                                     object_id=self.person.id,
+                                     issue='wrong-email')
         self.assertEqual(pre_issue_count+1, post_issue_count)
 
     # issue should not be added, with invalid object_id
     def test_view_invalid_object_id(self):
-        
+
         # Covers the possibility of creating more than one object with data
         pre_issue_count = DataQualityIssue.objects.all().count()
         data = {
@@ -55,34 +54,34 @@ class ReportTests(BaseViewTestCase):
             'object_id': "invalid_object",
             'issue': 'wrong-email'
         }
-        response = self.client.post(reverse('report'), data)
+        self.client.post(reverse('report'), data)
 
         post_issue_count = DataQualityIssue.objects.all().count()
         exception_raised = False
         try:
             DataQualityIssue.objects.get(object_id="invalid_object")
-        except:
+        except DataQualityIssue.DoesNotExist:
             exception_raised = True
 
         self.assertEqual(pre_issue_count, post_issue_count)
         self.assertTrue(exception_raised)
 
     # issue should not be added, with invalid jurisdiction
-    def test_view_invalid_object_id(self):
-        
+    def test_view_invalid_jurisdiction(self):
+
         pre_issue_count = DataQualityIssue.objects.all().count()
         data = {
             'jurisdiction': "invalid-jurisdiction",
             'object_id': self.person.id,
             'issue': 'wrong-email'
         }
-        response = self.client.post(reverse('report'), data)
+        self.client.post(reverse('report'), data)
 
         post_issue_count = DataQualityIssue.objects.all().count()
         exception_raised = False
         try:
-            DataQualityIssue.objects.get(jurisdiction__id = "invalid_object")
-        except:
+            DataQualityIssue.objects.get(jurisdiction__id="invalid-jurisdiction")
+        except DataQualityIssue.DoesNotExist:
             exception_raised = True
 
         self.assertEqual(pre_issue_count, post_issue_count)
@@ -97,13 +96,13 @@ class ReportTests(BaseViewTestCase):
             'object_id': self.person.id,
             'issue': 'invalid-issue'
         }
-        response = self.client.post(reverse('report'), data)
+        self.client.post(reverse('report'), data)
 
         post_issue_count = DataQualityIssue.objects.all().count()
         exception_raised = False
         try:
-            DataQualityIssue.objects.get(issue = "invalid-issue")
-        except:
+            DataQualityIssue.objects.get(issue="invalid-issue")
+        except DataQualityIssue.DoesNotExist:
             exception_raised = True
 
         self.assertEqual(pre_issue_count, post_issue_count)
@@ -111,23 +110,23 @@ class ReportTests(BaseViewTestCase):
 
     # same data should not be added twice
     def test_view_issue_already_exist(self):
-        
+
         pre_issue_count = DataQualityIssue.objects.all().count()
         data = {
             'jurisdiction': self.jur.id,
             'object_id': self.person.id,
             'issue': 'wrong-phone'
         }
-        response = self.client.post(reverse('report'), data)
+        self.client.post(reverse('report'), data)
 
         post_issue_count = DataQualityIssue.objects.all().count()
-        issue = DataQualityIssue.objects.get(issue="wrong-phone",
-                                             object_id=self.person.id)
-        
+        DataQualityIssue.objects.get(issue="wrong-phone",
+                                     object_id=self.person.id)
+
         self.assertEqual(pre_issue_count+1, post_issue_count)
         pre_issue_count = post_issue_count
 
-        response = self.client.post(reverse('report'), data)
+        self.client.post(reverse('report'), data)
         count = DataQualityIssue.objects.filter(issue="wrong-phone",
                                                 object_id=self.person.id).count()
 
@@ -137,7 +136,7 @@ class ReportTests(BaseViewTestCase):
 
 
 class ResolveTests(BaseViewTestCase):
-    
+
     def test_view_response(self):
         response = self.client.get(reverse('resolve'))
         self.assertEqual(response.status_code, 200)
@@ -156,18 +155,18 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99@gmail.com'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         post_resolve_count = IssueResolverPatch.objects.all().count()
-        resolve = IssueResolverPatch.objects.get(jurisdiction = self.jur.id, 
-                                                object_id=self.person.id,
-                                                old_value='email@openstates.com',
-                                                new_value='newemail@openstates.com',
-                                                category='email',
-                                                note='correcting email',
-                                                source='http://google.com',
-                                                reporter_name='bikram',
-                                                reporter_email='bikram.bharti99@gmail.com')
+        IssueResolverPatch.objects.get(jurisdiction=self.jur.id,
+                                       object_id=self.person.id,
+                                       old_value='email@openstates.com',
+                                       new_value='newemail@openstates.com',
+                                       category='email',
+                                       note='correcting email',
+                                       source='http://google.com',
+                                       reporter_name='bikram',
+                                       reporter_email='bikram.bharti99@gmail.com')
 
         self.assertEqual(pre_resolve_count+1, post_resolve_count)
 
@@ -183,16 +182,16 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.comm' # Note here, Email is changed
+            'reporter_email': 'bikram.bharti99@gmail.comm'  # Note here, Email is changed
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(jurisdiction__id="invalidJurId")
-        except:
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -211,18 +210,18 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikrambharti'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(reporter_email="bikram.bharti99gmail.com")
-        except:
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
-        
+
     # Invalid Url in source for resolver
     def test_view_invalid_url(self):
         pre_resolve_count = IssueResolverPatch.objects.all().count()
@@ -237,14 +236,14 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99gmail.comm'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(source="google")
-        except:
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -263,14 +262,14 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99gmail.comm'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(category="invalid_category")
-        except:
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -289,14 +288,14 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99gmail.comm'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(object_id="invalid_id")
-        except:
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -305,7 +304,7 @@ class ResolveTests(BaseViewTestCase):
     def test_view_vacant_data(self):
         pre_resolve_count = IssueResolverPatch.objects.all().count()
         data = {}
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
@@ -324,15 +323,15 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99@gmail.com'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(old_value="123456789",
                                            object_id=self.person.id)
-        except:
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -351,15 +350,15 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99@gmail.comm'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(category="phone",
                                            old_value="email@openstates.com")
-        except:
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -380,15 +379,15 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99@gmail.com'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(old_value="email@openstates.com",
-                                           object_id=new_person.id)           
-        except:
+                                           object_id=new_person.id)
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -397,7 +396,7 @@ class ResolveTests(BaseViewTestCase):
     # in a particular object with unreviewed status
     def test_view_repeated_patch_with_same_reporter_email(self):
         pre_resolve_count = IssueResolverPatch.objects.all().count()
-        
+
         data = {
             'jurisdiction': self.jur.id,
             'object_id': self.person.id,
@@ -409,8 +408,8 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99@gmail.com'
         }
-        
-        response = self.client.post(reverse('resolve'), data)
+
+        self.client.post(reverse('resolve'), data)
         post_resolve_count = IssueResolverPatch.objects.all().count()
 
         self.assertEqual(pre_resolve_count+1, post_resolve_count)
@@ -419,16 +418,16 @@ class ResolveTests(BaseViewTestCase):
         # same reporter_email,same object_id, same category
         # different new_value
         data['new_value'] = 'bikram99@gmail.com'
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(new_value="email@openstates.com",
                                            object_id=self.person.id,
-                                           reporter_email='bikram.bharti99@gmail.com')           
-        except:
+                                           reporter_email='bikram.bharti99@gmail.com')
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -448,7 +447,7 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99@gmail.commm'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
         post_resolve_count = IssueResolverPatch.objects.all().count()
 
         self.assertEqual(pre_resolve_count+1, post_resolve_count)
@@ -456,16 +455,16 @@ class ResolveTests(BaseViewTestCase):
 
         # same new value, but with different report_email
         data['reporter_email'] = 'bikram99@gmail.com'
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             IssueResolverPatch.objects.get(new_value="newemail@openstates.com",
                                            object_id=self.person.id,
-                                           reporter_email='bikram99@gmail.com')           
-        except:
+                                           reporter_email='bikram99@gmail.com')
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count, post_resolve_count)
         self.assertTrue(excpetion_raised)
@@ -485,7 +484,7 @@ class ResolveTests(BaseViewTestCase):
             'reporter_name': 'bikram',
             'reporter_email': 'bikram.bharti99@gmail.commm'
         }
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
         post_resolve_count = IssueResolverPatch.objects.all().count()
 
         self.assertEqual(pre_resolve_count+1, post_resolve_count)
@@ -501,20 +500,20 @@ class ResolveTests(BaseViewTestCase):
         resolve.status = 'approved'
         resolve.save()
 
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
 
         excpetion_raised = False
         try:
             resolve = IssueResolverPatch.objects.get(new_value="newemail@openstates.com",
-                                           object_id=self.person.id,
-                                           reporter_email='bikram99@gmail.com')           
-        except:
+                                                     object_id=self.person.id,
+                                                     reporter_email='bikram99@gmail.com')
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count+1, post_resolve_count)
         self.assertFalse(excpetion_raised)
-        
+
         pre_resolve_count = post_resolve_count
 
         resolve.status = 'rejected'
@@ -522,14 +521,14 @@ class ResolveTests(BaseViewTestCase):
 
         # same reporter email, different new_value
         data['new_value'] = 'email23@open.com'
-        response = self.client.post(reverse('resolve'), data)
+        self.client.post(reverse('resolve'), data)
         try:
             resolve = IssueResolverPatch.objects.get(new_value="email23@open.com",
                                                      object_id=self.person.id,
-                                                     reporter_email='bikram99@gmail.com')           
-        except:
+                                                     reporter_email='bikram99@gmail.com')
+        except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
-        
+
         post_resolve_count = IssueResolverPatch.objects.all().count()
         self.assertEqual(pre_resolve_count+1, post_resolve_count)
         self.assertFalse(excpetion_raised)
@@ -540,20 +539,17 @@ class ListTests(BaseViewTestCase):
     def test_view_response(self):
         response = self.client.get(reverse('list'))
         self.assertEqual(response.status_code, 200)
-    
+
     def test_issue_count(self):
         response = self.client.get(reverse('list'))
         self.assertEqual(len(response.context['issues']), 0)
-        issue = DataQualityIssue.objects.create(content_object=self.person,
-                                                jurisdiction=self.jur,
-                                                issue='wrong-email')
+        DataQualityIssue.objects.create(content_object=self.person,
+                                        jurisdiction=self.jur,
+                                        issue='wrong-email')
         response = self.client.get(reverse('list'))
         self.assertEqual(len(response.context['issues']), 1)
-        issue = DataQualityIssue.objects.create(content_object=self.person,
-                                                jurisdiction=self.jur,
-                                                issue='wrong-phone')
+        DataQualityIssue.objects.create(content_object=self.person,
+                                        jurisdiction=self.jur,
+                                        issue='wrong-phone')
         response = self.client.get(reverse('list'))
         self.assertEqual(len(response.context['issues']), 2)
-
-
-    

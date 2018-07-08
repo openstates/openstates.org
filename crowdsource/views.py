@@ -40,7 +40,7 @@ def check_old_value_person(person, category, old_value):
         if old_value == '':
             return True
         contacts = person.contact_details.filter(type=category, value=old_value)
-        if contacts.count() == 1:    
+        if contacts.count() == 1:
             return True
     return False
 

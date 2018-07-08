@@ -1,8 +1,5 @@
-import sys
 from django.test import TestCase
-from django.utils.six import StringIO
 from opencivicdata.core.models import (Person, Jurisdiction, Division,
-                                       Organization, Membership,
                                        PersonContactDetail)
 from dataquality.models import IssueResolverPatch, DataQualityIssue
 from crowdsource.resolvers.person import apply_person_patches
@@ -148,7 +145,7 @@ class PeoplePatchesTest(TestCase):
         pc = PersonContactDetail.objects.filter(person=person)
         self.assertEqual(pc.filter(value='456').count(), 1)
         self.assertEqual(pc.filter(value='852').count(), 1)
-    
+
     def test_wrong_voice_patches(self):
         person = Person.objects.create(name="Missing Phone Number")
         PersonContactDetail.objects.create(person=person, type='voice',
@@ -226,7 +223,7 @@ class PeoplePatchesTest(TestCase):
         pc2 = PersonContactDetail.objects.filter(person=person2)
         self.assertEqual(pc1.filter(value='right@gmail.com').count(), 1)
         self.assertEqual(pc2.filter(value='right@gmail.com').count(), 1)
-        
+
     def test_name_patch_over_ride_scraper(self):
         person = Person.objects.create(name="Wrong Name")
         # This test is basically only for approved Resolver
@@ -238,7 +235,7 @@ class PeoplePatchesTest(TestCase):
                                           category='name',
                                           applied_by='admin')
         # Scraper ran and updated name to 'Right-Name'
-        person.name = 'Right-Name' # Notice the hyphen in b/w
+        person.name = 'Right-Name'  # Notice the hyphen in b/w
         person.save()
         apply_person_patches(self.jur.name)
         # getting updated object
@@ -262,7 +259,7 @@ class PeoplePatchesTest(TestCase):
                                           category='image',
                                           applied_by='admin')
         # Scraper ran and updated image to the following
-        person.image = 'http://www.newlyScraped.png' # Notice the hyphen in b/w
+        person.image = 'http://www.newlyScraped.png'  # Notice the hyphen in b/w
         person.save()
         apply_person_patches(self.jur.name)
         # getting updated object
@@ -275,7 +272,7 @@ class PeoplePatchesTest(TestCase):
         self.assertEqual(p.image, "http://www.newlyScraped.png")
         self.assertEqual(resolver.status, 'deprecated')
 
-    # There are two approved patches, one gets over ridden by scraper 
+    # There are two approved patches, one gets over ridden by scraper
     def test_address_patch_over_ride_scraper(self):
         person = Person.objects.create(name="Wrong Address")
         c = PersonContactDetail.objects.create(person=person, type='address',
