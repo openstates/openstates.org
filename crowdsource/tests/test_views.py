@@ -153,7 +153,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.com'
+            'reporter_email': 'name.surname99@gmail.com'
         }
         self.client.post(reverse('resolve'), data)
 
@@ -166,7 +166,7 @@ class ResolveTests(BaseViewTestCase):
                                        note='correcting email',
                                        source='http://google.com',
                                        reporter_name='bikram',
-                                       reporter_email='bikram.bharti99@gmail.com')
+                                       reporter_email='name.surname99@gmail.com')
 
         self.assertEqual(pre_resolve_count+1, post_resolve_count)
 
@@ -182,7 +182,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.comm'  # Note here, Email is changed
+            'reporter_email': 'name.surname99@gmail.comm'  # Note here, Email is changed
         }
         self.client.post(reverse('resolve'), data)
 
@@ -214,7 +214,7 @@ class ResolveTests(BaseViewTestCase):
 
         excpetion_raised = False
         try:
-            IssueResolverPatch.objects.get(reporter_email="bikram.bharti99gmail.com")
+            IssueResolverPatch.objects.get(reporter_email="name.surname99gmail.com")
         except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
 
@@ -234,7 +234,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'google',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99gmail.comm'
+            'reporter_email': 'name.surname99gmail.comm'
         }
         self.client.post(reverse('resolve'), data)
 
@@ -260,7 +260,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99gmail.comm'
+            'reporter_email': 'name.surname99gmail.comm'
         }
         self.client.post(reverse('resolve'), data)
 
@@ -286,7 +286,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99gmail.comm'
+            'reporter_email': 'name.surname99gmail.comm'
         }
         self.client.post(reverse('resolve'), data)
 
@@ -321,7 +321,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.com'
+            'reporter_email': 'name.surname99@gmail.com'
         }
         self.client.post(reverse('resolve'), data)
 
@@ -348,7 +348,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.comm'
+            'reporter_email': 'name.surname99@gmail.comm'
         }
         self.client.post(reverse('resolve'), data)
 
@@ -377,7 +377,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.com'
+            'reporter_email': 'name.surname99@gmail.com'
         }
         self.client.post(reverse('resolve'), data)
 
@@ -406,7 +406,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.com'
+            'reporter_email': 'name.surname99@gmail.com'
         }
 
         self.client.post(reverse('resolve'), data)
@@ -424,7 +424,7 @@ class ResolveTests(BaseViewTestCase):
         try:
             IssueResolverPatch.objects.get(new_value="email@openstates.com",
                                            object_id=self.person.id,
-                                           reporter_email='bikram.bharti99@gmail.com')
+                                           reporter_email='name.surname99@gmail.com')
         except IssueResolverPatch.DoesNotExist:
             excpetion_raised = True
 
@@ -445,7 +445,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.commm'
+            'reporter_email': 'name.surname99@gmail.commm'
         }
         self.client.post(reverse('resolve'), data)
         post_resolve_count = IssueResolverPatch.objects.all().count()
@@ -482,7 +482,7 @@ class ResolveTests(BaseViewTestCase):
             'note': 'correcting email',
             'source': 'http://google.com',
             'reporter_name': 'bikram',
-            'reporter_email': 'bikram.bharti99@gmail.commm'
+            'reporter_email': 'name.surname99@gmail.commm'
         }
         self.client.post(reverse('resolve'), data)
         post_resolve_count = IssueResolverPatch.objects.all().count()
