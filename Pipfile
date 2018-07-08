@@ -20,6 +20,7 @@ Django = "*"
 [dev-packages]
 "flake8" = "*"
 pytest = "*"
+pytest-django = "*"
 
 [requires]
 python_version = "3.6"
