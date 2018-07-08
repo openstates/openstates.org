@@ -37,10 +37,11 @@ def check_old_value_person(person, category, old_value):
     elif category == 'image':
         return (old_value == person.image)
     else:
-        contacts = person.contact_details.filter(type=category)
-        for contact in contacts:
-            if contact.value == old_value:
-                return True
+        if old_value == '':
+            return True
+        contacts = person.contact_details.filter(type=category, value=old_value)
+        if contacts.count() == 1:    
+            return True
     return False
 
 
