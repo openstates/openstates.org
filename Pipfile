@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+opencivicdata = {editable = true, git = "https://github.com/opencivicdata/python-opencivicdata.git"}
+pupa = {editable = true, git = "https://github.com/opencivicdata/pupa.git"}
+django-webpack-loader = "*"
+graphene = "*"
+graphene-django = "*"
+dj-database-url = "*"
+django-cors-headers = "*"
+bleach = "*"
+us = "*"
+newrelic = "*"
+raven = "*"
+Django = "*"
+
+[dev-packages]
+"flake8" = "*"
+pytest = "*"
+pytest-django = "*"
+
+[requires]
+python_version = "3.6"
