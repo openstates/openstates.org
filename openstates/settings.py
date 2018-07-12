@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'public.apps.PublicConfig',
     'graphapi',
     'dataquality',
+    'crowdsource'
     # 'silk',
 ]
 
