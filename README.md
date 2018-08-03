@@ -16,7 +16,7 @@ The database is in [Open Civic Data](https://github.com/opencivicdata) format, m
 
 ## Developing
 ### Dependencies
-* [Python 3.5](https://www.python.org/) (with [pipenv](https://docs.pipenv.org/)
+* [Python 3.5](https://www.python.org/) (with [pipenv](https://docs.pipenv.org/))
 * PostgreSQL 9.4
 * PostGIS 2.3
 * [nvm](https://github.com/creationix/nvm#install-script)
