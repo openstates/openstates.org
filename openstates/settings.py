@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'opencivicdata.core.apps.BaseConfig',
     'opencivicdata.legislative.apps.BaseConfig',
+    'opencivicdata.elections',
     'pupa',
     'graphene_django',
     'public.apps.PublicConfig',
@@ -161,3 +162,6 @@ GRAPHENE = {
     'SCHEMA': 'graphapi.schema.schema',
     'MIDDLEWARE': []
 }
+
+
+GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH')
