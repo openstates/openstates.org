@@ -26,10 +26,13 @@ def division_list(request):
         Q(geometries__boundary__set__end_date=None),
         geometries__boundary__shape__contains='POINT({} {})'.format(lon, lat)
     )
+    divisions = divisions[:2]
 
     return JsonResponse({
         'results': [
-            {'id': d.id} for d in divisions
+            {'id': d.id,
+             'name': d.name,
+             } for d in divisions
         ]
     })
 
@@ -59,7 +62,5 @@ def division_detail(request, pk):
             serialize_geometry(g) for g in
             division.geometries.all()
         ],
-        # 'jurisdictions':
-        # 'children':
     }
     return JsonResponse(data)
