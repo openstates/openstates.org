@@ -15,7 +15,8 @@ bleach = "*"
 us = "*"
 newrelic = "*"
 raven = "*"
-Django = "*"
+Django = "<2.1"
+represent-boundaries = "*"
 
 [dev-packages]
 "flake8" = "*"
