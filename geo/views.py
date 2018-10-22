@@ -2,6 +2,7 @@ import datetime
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.contrib.gis.geos import Point
 from opencivicdata.core.models import Division
 
 DATE_FORMAT = "%Y-%m-%d"
@@ -24,9 +25,8 @@ def division_list(request):
         Q(geometries__boundary__set__start_date=None),
         Q(geometries__boundary__set__end_date__gte=date) |
         Q(geometries__boundary__set__end_date=None),
-        geometries__boundary__shape__contains='POINT({} {})'.format(lon, lat)
+        geometries__boundary__shape__contains=Point(float(lon), float(lat))
     )
-    divisions = divisions[:2]
 
     return JsonResponse({
         'results': [
