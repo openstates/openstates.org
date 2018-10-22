@@ -151,6 +151,9 @@ WEBPACK_LOADER = {
     }
 }
 
+# Boundaries
+BOUNDARIES_SHAPEFILES_DIR = 'shapefiles'
+
 
 # API
 
