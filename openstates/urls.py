@@ -11,8 +11,8 @@ urlpatterns = [
     url('', include('boundaries.urls')),
     url('', include('geo.urls')),
     url(r'^graphql', csrf_exempt(GraphQLView.as_view(graphiql=True))),
-    url(r'^public/', include('public.urls')),
-    url(r'^reports/', include('dataquality.urls'))
+    # url(r'^public/', include('public.urls')),
+    # url(r'^reports/', include('dataquality.urls'))
 ]
 
 
