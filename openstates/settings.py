@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'opencivicdata.core.apps.BaseConfig',
     'opencivicdata.legislative.apps.BaseConfig',
     'boundaries',
+    'geo',
     'pupa',
     'graphene_django',
     'public.apps.PublicConfig',
