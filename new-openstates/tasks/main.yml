@@ -1,7 +1,8 @@
 ---
 - name: install system packages
-  apt: pkg={{item}} update_cache=yes
-  with_items:
+  apt:
+    update_cache: yes
+    pkg:
       - build-essential
       - git
       - mercurial
@@ -20,8 +21,8 @@
       - letsencrypt
 - name: add localhost alias
   lineinfile: dest=/etc/hosts line='127.0.0.1 alpha.openstates.org'
-- name: add geo.openstates.org alias
-  lineinfile: dest=/etc/hosts line='{{internal_geo_ip}} geo.openstates.org'
+# - name: add geo.openstates.org alias
+#   lineinfile: dest=/etc/hosts line='{{internal_geo_ip}} geo.openstates.org'
 - name: make project dir
   file: path=/home/openstates state=directory
 - name: add project user
@@ -47,26 +48,33 @@
 
 # virtualenv
 - name: checkout project directories
-  git: repo=https://github.com/openstates/new-openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=master
+  git: repo=https://github.com/openstates/new-openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=develop
   become_user: "openstates"
   notify:
     - restart django-application
   register: gitresult
 - name: create virtualenv
-  command: virtualenv -p python3.5 /home/openstates/virt{{ gitresult.after }}
+  command: virtualenv -p python3.6 /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
   notify:
     - restart django-application
 - name: add checkouts to python path
-  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.5/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
+  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.6/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
   become_user: "openstates"
-- name: install requirements
-  pip: requirements=/home/openstates/src/openstates.org/requirements.txt virtualenv=/home/openstates/virt{{ gitresult.after }}
+- name: install pipenv
+  pip: name=pipenv virtualenv=/home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
-  notify:
-    - restart django-application
+- name: install Pipfile.lock
+  command: /home/openstates/virt{{ gitresult.after }}/bin/pipenv install # --deploy
+  args:
+    chdir: /home/openstates/src/openstates.org
+  environment:
+    VIRTUAL_ENV: /home/openstates/virt{{ gitresult.after }}
+  become_user: "openstates"
 - name: link virtualenv
   file: src=/home/openstates/virt{{ gitresult.after }} dest=/home/openstates/virt state=link
+  notify:
+    - restart django-application
 
 # nginx
 - name: make certs dir
@@ -92,12 +100,20 @@
 # - name: collectstatic
 #   command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
 #   environment: '{{django_environment}}'
+
 - name: migrate
   command: /home/openstates/virt/bin/python manage.py migrate --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
 - name: create Site
   command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='alpha.openstates.org', name='alpha.openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=openstates.settings chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
+# TODO: add run of shapefiles/download.py
+# - name: loadshapefiles
+#   command: /home/openstates/virt/bin/python manage.py loadshapefiles --settings=openstates.settings chdir=/home/openstates/src/openstates.org
+#   environment: '{{django_environment}}'
+# - name: loadmappings
+#   command: /home/openstates/virt/bin/python manage.py loadmappings --settings=openstates.settings chdir=/home/openstates/src/openstates.org
+#   environment: '{{django_environment}}'
 
 # uwsgi
 - name: write uwsgi template
