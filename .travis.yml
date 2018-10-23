@@ -10,7 +10,7 @@ env:
   - DATABASE_URL="postgis://test:test@localhost/test"
 install: 
     - pip install pipenv
-    - pipenv install --dev
+    - pipenv sync
     - pipenv graph
 before_script:
     - psql -c "CREATE USER test with PASSWORD 'test' CREATEDB SUPERUSER;" -U postgres
