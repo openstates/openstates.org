@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-opencivicdata = {editable = true, git = "https://github.com/opencivicdata/python-opencivicdata.git"}
-pupa = {editable = true, git = "https://github.com/opencivicdata/pupa.git"}
+opencivicdata = "*"
+pupa = "*"
 django-webpack-loader = "*"
 graphene = "*"
 graphene-django = "*"

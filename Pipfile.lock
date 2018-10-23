@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1babacb4e332e783865acac86ab46660b5b868e7f6a0a74a0dddeb2d23b23dd3"
+            "sha256": "4006da87c140eaa39866522a367d6f6b1217310667d877ab56ec0d5e81ee4130"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -212,9 +212,12 @@
             "version": "==4.4.1.104"
         },
         "opencivicdata": {
-            "editable": true,
-            "git": "https://github.com/opencivicdata/python-opencivicdata.git",
-            "ref": "bc8f29211b2930421dbdca02fb072bcbb30b7765"
+            "hashes": [
+                "sha256:71cdd91a2be431415a504ca93889362169b4236939229179c673c412e452845a",
+                "sha256:f83fbe14c42b066ba9587bf13543aadb3efd9c8c69ee573d0735d66ec53b005b"
+            ],
+            "index": "pypi",
+            "version": "==2.2.0"
         },
         "promise": {
             "hashes": [
@@ -259,9 +262,12 @@
             "version": "==2.7.5"
         },
         "pupa": {
-            "editable": true,
-            "git": "https://github.com/opencivicdata/pupa.git",
-            "ref": "c079a333a168d1e90af3c0803020c476e341ad59"
+            "hashes": [
+                "sha256:31b6bc205f1e9bc07edaf717c563c934ea9b7ec93620f7fc445ca431a3f2c20e",
+                "sha256:51ac3dfa87a2553c1b9c4f75f339d5a68264ff36bda34e012c9653a78395dc1a"
+            ],
+            "index": "pypi",
+            "version": "==0.9.1"
         },
         "pycparser": {
             "hashes": [
@@ -427,11 +433,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:10e59f84267370ab20cec9305bafe7505ba4d6b93ecbf66a1cce86193ed511d5",
-                "sha256:8c827e7d4816dfe13e9329c8226aef8e6e75d65b939bc74fda894143b6d1df59"
+                "sha256:212be78a6fa5352c392738a49b18f74ae9aeec1040f47c81cadbfd8d1233c310",
+                "sha256:6f6c1efc8d0ccc21f8f6c34d8330baca883cf109b66b3df954b0a117e5528fb4"
             ],
             "index": "pypi",
-            "version": "==3.9.1"
+            "version": "==3.9.2"
         },
         "pytest-django": {
             "hashes": [
