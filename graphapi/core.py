@@ -1,6 +1,7 @@
 import datetime
 import graphene
 from django.db.models import Q, Prefetch
+from django.contrib.gis.geos import Point
 from opencivicdata.core.models import Jurisdiction, Organization, Person, Membership
 from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode, DjangoConnectionField
 from .optimization import optimize
@@ -272,11 +273,13 @@ class CoreQuery:
 
         if latitude and longitude:
             try:
-                # TODO: limit to current
+                today = datetime.date.today()
                 qs = qs.filter(
-                    memberships__post__division__geometries__boundary__shape__contains=(
-                        'POINT({} {})'.format(longitude, latitude)
-                    )
+                    Q(memberships__post__division__geometries__boundary__shape__contains=(
+                        Point(float(longitude), float(latitude))
+                    )),
+                    Q(memberships__post__division__geometries__boundary__set__end_date=None) |
+                    Q(memberships__post__division__geometries__boundary__set__end_date__gt=today)
                 )
             except ValueError:
                 raise ValueError('invalid lat or lon')
