@@ -7,6 +7,7 @@ name = "pypi"
 opencivicdata = {editable = true, git = "https://github.com/opencivicdata/python-opencivicdata.git"}
 pupa = {editable = true, git = "https://github.com/opencivicdata/pupa.git"}
 django-webpack-loader = "*"
+Django = "<2.1"
 graphene = "*"
 graphene-django = "*"
 dj-database-url = "*"
@@ -15,13 +16,13 @@ bleach = "*"
 us = "*"
 newrelic = "*"
 raven = "*"
-Django = "<2.1"
 represent-boundaries = "*"
 
 [dev-packages]
 "flake8" = "*"
 pytest = "*"
 pytest-django = "*"
+Django = "<2.1"
 
 [requires]
 python_version = "3.6"
