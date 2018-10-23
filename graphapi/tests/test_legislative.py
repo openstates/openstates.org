@@ -120,6 +120,20 @@ def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_bill_openstates_url(django_assert_num_queries):
+    with django_assert_num_queries(1):
+        result = schema.execute(''' {
+            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak",
+                 session:"2018",
+                 identifier:"HB 1") {
+                openstatesUrl
+            }
+        }''')
+        assert result.errors is None
+        assert result.data['bill']['openstatesUrl'] == 'https://openstates.org/ak/bills/2018/HB1'
+
+
+@pytest.mark.django_db
 def test_bill_by_jurisdiction_name_session_identifier(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(''' {

@@ -104,6 +104,9 @@ class BillNode(OCDBaseNode):
     sources = graphene.List(LinkNode)
     votes = DjangoConnectionField('graphapi.legislative.VoteConnection')
 
+    # extra fields
+    openstates_url = graphene.String()
+
     def resolve_abstracts(self, info):
         return self.abstracts.all()
 
@@ -161,6 +164,12 @@ class BillNode(OCDBaseNode):
             return optimize(self.related_bills.all(), info, None, ['.relatedBill'])
         else:
             return self.related_bills.all()
+
+    def resolve_openstates_url(self, info):
+        session = self.legislative_session
+        abbr = session.jurisdiction_id.split('/')[-2].split(':')[1]
+        identifier = self.identifier.replace(' ', '')
+        return f'https://openstates.org/{abbr}/bills/{session.identifier}/{identifier}'
 
 
 class BillConnection(graphene.relay.Connection):
