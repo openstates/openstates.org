@@ -2,7 +2,6 @@
 django_environment:
     DEBUG: false
     ADMINS: James Turk james@openstates.org
-    BOUNDARY_SERVICE_URL: http://geo.openstates.org/
     SECRET_KEY: "{{ lookup('aws_ssm', '/site/SECRET_KEY') }}"
     EMAIL_HOST: email-smtp.us-east-1.amazonaws.com
     EMAIL_HOST_USER: "{{ lookup('aws_ssm', '/site/EMAIL_HOST_USER') }}"
@@ -16,4 +15,3 @@ newrelic_key: "{{ lookup('aws_ssm', '/site/NEWRELIC_INI_KEY') }}"
 server_name: alpha.openstates.org
 # ssl_cert: /etc/letsencrypt/live/openstates.org/fullchain.pem
 # ssl_key: /etc/letsencrypt/live/openstates.org/privkey.pem
-internal_geo_ip: "{{ lookup('aws_ssm', '/site/INTERNAL_GEO_IP') }}"
