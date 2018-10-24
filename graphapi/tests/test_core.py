@@ -82,7 +82,7 @@ def test_jurisdictions_num_queries_subquery(django_assert_num_queries):
 def test_jurisdiction_by_id(django_assert_num_queries):
     with django_assert_num_queries(5):
         result = schema.execute(''' {
-            jurisdiction(id:"ocd-jurisdiction/country:us/state:wy") {
+            jurisdiction(id:"ocd-jurisdiction/country:us/state:wy/government") {
                 name
                 legislativeSessions(first: 1) {
                     edges { node { identifier } }

@@ -51,8 +51,9 @@ def populate_db():
     for abbr, state in (('ak', 'Alaska'), ('wy', 'Wyoming')):
         d = Division.objects.create(id='ocd-division/country:us/state:' + abbr,
                                     name=state)
-        j = Jurisdiction.objects.create(id='ocd-jurisdiction/country:us/state:' + abbr,
-                                        name=state, division=d)
+        j = Jurisdiction.objects.create(
+            id='ocd-jurisdiction/country:us/state:' + abbr + '/government',
+            name=state, division=d)
         j.legislative_sessions.create(identifier='2017', name='2017')
         j.legislative_sessions.create(identifier='2018', name='2018')
 

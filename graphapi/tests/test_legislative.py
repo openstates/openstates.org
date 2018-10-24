@@ -109,7 +109,7 @@ def test_bill_by_id(django_assert_num_queries):
 def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(''' {
-            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak",
+            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak/government",
                  session:"2018",
                  identifier:"HB 1") {
                 title
@@ -123,10 +123,10 @@ def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
 def test_bill_openstates_url(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(''' {
-            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak",
+            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak/government",
                  session:"2018",
                  identifier:"HB 1") {
-                openstatesUrl
+            openstatesUrl
             }
         }''')
         assert result.errors is None
@@ -175,7 +175,7 @@ def test_bills_by_jurisdiction(django_assert_num_queries):
             ak: bills(jurisdiction:"Alaska", first: 50) {
                 edges { node { title } }
             }
-            wy: bills(jurisdiction:"ocd-jurisdiction/country:us/state:wy", first: 50) {
+            wy: bills(jurisdiction:"ocd-jurisdiction/country:us/state:wy/government", first: 50) {
                 edges { node { title } }
             }
         }''')
