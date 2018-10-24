@@ -31,6 +31,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # shapefiles
-shapefiles/nh*
-shapefiles/sldl*
-shapefiles/sldu*
+geo/shapefiles/nh*
+geo/shapefiles/sldl*
+geo/shapefiles/sldu*
