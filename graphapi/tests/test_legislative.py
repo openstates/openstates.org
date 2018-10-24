@@ -121,7 +121,7 @@ def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_openstates_url(django_assert_num_queries):
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(2):
         result = schema.execute(''' {
             bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak/government",
                  session:"2018",
