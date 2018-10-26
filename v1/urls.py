@@ -5,10 +5,10 @@ urlpatterns = [
     re_path(r'^metadata/$', views.all_metadata),
     re_path(r'^metadata/(?P<abbr>[a-zA-Z-]+)/$', views.state_metadata),
 
-    # (r'^bills/(?P<abbr>[a-zA-Z-]+)/(?P<session>.+)/'
-    #     r'(?P<chamber>upper|lower)/(?P<bill_id>.+)/$', bill_handler),
-    # (r'^bills/(?P<abbr>[a-zA-Z-]+)/(?P<session>.+)/'
-    #     r'(?P<bill_id>.+)/$', bill_handler),
+    re_path(r'^bills/(?P<abbr>[a-zA-Z-]+)/(?P<session>.+)/'
+            r'(?P<chamber>upper|lower)/(?P<bill_id>.+)/$', views.bill_detail),
+    re_path(r'^bills/(?P<abbr>[a-zA-Z-]+)/(?P<session>.+)/'
+            r'(?P<bill_id>.+)/$', views.bill_detail),
     # (r'^bills/(?P<billy_bill_id>[A-Z-]+B\d{8})/', bill_handler),
     re_path(r'^bills/$', views.bill_list),
 

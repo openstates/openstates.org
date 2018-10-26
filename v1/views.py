@@ -1,5 +1,6 @@
 from django.http import JsonResponse
-from django.db.models import Subquery, OuterRef, Max
+from django.db.models import Max, Min
+from django.shortcuts import get_object_or_404
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction
 from . import utils, static
@@ -26,6 +27,22 @@ def all_metadata(request):
         [utils.state_metadata(utils.jid_to_abbr(j.id), j) for j in Jurisdiction.objects.all()],
         safe=False
     )
+
+
+def bill_detail(request, abbr, session, bill_id, chamber=None):
+    jid = utils.abbr_to_jid(abbr)
+    params = {'legislative_session__jurisdiction_id': jid,
+              'legislative_session__identifier': session,
+              'identifier': bill_id}
+    if chamber:
+        if abbr in ('ne', 'dc') and chamber == 'upper':
+            chamber = 'legislature'
+        params['from_organization__classification'] = chamber
+
+    bills = Bill.objects.annotate(last_action=Max('actions__date'), first_action=Min('actions__date'))
+    bill = get_object_or_404(bills, **params)
+    return JsonResponse(utils.convert_bill(bill))
+
 
 
 def bill_list(request):
@@ -68,13 +85,15 @@ def bill_list(request):
         elif search_window != 'all':
             raise ValueError('invalid search_window. valid choices are "term", "session", "all"')
 
+    bills = bills.annotate(last_action=Max('actions__date'), first_action=Min('actions__date'))
+
     # first, last, created
     if sort == 'created_at':
         bills = bills.order_by('-created_at')
     elif sort == 'updated_at':
         bills = bills.order_by('-updated_at')
     else:
-        bills = bills.annotate(latest_action=Max('actions__date')).order_by('-latest_action')
+        bills = bills.order_by('-last_action')
 
     # pagination
     page = request.GET.get('page')
