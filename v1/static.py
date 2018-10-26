@@ -1,3 +1,36 @@
+ACTION_MAPPING = {
+    'introduction': 'bill:introduced',
+    'passage': 'bill:passed',
+    'failure': 'bill:failed',
+    'withdrawal': 'bill:withdrawn',
+    'substitution': 'bill:substituted',
+    'filing': 'bill:filed',
+    'veto-override-passage': 'bill:veto_override:passed',
+    'veto-override-failure': 'bill:veto_override:failed',
+    'executive-receipt': 'governor:received',
+    'executive-signature': 'governor:signed',
+    'became-law': 'governor:signed',
+    'executive-veto': 'governor:vetoed',
+    'executive-veto-line-item': 'governor:vetoed:line-item',
+    'amendment-introduction': 'amendment:introduced',
+    'amendment-passage': 'amendment:passed',
+    'amendment-failure': 'amendment:failed',
+    'amendment-deferral': 'amendment:tabled',
+    'amendment-amendment': 'amendment:amended',
+    'amendment-withdrawal': 'amendment:withdrawn',
+    'referral-committee': 'committee:referred',
+    'committee-failure': 'committee:failed',
+    'committee-passage': 'committee:passed',
+    'committee-passage-favorable': 'committee:passed:favorable',
+    'committee-passage-unfavorable': 'committee:passed:unfavorable',
+    'reading-1': 'bill:reading:1',
+    'reading-2': 'bill:reading:2',
+    'reading-3': 'bill:reading:3',
+
+    # obsolete
+    'committee-referral': 'committee:referred',
+}
+
 TIMEZONES = {
     "ak": "America/Anchorage",
     "al": "America/Chicago",

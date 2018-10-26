@@ -1,24 +1,26 @@
 import requests
+import click
+
 
 def compare(old, new, prefix):
     prefix_str = '.'.join(prefix)
 
     if isinstance(old, list):
         if len(old) != len(new):
-            print(f'    {prefix_str}{key} lengths differ')
-        if len(old):
+            click.secho(f'    {prefix_str} lengths differ', fg='blue')
+        if len(old) and len(new):
             compare(old[0], new[0], prefix + ['0'])
     elif isinstance(old, dict):
         for key, value in old.items():
             if key.startswith('+'):
                 continue
             if key not in new:
-                print(f'    missing key {prefix_str}{key}')
+                click.secho(f'    missing key {prefix_str}.{key}', fg='red')
                 continue
             compare(value, new[key], prefix + [key])
     else:
         if old != new:
-            print(f'    values differ for {prefix_str}: {old} != {new}')
+            click.secho(f'    values differ for {prefix_str}: {old} != {new}', fg='yellow')
 
 
 def api_compare(url):
@@ -30,6 +32,7 @@ def api_compare(url):
 urls = """
 /api/v1/bills/?state=ny&chamber=lower&q=widow&updated_since=2018-10-22&search_window=session&apikey=na&sort=last
 /api/v1/bills/ny/2017-2018/A%207982A/?apikey=na
+/api/v1/bills/nc/2017/HB%20388/?apikey=na
 """.strip().split()
 
 for url in urls:
