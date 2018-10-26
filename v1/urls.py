@@ -10,7 +10,7 @@ urlpatterns = [
     # (r'^bills/(?P<abbr>[a-zA-Z-]+)/(?P<session>.+)/'
     #     r'(?P<bill_id>.+)/$', bill_handler),
     # (r'^bills/(?P<billy_bill_id>[A-Z-]+B\d{8})/', bill_handler),
-    # (r'^bills/$', bill_search_handler),
+    re_path(r'^bills/$', views.bill_list),
 
     # (r'^legislators/(?P<id>[A-Z-]+L\d{6})/$', legislator_handler),
     # (r'^legislators/$', legsearch_handler),
