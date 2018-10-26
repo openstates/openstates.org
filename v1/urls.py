@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    # (r'^v1/metadata/$', all_metadata_handler),
+    re_path(r'^metadata/$', views.all_metadata),
     re_path(r'^metadata/(?P<abbr>[a-zA-Z-]+)/$', views.state_metadata),
 
     # (r'^bills/(?P<abbr>[a-zA-Z-]+)/(?P<session>.+)/'
