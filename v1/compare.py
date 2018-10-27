@@ -7,7 +7,7 @@ def compare(old, new, prefix):
 
     if isinstance(old, list):
         if len(old) != len(new):
-            click.secho(f'    {prefix_str} lengths differ', fg='blue')
+            click.secho(f'    {prefix_str} lengths differ {len(old)} != {len(new)}', fg='blue')
         if len(old) and len(new):
             compare(old[0], new[0], prefix + ['0'])
     elif isinstance(old, dict):
@@ -33,6 +33,9 @@ urls = """
 /api/v1/bills/?state=ny&chamber=lower&q=widow&updated_since=2018-10-22&search_window=session&apikey=na&sort=last
 /api/v1/bills/ny/2017-2018/A%207982A/?apikey=na
 /api/v1/bills/nc/2017/HB%20388/?apikey=na
+/api/v1/legislators/WYL000100/?apikey=na
+/api/v1/legislators/?apikey=na&state=nc
+/api/v1/legislators/?apikey=na&state=va&chamber=upper
 """.strip().split()
 
 for url in urls:

@@ -9,11 +9,11 @@ urlpatterns = [
             r'(?P<chamber>upper|lower)/(?P<bill_id>.+)/$', views.bill_detail),
     re_path(r'^bills/(?P<abbr>[a-zA-Z-]+)/(?P<session>.+)/'
             r'(?P<bill_id>.+)/$', views.bill_detail),
-    # (r'^bills/(?P<billy_bill_id>[A-Z-]+B\d{8})/', bill_handler),
+    # (r'^bills/(?P<billy_bill_id>[A-Z-]+B\d{8})/', views.bill_detail),
     re_path(r'^bills/$', views.bill_list),
 
-    # (r'^legislators/(?P<id>[A-Z-]+L\d{6})/$', legislator_handler),
-    # (r'^legislators/$', legsearch_handler),
+    re_path(r'^legislators/(?P<id>[A-Z-]+L\d{6})/$', views.legislator_detail),
+    re_path(r'^legislators/$', views.legislator_list),
     # (r'^legislators/geo/$', legislator_geo_handler),
 
     re_path(r'^committees/(?P<id>[A-Z-]+C\d{6})/$', views.item_404),

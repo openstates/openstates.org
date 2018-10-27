@@ -1,10 +1,14 @@
 import datetime
+from collections import defaultdict
+import name_tools
 from . import static
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+
 def expand_date(date):
     return date + ' 00:00:00' if len(date) == 10 else date
+
 
 def jid_to_abbr(j):
     return j.split(':')[-1].split('/')[0]
@@ -169,4 +173,93 @@ def convert_bill(b):
         'alternate_bill_ids': [],
         'subjects': [],
         'companions': [],
+    }
+
+
+def convert_legislator(leg):
+    if leg.given_name and leg.family_name:
+        first_name = leg.given_name
+        last_name = leg.family_name
+        suffixes = ''
+    else:
+        _, first_name, last_name, suffixes = name_tools.split(leg.name)
+
+    legacy_ids = [oid.identifier for oid in leg.identifiers.all()
+                  if oid.scheme == 'legacy_openstates']
+
+    party = None
+    chamber = None
+    district = None
+    state = None
+
+    today = datetime.date.today().strftime('%Y-%m-%d')
+
+    for membership in leg.memberships.all():
+        if not membership.end_date or membership.end_date > today:
+            if membership.organization.classification == 'party':
+                party = membership.organization.name
+            elif membership.organization.classification in ('upper', 'lower', 'legislature'):
+                chamber = membership.organization.classification
+                district = membership.post.label
+                state = jid_to_abbr(membership.organization.jurisdiction_id)
+
+    email = None
+    offices = defaultdict(dict)
+    for cd in leg.contact_details.all():
+        offices[cd.note][cd.type] = cd.value
+        if cd.type == 'email' and not email:
+            email = cd.value
+
+    active = bool(chamber and district)
+
+    try:
+        url = leg.links.all()[0].url
+    except IndexError:
+        url = ""
+
+    return {
+        'id': legacy_ids[0],
+        'leg_id': legacy_ids[0],
+        'all_ids': legacy_ids,
+        'full_name': leg.name,
+        'first_name': first_name,
+        'last_name': last_name,
+        'suffix': suffixes,
+        'photo_url': leg.image,
+        'url': url,
+        'email': email,
+        'party': party,
+        'chamber': chamber,
+        'district': district,
+        'state': state,
+        'sources': [{'url': s.url} for s in leg.sources.all()],
+        'active': active,
+        'roles': [{
+            "term": static.TERMS[state][-1]['name'],
+            "district": district,
+            "chamber": chamber,
+            "state": state,
+            "party": party,
+            "type": "member",
+            "start_date": None,
+            "end_date": None,
+        }] if active else [],
+        'offices': [
+            {
+                'name': label,
+                'fax': details.get('fax'),
+                'phone': details.get('voice'),
+                'email': details.get('email'),
+                'address': details.get('address'),
+                'type': 'capitol' if 'capitol' in label.lower() else 'district',
+            }
+            for label, details in offices.items()
+        ],
+
+        'old_roles': {},
+        'middle_name': '',
+        'country': 'us',
+        'level': 'state',
+        'created_at': leg.created_at.strftime(DATE_FORMAT),
+        'updated_at': leg.updated_at.strftime(DATE_FORMAT),
     }

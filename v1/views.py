@@ -1,8 +1,9 @@
+import datetime
 from django.http import JsonResponse
-from django.db.models import Max, Min
+from django.db.models import Max, Min, Q
 from django.shortcuts import get_object_or_404
 from opencivicdata.legislative.models import Bill, LegislativeSession
-from opencivicdata.core.models import Jurisdiction
+from opencivicdata.core.models import Jurisdiction, Person
 from . import utils, static
 
 
@@ -25,6 +26,39 @@ def state_metadata(request, abbr):
 def all_metadata(request):
     return JsonResponse(
         [utils.state_metadata(utils.jid_to_abbr(j.id), j) for j in Jurisdiction.objects.all()],
+        safe=False
+    )
+
+
+def legislator_detail(request, id):
+    person = get_object_or_404(Person,
+                               identifiers__scheme='legacy_openstates',
+                               identifiers__identifier=id)
+    return JsonResponse(
+        utils.convert_legislator(person)
+    )
+
+
+def legislator_list(request):
+    abbr = request.GET.get('state')
+    chamber = request.GET.get('chamber')
+
+    today = datetime.date.today().isoformat()
+    filter_params = [Q(memberships__start_date='') |
+                     Q(memberships__start_date__lte=today),
+                     Q(memberships__end_date='') |
+                     Q(memberships__end_date__gte=today),
+                     ]
+    if abbr:
+        jid = utils.abbr_to_jid(abbr)
+        filter_params.append(Q(memberships__organization__jurisdiction_id=jid))
+    if chamber:
+        filter_params.append(Q(memberships__organization__classification=chamber))
+
+    people = Person.objects.filter(*filter_params).distinct()
+
+    return JsonResponse(
+        [utils.convert_legislator(l) for l in people],
         safe=False
     )
 
