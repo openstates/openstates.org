@@ -36,6 +36,7 @@ urls = """
 /api/v1/legislators/WYL000100/?apikey=na
 /api/v1/legislators/?apikey=na&state=nc
 /api/v1/legislators/?apikey=na&state=va&chamber=upper
+/api/v1/legislators/geo/?apikey=na&lat=30&long=-95
 """.strip().split()
 
 for url in urls:

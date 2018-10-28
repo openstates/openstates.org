@@ -2,8 +2,9 @@ import datetime
 from django.http import JsonResponse
 from django.db.models import Max, Min, Q
 from django.shortcuts import get_object_or_404
+from django.contrib.gis.geos import Point
 from opencivicdata.legislative.models import Bill, LegislativeSession
-from opencivicdata.core.models import Jurisdiction, Person
+from opencivicdata.core.models import Jurisdiction, Person, Post
 from . import utils, static
 
 
@@ -39,9 +40,10 @@ def legislator_detail(request, id):
     )
 
 
-def legislator_list(request):
+def legislator_list(request, geo=False):
     abbr = request.GET.get('state')
     chamber = request.GET.get('chamber')
+    district = request.GET.get('district')
 
     today = datetime.date.today().isoformat()
     filter_params = [Q(memberships__start_date='') |
@@ -49,16 +51,52 @@ def legislator_list(request):
                      Q(memberships__end_date='') |
                      Q(memberships__end_date__gte=today),
                      ]
+
+    if geo:
+        latitude = request.GET.get('lat')
+        longitude = request.GET.get('long')
+
+        if not latitude or not longitude:
+            return JsonResponse("Bad Request: must include lat & long",
+                                status=400, safe=False)
+
+        filter_params += [
+            Q(memberships__post__division__geometries__boundary__shape__contains=(
+                Point(float(longitude), float(latitude))
+            )),
+            Q(memberships__post__division__geometries__boundary__set__end_date=None) |
+            Q(memberships__post__division__geometries__boundary__set__end_date__gt=today)
+        ]
+
     if abbr:
         jid = utils.abbr_to_jid(abbr)
         filter_params.append(Q(memberships__organization__jurisdiction_id=jid))
     if chamber:
         filter_params.append(Q(memberships__organization__classification=chamber))
+    if district:
+        filter_params.append(Q(memberships__post__label=district))
 
     people = Person.objects.filter(*filter_params).distinct()
 
     return JsonResponse(
         [utils.convert_legislator(l) for l in people],
+        safe=False
+    )
+
+
+def district_list(request, abbr, chamber=None):
+    jid = utils.abbr_to_jid(abbr)
+    if chamber is None:
+        posts = Post.objects.filter(
+            organization__jurisdiction_id=jid,
+            organization__classification__in=('upper', 'lower', 'legislature')
+        )
+    else:
+        posts = Post.objects.filter(organization__jurisdiction_id=jid,
+                                    organization__classification=chamber)
+
+    return JsonResponse(
+        [utils.convert_post(p) for p in posts],
         safe=False
     )
 
@@ -73,10 +111,10 @@ def bill_detail(request, abbr, session, bill_id, chamber=None):
             chamber = 'legislature'
         params['from_organization__classification'] = chamber
 
-    bills = Bill.objects.annotate(last_action=Max('actions__date'), first_action=Min('actions__date'))
+    bills = Bill.objects.annotate(last_action=Max('actions__date'),
+                                  first_action=Min('actions__date'))
     bill = get_object_or_404(bills, **params)
     return JsonResponse(utils.convert_bill(bill))
-
 
 
 def bill_list(request):
@@ -115,7 +153,9 @@ def bill_list(request):
             latest_sessions = static.TERMS[state][-1]['sessions']
             bills = bills.filter(legislative_session__identifier__in=latest_sessions)
         elif search_window.startswith('session:'):
-            bills = bills.filter(legislative_session__identifier=search_window.split('session:')[1])
+            bills = bills.filter(
+                legislative_session__identifier=search_window.split('session:')[1]
+            )
         elif search_window != 'all':
             raise ValueError('invalid search_window. valid choices are "term", "session", "all"')
 

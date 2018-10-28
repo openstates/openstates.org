@@ -23,6 +23,20 @@ def abbr_to_jid(abbr):
         return f'ocd-jurisdiction/country:us/state:{abbr}/government'
 
 
+def convert_post(post):
+    abbr = jid_to_abbr(post.organization.jurisdiction_id)
+    return {
+        'division_id': post.division_id,
+        'boundary_id': post.division_id,
+        'name': post.label,
+        'chamber': post.organization.classification,
+        'abbr': abbr,
+        'legislators': [],   # TODO?
+        'num_seats': 1,
+        'id': f'{abbr}-{post.organization.classification}-{post.label}',
+    }
+
+
 def state_metadata(abbr, jurisdiction):
     orgs = {
         o.classification: o for o in
@@ -65,6 +79,7 @@ def state_metadata(abbr, jurisdiction):
         'latest_json_date': '1970-01-01 00:00:00',
         'latest_json_url': 'https://openstates.org/downloads/',
     }
+
 
 def convert_action(a):
     return {
@@ -115,6 +130,7 @@ def convert_vote(v, bill_chamber, state, bill_id):
         'sources': [{'url': s.url} for s in v.sources.all()],
         'type': 'other',    # always the same
     }
+
 
 def convert_versions(version_list):
     versions = []
