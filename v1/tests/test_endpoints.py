@@ -1,8 +1,8 @@
 import pytest
 from graphapi.tests.utils import populate_db
-from .models import LegacyBillMapping
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
+from ..models import LegacyBillMapping
 
 
 @pytest.mark.django_db
