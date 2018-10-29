@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('legislative', '0007_auto_20181028_2146'),
+        ('legislative', '0006_billversion_extras'),
     ]
 
     operations = [
