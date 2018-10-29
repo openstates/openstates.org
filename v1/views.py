@@ -1,10 +1,10 @@
 import datetime
 from django.http import JsonResponse
-from django.db.models import Max, Min, Q
+from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
 from opencivicdata.legislative.models import Bill, LegislativeSession
-from opencivicdata.core.models import Jurisdiction, Person, Post
+from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
 from . import utils, static
 
 
@@ -18,15 +18,42 @@ def item_404(request, id):
     return JsonResponse("Not Found", safe=False, status=404)
 
 
+def jurisdictions_qs():
+    return Jurisdiction.objects.all().annotate(
+        latest_run=Max('runs__start_time')).prefetch_related(
+            'legislative_sessions',
+            Prefetch('organizations',
+                     queryset=Organization.objects.filter(
+                         classification__in=('upper', 'lower', 'legislature')
+                     ).prefetch_related('posts'),
+                     to_attr='chambers')
+        )
+
+
+def bill_qs():
+    return Bill.objects.annotate(
+        last_action=Max('actions__date'),
+        first_action=Min('actions__date')
+    ).select_related(
+        'legislative_session__jurisdiction',
+        'from_organization'
+    ).prefetch_related(
+        'documents__links', 'versions__links', 'actions__organization',
+        'abstracts', 'sources', 'sponsorships', 'other_titles',
+        'votes__counts', 'votes__votes', 'votes__sources',
+        'votes__legislative_session', 'votes__organization',
+    )
+
+
 def state_metadata(request, abbr):
     jid = utils.abbr_to_jid(abbr)
-    jurisdiction = Jurisdiction.objects.get(pk=jid)
+    jurisdiction = jurisdictions_qs().get(pk=jid)
     return JsonResponse(utils.state_metadata(abbr, jurisdiction))
 
 
 def all_metadata(request):
     return JsonResponse(
-        [utils.state_metadata(utils.jid_to_abbr(j.id), j) for j in Jurisdiction.objects.all()],
+        [utils.state_metadata(utils.jid_to_abbr(j.id), j) for j in jurisdictions_qs()],
         safe=False
     )
 
@@ -101,18 +128,24 @@ def district_list(request, abbr, chamber=None):
     )
 
 
-def bill_detail(request, abbr, session, bill_id, chamber=None):
-    jid = utils.abbr_to_jid(abbr)
-    params = {'legislative_session__jurisdiction_id': jid,
-              'legislative_session__identifier': session,
-              'identifier': bill_id}
+def bill_detail(request,
+                abbr=None, session=None, bill_id=None, chamber=None,
+                billy_bill_id=None,
+                ):
+    if abbr:
+        jid = utils.abbr_to_jid(abbr)
+        params = {'legislative_session__jurisdiction_id': jid,
+                  'legislative_session__identifier': session,
+                  'identifier': bill_id}
+    elif billy_bill_id:
+        params = {'legacy_mapping__legacy_id': billy_bill_id}
+
     if chamber:
         if abbr in ('ne', 'dc') and chamber == 'upper':
             chamber = 'legislature'
         params['from_organization__classification'] = chamber
 
-    bills = Bill.objects.annotate(last_action=Max('actions__date'),
-                                  first_action=Min('actions__date'))
+    bills = bill_qs()
     bill = get_object_or_404(bills, **params)
     return JsonResponse(utils.convert_bill(bill))
 
@@ -126,7 +159,7 @@ def bill_list(request):
     updated_since = request.GET.get('updated_since')
     sort = request.GET.get('sort', 'last')
 
-    bills = Bill.objects.all()
+    bills = bill_qs()
     if state:
         jid = utils.abbr_to_jid(state)
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
@@ -158,8 +191,6 @@ def bill_list(request):
             )
         elif search_window != 'all':
             raise ValueError('invalid search_window. valid choices are "term", "session", "all"')
-
-    bills = bills.annotate(last_action=Max('actions__date'), first_action=Min('actions__date'))
 
     # first, last, created
     if sort == 'created_at':

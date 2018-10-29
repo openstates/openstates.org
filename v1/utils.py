@@ -7,6 +7,8 @@ DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 def expand_date(date):
+    if not date:
+        return ''
     return date + ' 00:00:00' if len(date) == 10 else date
 
 
@@ -40,13 +42,16 @@ def convert_post(post):
 def state_metadata(abbr, jurisdiction):
     orgs = {
         o.classification: o for o in
-        jurisdiction.organizations.filter(classification__in=('legislature', 'upper', 'lower'))
+        jurisdiction.chambers
     }
 
     chambers = {}
     for chamber in ('upper', 'lower'):
         if chamber in orgs:
-            role = orgs[chamber].posts.all()[0].role
+            try:
+                role = orgs[chamber].posts.all()[0].role
+            except IndexError:
+                role = ''
             chambers[chamber] = {
                 'name': orgs[chamber].name,
                 'title': role,
@@ -62,6 +67,11 @@ def state_metadata(abbr, jurisdiction):
             if getattr(session, d):
                 sessions[session.identifier][d] = expand_date(getattr(session, d))
 
+    try:
+        latest_update = jurisdiction.latest_run.strftime(DATE_FORMAT)
+    except AttributeError:
+        latest_update = '2000-01-01 00:00:00'
+
     return {
         'id': abbr,
         'name': jurisdiction.name,
@@ -70,7 +80,7 @@ def state_metadata(abbr, jurisdiction):
         'legislature_url': jurisdiction.url,
         'chambers': chambers,
         'session_details': sessions,
-        'latest_update': jurisdiction.runs.latest('start_time').start_time.strftime(DATE_FORMAT),
+        'latest_update': latest_update,
         'capitol_timezone': static.TIMEZONES[abbr],
         'terms': static.TERMS[abbr],
         'feature_flags': [],
