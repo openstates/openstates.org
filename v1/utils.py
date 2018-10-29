@@ -213,6 +213,9 @@ def convert_legislator(leg):
     legacy_ids = [oid.identifier for oid in leg.identifiers.all()
                   if oid.scheme == 'legacy_openstates']
 
+    if not legacy_ids:
+        legacy_ids = ['~not available~']
+
     party = None
     chamber = None
     district = None

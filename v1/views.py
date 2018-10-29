@@ -45,6 +45,13 @@ def bill_qs():
     )
 
 
+def person_qs():
+    return Person.objects.prefetch_related(
+        'identifiers', 'memberships__organization', 'memberships__post',
+        'contact_details', 'links', 'sources',
+    )
+
+
 def state_metadata(request, abbr):
     jid = utils.abbr_to_jid(abbr)
     jurisdiction = jurisdictions_qs().get(pk=jid)
@@ -59,7 +66,7 @@ def all_metadata(request):
 
 
 def legislator_detail(request, id):
-    person = get_object_or_404(Person,
+    person = get_object_or_404(person_qs(),
                                identifiers__scheme='legacy_openstates',
                                identifiers__identifier=id)
     return JsonResponse(
@@ -103,7 +110,7 @@ def legislator_list(request, geo=False):
     if district:
         filter_params.append(Q(memberships__post__label=district))
 
-    people = Person.objects.filter(*filter_params).distinct()
+    people = person_qs().filter(*filter_params).distinct()
 
     return JsonResponse(
         [utils.convert_legislator(l) for l in people],
@@ -121,6 +128,8 @@ def district_list(request, abbr, chamber=None):
     else:
         posts = Post.objects.filter(organization__jurisdiction_id=jid,
                                     organization__classification=chamber)
+
+    posts = posts.select_related('organization')
 
     return JsonResponse(
         [utils.convert_post(p) for p in posts],
