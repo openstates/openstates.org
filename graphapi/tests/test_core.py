@@ -206,7 +206,7 @@ def test_people_by_party():
 
 # @pytest.mark.django_db
 # def test_people_by_location():
-#     # TODO: not implemented yet
+#     # TODO: need data to test with
 #     pass
 
 

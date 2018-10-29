@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'public.apps.PublicConfig',
     'graphapi',
+    'v1',
     # 'silk',
 ]
 

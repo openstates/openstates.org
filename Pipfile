@@ -17,6 +17,7 @@ us = "*"
 newrelic = "*"
 raven = "*"
 represent-boundaries = "*"
+name-tools = "*"
 
 [dev-packages]
 "flake8" = "*"
