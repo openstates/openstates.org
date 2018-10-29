@@ -165,8 +165,10 @@ def convert_bill(b):
     chamber = b.from_organization.classification
     state = jid_to_abbr(b.legislative_session.jurisdiction_id)
 
-    # TODO: how do we do this?
-    openstates_id = ''
+    try:
+        openstates_id = b.legacy_mapping.all()[0].legacy_id
+    except IndexError:
+        openstates_id = ''
 
     return {
         'title': b.title,

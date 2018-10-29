@@ -97,10 +97,14 @@ def populate_db():
     b1.other_titles.create(title='M.O.O.S.E.')
     b1.other_identifiers.create(identifier='HCA 1')
     b1.other_identifiers.create(identifier='SB 1')
-    a = b1.actions.create(description='Introduced', order=10, organization=house)
+    a = b1.actions.create(description='Introduced', order=10, organization=house,
+                          date='2018-01-01')
     a.related_entities.create(name='Amanda Adams', entity_type='person', person=amanda)
-    b1.actions.create(description='Amended', order=20, organization=house)
-    a = b1.actions.create(description='Passed House', order=30, organization=house)
+    b1.actions.create(description='Amended', order=20, organization=house,
+                      date='2018-02-01')
+    a = b1.actions.create(description='Passed House', order=30, organization=house,
+                          date='2018-03-01'
+                          )
     a.related_entities.create(name='House', entity_type='organization', organization=house)
 
     b1.sponsorships.create(primary=True, classification='sponsor', name='Adam One')

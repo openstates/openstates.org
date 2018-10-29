@@ -8,6 +8,9 @@ from opencivicdata.legislative.models import Bill
 @pytest.mark.django_db
 def setup():
     populate_db()
+    # add legacy ID to bill
+    LegacyBillMapping.objects.create(legacy_id='AKB00000001',
+                                     bill=Bill.objects.get(identifier='HB 1'))
 
 
 @pytest.mark.django_db
@@ -29,7 +32,30 @@ def test_metadata_detail(client, django_assert_num_queries):
     with django_assert_num_queries(4):
         resp = client.get('/api/v1/metadata/ak/')
         assert resp.status_code == 200
-        # TODO: test fields
+        assert resp.json() == {
+            'id': 'ak',
+            'name': 'Alaska',
+            'abbreviation': 'ak',
+            'legislature_name': 'Alaska Legislature',
+            'legislature_url': '',
+            'chambers': {'upper': {'name': 'Alaska Senate', 'title': ''},
+                         'lower': {'name': 'Alaska House', 'title': ''}},
+            'session_details': {
+                '2018': {'display_name': '2018', 'type': ''},
+                '2017': {'display_name': '2017', 'type': ''}},
+            'latest_update': '2000-01-01 00:00:00',
+            'capitol_timezone': 'America/Anchorage',
+            'terms': [
+                {'end_year': 2012, 'name': '27', 'sessions': ['27'], 'start_year': 2011},
+                {'end_year': 2014, 'name': '28', 'sessions': ['28'], 'start_year': 2013},
+                {'end_year': 2016, 'name': '29', 'sessions': ['29'], 'start_year': 2015},
+                {'end_year': 2018, 'name': '30', 'sessions': ['30'], 'start_year': 2017}],
+            'feature_flags': [],
+            'latest_csv_date': '1970-01-01 00:00:00',
+            'latest_csv_url': 'https://openstates.org/downloads/',
+            'latest_json_date': '1970-01-01 00:00:00',
+            'latest_json_url': 'https://openstates.org/downloads/'
+        }
 
 
 @pytest.mark.django_db
@@ -41,26 +67,91 @@ def test_metadata_list(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_detail(client, django_assert_num_queries):
-    with django_assert_num_queries(17):
+    with django_assert_num_queries(18):
         resp = client.get('/api/v1/bills/ak/2018/HB 1/')
         assert resp.status_code == 200
-        # TODO: test fields
+        bill = resp.json()
+        bill.pop('created_at')
+        bill.pop('updated_at')
+        assert bill == {
+            'title': 'Moose Freedom Act',
+            'summary': 'Grants all moose equal rights under the law.',
+            'id': 'AKB00000001',
+            'all_ids': ['AKB00000001'],
+            'chamber': 'lower',
+            'state': 'ak',
+            'session': '2018',
+            'type': ['bill', 'constitutional amendment'],
+            'bill_id': 'HB 1',
+            'actions': [
+                {'date': '2018-01-01 00:00:00', 'action': 'Introduced', 'type': [],
+                 'related_entities': [], 'actor': 'lower'},
+                {'date': '2018-02-01 00:00:00', 'action': 'Amended', 'type': [],
+                 'related_entities': [], 'actor': 'lower'},
+                {'date': '2018-03-01 00:00:00', 'action': 'Passed House', 'type': [],
+                 'related_entities': [], 'actor': 'lower'}
+            ],
+            'sources': [
+                {'url': 'https://example.com/s3'},
+                {'url': 'https://example.com/s2'},
+                {'url': 'https://example.com/s1'}
+            ],
+            'sponsors': [
+                {'leg_id': None, 'type': 'cosponsor', 'name': 'Beth Two'},
+                {'leg_id': None, 'type': 'sponsor', 'name': 'Adam One'}
+            ],
+            'versions': [
+                {'mimetype': 'text/plain', 'url': 'https://example.com/f.txt',
+                 'doc_id': '~not available~', 'name': 'Final Draft'},
+                {'mimetype': 'application/pdf', 'url': 'https://example.com/f.pdf',
+                 'doc_id': '~not available~', 'name': 'Final Draft'},
+                {'mimetype': 'text/plain', 'url': 'https://example.com/1.txt',
+                 'doc_id': '~not available~', 'name': 'First Draft'},
+                {'mimetype': 'application/pdf', 'url': 'https://example.com/1.pdf',
+                 'doc_id': '~not available~', 'name': 'First Draft'}],
+            'documents': [
+                {'mimetype': '', 'url': 'https://example.com/lj',
+                 'doc_id': '~not available~', 'name': 'Legal Justification'},
+                {'mimetype': '', 'url': 'https://example.com/fn',
+                 'doc_id': '~not available~', 'name': 'Fiscal Note'}],
+            'alternate_titles': ['Moosemendment', 'Moose & Reindeer Freedom Act', 'M.O.O.S.E.'],
+            'votes': [
+                {'session': '2018', 'id': '~not available~',
+                 'vote_id': '~not available~', 'motion': 'Vote on House Passage',
+                 'date': '', 'passed': False,
+                 'bill_id': 'AKB00000001',
+                 'bill_chamber': 'lower', 'state': 'ak',
+                 'chamber': 'lower',
+                 'yes_count': 1, 'no_count': 4, 'other_count': 0,
+                 'yes_votes': [{'leg_id': None, 'name': 'Amanda Adams'}],
+                 'no_votes': [{'leg_id': None, 'name': 'Speaker'},
+                              {'leg_id': None, 'name': 'Dingle'},
+                              {'leg_id': None, 'name': 'Carr'},
+                              {'leg_id': None, 'name': 'Birch'}],
+                 'other_votes': [], 'sources': [], 'type': 'other'}
+            ],
+            'action_dates': {'first': '2018-01-01 00:00:00',
+                             'last': '2018-03-01 00:00:00',
+                             'passed_upper': None,
+                             'passed_lower': None,
+                             'signed': None},
+            'scraped_subjects': ['nature'],
+            'alternate_bill_ids': [], 'subjects': [], 'companions': []
+            }
 
-    # ensure that alternate forms work too
-    new_resp = client.get('/api/v1/bills/ak/2018/lower/HB 1/')
-    assert new_resp.json() == resp.json()
 
-    # legacy ID
-    LegacyBillMapping.objects.create(legacy_id='AKB00000001',
-                                     bill=Bill.objects.get(identifier='HB 1'))
-    assert client.get('/api/v1/bills/AKB00000001/').json() == resp.json()
+@pytest.mark.django_db
+def test_bill_detail_alternate_forms(client):
+    resp = client.get('/api/v1/bills/ak/2018/HB 1/').json()
+    assert client.get('/api/v1/bills/ak/2018/lower/HB 1/').json() == resp
+    assert client.get('/api/v1/bills/AKB00000001/').json() == resp
 
 
 @pytest.mark.django_db
 def test_bill_list_basic(client, django_assert_num_queries):
-    with django_assert_num_queries(15):
-        resp = client.get('/api/v1/bills/?per_page=10')
-        assert len(resp.json()) == 10
+    with django_assert_num_queries(18):
+        resp = client.get('/api/v1/bills/')
+        assert len(resp.json()) == 26
         assert resp.status_code == 200
 
 
@@ -131,7 +222,25 @@ def test_legislator_detail(client, django_assert_num_queries):
     with django_assert_num_queries(8):
         resp = client.get('/api/v1/legislators/AKL000001/')
         assert resp.status_code == 200
-        # TODO: test fields
+        resp = resp.json()
+        resp.pop('updated_at')
+        resp.pop('created_at')
+        amanda = {'id': 'AKL000001', 'leg_id': 'AKL000001', 'all_ids': ['AKL000001'],
+                  'full_name': 'Amanda Adams', 'first_name': 'Amanda', 'last_name': 'Adams',
+                  'suffix': '', 'photo_url': '', 'url': '', 'email': None,
+                  'party': 'Republican', 'chamber': 'lower', 'district': '1', 'state': 'ak',
+                  'sources': [], 'active': True,
+                  'roles': [
+                      {'term': '30', 'district': '1', 'chamber': 'lower', 'state': 'ak',
+                       'party': 'Republican', 'type': 'member',
+                       'start_date': None, 'end_date': None}],
+                  'offices': [],
+                  'old_roles': {},
+                  'middle_name': '',
+                  'country': 'us',
+                  'level': 'state',
+                  }
+        assert amanda == resp
 
 
 @pytest.mark.django_db
@@ -172,7 +281,11 @@ def test_districts_list(client, django_assert_num_queries):
         resp = client.get('/api/v1/districts/ak/')
         assert resp.status_code == 200
         assert len(resp.json()) == 7
-        # TODO: test fields
+        expected = {'division_id': 'ocd-division/country:us/state:Alaska/district:B',
+                    'boundary_id': 'ocd-division/country:us/state:Alaska/district:B',
+                    'name': 'B', 'chamber': 'upper', 'abbr': 'ak',
+                    'legislators': [], 'num_seats': 1, 'id': 'ak-upper-B'}
+        assert expected in resp.json()
 
     # test filtering by URL
     resp = client.get('/api/v1/districts/ak/upper/')

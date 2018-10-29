@@ -42,6 +42,7 @@ def bill_qs():
         'abstracts', 'sources', 'sponsorships', 'other_titles',
         'votes__counts', 'votes__votes', 'votes__sources',
         'votes__legislative_session', 'votes__organization',
+        'legacy_mapping',
     )
 
 
