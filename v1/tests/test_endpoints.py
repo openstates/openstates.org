@@ -73,71 +73,38 @@ def test_bill_detail(client, django_assert_num_queries):
         bill = resp.json()
         bill.pop('created_at')
         bill.pop('updated_at')
-        assert bill == {
-            'title': 'Moose Freedom Act',
-            'summary': 'Grants all moose equal rights under the law.',
-            'id': 'AKB00000001',
-            'all_ids': ['AKB00000001'],
-            'chamber': 'lower',
-            'state': 'ak',
-            'session': '2018',
-            'type': ['bill', 'constitutional amendment'],
-            'bill_id': 'HB 1',
-            'actions': [
-                {'date': '2018-01-01 00:00:00', 'action': 'Introduced', 'type': [],
-                 'related_entities': [], 'actor': 'lower'},
-                {'date': '2018-02-01 00:00:00', 'action': 'Amended', 'type': [],
-                 'related_entities': [], 'actor': 'lower'},
-                {'date': '2018-03-01 00:00:00', 'action': 'Passed House', 'type': [],
-                 'related_entities': [], 'actor': 'lower'}
-            ],
-            'sources': [
-                {'url': 'https://example.com/s3'},
-                {'url': 'https://example.com/s2'},
-                {'url': 'https://example.com/s1'}
-            ],
-            'sponsors': [
-                {'leg_id': None, 'type': 'cosponsor', 'name': 'Beth Two'},
-                {'leg_id': None, 'type': 'sponsor', 'name': 'Adam One'}
-            ],
-            'versions': [
-                {'mimetype': 'text/plain', 'url': 'https://example.com/f.txt',
-                 'doc_id': '~not available~', 'name': 'Final Draft'},
-                {'mimetype': 'application/pdf', 'url': 'https://example.com/f.pdf',
-                 'doc_id': '~not available~', 'name': 'Final Draft'},
-                {'mimetype': 'text/plain', 'url': 'https://example.com/1.txt',
-                 'doc_id': '~not available~', 'name': 'First Draft'},
-                {'mimetype': 'application/pdf', 'url': 'https://example.com/1.pdf',
-                 'doc_id': '~not available~', 'name': 'First Draft'}],
-            'documents': [
-                {'mimetype': '', 'url': 'https://example.com/lj',
-                 'doc_id': '~not available~', 'name': 'Legal Justification'},
-                {'mimetype': '', 'url': 'https://example.com/fn',
-                 'doc_id': '~not available~', 'name': 'Fiscal Note'}],
-            'alternate_titles': ['Moosemendment', 'Moose & Reindeer Freedom Act', 'M.O.O.S.E.'],
-            'votes': [
-                {'session': '2018', 'id': '~not available~',
-                 'vote_id': '~not available~', 'motion': 'Vote on House Passage',
-                 'date': '', 'passed': False,
-                 'bill_id': 'AKB00000001',
-                 'bill_chamber': 'lower', 'state': 'ak',
-                 'chamber': 'lower',
-                 'yes_count': 1, 'no_count': 4, 'other_count': 0,
-                 'yes_votes': [{'leg_id': None, 'name': 'Amanda Adams'}],
-                 'no_votes': [{'leg_id': None, 'name': 'Speaker'},
-                              {'leg_id': None, 'name': 'Dingle'},
-                              {'leg_id': None, 'name': 'Carr'},
-                              {'leg_id': None, 'name': 'Birch'}],
-                 'other_votes': [], 'sources': [], 'type': 'other'}
-            ],
-            'action_dates': {'first': '2018-01-01 00:00:00',
-                             'last': '2018-03-01 00:00:00',
-                             'passed_upper': None,
-                             'passed_lower': None,
-                             'signed': None},
-            'scraped_subjects': ['nature'],
-            'alternate_bill_ids': [], 'subjects': [], 'companions': []
-            }
+        assert bill['title'] == 'Moose Freedom Act'
+        assert bill['summary'] == 'Grants all moose equal rights under the law.'
+        assert bill['id'] == 'AKB00000001'
+        assert bill['chamber'] == 'lower'
+        assert bill['state'] == 'ak'
+        assert bill['session'] == '2018'
+        assert bill['type'] == ['bill', 'constitutional amendment']
+        assert bill['bill_id'] == 'HB 1'
+        assert bill['actions'] == [
+            {'date': '2018-01-01 00:00:00', 'action': 'Introduced', 'type': [],
+             'related_entities': [], 'actor': 'lower'},
+            {'date': '2018-02-01 00:00:00', 'action': 'Amended', 'type': [],
+             'related_entities': [], 'actor': 'lower'},
+            {'date': '2018-03-01 00:00:00', 'action': 'Passed House', 'type': [],
+             'related_entities': [], 'actor': 'lower'}
+        ]
+        assert len(bill['sources']) == 3
+        assert len(bill['sponsors']) == 2
+        assert len(bill['versions']) == 4
+        assert len(bill['documents']) == 2
+        assert len(bill['alternate_titles']) == 3
+        assert len(bill['votes']) == 1
+        assert bill['votes'][0]['session'] == '2018'
+        assert bill['votes'][0]['yes_count'] == 1
+        assert bill['votes'][0]['no_count'] == 4
+        assert len(bill['votes'][0]['yes_votes']) == 1
+        assert len(bill['votes'][0]['no_votes']) == 4
+        assert bill['action_dates'] == {
+            'first': '2018-01-01 00:00:00',
+            'last': '2018-03-01 00:00:00',
+            'passed_upper': None, 'passed_lower': None, 'signed': None}
+        assert bill['scraped_subjects'] == ['nature']
 
 
 @pytest.mark.django_db
