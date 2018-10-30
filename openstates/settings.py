@@ -40,6 +40,7 @@ if os.environ.get('DEBUG', 'true').lower() == 'false':
     EMAIL_USE_TLS = True
     REGISTRATION_DEFAULT_FROM_EMAIL = DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ.get(
         'DEFAULT_FROM_EMAIL', 'contact@openstates.org')
+    GRAPHQL_DEMO_KEY = os.environ['GRAPHQL_DEMO_KEY']
     # enable once SSL is ready
     # SECURE_HSTS_SECONDS = 3600
     # SECURE_SSL_REDIRECT = True
@@ -58,6 +59,7 @@ else:
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
     ]
+    GRAPHQL_DEMO_KEY = 'no-key-set'
 
 DATABASE_URL = os.environ.get(
     'DATABASE_URL',
@@ -90,6 +92,7 @@ INSTALLED_APPS = [
     'public.apps.PublicConfig',
     'graphapi',
     'v1',
+    'simplekeys',
     # 'silk',
 ]
 
@@ -102,6 +105,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simplekeys.middleware.SimpleKeysMiddleware',
     # 'silk.middleware.SilkyMiddleware',
 ]
 
@@ -157,9 +161,8 @@ BOUNDARIES_SHAPEFILES_DIR = 'shapefiles'
 
 
 # API
-
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'^/graphql/.*$'
+CORS_URLS_REGEX = r'^/(graphql|api/v1)/.*$'
 CORS_ALLOW_METHODS = ['GET', 'POST', 'OPTIONS']
 
 
@@ -167,3 +170,10 @@ GRAPHENE = {
     'SCHEMA': 'graphapi.schema.schema',
     'MIDDLEWARE': []
 }
+
+SIMPLEKEYS_ZONE_PATHS = [
+    ('/api/v1/legislators/geo/', 'geo'),
+    ('/api/v1/', 'default'),
+]
+SIMPLEKEYS_ERROR_NOTE = ('https://openstates.org/api/register/ for API key. '
+                         'contact@openstates.org to raise limits')

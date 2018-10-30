@@ -18,6 +18,7 @@ newrelic = "*"
 raven = "*"
 represent-boundaries = "*"
 name-tools = "*"
+django-simplekeys = "*"
 
 [dev-packages]
 "flake8" = "*"
