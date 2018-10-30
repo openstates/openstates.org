@@ -17,7 +17,7 @@ before_script:
     - psql -c "CREATE DATABASE test;" -U postgres
     - psql -c "CREATE EXTENSION postgis;" -U postgres -d test
 script: 
-    - pipenv run pytest --ds=openstates.settings --reuse-db -v
+    - pipenv run pytest --ds=openstates.test_settings --reuse-db -v
     - pipenv run flake8
 notifications:
     email:
