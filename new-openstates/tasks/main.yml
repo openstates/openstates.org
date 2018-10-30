@@ -20,7 +20,7 @@
       - libxslt-dev
       - letsencrypt
 - name: add localhost alias
-  lineinfile: dest=/etc/hosts line='127.0.0.1 alpha.openstates.org'
+  lineinfile: dest=/etc/hosts line='127.0.0.1 beta.openstates.org'
 - name: make project dir
   file: path=/home/openstates state=directory
 - name: add project user
@@ -92,7 +92,7 @@
 - name: generate new relic config
   command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
 - name: rename new relic app
-  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='alpha.openstates.org'
+  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='beta.openstates.org'
 
 # django
 # - name: collectstatic
@@ -103,7 +103,7 @@
   command: /home/openstates/virt/bin/python manage.py migrate --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
 - name: create Site
-  command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='alpha.openstates.org', name='alpha.openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=openstates.settings chdir=/home/openstates/src/openstates.org
+  command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='beta.openstates.org', name='beta.openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=openstates.settings chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
 # TODO: add run of shapefiles/download.py
 # - name: loadshapefiles
