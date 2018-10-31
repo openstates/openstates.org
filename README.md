@@ -29,14 +29,15 @@ Create a Python 3 virtual environment and install dependencies
 pipenv install
 ```
 
-Create the database
+Create the database and user
 ```
-createdb openstates
+psql -c "CREATE USER openstates CREATEDB SUPERUSER;" -U postgres
+createdb openstatesorg
 ```
 
 Populate the database
 
-If you have access to an Open Civic Data `pgdump` file (for example, from the `openstates-backups` AWS S3 bucket with a filename ending in `openstatesorg.pgdump`), then you can load the data from that:
+If you have access to a `pgdump` file (for example, from the `openstates-backups` AWS S3 bucket with a filename ending in `openstatesorg.pgdump`), then you can load the data from that:
 ```
 pg_restore --dbname openstates PATH_TO_PGDUMP_FILE
 ```
@@ -69,7 +70,7 @@ npm run build
 
 ### Running the project locally
 
-Start up the Django webserver. Make sure that your environment's `DATABASE_URL` exists, and starts with `postgis://`, such as `postgis://localhost/openstates`.
+Start up the Django webserver.
 ```
 ./manage.py runserver
 ```

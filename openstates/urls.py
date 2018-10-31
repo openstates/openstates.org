@@ -12,7 +12,7 @@ urlpatterns = [
     url('', include('geo.urls')),
     url(r'^api/v1/', include('v1.urls')),
     url(r'^graphql', csrf_exempt(KeyedGraphQLView.as_view(graphiql=True))),
-    # url(r'^public/', include('public.urls')),
+    url(r'^public/', include('public.urls')),
 ]
 
 
