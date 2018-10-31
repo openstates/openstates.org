@@ -8,6 +8,7 @@
     "foundation-sites": "^6.4.4-rc1",
     "lodash": "^4.17.5",
     "mapbox-gl": "^0.44.1",
+    "npm": "^6.4.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
   },
