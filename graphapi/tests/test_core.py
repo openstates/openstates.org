@@ -268,6 +268,28 @@ def test_people_current_memberships_classification(django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_people_old_memberships(django_assert_num_queries):
+    with django_assert_num_queries(3):
+        result = schema.execute('''{
+        people(first: 50) {
+            edges {
+                node {
+                    oldMemberships {
+                        organization { name }
+                    }
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert len(result.data['people']['edges']) == 8
+    old_memberships = 0
+    for person in result.data['people']['edges']:
+        old_memberships += len(person['node']['oldMemberships'])
+    assert old_memberships == 1      # one old membership in test data right now
+
+
+@pytest.mark.django_db
 def test_person_by_id(django_assert_num_queries):
     person = Person.objects.get(name='Bob Birch')
     with django_assert_num_queries(7):
