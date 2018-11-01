@@ -379,3 +379,36 @@ def test_people_by_updated_since():
     assert len(result.data['all']['edges']) == 8
     assert len(result.data['some']['edges']) == 6
     assert len(result.data['none']['edges']) == 0
+
+
+@pytest.mark.django_db
+def test_jurisdiction_fragment(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute('''
+    fragment JurisdictionFields on JurisdictionNode {
+      id
+      name
+      url
+      legislativeSessions {
+        edges {
+          node {
+            name
+            startDate
+            endDate
+            classification
+            identifier
+          }
+        }
+      }
+    }
+
+    query jurisdictionsQuery {
+      jurisdictions {
+        edges {
+          node {
+            ...JurisdictionFields
+          }
+        }
+      }
+    }''')
+    assert result.errors is None
