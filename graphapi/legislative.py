@@ -1,5 +1,5 @@
 import graphene
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Max
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
@@ -255,15 +255,15 @@ class LegislativeQuery:
                                   subject=graphene.String(),
                                   sponsor=SponsorInput(),
                                   classification=graphene.String(),
+                                  action_since=graphene.String(),
                                   )
 
     def resolve_bills(self, info,
                       before=None, after=None, first=None, last=None,
                       jurisdiction=None, chamber=None, session=None,
                       updated_since=None, classification=None,
-                      subject=None, sponsor=None,
+                      subject=None, sponsor=None, action_since=None,
                       ):
-        # bill_id/bill_id__in
         # q (full text)
         bills = Bill.objects.all()
 
@@ -279,6 +279,9 @@ class LegislativeQuery:
             bills = bills.filter(classification__contains=[classification])
         if subject:
             bills = bills.filter(subject__contains=[subject])
+        if action_since:
+            bills = bills.annotate(latest_action_date=Max('actions__date'))
+            bills = bills.filter(latest_action_date__gte=action_since)
         if sponsor:
             sponsor_args = {}
             if 'primary' in sponsor:
