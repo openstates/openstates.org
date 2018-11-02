@@ -10,7 +10,7 @@ def setup():
 
 
 @pytest.mark.django_db
-def test_metadata_counts(django_assert_num_queries):
+def test_simple_costs(django_assert_num_queries):
     result = schema.execute(''' {
         bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak/government",
              session:"2018",
@@ -27,8 +27,23 @@ def test_metadata_counts(django_assert_num_queries):
     }''', middleware=[QueryProtectionMiddleware(0)])    # max cost to 0 so everything errors
     assert len(result.errors) == 3
     # one item
-    assert '(1)' in result.errors[0]
+    assert '(1)' in str(result.errors[0])
     # 100 bills
-    assert '(100)' in result.errors[1]
+    assert '(100)' in str(result.errors[1])
     # each jurisdiction has 6 items beneath it
-    assert '(6)' in result.errors[2]
+    assert '(6)' in str(result.errors[2])
+
+
+@pytest.mark.django_db
+def test_fragment_cost(django_assert_num_queries):
+    result = schema.execute(
+        '''
+        fragment JurisdictionFields on JurisdictionNode {
+            first: organizations(first: 3) { edges { node { name } } }
+            last: organizations(last: 3) { edges { node { name } } }
+        }
+
+        query jurisdictionsQuery { jurisdictions { edges { node { ...JurisdictionFields }}}}
+    ''', middleware=[QueryProtectionMiddleware(0)])
+    assert len(result.errors) == 1
+    assert '(6)' in str(result.errors[0])

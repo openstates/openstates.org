@@ -1,4 +1,5 @@
 import logging
+from graphql.language.ast import FragmentSpread
 
 
 class QueryCostException(Exception):
@@ -8,21 +9,23 @@ class QueryCostException(Exception):
 log = logging.getLogger('graphapi')
 
 
-def _get_counts(info):
-    # the multiplier is either 1 or the number of elements returned
+def _get_counts(info, fragments):
     multiplier = 1
-    for argument in info.arguments:
-        if argument.name.value in ('first', 'last'):
-            multiplier = int(argument.value.value)
-
-    # count up how many multi-nodes inside
     inner_multiplier = 0
-    if info.selection_set:
-        for selection in info.selection_set.selections:
-            # if isinstance(selection, FragmentSpread):
-            #     return 1
-            #     # yield from _yield_counts(info.fragments[selection.name.value].selection_set)
-            inner_multiplier += _get_counts(selection)
+
+    if isinstance(info, FragmentSpread):
+        for selection in fragments[info.name.value].selection_set.selections:
+            inner_multiplier += _get_counts(selection, fragments)
+    else:
+        # the multiplier is either 1 or the number of elements returned
+        for argument in info.arguments:
+            if argument.name.value in ('first', 'last'):
+                multiplier = int(argument.value.value)
+
+        # count up how many multi-nodes inside
+        if info.selection_set:
+            for selection in info.selection_set.selections:
+                inner_multiplier += _get_counts(selection, fragments)
 
     # if this wasn't a multi-node, this counts as one node
     if inner_multiplier == 0:
@@ -37,7 +40,7 @@ class QueryProtectionMiddleware(object):
 
     def resolve(self, next, root, info, **args):
         if root is None:
-            count = _get_counts(info.field_asts[0])
+            count = _get_counts(info.field_asts[0], info.fragments)
             log.debug(f'graphql query name={info.field_name} asts={info.field_asts} cost={count}')
             if count > self.max_cost:
                 raise QueryCostException(
