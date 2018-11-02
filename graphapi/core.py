@@ -23,10 +23,13 @@ def _resolve_suborganizations(root_obj, field_name, classification=None):
     return qs
 
 
-def _current_membership_filter(qs, info, classification=None, prefix=None):
+def _membership_filter(qs, info, classification=None, prefix=None, current=False):
     today = datetime.date.today().isoformat()
-    qs = qs.filter(Q(start_date='') | Q(start_date__lte=today),
-                   Q(end_date='') | Q(end_date__gte=today))
+    if current:
+        qs = qs.filter(Q(start_date='') | Q(start_date__lte=today),
+                       Q(end_date='') | Q(end_date__gte=today))
+    else:
+        qs = qs.filter(Q(start_date__gte=today) | (Q(end_date__lte=today) & ~Q(end_date='')))
     if classification:
         qs = qs.filter(organization__classification__in=classification)
 
@@ -118,6 +121,9 @@ class PersonNode(OCDBaseNode):
     current_memberships = graphene.List('graphapi.core.MembershipNode',
                                         classification=graphene.List(graphene.String)
                                         )
+    old_memberships = graphene.List('graphapi.core.MembershipNode',
+                                    classification=graphene.List(graphene.String)
+                                    )
     votes = graphene.List('graphapi.legislative.BillVoteNode')
 
     def resolve_identifiers(self, info):
@@ -142,7 +148,16 @@ class PersonNode(OCDBaseNode):
                         if m.organization.classification in classification]
             return self.current_memberships
         else:
-            return _current_membership_filter(self.memberships, info, classification)
+            return _membership_filter(self.memberships, info, classification, current=True)
+
+    def resolve_old_memberships(self, info, classification=None):
+        if hasattr(self, 'old_memberships'):
+            if classification:
+                return [m for m in self.old_memberships
+                        if m.organization.classification in classification]
+            return self.old_memberships
+        else:
+            return _membership_filter(self.memberships, info, classification, current=False)
 
     def resolve_votes(self, info):
         return self.votes.all()
@@ -294,9 +309,18 @@ class CoreQuery:
             '.contactDetails',
             ('.currentMemberships',
              Prefetch('memberships',
-                      queryset=_current_membership_filter(Membership.objects, info,
-                                                          prefix='.currentMemberships'),
+                      queryset=_membership_filter(Membership.objects, info,
+                                                  prefix='.currentMemberships',
+                                                  current=True,
+                                                  ),
                       to_attr='current_memberships')),
+            ('.oldMemberships',
+             Prefetch('memberships',
+                      queryset=_membership_filter(Membership.objects, info,
+                                                  prefix='.oldMemberships',
+                                                  current=False,
+                                                  ),
+                      to_attr='old_memberships')),
         ])
 
         return qs

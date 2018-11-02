@@ -18,7 +18,8 @@ def make_random_bill():
                             subject=[random.choice('abcdefghijklmnopqrstuvwxyz')
                                      for _ in range(10)],
                             )
-    b.actions.create(description='Introduced', order=10, organization=org)
+    b.actions.create(description='Introduced', order=10, organization=org,
+                     date="2018-01-01")
 
     for n in range(random.randint(1,  2)):
         ve = VoteEvent.objects.create(bill=b, legislative_session=session,

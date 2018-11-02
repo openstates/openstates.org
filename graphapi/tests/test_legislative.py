@@ -466,6 +466,28 @@ def test_bills_by_sponsorships():
 
 
 @pytest.mark.django_db
+def test_bills_by_action_since():
+    result = schema.execute('''{
+        all: bills(actionSince: "2017-01", first:50) {
+            edges { node { title } }
+        }
+        some: bills(actionSince: "2018-02-28", first:50) {
+            edges { node { title } }
+        }
+        none: bills(actionSince: "2030", first:50) {
+            edges { node { title } }
+        }
+    }''')
+
+    assert result.errors is None
+    # HB2 bill doesn't have any actions
+    assert len(result.data['all']['edges']) == 25
+    # only HB1 has data after Feb 2018
+    assert len(result.data['some']['edges']) == 1
+    assert len(result.data['none']['edges']) == 0
+
+
+@pytest.mark.django_db
 def test_votes_via_person():
     result = schema.execute('''{
         people(name: "Amanda", first:100) {
