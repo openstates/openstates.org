@@ -59,7 +59,7 @@ else:
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
     ]
-    GRAPHQL_DEMO_KEY = 'no-key-set'
+    GRAPHQL_DEMO_KEY = 'graphiql-demo-key'
 
 DATABASE_URL = os.environ.get(
     'DATABASE_URL',
@@ -143,6 +143,25 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, '/public/static/'),
 )
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'graphapi': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 
 # Django Webpack Loader Settings
 WEBPACK_LOADER = {
