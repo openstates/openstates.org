@@ -20,10 +20,15 @@ def test_metadata_counts(django_assert_num_queries):
 
         bills(first:100) { edges { node { title } } }
 
-        jurisdictions(first:10) { edges { node { 
-            first: organizations(first: 3) { edges { node { name } } } 
-            last: organizations(last: 3) { edges { node { name } } } 
+        jurisdictions { edges { node {
+            first: organizations(first: 3) { edges { node { name } } }
+            last: organizations(last: 3) { edges { node { name } } }
         } } }
-    }''', middleware=[QueryProtectionMiddleware()])
-    assert result.errors is None
-    assert False
+    }''', middleware=[QueryProtectionMiddleware(0)])    # max cost to 0 so everything errors
+    assert len(result.errors) == 3
+    # one item
+    assert '(1)' in result.errors[0]
+    # 100 bills
+    assert '(100)' in result.errors[1]
+    # each jurisdiction has 6 items beneath it
+    assert '(6)' in result.errors[2]
