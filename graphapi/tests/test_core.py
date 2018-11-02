@@ -383,7 +383,7 @@ def test_people_by_updated_since():
 
 @pytest.mark.django_db
 def test_jurisdiction_fragment(django_assert_num_queries):
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(3):
         result = schema.execute('''
     fragment JurisdictionFields on JurisdictionNode {
       id
