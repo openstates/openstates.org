@@ -20,10 +20,14 @@ def dump_divisions(state, year):
     posts = Post.objects.filter(organization__jurisdiction__name=state)
     for post in posts:
         division_id = post.division_id
-        boundary = post.division.geometries.get(boundary__set__slug__in=(
-            f'sldl-{year}', f'sldu-{year}')
-        ).boundary
+boundary = post.division.geometries.get(boundary__set__slug__in=(
+    f'sldl-{year}', f'sldu-{year}')
+).boundary
+        # TODO: do this without the requests, attributes on boundary &
+        # serializers would be fine
+        # also evaluate shape vs. simple_shape
         boundary_url = 'http://beta.openstates.org' + boundary.get_absolute_url()
+
 
         # get the data and write the file
         meta = requests.get(boundary_url).json()
