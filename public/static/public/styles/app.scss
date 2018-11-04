@@ -45,9 +45,9 @@
 
 // Components
 @import 'typography';
-@import 'styleguide';
 @import 'components/buttons';
 @import 'components/labels';
+@import 'components/cards';
 
 
 // Utilities
@@ -55,4 +55,5 @@
 @import 'utilities/measure';
 
 
-
+// Styleguide
+@import 'styleguide';
