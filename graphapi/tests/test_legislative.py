@@ -435,6 +435,19 @@ def test_bills_max_items():
 
 
 @pytest.mark.django_db
+def test_bills_total_count(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute('''{
+            bills(first: 5) {
+                totalCount
+                edges { node { identifier } }
+            }
+        }''')
+    assert result.data['bills']['totalCount'] == 26
+    assert len(result.data['bills']['edges']) == 5
+
+
+@pytest.mark.django_db
 def test_bills_by_sponsorships():
     result = schema.execute('''{
         bills(sponsor: {name: "Beth Two"}, first: 100) {

@@ -1,7 +1,7 @@
 import graphene
 from django.db.models import Prefetch, Max
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
-from .common import OCDBaseNode, DjangoConnectionField
+from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
 from .optimization import optimize
@@ -172,7 +172,7 @@ class BillNode(OCDBaseNode):
         return f'https://openstates.org/{abbr}/bills/{session.identifier}/{identifier}'
 
 
-class BillConnection(graphene.relay.Connection):
+class BillConnection(CountableConnectionBase):
     class Meta:
         node = BillNode
 

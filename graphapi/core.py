@@ -3,7 +3,8 @@ import graphene
 from django.db.models import Q, Prefetch
 from django.contrib.gis.geos import Point
 from opencivicdata.core.models import Jurisdiction, Organization, Person, Membership
-from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode, DjangoConnectionField
+from .common import (OCDBaseNode, IdentifierNode, NameNode, LinkNode, DjangoConnectionField,
+                     CountableConnectionBase)
 from .optimization import optimize
 
 
@@ -191,7 +192,7 @@ class LegislativeSessionConnection(graphene.relay.Connection):
         node = LegislativeSessionNode
 
 
-class OrganizationConnection(graphene.relay.Connection):
+class OrganizationConnection(CountableConnectionBase):
     class Meta:
         node = OrganizationNode
 
@@ -225,7 +226,7 @@ class JurisdictionConnection(graphene.relay.Connection):
         node = JurisdictionNode
 
 
-class PersonConnection(graphene.relay.Connection):
+class PersonConnection(CountableConnectionBase):
     class Meta:
         node = PersonNode
 

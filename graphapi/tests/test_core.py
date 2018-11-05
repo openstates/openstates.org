@@ -246,6 +246,39 @@ def test_people_num_queries(django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_people_total_count(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+        people(first: 50) {
+            totalCount
+            edges {
+                node {
+                    name
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert result.data['people']['totalCount'] == 8
+    assert len(result.data['people']['edges']) == 8
+
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+        people(first: 50, name: "Amanda") {
+            totalCount
+            edges {
+                node {
+                    name
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert result.data['people']['totalCount'] == 1
+    assert len(result.data['people']['edges']) == 1
+
+
+@pytest.mark.django_db
 def test_people_current_memberships_classification(django_assert_num_queries):
     with django_assert_num_queries(3):
         result = schema.execute(''' {
