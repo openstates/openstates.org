@@ -120,10 +120,11 @@ def test_jurisdiction_by_name(django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_jurisdiction_chambers_current_members(django_assert_num_queries):
-    with django_assert_num_queries(4):
+    with django_assert_num_queries(5):
         result = schema.execute(''' {
             jurisdiction(name:"Wyoming") {
-                chambers { edges { node {
+                chambers: organizations(classification:["upper", "lower"], first:2)
+                { edges { node {
                     name
                     currentMemberships {
                         person { name }

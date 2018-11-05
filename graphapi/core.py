@@ -227,8 +227,7 @@ class JurisdictionNode(graphene.ObjectType):
 
     legislative_sessions = DjangoConnectionField(LegislativeSessionConnection)
     organizations = DjangoConnectionField(OrganizationConnection,
-                                          classification=graphene.String())
-    chambers = graphene.relay.ConnectionField(OrganizationConnection)
+                                          classification=graphene.List(graphene.String))
 
     def resolve_legislative_sessions(self, info,
                                      first=None, last=None, before=None, after=None):
@@ -238,9 +237,6 @@ class JurisdictionNode(graphene.ObjectType):
                               first=None, last=None, before=None, after=None,
                               classification=None):
         return _resolve_suborganizations(self, 'organizations', classification)
-
-    def resolve_chambers(self, info, first=None, last=None, before=None, after=None):
-        return _resolve_suborganizations(self, 'organizations', ['upper', 'lower'])
 
 
 class JurisdictionConnection(graphene.relay.Connection):
