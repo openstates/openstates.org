@@ -63,7 +63,7 @@ else:
 
 DATABASE_URL = os.environ.get(
     'DATABASE_URL',
-    'sqlite:///' + os.path.join(os.path.dirname(__file__), 'openstates.sqlite3')
+    'postgis://openstates@localhost/openstatesorg'
 )
 DATABASES = {'default': dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
