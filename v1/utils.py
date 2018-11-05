@@ -84,10 +84,10 @@ def state_metadata(abbr, jurisdiction):
         'capitol_timezone': static.TIMEZONES[abbr],
         'terms': static.TERMS[abbr],
         'feature_flags': [],
-        'latest_csv_date': '1970-01-01 00:00:00',
-        'latest_csv_url': 'https://openstates.org/downloads/',
-        'latest_json_date': '1970-01-01 00:00:00',
-        'latest_json_url': 'https://openstates.org/downloads/',
+        'latest_csv_date': '2018-11-03 00:00:00',
+        'latest_csv_url': f'https://data.openstates.org/legacy/csv/{abbr}.zip',
+        'latest_json_date': '2018-11-03 00:00:00',
+        'latest_json_url': f'https://data.openstates.org/legacy/json/{abbr}.zip',
     }
 
 

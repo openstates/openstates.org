@@ -51,10 +51,10 @@ def test_metadata_detail(client, django_assert_num_queries):
                 {'end_year': 2016, 'name': '29', 'sessions': ['29'], 'start_year': 2015},
                 {'end_year': 2018, 'name': '30', 'sessions': ['30'], 'start_year': 2017}],
             'feature_flags': [],
-            'latest_csv_date': '1970-01-01 00:00:00',
-            'latest_csv_url': 'https://openstates.org/downloads/',
-            'latest_json_date': '1970-01-01 00:00:00',
-            'latest_json_url': 'https://openstates.org/downloads/'
+            'latest_csv_date': '2018-11-03 00:00:00',
+            'latest_csv_url': 'https://data.openstates.org/legacy/csv/ak.zip',
+            'latest_json_date': '2018-11-03 00:00:00',
+            'latest_json_url': 'https://data.openstates.org/legacy/json/ak.zip',
         }
 
 
