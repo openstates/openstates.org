@@ -13,18 +13,25 @@ def _resolve_suborganizations(root_obj, field_name, classification=None):
 
     # special case filtering if organizations are prefetched
     if classification and field_name in getattr(root_obj, '_prefetched_objects_cache', []):
-        return [o for o in root_obj._prefetched_objects_cache[field_name]
-                if o.classification == classification]
+        if isinstance(classification, str):
+            return [o for o in root_obj._prefetched_objects_cache[field_name]
+                    if o.classification == classification]
+        elif isinstance(classification, (list, tuple)):
+            return [o for o in root_obj._prefetched_objects_cache[field_name]
+                    if o.classification in classification]
 
     qs = getattr(root_obj, field_name).all()
 
-    if classification:
+    if isinstance(classification, str):
         qs = qs.filter(classification=classification)
+    elif isinstance(classification, (list, tuple)):
+        qs = qs.filter(classification__in=classification)
 
     return qs
 
 
-def _membership_filter(qs, info, classification=None, prefix=None, current=False):
+def _membership_filter(qs, info, classification=None, prefix=None, current=False,
+                       coming_from_person=True):
     today = datetime.date.today().isoformat()
     if current:
         qs = qs.filter(Q(start_date='') | Q(start_date__lte=today),
@@ -34,8 +41,14 @@ def _membership_filter(qs, info, classification=None, prefix=None, current=False
     if classification:
         qs = qs.filter(organization__classification__in=classification)
 
+    related = ['.post', '.post.division']
+    if coming_from_person:
+        related.append('.organization')
+    else:
+        related.append('.person')
+
     # if we're getting a membership we're probably going to need org/post
-    qs = optimize(qs, info, None, ['.organization', '.post', '.post.division'], prefix=prefix)
+    qs = optimize(qs, info, None, related, prefix=prefix)
     return qs
 
 
@@ -56,9 +69,9 @@ class OrganizationNode(OCDBaseNode):
 
     # self-referential relationship
     parent = graphene.Field('graphapi.core.OrganizationNode')
-    # children = graphene.List('graphapi.core.OrganizationNode')
     children = DjangoConnectionField('graphapi.core.OrganizationConnection',
                                      classification=graphene.String())
+    current_memberships = graphene.List('graphapi.core.MembershipNode')
 
     # related objects
     identifiers = graphene.List(IdentifierNode)
@@ -69,6 +82,13 @@ class OrganizationNode(OCDBaseNode):
     def resolve_children(self, info, classification=None,
                          first=None, last=None, before=None, after=None):
         return _resolve_suborganizations(self, 'children', classification)
+
+    def resolve_current_memberships(self, info):
+        if hasattr(self, 'current_memberships'):
+            return self.current_memberships
+        else:
+            return _membership_filter(self.memberships, info, None, current=True,
+                                      coming_from_person=False)
 
     def resolve_identifiers(self, info):
         return self.identifiers.all()
@@ -203,13 +223,12 @@ class JurisdictionNode(graphene.ObjectType):
     id = graphene.String()
     name = graphene.String()
     url = graphene.String()
-    # always Government within OS
-    # classification = graphene.String()
     feature_flags = graphene.List(graphene.String)
 
     legislative_sessions = DjangoConnectionField(LegislativeSessionConnection)
     organizations = DjangoConnectionField(OrganizationConnection,
                                           classification=graphene.String())
+    chambers = graphene.relay.ConnectionField(OrganizationConnection)
 
     def resolve_legislative_sessions(self, info,
                                      first=None, last=None, before=None, after=None):
@@ -219,6 +238,9 @@ class JurisdictionNode(graphene.ObjectType):
                               first=None, last=None, before=None, after=None,
                               classification=None):
         return _resolve_suborganizations(self, 'organizations', classification)
+
+    def resolve_chambers(self, info, first=None, last=None, before=None, after=None):
+        return _resolve_suborganizations(self, 'organizations', ['upper', 'lower'])
 
 
 class JurisdictionConnection(graphene.relay.Connection):

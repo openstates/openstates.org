@@ -119,6 +119,33 @@ def test_jurisdiction_by_name(django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_jurisdiction_chambers_current_members(django_assert_num_queries):
+    with django_assert_num_queries(4):
+        result = schema.execute(''' {
+            jurisdiction(name:"Wyoming") {
+                chambers { edges { node {
+                    name
+                    currentMemberships {
+                        person { name }
+                    }
+                } }
+                }
+            }
+        }
+    ''')
+    assert result.errors is None
+    assert len(result.data['jurisdiction']['chambers']['edges']) == 2
+    assert set(('Wyoming House', 'Wyoming Senate')) == set(
+        edge['node']['name'] for edge in result.data['jurisdiction']['chambers']['edges']
+    )
+    people = []
+    for chamber in result.data['jurisdiction']['chambers']['edges']:
+        for m in chamber['node']['currentMemberships']:
+            people.append(m['person']['name'])
+    assert len(people) == 2
+
+
+@pytest.mark.django_db
 def test_people_by_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(jurisdiction__name='Alaska', classification='lower')
     with django_assert_num_queries(2):
