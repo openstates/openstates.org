@@ -27,7 +27,7 @@ def dump_divisions(year, state=None):
         try:
             boundary = post.division.geometries.get(boundary__set__slug__in=(
                 f'sldl-{short_year}', f'sldu-{short_year}', 'nh-12')).boundary
-        except Exception as e:
+        except Exception:
             print(division_id, 'does not exist')
             continue
 
