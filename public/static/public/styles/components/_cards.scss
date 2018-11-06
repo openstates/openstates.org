@@ -1,10 +1,20 @@
 // Cards
 
 .card {
-    background-color: $color-gray-light;
-    background-color: lighten($color-gray-light, 5%);
-    background-color: #f9fdff;
+    background-color: $color-gray-lighter;
     padding: 1rem;
+    position: relative;
+    top: 0;
+    transition: background-color 200ms ease-in-out,
+                top 150ms ease-in-out;
+
+
+    &:hover {
+        background-color: darken($color-gray-lighter, 2%);
+        cursor: pointer;
+        top: -0.15rem;
+        box-shadow: 0 2px 0.25rem rgba(0, 0, 0, 0.05);
+    }
 }
 
 .card__detail-group {
@@ -14,7 +24,7 @@
 }
 
 .card__detail {
-    display: block;
+    display: inline-block;
     margin-right: 0.5rem;
 
     &:before {
@@ -24,13 +34,36 @@
     }
 
     &:first-of-type:before {
-        @include breakpoint(large) {
+        @include breakpoint(medium) {
             content: normal;
         }
     }
+}
 
-    @include breakpoint(medium) {
-        display: inline-block;
-    }
+.card--profile {
+    display: flex;
+    flex-direction: row;
+}
 
+.card__image {
+    border-radius: 50%;
+    width: 75px;
+    min-width: 75px;
+    height: 75px;
+    margin-right: 1rem;
+    filter: grayscale(100);
+    object-fit: cover;
+}
+
+.card__image--placeholder {
+    background-color: $color-gray;
+    background-image: url('/static/public/images/person.svg');
+    background-repeat: no-repeat;
+    background-size: 70%;
+    background-position: center 100%;
+}
+
+.card__heading {
+    font-weight: normal;
+    margin-bottom: 0;
 }
