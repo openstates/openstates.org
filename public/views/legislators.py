@@ -1,10 +1,76 @@
 from django.shortcuts import get_object_or_404, render
+from django.views import View
 from opencivicdata.core.models import Person
+from graphapi.schema import schema
 
 from ..utils import (
     get_chambers_from_state_abbr,
     get_legislative_post
 )
+
+
+def _people_from_lat_lon(lat, lon):
+    PERSON_GEO_QUERY = """{
+      people(latitude: {lat}, longitude: {lon}, first: 10) {
+        edges {
+          node {
+            name
+            currentMemberships(classification: ["upper", "lower", "party"]) {
+              post {
+                label
+              }
+              organization {
+                classification
+                name
+              }
+            }
+          }
+        }
+      }
+    }"""
+    resp = schema.execute(PERSON_GEO_QUERY.format(latitude=lat, longitude=lon))
+
+    nodes = [node['node'] for node in resp.data['people']['edges']]
+    people = []
+    for node in nodes:
+        person = {
+            'name': node['name'],
+        }
+        for m in node['currentMemberships']:
+            if m['organization']['classification'] == 'party':
+                person['party'] = m['organization']['name']
+            else:
+                person['chamber'] = m['organization']['classification']
+                person['district'] = m['post']['label']
+        people.append(person)
+
+    return people
+
+
+def find_your_legislator(request):
+    '''
+    Context:
+        - q
+        - lat
+        - lon
+        - located
+        - legislators
+        - disable_state_nav = True
+    '''
+    context = {
+        'q': request.GET.get('q', ''),
+        'disable_state_nav': True,
+    }
+    lat = request.GET.get('lat')
+    lon = request.GET.get('lon')
+
+    if lat and lon:
+        # got a passed lat/lon. Let's build off it.
+        context['lat'] = lat
+        context['lon'] = lon
+        people = _people_from_lat_lon(lat, lon)
+        context['legislators'] = people
+    return render(request, 'public/views/find_your_legislator.html', context)
 
 
 def legislators(request, state):

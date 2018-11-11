@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 
 from .views.other import styleguide, home, state
-from .views.legislators import legislators, legislator
+from .views.legislators import legislators, legislator, find_your_legislator
 from .views.bills import bills, bill
 from .views.committees import committees, committee
 from .utils import states
@@ -16,6 +16,8 @@ urlpatterns = [
     path('styleguide', styleguide, name='styleguide'),
 
     path('', home, name='home'),
+
+    path('find_your_legislator/', find_your_legislator, name='find_your_legislator'),
 
     re_path(r'^(?P<state>{})$'.format(state_abbr_pattern), state, name='state'),
 
