@@ -1,5 +1,6 @@
 <header>
-	<a href="{% url 'home' %}"><img alt="Open States logo" /></a>
+    <a href="{% url 'home' %}"><img alt="Open States logo" /></a>
+    {% if not disable_state_nav %}
 	<nav>
 		<select onchange="window.location.href = {% url 'home' %} + this.value">
 			{% if not state %}
@@ -18,5 +19,6 @@
 				<li><a href="{% url 'committees' state %}">Committees</a></li>
 			</ul>
 		{% endif %}
-	</nav>
+    </nav>
+    {% endif %}
 </header>

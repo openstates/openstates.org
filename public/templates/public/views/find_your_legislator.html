@@ -1,0 +1,17 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+<section>
+    <h1>Find Your Legislators</h1>
+
+    <form>
+        <label>Enter Your Address:</label>
+        <input id="address" name="address" />
+        <button id="address-lookup">Search by Address</button>
+        <button id="locate">Use Current Location</button>
+    </form>
+
+</section>
+{% endblock %}

@@ -1,5 +1,4 @@
-import json as jsonlib
-
+import json
 import bleach
 from django import template
 from django.utils.safestring import mark_safe
@@ -11,11 +10,12 @@ from ..utils import get_legislature_from_state_abbr, states
 register = template.Library()
 
 
-@register.inclusion_tag('public/components/header.html')
-def header(state):
+@register.inclusion_tag('public/components/header.html', takes_context=True)
+def header(context):
     return {
-        'state': state,
-        'states': states
+        'state': context.get('state'),
+        'disable_state_nav': context.get('disable_state_nav'),
+        'states': states,
     }
 
 
@@ -57,8 +57,6 @@ def state_name(state_abbr):
 @register.filter()
 def jsonify(data):
     # Source: https://gist.github.com/pirate/c18bfe4fd96008ffa0aef25001a2e88f
-    uncleaned = jsonlib.dumps(data)
+    uncleaned = json.dumps(data)
     clean = bleach.clean(uncleaned)
-    # If this function fails, then there was a serialization issue
-    assert jsonlib.loads(clean)
     return mark_safe(clean)
