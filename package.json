@@ -10,7 +10,8 @@
     "mapbox-gl": "^0.44.2",
     "npm": "^6.4.1",
     "react": "^16.6.0",
-    "react-dom": "^16.6.0"
+    "react-dom": "^16.6.0",
+    "react-google-maps": "^9.4.5"
   },
   "devDependencies": {
     "babel": "^6.23.0",

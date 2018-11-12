@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.views import View
+from django.http import JsonResponse
 from opencivicdata.core.models import Person
 from graphapi.schema import schema
 
@@ -11,13 +11,14 @@ from ..utils import (
 
 def _people_from_lat_lon(lat, lon):
     PERSON_GEO_QUERY = """{
-      people(latitude: {lat}, longitude: {lon}, first: 10) {
+      people(latitude: %s, longitude: %s, first: 10) {
         edges {
           node {
             name
-            currentMemberships(classification: ["upper", "lower", "party"]) {
+            currentMemberships(classification: ["upper", "lower", "legislature", "party"]) {
               post {
                 label
+                division { id }
               }
               organization {
                 classification
@@ -28,7 +29,7 @@ def _people_from_lat_lon(lat, lon):
         }
       }
     }"""
-    resp = schema.execute(PERSON_GEO_QUERY.format(latitude=lat, longitude=lon))
+    resp = schema.execute(PERSON_GEO_QUERY % (lat, lon))
 
     nodes = [node['node'] for node in resp.data['people']['edges']]
     people = []
@@ -42,34 +43,24 @@ def _people_from_lat_lon(lat, lon):
             else:
                 person['chamber'] = m['organization']['classification']
                 person['district'] = m['post']['label']
+                person['division_id'] = m['post']['division']['id']
         people.append(person)
 
     return people
 
 
 def find_your_legislator(request):
-    '''
-    Context:
-        - q
-        - lat
-        - lon
-        - located
-        - legislators
-        - disable_state_nav = True
-    '''
-    context = {
-        'q': request.GET.get('q', ''),
-        'disable_state_nav': True,
-    }
     lat = request.GET.get('lat')
     lon = request.GET.get('lon')
 
     if lat and lon:
         # got a passed lat/lon. Let's build off it.
-        context['lat'] = lat
-        context['lon'] = lon
         people = _people_from_lat_lon(lat, lon)
-        context['legislators'] = people
+        return JsonResponse({'legislators': people})
+
+    context = {
+        'disable_state_nav': True,
+    }
     return render(request, 'public/views/find_your_legislator.html', context)
 
 

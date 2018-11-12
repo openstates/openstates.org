@@ -2,16 +2,10 @@
 {% load custom_tags %}
 {% load static %}
 
+{% block scripts %} 
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHXDvbO733mGwjzREpnqnnkoz9sPQqwAk"> </script>
+{% endblock %}
+
 {% block content %}
-<section>
-    <h1>Find Your Legislators</h1>
-
-    <form>
-        <label>Enter Your Address:</label>
-        <input id="address" name="address" />
-        <button id="address-lookup">Search by Address</button>
-        <button id="locate">Use Current Location</button>
-    </form>
-
-</section>
+    <div data-hook="find-your-legislator"></div>
 {% endblock %}

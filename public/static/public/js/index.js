@@ -5,6 +5,8 @@ import ReactDOM from 'react-dom'
 
 import legislatorMap from './legislator-map'
 import LegislatorList from './legislator-list'
+import FindYourLegislator from './find-your-legislator'
+
 
 window.addEventListener('load', () => {
   if (document.querySelector('[data-hook="legislator-map"]')) {
@@ -17,4 +19,9 @@ window.addEventListener('load', () => {
       window.reactMount
     )
   }
+
+    const fyl = document.querySelector('[data-hook="find-your-legislator"]');
+    if (fyl) {
+        ReactDOM.render(React.createElement(FindYourLegislator, {}), fyl);
+    }
 })
