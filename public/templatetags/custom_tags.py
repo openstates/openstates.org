@@ -4,7 +4,8 @@ from django import template
 from django.utils.safestring import mark_safe
 import us
 
-from ..utils import get_legislature_from_state_abbr, states
+from utils.common import states
+from utils.orgs import get_legislature_from_abbr
 
 
 register = template.Library()
@@ -21,7 +22,7 @@ def header(context):
 
 @register.inclusion_tag('public/components/sources.html')
 def sources(state, sources=None):
-    legislature = get_legislature_from_state_abbr(state)
+    legislature = get_legislature_from_abbr(state)
     return {
         'legislature_name': legislature.name,
         'legislature_url': legislature.jurisdiction.url,

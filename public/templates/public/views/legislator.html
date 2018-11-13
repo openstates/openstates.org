@@ -3,60 +3,60 @@
 {% load static %}
 
 {% block content %}
-	<section>
-		{% if person.headshot_url %}
-			<img src="{{ person.headshot_url }}" alt="legislator headshot" />
-		{% else %}
-			<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
-		{% endif %}
-		<h2>{{ person.name }}</h2>
-		<span>{{ person.party }} · {{ person.legislative_post.role }} · District {{ person.legislative_post.label }}</span>
+    <section>
+        {% if person.image %}
+            <img src="{{ person.image }}" alt="legislator headshot" />
+        {% else %}
+            <img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
+        {% endif %}
+        <h2>{{ person.name }}</h2>
+        <span>{{ person.party }} · {{ person.role }} · District {{ person.district }}</span>
 
-		<div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.legislative_post.division_id }}"></div>
+        <div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.division_id }}"></div>
 
-		{% if email or capitol_address or capitol_phone or district_address or district_phone %}
-			<address>
-				<dl>
-					{% if email %}<dt>Email</dt><dd>{{ email|urlize }}</dd>{% endif %}
+        {% if email or capitol_address or capitol_phone or district_address or district_phone %}
+            <address>
+                <dl>
+                    {% if email %}<dt>Email</dt><dd>{{ email|urlize }}</dd>{% endif %}
 
-					{% if capitol_address %}<dt>Capitol Address</dt><dd>{{ capitol_address|linebreaks }}</dd>{% endif %}
-					{% if capitol_phone %}<dt>Capitol Phone</dt><dd><a href="tel:{{ capitol_phone }}">{{ capitol_phone }}</a></dd>{% endif %}
+                    {% if capitol_address %}<dt>Capitol Address</dt><dd>{{ capitol_address|linebreaks }}</dd>{% endif %}
+                    {% if capitol_phone %}<dt>Capitol Phone</dt><dd><a href="tel:{{ capitol_phone }}">{{ capitol_phone }}</a></dd>{% endif %}
 
-					{% if district_address %}<dt>District Address</dt><dd>{{ district_address|linebreaks }}</dd>{% endif %}
-					{% if district_phone %}<dt>District Phone</dt><dd><a href="tel:{{ district_phone }}">{{ district_phone }}</a></dd>{% endif %}
-				</dl>
-			</address>
-		{% endif %}
+                    {% if district_address %}<dt>District Address</dt><dd>{{ district_address|linebreaks }}</dd>{% endif %}
+                    {% if district_phone %}<dt>District Phone</dt><dd><a href="tel:{{ district_phone }}">{{ district_phone }}</a></dd>{% endif %}
+                </dl>
+            </address>
+        {% endif %}
 
-		{% if person.committee_memberships %}
-			<h1>Committee Memberships</h1>
-			{% for committee in person.committee_memberships %}
-				<a class="button">{{ committee.organization.name }}</a>
-			{% endfor %}
-		{% endif %}
-	</section>
+        {% if person.committee_memberships %}
+            <h1>Committee Memberships</h1>
+            {% for committee in person.committee_memberships %}
+                <a class="button">{{ committee.organization.name }}</a>
+            {% endfor %}
+        {% endif %}
+    </section>
 
-	<section>
-		<h1>Sponsored Bills</h1>
-		{% for bill in person.sponsored_bills %}
-			<div>
-				<h2><a href="{% url 'bill' state bill.id %}">{{ bill.identifier }}</a></h2>
-				<span>{{ bill.title }}</span>
-			</div>
-		{% endfor %}
-		{% if person.sponsored_bills %}<a class="button">View more bills</a>{% endif %}
-	</section>
+    <section>
+        <h1>Sponsored Bills</h1>
+        {% for bill in person.sponsored_bills %}
+            <div>
+                <h2><a href="{% url 'bill' state bill.id %}">{{ bill.identifier }}</a></h2>
+                <span>{{ bill.title }}</span>
+            </div>
+        {% endfor %}
+        {% if person.sponsored_bills %}<a class="button">View more bills</a>{% endif %}
+    </section>
 
-	<section>
-		<h1>Recent Votes</h1>
-		{% regroup person.vote_events by start_date as votes_by_date %}
-		{% for start_date in votes_by_date reversed %}
-			<span>{{ start_date.grouper }}</span>
-			{% for vote_event in start_date.list %}
-				{% vote_card vote_event %}
-			{% endfor %}
-		{% endfor %}
-	</section>
+    <section>
+        <h1>Recent Votes</h1>
+        {% regroup person.vote_events by start_date as votes_by_date %}
+        {% for start_date in votes_by_date reversed %}
+            <span>{{ start_date.grouper }}</span>
+            {% for vote_event in start_date.list %}
+                {% vote_card vote_event %}
+            {% endfor %}
+        {% endfor %}
+    </section>
 
-	{% sources state person.sources.all %}
+    {% sources state person.sources.all %}
 {% endblock %}

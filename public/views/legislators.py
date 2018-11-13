@@ -3,11 +3,7 @@ from django.http import JsonResponse
 from opencivicdata.core.models import Person
 from graphapi.schema import schema
 from utils.people import get_current_role
-
-from ..utils import (
-    get_chambers_from_state_abbr,
-    get_legislative_post
-)
+from utils.orgs import get_chambers_from_abbr
 
 
 def _people_from_lat_lon(lat, lon):
@@ -84,7 +80,7 @@ def find_your_legislator(request):
 
 
 def legislators(request, state):
-    chambers = get_chambers_from_state_abbr(state)
+    chambers = get_chambers_from_abbr(state)
 
     legislators = [
         _template_person(p)
@@ -110,11 +106,12 @@ def legislator(request, state, legislator_id):
 
     person = get_object_or_404(Person, pk=legislator_id)
 
-    # TO DO
-    person.headshot_url = ''
+    cur_role = get_current_role(person)
 
-    person.party = person.memberships.get(organization__classification='party').organization.name
-    person.legislative_post = get_legislative_post(person)
+    person.party = cur_role['party']
+    person.role = cur_role['role']
+    person.district = cur_role['district']
+
     person.committee_memberships = person.memberships.filter(
         organization__classification='committee').all()
 
@@ -148,9 +145,7 @@ def legislator(request, state, legislator_id):
         'public/views/legislator.html',
         {
             'state': state,
-
             'person': person,
-
             'email': email,
             'capitol_address': capitol_address,
             'capitol_phone': capitol_phone,

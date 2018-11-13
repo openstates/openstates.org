@@ -5,8 +5,7 @@ from .common import jid_to_abbr
 def get_current_role(person):
     today = datetime.date.today().strftime('%Y-%m-%d')
     party = None
-    chamber = None
-    district = None
+    post = None
     state = None
 
     # TODO: optimize this query
@@ -16,7 +15,9 @@ def get_current_role(person):
                 party = membership.organization.name
             elif membership.organization.classification in ('upper', 'lower', 'legislature'):
                 chamber = membership.organization.classification
-                district = membership.post.label
                 state = jid_to_abbr(membership.organization.jurisdiction_id)
+                post = membership.post
 
-    return {'party': party, 'chamber': chamber, 'state': state, 'district': district}
+    return {'party': party, 'chamber': chamber, 'state': state,
+            'district': post.label, 'division_id': post.division_id, 'role': post.role,
+            }
