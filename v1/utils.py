@@ -2,6 +2,7 @@ import datetime
 from collections import defaultdict
 import name_tools
 from . import static
+from utils.common import jid_to_abbr, abbr_to_jid
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
@@ -10,19 +11,6 @@ def expand_date(date):
     if not date:
         return ''
     return date + ' 00:00:00' if len(date) == 10 else date
-
-
-def jid_to_abbr(j):
-    return j.split(':')[-1].split('/')[0]
-
-
-def abbr_to_jid(abbr):
-    if abbr == 'dc':
-        return 'ocd-jurisdiction/country:us/district:dc/government'
-    elif abbr == 'pr':
-        return 'ocd-jurisdiction/country:us/territory:pr/government'
-    else:
-        return f'ocd-jurisdiction/country:us/state:{abbr}/government'
 
 
 def convert_post(post):
@@ -225,14 +213,11 @@ def convert_legislator(leg):
 
     today = datetime.date.today().strftime('%Y-%m-%d')
 
-    for membership in leg.memberships.all():
-        if not membership.end_date or membership.end_date > today:
-            if membership.organization.classification == 'party':
-                party = membership.organization.name
-            elif membership.organization.classification in ('upper', 'lower', 'legislature'):
-                chamber = membership.organization.classification
-                district = membership.post.label
-                state = jid_to_abbr(membership.organization.jurisdiction_id)
+    cr = get_current_role(leg)
+    party = cr['party']
+    chamber = cr['chamber']
+    district = cr['district']
+    state = cr['state']
 
     email = None
     offices = defaultdict(dict)
