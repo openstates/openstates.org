@@ -3,10 +3,7 @@ from collections import Counter
 from django.db.models import Min, Max
 from django.shortcuts import render
 from opencivicdata.legislative.models import Bill
-
-from ..utils import (
-    get_chambers_from_state_abbr
-)
+from utils.orgs import get_chambers_from_abbr
 
 
 def styleguide(request):
@@ -21,7 +18,7 @@ def state(request, state):
     RECENTLY_INTRODUCED_BILLS_TO_SHOW = 4
     RECENTLY_PASSED_BILLS_TO_SHOW = 4
 
-    chambers = get_chambers_from_state_abbr(state)
+    chambers = get_chambers_from_abbr(state)
     legislature = chambers[0].parent if chambers[0].parent else chambers[0]
 
     for chamber in chambers:

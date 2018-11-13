@@ -4,7 +4,7 @@ from .views.other import styleguide, home, state
 from .views.legislators import legislators, legislator, find_your_legislator
 from .views.bills import bills, bill
 from .views.committees import committees, committee
-from .utils import states
+from utils.common import states
 
 
 OCD_ID_PATTERN = r'[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}'

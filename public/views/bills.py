@@ -1,12 +1,11 @@
 from django.db.models import Min
 from django.shortcuts import get_object_or_404, render
 from opencivicdata.legislative.models import Bill
-
-from ..utils import get_chambers_from_state_abbr
+from utils.orgs import get_chambers_from_abbr
 
 
 def bills(request, state):
-    chambers = get_chambers_from_state_abbr(state)
+    chambers = get_chambers_from_abbr(state)
 
     bills = Bill.objects.filter(from_organization__in=chambers)[:8]
     for bill in bills:
