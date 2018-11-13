@@ -14,25 +14,37 @@
 
         <div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.division_id }}"></div>
 
-        {% if email or capitol_address or capitol_phone or district_address or district_phone %}
-            <address>
-                <dl>
-                    {% if email %}<dt>Email</dt><dd>{{ email|urlize }}</dd>{% endif %}
-
-                    {% if capitol_address %}<dt>Capitol Address</dt><dd>{{ capitol_address|linebreaks }}</dd>{% endif %}
-                    {% if capitol_phone %}<dt>Capitol Phone</dt><dd><a href="tel:{{ capitol_phone }}">{{ capitol_phone }}</a></dd>{% endif %}
-
-                    {% if district_address %}<dt>District Address</dt><dd>{{ district_address|linebreaks }}</dd>{% endif %}
-                    {% if district_phone %}<dt>District Phone</dt><dd><a href="tel:{{ district_phone }}">{{ district_phone }}</a></dd>{% endif %}
-                </dl>
-            </address>
+        <div class="contact-details">
+        {% if person.all_contact_details %}
+            {% regroup person.all_contact_details by note as contact_details %}
+            {% for note, cd_list in contact_details %}
+                <h2>{{ note }}</h2>
+                <address><ul>
+                {% for cd in cd_list %}
+                    <li class="contact-{{ cd.type }}">
+                    {% if cd.type == 'voice' %}
+                        <a href="tel:{{ cd.value }}">{{ cd.value }}</a>
+                    {% elif cd.type == 'fax' %}
+                        <span class="fax">{{ cd.value }}</span>
+                    {% elif cd.type == 'email' %}
+                        <a href="mailto:{{ cd.value }}">{{ cd.value }}</a>
+                    {% elif cd.type == 'address' %}
+                        {{ cd.value }}
+                    {% endif %}
+                    </li>
+                {% endfor %}
+                </ul></address>
+            {% endfor %}
         {% endif %}
+        </div>
 
         {% if person.committee_memberships %}
             <h1>Committee Memberships</h1>
+            <ul>
             {% for committee in person.committee_memberships %}
-                <a class="button">{{ committee.organization.name }}</a>
+            <li><a href="#">{{ committee.organization.name }}</a> {% if committee.role.lower != 'member' %} {{ committee.role }} {% endif %}</li>
             {% endfor %}
+            </ul>
         {% endif %}
     </section>
 
