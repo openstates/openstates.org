@@ -81,7 +81,7 @@ export default class LegislatorList extends React.Component {
                       : <img alt="placeholder headshot" />
                     }
                   </td>
-                  <td><a href={`${window.location.href.split('?')[0]}/${b.id}`}>{b.name}</a></td>
+                  <td><a href={b.pretty_url}>{b.name}</a></td>
                   <td>{b.party}</td>
                   <td>{b.district}</td>
                   <td>{b.chamber}</td>

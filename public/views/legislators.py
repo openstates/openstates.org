@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse
 from opencivicdata.core.models import Person
 from graphapi.schema import schema
-from utils.people import get_current_role
+from utils.common import decode_uuid
+from utils.people import get_current_role, pretty_url
 from utils.orgs import get_chambers_from_abbr
 
 
@@ -60,6 +61,7 @@ def _template_person(person):
         'party': cr['party'],
         'district': district,
         'chamber': cr['chamber'],
+        'pretty_url': pretty_url(person),
         }
     return obj
 
@@ -100,31 +102,24 @@ def legislators(request, state):
     )
 
 
-def legislator(request, state, legislator_id):
+def person(request, person_id):
     SPONSORED_BILLS_TO_SHOW = 4
     RECENT_VOTES_TO_SHOW = 3
 
-    person = get_object_or_404(Person, pk=legislator_id)
+    ocd_person_id = decode_uuid(person_id)
+    person = get_object_or_404(Person, pk=ocd_person_id)
 
     cur_role = get_current_role(person)
 
     person.party = cur_role['party']
     person.role = cur_role['role']
     person.district = cur_role['district']
+    state = cur_role['state']
 
     person.committee_memberships = person.memberships.filter(
         organization__classification='committee').all()
 
-    # These contact information values may not exist, so allow database fetch to find nothing
-    email = getattr(person.contact_details.filter(type='email').first(), 'value', None)
-    capitol_address = getattr(person.contact_details.filter(note='Capitol Office').first(),
-                              'value', None)
-    capitol_phone = getattr(person.contact_details.filter(note='Capitol Office Phone').first(),
-                            'value', None)
-    district_address = getattr(person.contact_details.filter(note='District Office').first(),
-                               'value', None)
-    district_phone = getattr(person.contact_details.filter(note='District Office Phone').first(),
-                             'value', None)
+    person.all_contact_details = person.contact_details.order_by('note')
 
     person.sponsored_bills = [
         sponsorship.bill for sponsorship in
@@ -146,10 +141,5 @@ def legislator(request, state, legislator_id):
         {
             'state': state,
             'person': person,
-            'email': email,
-            'capitol_address': capitol_address,
-            'capitol_phone': capitol_phone,
-            'district_address': district_address,
-            'district_phone': district_phone
         }
     )

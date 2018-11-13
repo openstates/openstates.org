@@ -1,3 +1,5 @@
+{% load custom_tags %}
+
 <div>
 	<span>{{ bill.identifier }}</span>
 	<span>{{ bill.title }}</span>
@@ -13,7 +15,7 @@
 		{% for sponsorship in bill.sponsorships.all %}
 			{% if sponsorship.primary %}
 				{% if sponsorship.person %}
-					<a href="{% url 'legislator' state sponsorship.person_id %}">{{ sponsorship.person }}</a>
+					<a href="{% canonical_url sponsorship.person %}">{{ sponsorship.person }}</a>
 				{% elif sponsorship.organization %}
 					<a href="{% url 'committee' state sponsorship.organization_id %}">{{ sponsorship.organization }}</a>
 				{% else %}

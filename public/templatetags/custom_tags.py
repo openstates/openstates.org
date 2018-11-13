@@ -6,9 +6,15 @@ import us
 
 from utils.common import states
 from utils.orgs import get_legislature_from_abbr
+from utils.people import pretty_url
 
 
 register = template.Library()
+
+
+@register.simple_tag()
+def canonical_url(obj):
+    return pretty_url(obj)
 
 
 @register.inclusion_tag('public/components/header.html', takes_context=True)

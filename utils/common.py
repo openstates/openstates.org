@@ -1,4 +1,6 @@
 import us
+import uuid
+import base62
 
 # Metadata for states that are available in the platform
 states = sorted(us.STATES + [us.states.PR], key=lambda s: s.name)
@@ -15,3 +17,14 @@ def abbr_to_jid(abbr):
         return 'ocd-jurisdiction/country:us/territory:pr/government'
     else:
         return f'ocd-jurisdiction/country:us/state:{abbr}/government'
+
+
+def encode_uuid(id):
+    uuid_portion = str(id).split('/')[1]
+    as_int = uuid.UUID(uuid_portion).int
+    return base62.encode(as_int)
+
+
+def decode_uuid(id, type='person'):
+    decoded = uuid.UUID(int=base62.decode(id))
+    return f'ocd-{type}/{decoded}'
