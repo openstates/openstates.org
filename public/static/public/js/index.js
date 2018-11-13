@@ -13,12 +13,12 @@ window.addEventListener('load', () => {
     legislatorMap()
   }
 
-  if (document.querySelector('[data-hook="legislator-list"]')) {
-    ReactDOM.render(
-      React.createElement(LegislatorList, {legislators: window.props}),
-      window.reactMount
-    )
-  }
+    const ll = document.querySelector('[data-hook="legislator-list"]');
+    if(ll) {
+        ReactDOM.render(React.createElement(LegislatorList,
+            {legislators: window.legislators, chambers: window.chambers}),
+            ll);
+    }
 
     const fyl = document.querySelector('[data-hook="find-your-legislator"]');
     if (fyl) {

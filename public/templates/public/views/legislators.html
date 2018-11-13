@@ -2,16 +2,12 @@
 {% load custom_tags %}
 
 {% block content %}
-	<h1>{{ state|state_name }} Legislators</h1>
+    <h1>{{ state|state_name }} Legislators</h1>
 
-	<div data-hook="legislator-list"></div>
+    <div data-hook="legislator-list"></div>
 
-	<div>
-		TO DO: FIND MY LEGISLATOR WIDGET
-	</div>
-
-	<script>
-		window.props = {{ legislators|jsonify }};
-		window.reactMount = document.querySelector('[data-hook="legislator-list"]');
-	</script>
+    <script>
+        window.legislators = {{ legislators|jsonify }};
+        window.chambers = {{ chambers|jsonify }};
+    </script>
 {% endblock %}

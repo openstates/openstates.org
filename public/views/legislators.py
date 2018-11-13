@@ -49,6 +49,19 @@ def _people_from_lat_lon(lat, lon):
     return people
 
 
+def _template_person(person):
+    obj = {
+        'id': person.id,
+        'name': person.name,
+        'image': person.image,
+        'party': person.memberships.filter(
+                organization__classification='party').last().organization.name,
+        'district': get_legislative_post(p).label,
+        'chamber': get_legislative_post(p).organization.classification
+        }
+    return obj
+
+
 def find_your_legislator(request):
     lat = request.GET.get('lat')
     lon = request.GET.get('lon')
@@ -69,9 +82,9 @@ def legislators(request, state):
 
     legislators = [
         {
-            'headshot_url': '',
             'id': p.id,
             'name': p.name,
+            'image': p.image,
             'party': p.memberships.filter(
                 organization__classification='party').last().organization.name,
             'district': get_legislative_post(p).label,
@@ -81,12 +94,15 @@ def legislators(request, state):
         in Person.objects.filter(memberships__organization__in=chambers)
     ]
 
+    chambers = {c.classification: c.name for c in chambers}
+
     return render(
         request,
         'public/views/legislators.html',
         {
             'state': state,
-            'legislators': legislators
+            'chambers': chambers,
+            'legislators': legislators,
         }
     )
 
