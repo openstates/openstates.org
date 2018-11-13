@@ -1,4 +1,4 @@
-// Colors
+// Background Colors
 
 // General colors
 .u-fill--primary { background-color: $color-primary; }
@@ -18,3 +18,10 @@
 .u-fill--red { background-color: $color-red; }
 .u-fill--yellow { background-color: $color-yellow; }
 .u-fill--green { background-color: $color-green; }
+
+
+// Text Colors
+.u-color-primary { color: $color-primary; }
+.u-color--red { color: $color-red; }
+.u-color--yellow { color: $color-yellow; }
+.u-color--green { color: $color-green; }
