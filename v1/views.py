@@ -6,7 +6,9 @@ from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
-from . import utils, static
+from . import static
+from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
+from utils.common import jid_to_abbr, abbr_to_jid
 
 
 def jsonp(view_func):
@@ -77,10 +79,8 @@ def state_metadata(request, abbr):
 
 @jsonp
 def all_metadata(request):
-    return JsonResponse(
-        [utils.state_metadata(utils.jid_to_abbr(j.id), j) for j in jurisdictions_qs()],
-        safe=False
-    )
+    return JsonResponse([v1_metadata(jid_to_abbr(j.id), j) for j in jurisdictions_qs()],
+                        safe=False)
 
 
 @jsonp
@@ -88,9 +88,7 @@ def legislator_detail(request, id):
     person = get_object_or_404(person_qs(),
                                identifiers__scheme='legacy_openstates',
                                identifiers__identifier=id)
-    return JsonResponse(
-        utils.convert_legislator(person)
-    )
+    return JsonResponse(convert_legislator(person))
 
 
 @jsonp
@@ -123,7 +121,7 @@ def legislator_list(request, geo=False):
         ]
 
     if abbr:
-        jid = utils.abbr_to_jid(abbr)
+        jid = abbr_to_jid(abbr)
         filter_params.append(Q(memberships__organization__jurisdiction_id=jid))
     if chamber:
         filter_params.append(Q(memberships__organization__classification=chamber))
@@ -132,15 +130,12 @@ def legislator_list(request, geo=False):
 
     people = person_qs().filter(*filter_params).distinct()
 
-    return JsonResponse(
-        [utils.convert_legislator(l) for l in people],
-        safe=False
-    )
+    return JsonResponse([convert_legislator(l) for l in people], safe=False)
 
 
 @jsonp
 def district_list(request, abbr, chamber=None):
-    jid = utils.abbr_to_jid(abbr)
+    jid = abbr_to_jid(abbr)
     if chamber is None:
         posts = Post.objects.filter(
             organization__jurisdiction_id=jid,
@@ -152,10 +147,7 @@ def district_list(request, abbr, chamber=None):
 
     posts = posts.select_related('organization')
 
-    return JsonResponse(
-        [utils.convert_post(p) for p in posts],
-        safe=False
-    )
+    return JsonResponse([convert_post(p) for p in posts], safe=False)
 
 
 @jsonp
@@ -164,7 +156,7 @@ def bill_detail(request,
                 billy_bill_id=None,
                 ):
     if abbr:
-        jid = utils.abbr_to_jid(abbr)
+        jid = abbr_to_jid(abbr)
         params = {'legislative_session__jurisdiction_id': jid,
                   'legislative_session__identifier': session,
                   'identifier': bill_id}
@@ -178,7 +170,7 @@ def bill_detail(request,
 
     bills = bill_qs()
     bill = get_object_or_404(bills, **params)
-    return JsonResponse(utils.convert_bill(bill))
+    return JsonResponse(convert_bill(bill))
 
 
 @jsonp
@@ -194,7 +186,7 @@ def bill_list(request):
     too_big = True
     bills = bill_qs()
     if state:
-        jid = utils.abbr_to_jid(state)
+        jid = abbr_to_jid(state)
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
     if chamber:
         if state in ('ne', 'dc') and chamber == 'upper':
@@ -258,4 +250,4 @@ def bill_list(request):
         return JsonResponse("Bad Request: request too large, try narrowing your search by "
                             "adding more filters or using pagination.", status=400, safe=False)
 
-    return JsonResponse([utils.convert_bill(b) for b in bills], safe=False)
+    return JsonResponse([convert_bill(b) for b in bills], safe=False)

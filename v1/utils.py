@@ -1,8 +1,8 @@
-import datetime
 from collections import defaultdict
 import name_tools
 from . import static
-from utils.common import jid_to_abbr, abbr_to_jid
+from utils.common import jid_to_abbr
+from utils.people import get_current_role
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
@@ -41,7 +41,7 @@ def convert_post(post):
     }
 
 
-def state_metadata(abbr, jurisdiction):
+def v1_metadata(abbr, jurisdiction):
     orgs = {
         o.classification: o for o in
         jurisdiction.chambers
@@ -224,8 +224,6 @@ def convert_legislator(leg):
     chamber = None
     district = None
     state = None
-
-    today = datetime.date.today().strftime('%Y-%m-%d')
 
     cr = get_current_role(leg)
     party = cr['party']
