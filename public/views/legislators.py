@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse
 from opencivicdata.core.models import Person
 from graphapi.schema import schema
+from utils.people import get_current_role
 
 from ..utils import (
     get_chambers_from_state_abbr,
@@ -50,14 +51,19 @@ def _people_from_lat_lon(lat, lon):
 
 
 def _template_person(person):
+    cr = get_current_role(person)
+    try:
+        district = int(cr['district'])
+    except ValueError:
+        district = cr['district']
+
     obj = {
         'id': person.id,
         'name': person.name,
         'image': person.image,
-        'party': person.memberships.filter(
-                organization__classification='party').last().organization.name,
-        'district': get_legislative_post(p).label,
-        'chamber': get_legislative_post(p).organization.classification
+        'party': cr['party'],
+        'district': district,
+        'chamber': cr['chamber'],
         }
     return obj
 
@@ -81,17 +87,8 @@ def legislators(request, state):
     chambers = get_chambers_from_state_abbr(state)
 
     legislators = [
-        {
-            'id': p.id,
-            'name': p.name,
-            'image': p.image,
-            'party': p.memberships.filter(
-                organization__classification='party').last().organization.name,
-            'district': get_legislative_post(p).label,
-            'chamber': get_legislative_post(p).organization.classification
-        }
-        for p
-        in Person.objects.filter(memberships__organization__in=chambers)
+        _template_person(p)
+        for p in Person.objects.filter(memberships__organization__in=chambers)
     ]
 
     chambers = {c.classification: c.name for c in chambers}
