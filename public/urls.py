@@ -26,8 +26,8 @@ urlpatterns = [
     re_path(r'^person/.*\-(?P<person_id>[0-9A-Za-z]+)', person, name='person-detail'),
 
     re_path(r'^(?P<state>{})/bills$'.format(state_abbr_pattern), bills, name='bills'),
-    re_path(r'^(?P<state>{})/bills/(?P<bill_id>ocd-bill/{})$'.format(
-        state_abbr_pattern, OCD_ID_PATTERN), bill, name='bill'),
+    re_path(r'^(?P<state>{})/bills/(?P<session>\w+)/(?P<bill_id>\w+)$'.format(
+        state_abbr_pattern), bill, name='bill'),
 
     re_path(r'^(?P<state>{})/committees$'.format(state_abbr_pattern), committees,
             name='committees'),

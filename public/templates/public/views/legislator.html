@@ -52,7 +52,7 @@
         <h1>Sponsored Bills</h1>
         {% for bill in person.sponsored_bills %}
             <div>
-                <h2><a href="{% url 'bill' state bill.id %}">{{ bill.identifier }}</a></h2>
+                <h2><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></h2>
                 <span>{{ bill.title }}</span>
             </div>
         {% endfor %}

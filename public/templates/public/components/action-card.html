@@ -1,4 +1,14 @@
 <div>
-	<span>TO-DO: PERSON OR ORGANIZATION PERFORMING ACTION</span>
-	<span>{{ action.description }}</span>
+    <span>
+        {{ action.organization }}
+    </span>
+    <span>{{ action.description }}</span>
+    <span>{{ action.classification }}</span>
+    {% if action.related_entities.count %}
+    <ul>
+        {% for re in action.related_entities.all %}
+        <li>{{ re.entity_name }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 </div>

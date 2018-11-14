@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse
 from opencivicdata.core.models import Person
 from graphapi.schema import schema
-from utils.common import decode_uuid
-from utils.people import get_current_role, pretty_url
+from utils.common import decode_uuid, pretty_url
+from utils.people import get_current_role
 from utils.orgs import get_chambers_from_abbr
 
 

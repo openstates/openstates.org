@@ -1,0 +1,7 @@
+<li>
+    {{ document.note }}
+    {% for link in document.links.all %}
+        <span><a href="{{ link.url }}">{{ link.media_type }}</a></span>
+    {% endfor %}
+    <span><a href="#">second media type</a></span>
+</li>

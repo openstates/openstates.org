@@ -1,7 +1,9 @@
 from django.db.models import Min
 from django.shortcuts import get_object_or_404, render
 from opencivicdata.legislative.models import Bill
+from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
+from utils.bills import fix_bill_id
 
 
 def bills(request, state):
@@ -22,8 +24,13 @@ def bills(request, state):
     )
 
 
-def bill(request, state, bill_id):
-    bill = get_object_or_404(Bill, pk=bill_id)
+def bill(request, state, session, bill_id):
+    jid = abbr_to_jid(state)
+    identifier = fix_bill_id(bill_id)
+    bill = get_object_or_404(Bill,
+                             legislative_session__jurisdiction_id=jid,
+                             legislative_session__identifier=session,
+                             identifier=identifier)
 
     return render(
         request,
