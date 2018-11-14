@@ -71,16 +71,20 @@
 
 	<section>
 		<h1>Bill Text</h1>
-		<table>
-			<tbody>
-				{% for version in bill.versions.all reversed %}
-					<tr>
-						<td><a href="{{ version.links.first.url }}">{{ version.note }}</a></td>
-						<td>{{ version.links.first.media_type }}</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+		<ul>
+            {% for version in bill.versions.all reversed %}
+            {% document_card version %}
+            {% endfor %}
+		</ul>
+    </section>
+
+	<section>
+		<h1>Related Documents</h1>
+		<ul>
+            {% for document in bill.documents.all reversed %}
+            {% document_card document %}
+            {% endfor %}
+		</ul>
 	</section>
 
 	{% sources state bill.sources.all %}

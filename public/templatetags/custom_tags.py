@@ -4,9 +4,8 @@ from django import template
 from django.utils.safestring import mark_safe
 import us
 
-from utils.common import states
+from utils.common import states, pretty_url
 from utils.orgs import get_legislature_from_abbr
-from utils.people import pretty_url
 
 
 register = template.Library()
@@ -54,6 +53,11 @@ def vote_card(vote):
 def action_card(action):
     # Model needs to be wrapped in a dict, per custom-tag requirements
     return {'action': action}
+
+
+@register.inclusion_tag('public/components/document-card.html')
+def document_card(document):
+    return {'document': document}
 
 
 @register.filter()

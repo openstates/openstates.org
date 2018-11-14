@@ -1,6 +1,5 @@
 import datetime
-from django.utils.text import slugify
-from .common import jid_to_abbr, encode_uuid
+from .common import jid_to_abbr
 
 
 def get_current_role(person):
@@ -22,7 +21,3 @@ def get_current_role(person):
     return {'party': party, 'chamber': chamber, 'state': state,
             'district': post.label, 'division_id': post.division_id, 'role': post.role,
             }
-
-
-def pretty_url(person):
-    return f'/public/person/{slugify(person.name)}-{encode_uuid(person.id)}'
