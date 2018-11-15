@@ -19,8 +19,12 @@
       - uwsgi-plugin-python3
       - libxslt-dev
       - letsencrypt
+
 - name: add localhost alias
   lineinfile: dest=/etc/hosts line='127.0.0.1 beta.openstates.org'
+- name: add pgpass file
+  template: src=pgpass.j2 dest=/home/ubuntu/.pgpass mode=600
+
 - name: make project dir
   file: path=/home/openstates state=directory
 - name: add project user
@@ -35,6 +39,7 @@
 - name: add env_vars for project user
   template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
   become_user: "openstates"
+
 
 # letsencrypt
 - name: add letsencrypt renewal crontab

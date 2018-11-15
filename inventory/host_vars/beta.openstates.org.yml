@@ -12,6 +12,14 @@ django_environment:
     # STRIPE_SECRET_KEY: "{{ lookup('aws_ssm', '/site/STRIPE_SECRET_KEY') }}"
     RAVEN_DSN: "{{ lookup('aws_ssm', '/alpha/RAVEN_DSN') }}"
 
+# postgres
+pg_password: "{{ lookup('aws_ssm', '/bobsled/backups/PGPASSWORD') }}" 
+pg_host: "{{ lookup('aws_ssm', '/bobsled/backups/PGHOST') }}" 
+pg_user: "{{ lookup('aws_ssm', '/bobsled/backups/PGUSER') }}" 
+pg_port: 5432
+pg_database: openstatesorg
+
+# server config
 newrelic_key: "{{ lookup('aws_ssm', '/site/NEWRELIC_INI_KEY') }}" 
 server_name: beta.openstates.org
 # ssl_cert: /etc/letsencrypt/live/openstates.org/fullchain.pem
