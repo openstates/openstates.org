@@ -1,30 +1,22 @@
-# The new openstates.org, and API v2
+# new-openstates.org
+
 [![Build Status](https://travis-ci.org/openstates/new-openstates.org.svg?branch=develop)](https://travis-ci.org/openstates/new-openstates.org)
 
-## Summary
-
-### FrontEnd
-The frontend is a Django site, augmented by React for particular pages that require state management.
-
-### API
-
-GraphQL-based API, using Graphene.
-
-### Database
-
-The database is in [Open Civic Data](https://github.com/opencivicdata) format, managed by Django and powered by PostGIS.
+This project powers the future OpenStates.org, including the API.
 
 ## Developing
+
 ### Dependencies
-* [Python 3.5](https://www.python.org/) (with [pipenv](https://docs.pipenv.org/))
+* [Python 3.6](https://www.python.org/) (with [pipenv](https://docs.pipenv.org/))
 * PostgreSQL 9.4
 * PostGIS 2.3
-* [nvm](https://github.com/creationix/nvm#install-script)
+* recent version of npm
 
 ### Installing
 
 #### Python & Django
-Create a Python 3 virtual environment and install dependencies
+
+Install dependencies
 ```
 pipenv install
 ```
@@ -39,7 +31,7 @@ Populate the database
 
 If you have access to a `pgdump` file (for example, from the `openstates-backups` AWS S3 bucket with a filename ending in `openstatesorg.pgdump`), then you can load the data from that:
 ```
-pg_restore --dbname openstates PATH_TO_PGDUMP_FILE
+pg_restore --dbname openstatesorg PATH_TO_PGDUMP_FILE
 ```
 
 Without a `pgdump` file to restore from, you can instantiate an Open Civic Data database yourself and afterwards use `pupa update` scrapes to populate it with data:
@@ -51,11 +43,6 @@ DATABASE_URL=postgis://localhost/openstates ./manage.py loaddivisions us
 ```
 
 #### Frontend
-
-Use nvm to install the correct version of Node.js
-```
-nvm install
-```
 
 Install frontend dependencies
 ```
