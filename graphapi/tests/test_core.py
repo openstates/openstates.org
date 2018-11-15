@@ -82,7 +82,7 @@ def test_jurisdictions_num_queries_subquery(django_assert_num_queries):
 def test_jurisdiction_by_id(django_assert_num_queries):
     with django_assert_num_queries(5):
         result = schema.execute(''' {
-            jurisdiction(id:"ocd-jurisdiction/country:us/state:wy") {
+            jurisdiction(id:"ocd-jurisdiction/country:us/state:wy/government") {
                 name
                 legislativeSessions(first: 1) {
                     edges { node { identifier } }
@@ -116,6 +116,34 @@ def test_jurisdiction_by_name(django_assert_num_queries):
     assert result.errors is None
     assert len(result.data['jurisdiction']['legislativeSessions']['edges']) == 1
     assert len(result.data['jurisdiction']['organizations']['edges']) == 1
+
+
+@pytest.mark.django_db
+def test_jurisdiction_chambers_current_members(django_assert_num_queries):
+    with django_assert_num_queries(5):
+        result = schema.execute(''' {
+            jurisdiction(name:"Wyoming") {
+                chambers: organizations(classification:["upper", "lower"], first:2)
+                { edges { node {
+                    name
+                    currentMemberships {
+                        person { name }
+                    }
+                } }
+                }
+            }
+        }
+    ''')
+    assert result.errors is None
+    assert len(result.data['jurisdiction']['chambers']['edges']) == 2
+    assert set(('Wyoming House', 'Wyoming Senate')) == set(
+        edge['node']['name'] for edge in result.data['jurisdiction']['chambers']['edges']
+    )
+    people = []
+    for chamber in result.data['jurisdiction']['chambers']['edges']:
+        for m in chamber['node']['currentMemberships']:
+            people.append(m['person']['name'])
+    assert len(people) == 2
 
 
 @pytest.mark.django_db
@@ -206,7 +234,7 @@ def test_people_by_party():
 
 # @pytest.mark.django_db
 # def test_people_by_location():
-#     # TODO: not implemented yet
+#     # TODO: need data to test with
 #     pass
 
 
@@ -243,6 +271,83 @@ def test_people_num_queries(django_assert_num_queries):
     for person in result.data['people']['edges']:
         total_memberships += len(person['node']['currentMemberships'])
     assert total_memberships == 16      # 8 chambers + 8 parties
+
+
+@pytest.mark.django_db
+def test_people_total_count(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+        people(first: 50) {
+            totalCount
+            edges {
+                node {
+                    name
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert result.data['people']['totalCount'] == 8
+    assert len(result.data['people']['edges']) == 8
+
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+        people(first: 50, name: "Amanda") {
+            totalCount
+            edges {
+                node {
+                    name
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert result.data['people']['totalCount'] == 1
+    assert len(result.data['people']['edges']) == 1
+
+
+@pytest.mark.django_db
+def test_people_current_memberships_classification(django_assert_num_queries):
+    with django_assert_num_queries(3):
+        result = schema.execute(''' {
+        people(first: 50) {
+            edges {
+                node {
+                    currentMemberships(classification: "party") {
+                        organization { name }
+                    }
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert len(result.data['people']['edges']) == 8
+    total_memberships = 0
+    for person in result.data['people']['edges']:
+        total_memberships += len(person['node']['currentMemberships'])
+    assert total_memberships == 8      # Only the 8 parties should be returned
+
+
+@pytest.mark.django_db
+def test_people_old_memberships(django_assert_num_queries):
+    with django_assert_num_queries(3):
+        result = schema.execute('''{
+        people(first: 50) {
+            edges {
+                node {
+                    oldMemberships {
+                        organization { name }
+                    }
+                }
+            }
+        }
+        }''')
+    assert result.errors is None
+    assert len(result.data['people']['edges']) == 8
+    old_memberships = 0
+    for person in result.data['people']['edges']:
+        old_memberships += len(person['node']['oldMemberships'])
+    assert old_memberships == 1      # one old membership in test data right now
 
 
 @pytest.mark.django_db
@@ -335,3 +440,36 @@ def test_people_by_updated_since():
     assert len(result.data['all']['edges']) == 8
     assert len(result.data['some']['edges']) == 6
     assert len(result.data['none']['edges']) == 0
+
+
+@pytest.mark.django_db
+def test_jurisdiction_fragment(django_assert_num_queries):
+    with django_assert_num_queries(3):
+        result = schema.execute('''
+    fragment JurisdictionFields on JurisdictionNode {
+      id
+      name
+      url
+      legislativeSessions {
+        edges {
+          node {
+            name
+            startDate
+            endDate
+            classification
+            identifier
+          }
+        }
+      }
+    }
+
+    query jurisdictionsQuery {
+      jurisdictions {
+        edges {
+          node {
+            ...JurisdictionFields
+          }
+        }
+      }
+    }''')
+    assert result.errors is None

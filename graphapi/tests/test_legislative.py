@@ -109,7 +109,7 @@ def test_bill_by_id(django_assert_num_queries):
 def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(''' {
-            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak",
+            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak/government",
                  session:"2018",
                  identifier:"HB 1") {
                 title
@@ -117,6 +117,20 @@ def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
         }''')
         assert result.errors is None
         assert result.data['bill']['title'] == 'Moose Freedom Act'
+
+
+@pytest.mark.django_db
+def test_bill_openstates_url(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(''' {
+            bill(jurisdiction:"ocd-jurisdiction/country:us/state:ak/government",
+                 session:"2018",
+                 identifier:"HB 1") {
+            openstatesUrl
+            }
+        }''')
+        assert result.errors is None
+        assert result.data['bill']['openstatesUrl'] == 'https://openstates.org/ak/bills/2018/HB1'
 
 
 @pytest.mark.django_db
@@ -161,7 +175,7 @@ def test_bills_by_jurisdiction(django_assert_num_queries):
             ak: bills(jurisdiction:"Alaska", first: 50) {
                 edges { node { title } }
             }
-            wy: bills(jurisdiction:"ocd-jurisdiction/country:us/state:wy", first: 50) {
+            wy: bills(jurisdiction:"ocd-jurisdiction/country:us/state:wy/government", first: 50) {
                 edges { node { title } }
             }
         }''')
@@ -421,6 +435,19 @@ def test_bills_max_items():
 
 
 @pytest.mark.django_db
+def test_bills_total_count(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute('''{
+            bills(first: 5) {
+                totalCount
+                edges { node { identifier } }
+            }
+        }''')
+    assert result.data['bills']['totalCount'] == 26
+    assert len(result.data['bills']['edges']) == 5
+
+
+@pytest.mark.django_db
 def test_bills_by_sponsorships():
     result = schema.execute('''{
         bills(sponsor: {name: "Beth Two"}, first: 100) {
@@ -449,3 +476,49 @@ def test_bills_by_sponsorships():
     }''' % person.id)
     bills = [n['node']['identifier'] for n in result.data['bills']['edges']]
     assert len(bills) == 1
+
+
+@pytest.mark.django_db
+def test_bills_by_action_since():
+    result = schema.execute('''{
+        all: bills(actionSince: "2017-01", first:50) {
+            edges { node { title } }
+        }
+        some: bills(actionSince: "2018-02-28", first:50) {
+            edges { node { title } }
+        }
+        none: bills(actionSince: "2030", first:50) {
+            edges { node { title } }
+        }
+    }''')
+
+    assert result.errors is None
+    # HB2 bill doesn't have any actions
+    assert len(result.data['all']['edges']) == 25
+    # only HB1 has data after Feb 2018
+    assert len(result.data['some']['edges']) == 1
+    assert len(result.data['none']['edges']) == 0
+
+
+@pytest.mark.django_db
+def test_votes_via_person():
+    result = schema.execute('''{
+        people(name: "Amanda", first:100) {
+            edges {node {
+              votes {
+                option
+                voteEvent {
+                  motionText
+                  bill {
+                    identifier
+                  }
+                }
+              }
+            }}
+          }
+        }''')
+    assert result.errors is None
+    people = [n['node'] for n in result.data['people']['edges']]
+    assert len(people) == 1
+    assert people[0]['votes'][0]['option'] == 'yes'
+    assert people[0]['votes'][0]['voteEvent']['bill']['identifier'] == 'HB 1'

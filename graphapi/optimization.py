@@ -1,4 +1,5 @@
 import re
+from graphql.language.ast import FragmentSpread
 
 
 def _to_snake(word):
@@ -17,19 +18,25 @@ def transform_path(path):
 def get_field_names(info):
     # info.operation has the entire operation, could be used for
     # cross-query optimization potentially
-    return list(_yield_field_names(info.field_asts[0].selection_set, ''))
+    return list(_yield_field_names(info.field_asts[0].selection_set, '', info.fragments))
 
 
-def _yield_field_names(selection_set, prefix):
+def _yield_field_names(selection_set, prefix, fragments):
     if not selection_set:
         return
+
     for selection in selection_set.selections:
-        if selection.name.value not in ('edges', 'node'):
-            yield prefix + '.' + selection.name.value
-            new_prefix = prefix + '.' + selection.name.value
-            yield from _yield_field_names(selection.selection_set, new_prefix)
+        if isinstance(selection, FragmentSpread):
+            yield from _yield_field_names(fragments[selection.name.value].selection_set, prefix,
+                                          fragments)
         else:
-            yield from _yield_field_names(selection.selection_set, prefix)
+            # normal handling for Field selections
+            if selection.name.value not in ('edges', 'node'):
+                yield prefix + '.' + selection.name.value
+                new_prefix = prefix + '.' + selection.name.value
+                yield from _yield_field_names(selection.selection_set, new_prefix, fragments)
+            else:
+                yield from _yield_field_names(selection.selection_set, prefix, fragments)
 
 
 def optimize(queryset, info, prefetch, select_related=None, *, prefix=None):

@@ -1,7 +1,7 @@
 import graphene
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Max
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
-from .common import OCDBaseNode, DjangoConnectionField
+from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
 from .optimization import optimize
@@ -104,6 +104,9 @@ class BillNode(OCDBaseNode):
     sources = graphene.List(LinkNode)
     votes = DjangoConnectionField('graphapi.legislative.VoteConnection')
 
+    # extra fields
+    openstates_url = graphene.String()
+
     def resolve_abstracts(self, info):
         return self.abstracts.all()
 
@@ -145,7 +148,9 @@ class BillNode(OCDBaseNode):
     def resolve_sources(self, info):
         return self.sources.all()
 
-    def resolve_votes(self, info):
+    def resolve_votes(self, info,
+                      first=None, last=None, before=None, after=None,
+                      ):
         if 'votes' not in getattr(self, '_prefetched_objects_cache', []):
             return optimize(self.votes.all(), info, [
                 '.counts',
@@ -160,8 +165,14 @@ class BillNode(OCDBaseNode):
         else:
             return self.related_bills.all()
 
+    def resolve_openstates_url(self, info):
+        session = self.legislative_session
+        abbr = session.jurisdiction_id.split('/')[-2].split(':')[1]
+        identifier = self.identifier.replace(' ', '')
+        return f'https://openstates.org/{abbr}/bills/{session.identifier}/{identifier}'
 
-class BillConnection(graphene.relay.Connection):
+
+class BillConnection(CountableConnectionBase):
     class Meta:
         node = BillNode
 
@@ -173,11 +184,20 @@ class VoteCountNode(graphene.ObjectType):
     value = graphene.Int()
 
 
+# PersonVoteNode & BillVoteNode are the same underlying data, but only allow traversing
+# in a single direction -- it would be possible to combine these into a single object
+# but would lead to more loop potential
 class PersonVoteNode(graphene.ObjectType):
     option = graphene.String()
     voter_name = graphene.String()
     voter = graphene.Field(PersonNode)
     note = graphene.String()
+
+
+class BillVoteNode(graphene.ObjectType):
+    option = graphene.String()
+    note = graphene.String()
+    vote_event = graphene.Field('graphapi.legislative.VoteEventNode')
 
 
 class VoteEventNode(OCDBaseNode):
@@ -190,9 +210,9 @@ class VoteEventNode(OCDBaseNode):
 
     organization = graphene.Field(OrganizationNode)
     bill_action = graphene.Field(BillActionNode)
-    # not used for now since only path into VoteEvent is via Bill
-    # legislative_session = graphene.Field(LegislativeSessionNode)
-    # bill = graphene.Field(BillNode)
+
+    legislative_session = graphene.Field(LegislativeSessionNode)
+    bill = graphene.Field(BillNode)
 
     # related entities
     votes = graphene.List(PersonVoteNode)
@@ -235,15 +255,15 @@ class LegislativeQuery:
                                   subject=graphene.String(),
                                   sponsor=SponsorInput(),
                                   classification=graphene.String(),
+                                  action_since=graphene.String(),
                                   )
 
     def resolve_bills(self, info,
                       before=None, after=None, first=None, last=None,
                       jurisdiction=None, chamber=None, session=None,
                       updated_since=None, classification=None,
-                      subject=None, sponsor=None,
+                      subject=None, sponsor=None, action_since=None,
                       ):
-        # bill_id/bill_id__in
         # q (full text)
         bills = Bill.objects.all()
 
@@ -259,6 +279,9 @@ class LegislativeQuery:
             bills = bills.filter(classification__contains=[classification])
         if subject:
             bills = bills.filter(subject__contains=[subject])
+        if action_since:
+            bills = bills.annotate(latest_action_date=Max('actions__date'))
+            bills = bills.filter(latest_action_date__gte=action_since)
         if sponsor:
             sponsor_args = {}
             if 'primary' in sponsor:

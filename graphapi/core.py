@@ -1,8 +1,10 @@
 import datetime
 import graphene
 from django.db.models import Q, Prefetch
+from django.contrib.gis.geos import Point
 from opencivicdata.core.models import Jurisdiction, Organization, Person, Membership
-from .common import OCDBaseNode, IdentifierNode, NameNode, LinkNode, DjangoConnectionField
+from .common import (OCDBaseNode, IdentifierNode, NameNode, LinkNode, DjangoConnectionField,
+                     CountableConnectionBase)
 from .optimization import optimize
 
 
@@ -11,26 +13,42 @@ def _resolve_suborganizations(root_obj, field_name, classification=None):
 
     # special case filtering if organizations are prefetched
     if classification and field_name in getattr(root_obj, '_prefetched_objects_cache', []):
-        return [o for o in root_obj._prefetched_objects_cache[field_name]
-                if o.classification == classification]
+        if isinstance(classification, str):
+            return [o for o in root_obj._prefetched_objects_cache[field_name]
+                    if o.classification == classification]
+        elif isinstance(classification, (list, tuple)):
+            return [o for o in root_obj._prefetched_objects_cache[field_name]
+                    if o.classification in classification]
 
     qs = getattr(root_obj, field_name).all()
 
-    if classification:
+    if isinstance(classification, str):
         qs = qs.filter(classification=classification)
+    elif isinstance(classification, (list, tuple)):
+        qs = qs.filter(classification__in=classification)
 
     return qs
 
 
-def _current_membership_filter(qs, info, classification=None, prefix=None):
+def _membership_filter(qs, info, classification=None, prefix=None, current=False,
+                       coming_from_person=True):
     today = datetime.date.today().isoformat()
-    qs = qs.filter(Q(start_date='') | Q(start_date__lte=today),
-                   Q(end_date='') | Q(end_date__gte=today))
+    if current:
+        qs = qs.filter(Q(start_date='') | Q(start_date__lte=today),
+                       Q(end_date='') | Q(end_date__gte=today))
+    else:
+        qs = qs.filter(Q(start_date__gte=today) | (Q(end_date__lte=today) & ~Q(end_date='')))
     if classification:
         qs = qs.filter(organization__classification__in=classification)
 
+    related = ['.post', '.post.division']
+    if coming_from_person:
+        related.append('.organization')
+    else:
+        related.append('.person')
+
     # if we're getting a membership we're probably going to need org/post
-    qs = optimize(qs, info, None, ['.organization', '.post', '.post.division'], prefix=prefix)
+    qs = optimize(qs, info, None, related, prefix=prefix)
     return qs
 
 
@@ -51,9 +69,9 @@ class OrganizationNode(OCDBaseNode):
 
     # self-referential relationship
     parent = graphene.Field('graphapi.core.OrganizationNode')
-    # children = graphene.List('graphapi.core.OrganizationNode')
     children = DjangoConnectionField('graphapi.core.OrganizationConnection',
                                      classification=graphene.String())
+    current_memberships = graphene.List('graphapi.core.MembershipNode')
 
     # related objects
     identifiers = graphene.List(IdentifierNode)
@@ -64,6 +82,13 @@ class OrganizationNode(OCDBaseNode):
     def resolve_children(self, info, classification=None,
                          first=None, last=None, before=None, after=None):
         return _resolve_suborganizations(self, 'children', classification)
+
+    def resolve_current_memberships(self, info):
+        if hasattr(self, 'current_memberships'):
+            return self.current_memberships
+        else:
+            return _membership_filter(self.memberships, info, None, current=True,
+                                      coming_from_person=False)
 
     def resolve_identifiers(self, info):
         return self.identifiers.all()
@@ -117,6 +142,10 @@ class PersonNode(OCDBaseNode):
     current_memberships = graphene.List('graphapi.core.MembershipNode',
                                         classification=graphene.List(graphene.String)
                                         )
+    old_memberships = graphene.List('graphapi.core.MembershipNode',
+                                    classification=graphene.List(graphene.String)
+                                    )
+    votes = graphene.List('graphapi.legislative.BillVoteNode')
 
     def resolve_identifiers(self, info):
         return self.identifiers.all()
@@ -135,9 +164,24 @@ class PersonNode(OCDBaseNode):
 
     def resolve_current_memberships(self, info, classification=None):
         if hasattr(self, 'current_memberships'):
+            if classification:
+                return [m for m in self.current_memberships
+                        if m.organization.classification in classification]
             return self.current_memberships
         else:
-            return _current_membership_filter(self.memberships, info, classification)
+            return _membership_filter(self.memberships, info, classification, current=True)
+
+    def resolve_old_memberships(self, info, classification=None):
+        if hasattr(self, 'old_memberships'):
+            if classification:
+                return [m for m in self.old_memberships
+                        if m.organization.classification in classification]
+            return self.old_memberships
+        else:
+            return _membership_filter(self.memberships, info, classification, current=False)
+
+    def resolve_votes(self, info):
+        return self.votes.all()
 
 
 class MembershipNode(OCDBaseNode):
@@ -168,7 +212,7 @@ class LegislativeSessionConnection(graphene.relay.Connection):
         node = LegislativeSessionNode
 
 
-class OrganizationConnection(graphene.relay.Connection):
+class OrganizationConnection(CountableConnectionBase):
     class Meta:
         node = OrganizationNode
 
@@ -179,13 +223,11 @@ class JurisdictionNode(graphene.ObjectType):
     id = graphene.String()
     name = graphene.String()
     url = graphene.String()
-    # always Government within OS
-    # classification = graphene.String()
     feature_flags = graphene.List(graphene.String)
 
     legislative_sessions = DjangoConnectionField(LegislativeSessionConnection)
     organizations = DjangoConnectionField(OrganizationConnection,
-                                          classification=graphene.String())
+                                          classification=graphene.List(graphene.String))
 
     def resolve_legislative_sessions(self, info,
                                      first=None, last=None, before=None, after=None):
@@ -202,7 +244,7 @@ class JurisdictionConnection(graphene.relay.Connection):
         node = JurisdictionNode
 
 
-class PersonConnection(graphene.relay.Connection):
+class PersonConnection(CountableConnectionBase):
     class Meta:
         node = PersonNode
 
@@ -265,11 +307,13 @@ class CoreQuery:
 
         if latitude and longitude:
             try:
-                # TODO: limit to current
+                today = datetime.date.today()
                 qs = qs.filter(
-                    memberships__post__division__geometries__boundary__shape__contains=(
-                        'POINT({} {})'.format(longitude, latitude)
-                    )
+                    Q(memberships__post__division__geometries__boundary__shape__contains=(
+                        Point(float(longitude), float(latitude))
+                    )),
+                    Q(memberships__post__division__geometries__boundary__set__end_date=None) |
+                    Q(memberships__post__division__geometries__boundary__set__end_date__gt=today)
                 )
             except ValueError:
                 raise ValueError('invalid lat or lon')
@@ -284,9 +328,18 @@ class CoreQuery:
             '.contactDetails',
             ('.currentMemberships',
              Prefetch('memberships',
-                      queryset=_current_membership_filter(Membership.objects, info,
-                                                          prefix='.currentMemberships'),
+                      queryset=_membership_filter(Membership.objects, info,
+                                                  prefix='.currentMemberships',
+                                                  current=True,
+                                                  ),
                       to_attr='current_memberships')),
+            ('.oldMemberships',
+             Prefetch('memberships',
+                      queryset=_membership_filter(Membership.objects, info,
+                                                  prefix='.oldMemberships',
+                                                  current=False,
+                                                  ),
+                      to_attr='old_memberships')),
         ])
 
         return qs

@@ -30,4 +30,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-Pipfile.lock
+# shapefiles
+geo/shapefiles/nh*
+geo/shapefiles/sldl*
+geo/shapefiles/sldu*

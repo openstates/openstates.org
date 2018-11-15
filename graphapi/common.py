@@ -61,4 +61,18 @@ class DjangoConnectionField(graphene.relay.ConnectionField):
             list_slice_length=_len,
         )
         connection.iterable = resolved
+        connection._len = _len
         return connection
+
+
+class CountableConnectionBase(graphene.relay.Connection):
+    class Meta:
+        abstract = True
+
+    total_count = graphene.Int()
+
+    def resolve_total_count(self, info):
+        count = getattr(self, '_len')
+        if count is None:
+            count = self.iterable.count()
+        return count

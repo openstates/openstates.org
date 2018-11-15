@@ -1,49 +1,43 @@
 # The new openstates.org, and API v2
+[![Build Status](https://travis-ci.org/openstates/new-openstates.org.svg?branch=develop)](https://travis-ci.org/openstates/new-openstates.org)
 
 ## Summary
 
-### FrontEnd 
+### FrontEnd
 The frontend is a Django site, augmented by React for particular pages that require state management.
 
 ### API
 
-_Needs to be filled out by @jamesturk_
+GraphQL-based API, using Graphene.
 
 ### Database
 
-The database in the OCD schema, managed by Django and powered by PostGIS.
+The database is in [Open Civic Data](https://github.com/opencivicdata) format, managed by Django and powered by PostGIS.
 
 ## Developing
 ### Dependencies
-* [Python 3.5](https://www.python.org/) (with [pip](https://pip.pypa.io/en/stable/) and [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/))
+* [Python 3.5](https://www.python.org/) (with [pipenv](https://docs.pipenv.org/))
 * PostgreSQL 9.4
 * PostGIS 2.3
 * [nvm](https://github.com/creationix/nvm#install-script)
 
-
 ### Installing
 
 #### Python & Django
-Create a Python 3 virtual environment
+Create a Python 3 virtual environment and install dependencies
 ```
-mkvirtualenv --python=$(which python3) openstates
-```
-
-Install dependencies
-```
-pip install -r requirements.txt
+pipenv install
 ```
 
-Create the database
-
+Create the database and user
 ```
-createdb openstates
+psql -c "CREATE USER openstates CREATEDB SUPERUSER;" -U postgres
+createdb openstatesorg
 ```
 
 Populate the database
 
-If you have access to an Open Civic Data `pgdump` file (for example, from the `openstates-backups` AWS S3 bucket with a filename ending in `openstatesorg.pgdump`), then you can load the data from that:
-
+If you have access to a `pgdump` file (for example, from the `openstates-backups` AWS S3 bucket with a filename ending in `openstatesorg.pgdump`), then you can load the data from that:
 ```
 pg_restore --dbname openstates PATH_TO_PGDUMP_FILE
 ```
@@ -56,7 +50,7 @@ DATABASE_URL=postgis://localhost/openstates ./manage.py migrate
 DATABASE_URL=postgis://localhost/openstates ./manage.py loaddivisions us
 ```
 
-#### Frontend 
+#### Frontend
 
 Use nvm to install the correct version of Node.js
 ```
@@ -76,8 +70,7 @@ npm run build
 
 ### Running the project locally
 
-Start up the Django webserver. Make sure that your environment's `DATABASE_URL` exists, and starts with `postgis://`, such as `postgis://localhost/openstates`.
-
+Start up the Django webserver.
 ```
 ./manage.py runserver
 ```

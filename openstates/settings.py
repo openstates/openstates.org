@@ -40,6 +40,7 @@ if os.environ.get('DEBUG', 'true').lower() == 'false':
     EMAIL_USE_TLS = True
     REGISTRATION_DEFAULT_FROM_EMAIL = DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ.get(
         'DEFAULT_FROM_EMAIL', 'contact@openstates.org')
+    GRAPHQL_DEMO_KEY = os.environ['GRAPHQL_DEMO_KEY']
     # enable once SSL is ready
     # SECURE_HSTS_SECONDS = 3600
     # SECURE_SSL_REDIRECT = True
@@ -58,10 +59,11 @@ else:
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
     ]
+    GRAPHQL_DEMO_KEY = 'graphiql-demo-key'
 
 DATABASE_URL = os.environ.get(
     'DATABASE_URL',
-    'sqlite:///' + os.path.join(os.path.dirname(__file__), 'openstates.sqlite3')
+    'postgis://openstates@localhost/openstatesorg'
 )
 DATABASES = {'default': dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
@@ -78,15 +80,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'raven.contrib.django.raven_compat',
     'webpack_loader',
     'opencivicdata.core.apps.BaseConfig',
     'opencivicdata.legislative.apps.BaseConfig',
+    'boundaries',
+    'geo',
     'pupa',
     'graphene_django',
     'public.apps.PublicConfig',
     'graphapi',
-    'dataquality',
+    'v1',
+    'simplekeys',
     # 'silk',
 ]
 
@@ -99,6 +105,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simplekeys.middleware.SimpleKeysMiddleware',
     # 'silk.middleware.SilkyMiddleware',
 ]
 
@@ -137,6 +144,25 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, '/public/static/'),
 )
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'graphapi': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+
 # Django Webpack Loader Settings
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -145,15 +171,17 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map']
     }
 }
 
+# Boundaries
+BOUNDARIES_SHAPEFILES_DIR = 'shapefiles'
+
 
 # API
-
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'^/graphql/.*$'
+CORS_URLS_REGEX = r'^/(graphql|api/v1)/.*$'
 CORS_ALLOW_METHODS = ['GET', 'POST', 'OPTIONS']
 
 
@@ -161,3 +189,10 @@ GRAPHENE = {
     'SCHEMA': 'graphapi.schema.schema',
     'MIDDLEWARE': []
 }
+
+SIMPLEKEYS_ZONE_PATHS = [
+    ('/api/v1/legislators/geo/', 'geo'),
+    ('/api/v1/', 'default'),
+]
+SIMPLEKEYS_ERROR_NOTE = ('https://openstates.org/api/register/ for API key. '
+                         'contact@openstates.org to raise limits')
