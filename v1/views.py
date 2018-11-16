@@ -191,6 +191,7 @@ def bill_list(request):
     updated_since = request.GET.get('updated_since')
     sort = request.GET.get('sort', 'last')
 
+    too_big = True
     bills = bill_qs()
     if state:
         jid = utils.abbr_to_jid(state)
@@ -201,10 +202,13 @@ def bill_list(request):
         bills = bills.filter(from_organization__classification=chamber)
     if query:
         bills = bills.filter(title__icontains=query)
+        too_big = False
     if updated_since:
         bills = bills.filter(updated_at__gt=updated_since)
+        too_big = False
     if bill_id:
         bills = bills.filter(identifier=bill_id)
+        too_big = False
 
     # search_window only ever really worked w/ state- and judging by analytics that's how
     # it was used in every case
@@ -214,13 +218,16 @@ def bill_list(request):
                 jurisdiction_id=jid
             ).order_by('-start_date').values_list('identifier', flat=True)[0]
             bills = bills.filter(legislative_session__identifier=latest_session)
+            too_big = False
         elif search_window == 'term':
             latest_sessions = static.TERMS[state][-1]['sessions']
             bills = bills.filter(legislative_session__identifier__in=latest_sessions)
+            too_big = False
         elif search_window.startswith('session:'):
             bills = bills.filter(
                 legislative_session__identifier=search_window.split('session:')[1]
             )
+            too_big = False
         elif search_window != 'all':
             raise ValueError('invalid search_window. valid choices are "term", "session", "all"')
 
@@ -246,10 +253,9 @@ def bill_list(request):
         start = per_page * (page - 1)
         end = start + per_page
         bills = bills[start:end]
-    else:
-        # limit response size
-        if len(bills) > 1000:
-            return JsonResponse("Bad Request: request too large, try narrowing your search by "
-                                "adding more filters.", status=400, safe=False)
+        too_big = False
+    elif too_big or bills.count() > 200:
+        return JsonResponse("Bad Request: request too large, try narrowing your search by "
+                            "adding more filters or using pagination.", status=400, safe=False)
 
     return JsonResponse([utils.convert_bill(b) for b in bills], safe=False)
