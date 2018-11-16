@@ -1,4 +1,5 @@
 import datetime
+import functools
 from django.http import JsonResponse
 from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
@@ -8,12 +9,26 @@ from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
 from . import utils, static
 
 
+def jsonp(view_func):
+    @functools.wraps(view_func)
+    def new_view(request, *args, **kwargs):
+        callback = request.GET.get('callback')
+        resp = view_func(request, *args, **kwargs)
+        print(callback)
+        if callback:
+            resp.content = bytes(callback, 'utf8') + b'(' + resp.content + b')'
+        return resp
+    return new_view
+
 # these are to mimic empty committee/event responses
 
+
+@jsonp
 def empty_list(request):
     return JsonResponse([], safe=False)
 
 
+@jsonp
 def item_404(request, id):
     return JsonResponse("Not Found", safe=False, status=404)
 
@@ -53,12 +68,14 @@ def person_qs():
     )
 
 
+@jsonp
 def state_metadata(request, abbr):
     jid = utils.abbr_to_jid(abbr)
     jurisdiction = jurisdictions_qs().get(pk=jid)
     return JsonResponse(utils.state_metadata(abbr, jurisdiction))
 
 
+@jsonp
 def all_metadata(request):
     return JsonResponse(
         [utils.state_metadata(utils.jid_to_abbr(j.id), j) for j in jurisdictions_qs()],
@@ -66,6 +83,7 @@ def all_metadata(request):
     )
 
 
+@jsonp
 def legislator_detail(request, id):
     person = get_object_or_404(person_qs(),
                                identifiers__scheme='legacy_openstates',
@@ -75,6 +93,7 @@ def legislator_detail(request, id):
     )
 
 
+@jsonp
 def legislator_list(request, geo=False):
     abbr = request.GET.get('state')
     chamber = request.GET.get('chamber')
@@ -119,6 +138,7 @@ def legislator_list(request, geo=False):
     )
 
 
+@jsonp
 def district_list(request, abbr, chamber=None):
     jid = utils.abbr_to_jid(abbr)
     if chamber is None:
@@ -138,6 +158,7 @@ def district_list(request, abbr, chamber=None):
     )
 
 
+@jsonp
 def bill_detail(request,
                 abbr=None, session=None, bill_id=None, chamber=None,
                 billy_bill_id=None,
@@ -160,6 +181,7 @@ def bill_detail(request,
     return JsonResponse(utils.convert_bill(bill))
 
 
+@jsonp
 def bill_list(request):
     state = request.GET.get('state')
     chamber = request.GET.get('chamber')
