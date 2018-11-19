@@ -361,6 +361,30 @@ def test_bills_queries(django_assert_num_queries):
     assert len(result.data['bills']['edges']) == 26
 
 
+@pytest.mark.django_db()
+def test_bills_subfields():
+    result = schema.execute('''{
+        bills(first: 100) {
+            edges { node {
+                versions {links { url }}
+                documents {links { url }}
+            } }
+        }
+    }
+    ''')
+    version_urls = []
+    document_urls = []
+    for node in result.data['bills']['edges']:
+        for v in node['node']['versions']:
+            for link in v['links']:
+                version_urls.append(link['url'])
+        for v in node['node']['documents']:
+            for link in v['links']:
+                document_urls.append(link['url'])
+    assert len(version_urls) == 4
+    assert len(document_urls) == 2
+
+
 @pytest.mark.django_db
 def test_bills_pagination_forward():
     bills = []
