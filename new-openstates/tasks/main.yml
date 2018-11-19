@@ -18,30 +18,30 @@
       - nginx
       - uwsgi-plugin-python3
       - libxslt-dev
-      - letsencrypt
+      - certbot
+      - python3-certbot-dns-route53
 
 - name: add localhost alias
   lineinfile: dest=/etc/hosts line='127.0.0.1 beta.openstates.org'
 - name: add pgpass file
   template: src=pgpass.j2 dest=/home/ubuntu/.pgpass mode=600
 
+# user home directory
 - name: make project dir
   file: path=/home/openstates state=directory
 - name: add project user
   user: name=openstates home=/home/openstates shell=/bin/bash state=present
 - name: chown user directory
   file: path=/home/openstates owner=openstates
-- name: add user subdirectories
-  file: path=/home/openstates/{{item}} owner=openstates state=directory
-  with_items:
-    - letsencrypt
-  become_user: "openstates"
 - name: add env_vars for project user
   template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
   become_user: "openstates"
 
 
 # letsencrypt
+
+- name: add letsencrypt cert
+  command: certbot certonly --dns-route53 -d beta.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/beta.openstates.org/fullchain.pem
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
 - name: restart nginx weekly
