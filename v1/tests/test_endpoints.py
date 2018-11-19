@@ -116,24 +116,25 @@ def test_bill_detail_alternate_forms(client):
 
 @pytest.mark.django_db
 def test_bill_list_basic(client, django_assert_num_queries):
-    with django_assert_num_queries(18):
-        resp = client.get('/api/v1/bills/')
+    with django_assert_num_queries(19):
+        # need updated_since on there to avoid too-big detection
+        resp = client.get('/api/v1/bills/?updated_since=2017-01-01')
         assert len(resp.json()) == 26
         assert resp.status_code == 200
 
 
 @pytest.mark.django_db
 def test_bill_list_state_param(client):
-    wy = client.get('/api/v1/bills/?state=wy')
-    ak = client.get('/api/v1/bills/?state=ak')
+    wy = client.get('/api/v1/bills/?state=wy&updated_since=2017-01-01')
+    ak = client.get('/api/v1/bills/?state=ak&updated_since=2017-01-01')
     assert len(wy.json()) + len(ak.json()) == 26
 
 
 @pytest.mark.django_db
 def test_bill_list_chamber_param(client):
-    wy = client.get('/api/v1/bills/?state=wy')
-    upper = client.get('/api/v1/bills/?state=wy&chamber=upper')
-    lower = client.get('/api/v1/bills/?state=wy&chamber=lower')
+    wy = client.get('/api/v1/bills/?state=wy&updated_since=2017-01-01')
+    upper = client.get('/api/v1/bills/?state=wy&chamber=upper&updated_since=2017-01-01')
+    lower = client.get('/api/v1/bills/?state=wy&chamber=lower&updated_since=2017-01-01')
     assert len(upper.json()) + len(lower.json()) == len(wy.json())
 
 
@@ -152,7 +153,7 @@ def test_bill_list_q_param(client):
 
 @pytest.mark.django_db
 def test_bill_list_search_window_param(client):
-    wy = client.get('/api/v1/bills/?state=wy')
+    wy = client.get('/api/v1/bills/?state=wy&updated_since=2017-01-01')
     session2017 = client.get('/api/v1/bills/?state=wy&search_window=session:2017')
     session2018 = client.get('/api/v1/bills/?state=wy&search_window=session:2018')
     session_now = client.get('/api/v1/bills/?state=wy&search_window=session')
@@ -170,13 +171,13 @@ def test_bill_list_updated_since_param(client):
 
 @pytest.mark.django_db
 def test_bill_list_sort(client):
-    all = client.get('/api/v1/bills/?sort=created_at').json()
+    all = client.get('/api/v1/bills/?sort=created_at&updated_since=2017-01-01').json()
     assert all[0]['created_at'] >= all[10]['created_at'] >= all[-1]['created_at']
 
     some_bill = Bill.objects.all()[16]
     some_bill.title = 'latest updated'
     some_bill.save()
-    all = client.get('/api/v1/bills/?sort=updated_at').json()
+    all = client.get('/api/v1/bills/?sort=updated_at&updated_since=2017-01-01').json()
     assert all[0]['updated_at'] >= all[10]['updated_at'] >= all[-1]['updated_at']
     assert all[0]['title'] == 'latest updated'
 
