@@ -8,7 +8,7 @@
         <h2>{{ person.name }}</h2>
         <span>{{ person.current_role.party }} · {{ person.current_role.role }} · District {{ person.current_role.district }}</span>
 
-        <div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.division_id }}"></div>
+        <div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.current_role.division_id }}"></div>
 
         <div class="contact-details">
         {% if person.all_contact_details %}
