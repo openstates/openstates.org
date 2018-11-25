@@ -1,10 +1,9 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse
-from opencivicdata.core.models import Person
 from graphapi.schema import schema
-from utils.common import decode_uuid, pretty_url
-from utils.people import get_current_role
+from utils.common import decode_uuid
 from utils.orgs import get_chambers_from_abbr
+from ..models import PersonProxy
 
 
 def _people_from_lat_lon(lat, lon):
@@ -47,25 +46,6 @@ def _people_from_lat_lon(lat, lon):
     return people
 
 
-def _template_person(person):
-    cr = get_current_role(person)
-    try:
-        district = int(cr['district'])
-    except ValueError:
-        district = cr['district']
-
-    obj = {
-        'id': person.id,
-        'name': person.name,
-        'image': person.image,
-        'party': cr['party'],
-        'district': district,
-        'chamber': cr['chamber'],
-        'pretty_url': pretty_url(person),
-        }
-    return obj
-
-
 def find_your_legislator(request):
     lat = request.GET.get('lat')
     lon = request.GET.get('lon')
@@ -85,8 +65,7 @@ def legislators(request, state):
     chambers = get_chambers_from_abbr(state)
 
     legislators = [
-        _template_person(p)
-        for p in Person.objects.filter(memberships__organization__in=chambers)
+        p.as_dict() for p in PersonProxy.objects.filter(memberships__organization__in=chambers)
     ]
 
     chambers = {c.classification: c.name for c in chambers}
@@ -107,17 +86,9 @@ def person(request, person_id):
     RECENT_VOTES_TO_SHOW = 3
 
     ocd_person_id = decode_uuid(person_id)
-    person = get_object_or_404(Person, pk=ocd_person_id)
+    person = get_object_or_404(PersonProxy, pk=ocd_person_id)
 
-    cur_role = get_current_role(person)
-
-    person.party = cur_role['party']
-    person.role = cur_role['role']
-    person.district = cur_role['district']
-    state = cur_role['state']
-
-    person.committee_memberships = person.memberships.filter(
-        organization__classification='committee').all()
+    state = person.current_role['state']
 
     person.all_contact_details = person.contact_details.order_by('note')
 

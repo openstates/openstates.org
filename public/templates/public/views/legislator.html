@@ -4,13 +4,9 @@
 
 {% block content %}
     <section>
-        {% if person.image %}
-            <img src="{{ person.image }}" alt="legislator headshot" />
-        {% else %}
-            <img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
-        {% endif %}
+        <img src="{{ person.image_url }}" alt="legislator headshot" />
         <h2>{{ person.name }}</h2>
-        <span>{{ person.party }} · {{ person.role }} · District {{ person.district }}</span>
+        <span>{{ person.current_role.party }} · {{ person.current_role.role }} · District {{ person.current_role.district }}</span>
 
         <div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.division_id }}"></div>
 
