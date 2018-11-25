@@ -10,4 +10,11 @@
         window.legislators = {{ legislators|jsonify }};
         window.chambers = {{ chambers|jsonify }};
     </script>
+    <noscript>
+        <ul>
+        {% for leg in legislators %}
+        <li><a href="{{ leg.pretty_url }}">{{ leg.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </noscript>
 {% endblock %}
