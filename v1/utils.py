@@ -17,6 +17,7 @@ def jid_to_abbr(j):
 
 
 def abbr_to_jid(abbr):
+    abbr = abbr.lower()
     if abbr == 'dc':
         return 'ocd-jurisdiction/country:us/district:dc/government'
     elif abbr == 'pr':
