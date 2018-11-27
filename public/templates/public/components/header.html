@@ -1,24 +1,41 @@
-<header>
-    <a href="{% url 'home' %}"><img alt="Open States logo" /></a>
-    {% if not disable_state_nav %}
-	<nav>
-		<select onchange="window.location.href = {% url 'home' %} + this.value">
-			{% if not state %}
-				<option value="">Select a state</option>
-			{% endif %}
-			{% for st in states %}
-				<option value="{{ st.abbr|lower }}" {% if st.abbr|lower == state %}selected{% endif %}>{{ st.name }}</option>
-			{% endfor %}
-		</select>
+<header class="header">
+    <div class="grid-container">
+        <a href="{% url 'home' %}">
+            <img class="header__logo" width="300" src="https://openstates.org/media/images/logo.1ebcbdb5b9ac.png">
+        </a>
+    </div>
 
-		{% if state %}
-			<ul>
-				<li><a href="{% url 'state' state %}">Overview</a></li>
-				<li><a href="{% url 'legislators' state %}">Legislators</a></li>
-				<li><a href="{% url 'bills' state %}">Bills</a></li>
-				<li><a href="{% url 'committees' state %}">Committees</a></li>
-			</ul>
-		{% endif %}
-    </nav>
+    {% if not disable_state_nav %}    
+    <div class="navigation">
+        <div class="grid-container">
+            <div class="navigation__container">
+
+                <div class="navigation__section">
+                    <div class="navigation__select-wrapper">
+                        <select class="navigation__select" onchange="window.location.href = {% url 'home' %} + this.value">
+                            {% if not state %}
+                                <option value="">Select a state</option>
+                            {% endif %}
+                            {% for st in states %}
+                                <option value="{{ st.abbr|lower }}" {% if st.abbr|lower == state %}selected{% endif %}>{{ st.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="navigation__section">
+                    <ul class="navigation__menu">
+                    {% if state %}
+                        <li><a href="{% url 'state' state %}">Overview </a></li>
+                        <li><a href="{% url 'legislators' state %}">Legislators</a></li>
+                        <li><a class="is-active" href="{% url 'bills' state %}">Bills</a></li>
+                        <li><a href="{% url 'committees' state %}">Committees</a></li>
+                    {% endif %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
     {% endif %}
 </header>
