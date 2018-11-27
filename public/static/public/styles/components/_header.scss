@@ -44,6 +44,17 @@
         padding: 1rem;
         color: $color-secondary;
 
+        @include breakpoint(medium) {
+            border-bottom: 0px solid darken($color-gray, 10%);
+            transition: border-bottom 200ms;
+        }
+
+        &:hover {
+            @include breakpoint(medium) {
+                border-bottom: 4px solid darken($color-gray, 10%);
+            }
+        }
+
         &.is-active {
             font-weight: bold;
             
@@ -62,8 +73,7 @@
             }
 
             @include breakpoint(medium) {
-                border-bottom: 3px solid $color-primary;
-                background-color: transparent;
+                border-bottom: 4px solid $color-primary;
                 color: $color-primary;
             }
         }
