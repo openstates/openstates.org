@@ -10,8 +10,7 @@
         <div class="grid-container">
             <div class="navigation__container">
 
-                <div class="navigation__section">
-                    <div class="navigation__select-wrapper">
+                    <div class="navigation__section navigation__select-wrapper">
                         <select class="navigation__select" onchange="window.location.href = {% url 'home' %} + this.value">
                             {% if not state %}
                                 <option value="">Select a state</option>
@@ -21,10 +20,8 @@
                             {% endfor %}
                         </select>
                     </div>
-                </div>
 
-                <div class="navigation__section">
-                    <ul class="navigation__menu">
+                    <ul class="navigation__section navigation__menu">
                     {% if state %}
                         <li><a href="{% url 'state' state %}">Overview </a></li>
                         <li><a href="{% url 'legislators' state %}">Legislators</a></li>
@@ -32,7 +29,6 @@
                         <li><a href="{% url 'committees' state %}">Committees</a></li>
                     {% endif %}
                     </ul>
-                </div>
 
             </div>
         </div>
