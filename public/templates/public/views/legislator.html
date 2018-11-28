@@ -10,7 +10,7 @@
         <div class="overview__header">
             {% if person.image %}
                 <!-- TODO: Replace img source with resized thumbnails -->
-                <img class="card__image" src="{{ person.image }}" alt="Official headshot of {{ person.name }}">
+                <img class="thumbnail mr1" src="{{ person.image }}" alt="Headshot of {{ person.name }}">
             {% else %}
                 <div class="card__image card__image--placeholder"></div>
             {% endif %}
@@ -78,7 +78,7 @@
             {% endfor %}
         </div>
         {% endif %}
-        
+
     </div>
 </section>
 
