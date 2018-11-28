@@ -34,7 +34,7 @@
 // @include foundation-sticky;
 // @include foundation-reveal;
 // @include foundation-switch;
-// @include foundation-table;
+@include foundation-table;
 // @include foundation-tabs;
 // @include foundation-thumbnail;
 // @include foundation-title-bar;
@@ -52,6 +52,7 @@
 @import 'components/timeline';
 @import 'components/header';
 @import 'components/footer';
+@import 'components/tables';
 
 // View-Specific
 @import 'legislators';
