@@ -3,50 +3,84 @@
 {% load static %}
 
 {% block content %}
-    <section>
-        {% if person.image %}
-            <img src="{{ person.image }}" alt="legislator headshot" />
-        {% else %}
-            <img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
-        {% endif %}
-        <h2>{{ person.name }}</h2>
-        <span>{{ person.party }} · {{ person.role }} · District {{ person.district }}</span>
+<section class="section">
 
-        <div style="width:250px;height:250px" data-hook="legislator-map" data-value="{{ person.division_id }}"></div>
-
-        <div class="contact-details">
-        {% if person.all_contact_details %}
-            {% regroup person.all_contact_details by note as contact_details %}
-            {% for note, cd_list in contact_details %}
-                <h2>{{ note }}</h2>
-                <address><ul>
-                {% for cd in cd_list %}
-                    <li class="contact-{{ cd.type }}">
-                    {% if cd.type == 'voice' %}
-                        <a href="tel:{{ cd.value }}">{{ cd.value }}</a>
-                    {% elif cd.type == 'fax' %}
-                        <span class="fax">{{ cd.value }}</span>
-                    {% elif cd.type == 'email' %}
-                        <a href="mailto:{{ cd.value }}">{{ cd.value }}</a>
-                    {% elif cd.type == 'address' %}
-                        {{ cd.value }}
-                    {% endif %}
-                    </li>
-                {% endfor %}
-                </ul></address>
-            {% endfor %}
-        {% endif %}
+    <div class="overview">
+        
+        <div class="overview__header">
+            {% if person.image %}
+                <!-- TODO: Replace img source with resized thumbnails -->
+                <img class="card__image" src="{{ person.image }}" alt="Official headshot of {{ person.name }}">
+            {% else %}
+                <div class="card__image card__image--placeholder"></div>
+            {% endif %}
+            <div>
+                <h3 class="overview__heading">{{ person.name }}</h3>
+                <ul class="card__detail-group">
+                    <li class="card__detail type--xsmall">{{ person.party }}</li>
+                    <li class="card__detail type--xsmall">{{ person.role }}</li>
+                    <li class="card__detail type--xsmall">District {{ person.district }}</a></li>
+                </ul>
+            </div>
         </div>
 
+        <div class="overview__section overview__section--parent">
+            {% if person.all_contact_details %}
+                {% regroup person.all_contact_details by note as contact_details %}
+                {% for note, cd_list in contact_details %}
+                <div class="overview__subsection">
+                    <address class="contact">
+                        <h3 class="heading--small">{{ note }}</h3>
+                        {% for cd in cd_list %}
+                            <p>
+                            {% if cd.type == 'address' %}
+                                <!-- TODO: Format address with line breaks -->
+                                {{ cd.value }}
+                            {% elif cd.type == 'voice' %}
+                                <span class="contact__label">Phone</span>
+                                <a href="tel:{{ cd.value }}">{{ cd.value }}</a>
+                            {% elif cd.type == 'fax' %}
+                                <span class="contact__label">Fax</span>
+                                {{ cd.value }}
+                            {% elif cd.type == 'email' %}
+                                <span class="contact__label">Email</span>
+                                <a href="mailto:{{ cd.value }}">{{ cd.value }}</a>
+                            {% endif %}
+                            </p>
+                        {% endfor %}
+                    </address>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="overview__subsection overview__subsection--map">
+                <p class="heading--xsmall">Serving District {{ person.district }}</p>
+                <!-- TODO: Replace with custom map -->
+                <img class="map" width="280" height="215" src="{% static 'public/images/map_placeholder.png' %} ">
+                <!-- <div style="width:280px;height:215px" data-hook="legislator-map" data-value="{{ person.division_id }}"></div> -->
+            </div>
+        </div>
+        
         {% if person.committee_memberships %}
-            <h1>Committee Memberships</h1>
-            <ul>
+        <div class="overview__section">
+            <h3 class="heading--xsmall">Committee Memberships ({{ person.committee_memberships|length }})</h3>
             {% for committee in person.committee_memberships %}
-            <li><a href="#">{{ committee.organization.name }}</a> {% if committee.role.lower != 'member' %} {{ committee.role }} {% endif %}</li>
+            <!-- TODO: Add real links to committees -->
+            <a class="label" link="#">
+                <svg class="label__icon"><use xlink:href="{% static 'public/images/icons.svg' %}#icon-group"></use></svg>
+                {{ committee.organization.name }}
+                {% if committee.role.lower != 'member' %}
+                <span style="font-weight: normal;">
+                    | {{ committee.role|title }}
+                </span>
+                {% endif %}
+            </a>
             {% endfor %}
-            </ul>
+        </div>
         {% endif %}
-    </section>
+        
+    </div>
+</section>
 
     <section>
         <h1>Sponsored Bills</h1>
