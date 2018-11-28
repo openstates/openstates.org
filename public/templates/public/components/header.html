@@ -1,7 +1,9 @@
+{% load staticfiles %}
+
 <header class="header">
     <div class="grid-container">
         <a href="{% url 'home' %}">
-            <img class="header__logo" width="300" src="https://openstates.org/media/images/logo.1ebcbdb5b9ac.png">
+            <img class="header__logo" width="250" src="{% static 'public/images/openstates_logo.svg' %}" alt="OpenStates Logo">
         </a>
     </div>
 

@@ -3,9 +3,15 @@
 .header {}
 
 .header__logo {
-    width: 300px;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    width: 200px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    
+    @include breakpoint(medium) {
+        width: 250px;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
 }
 
 .navigation {
