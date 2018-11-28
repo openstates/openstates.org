@@ -15,7 +15,7 @@
                 <div class="card__image card__image--placeholder"></div>
             {% endif %}
             <div>
-                <h3 class="overview__heading">{{ person.name }}</h3>
+                <h2 class="overview__heading">{{ person.name }}</h2>
                 <ul class="card__detail-group">
                     <li class="card__detail type--xsmall">{{ person.party }}</li>
                     <li class="card__detail type--xsmall">{{ person.role }}</li>
@@ -82,27 +82,41 @@
     </div>
 </section>
 
-    <section>
-        <h1>Sponsored Bills</h1>
-        {% for bill in person.sponsored_bills %}
-            <div>
-                <h2><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></h2>
-                <span>{{ bill.title }}</span>
+
+<section class="section">
+    <h3 class="heading--medium">Sponsored Bills</h3>
+    {% for bill in person.sponsored_bills %}
+        <div class="card">
+                <h3 class="heading--small"><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></h3>
+                <p>{{ bill.title }}</p>
+        </div>
+    {% endfor %}
+    {% if person.sponsored_bills %}<a class="button">View more bills</a>{% endif %}
+</section>
+
+
+<section class="section">
+    <h3 class="heading--medium">Recent Votes</h3>
+
+    <div class="timeline">
+    {% regroup person.vote_events by start_date as votes_by_date %}
+    {% for start_date in votes_by_date reversed %}
+        <div class="timeline-item">
+            <div class="timeline-date">
+                <h3 class="heading--xsmall">{{ start_date.grouper }}</h3>
             </div>
-        {% endfor %}
-        {% if person.sponsored_bills %}<a class="button">View more bills</a>{% endif %}
-    </section>
-
-    <section>
-        <h1>Recent Votes</h1>
-        {% regroup person.vote_events by start_date as votes_by_date %}
-        {% for start_date in votes_by_date reversed %}
-            <span>{{ start_date.grouper }}</span>
+            
             {% for vote_event in start_date.list %}
-                {% vote_card vote_event %}
+            <div class="timeline-activity">
+                <div class="card">
+                    {% vote_card vote_event %}
+                </div>
+            </div>
             {% endfor %}
-        {% endfor %}
-    </section>
+        </div>
+    {% endfor %}
+</section>
 
-    {% sources state person.sources.all %}
+{% sources state person.sources.all %}
+
 {% endblock %}
