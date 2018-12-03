@@ -1,0 +1,17 @@
+// Tables
+
+
+thead {
+    @extend .heading--xsmall;
+    border-bottom: 2px solid $color-secondary;
+
+}
+tbody tr {
+    border-bottom: 1px solid $color-gray;
+}
+
+table {
+    .label {
+        margin-bottom: 0;
+    }
+}

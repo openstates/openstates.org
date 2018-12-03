@@ -15,7 +15,7 @@ urlpatterns = [
         graphiql=True,
         middleware=[QueryProtectionMiddleware(5000)])
     )),
-    # url(r'^public/', include('public.urls')),
+    url(r'^public/', include('public.urls')),
 ]
 
 

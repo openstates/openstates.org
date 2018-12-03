@@ -1,27 +1,33 @@
-import json as jsonlib
-
+import json
 import bleach
 from django import template
 from django.utils.safestring import mark_safe
 import us
 
-from ..utils import get_legislature_from_state_abbr, states
+from utils.common import states, pretty_url
+from utils.orgs import get_legislature_from_abbr
 
 
 register = template.Library()
 
 
-@register.inclusion_tag('public/components/header.html')
-def header(state):
+@register.simple_tag()
+def canonical_url(obj):
+    return pretty_url(obj)
+
+
+@register.inclusion_tag('public/components/header.html', takes_context=True)
+def header(context):
     return {
-        'state': state,
-        'states': states
+        'state': context.get('state'),
+        'disable_state_nav': context.get('disable_state_nav'),
+        'states': states,
     }
 
 
 @register.inclusion_tag('public/components/sources.html')
 def sources(state, sources=None):
-    legislature = get_legislature_from_state_abbr(state)
+    legislature = get_legislature_from_abbr(state)
     return {
         'legislature_name': legislature.name,
         'legislature_url': legislature.jurisdiction.url,
@@ -49,6 +55,11 @@ def action_card(action):
     return {'action': action}
 
 
+@register.inclusion_tag('public/components/document-card.html')
+def document_card(document):
+    return {'document': document}
+
+
 @register.filter()
 def state_name(state_abbr):
     return us.states.lookup(state_abbr).name
@@ -57,8 +68,6 @@ def state_name(state_abbr):
 @register.filter()
 def jsonify(data):
     # Source: https://gist.github.com/pirate/c18bfe4fd96008ffa0aef25001a2e88f
-    uncleaned = jsonlib.dumps(data)
+    uncleaned = json.dumps(data)
     clean = bleach.clean(uncleaned)
-    # If this function fails, then there was a serialization issue
-    assert jsonlib.loads(clean)
     return mark_safe(clean)

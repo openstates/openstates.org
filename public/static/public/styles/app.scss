@@ -34,7 +34,7 @@
 // @include foundation-sticky;
 // @include foundation-reveal;
 // @include foundation-switch;
-// @include foundation-table;
+@include foundation-table;
 // @include foundation-tabs;
 // @include foundation-thumbnail;
 // @include foundation-title-bar;
@@ -45,14 +45,25 @@
 
 // Components
 @import 'typography';
-@import 'styleguide';
 @import 'components/buttons';
 @import 'components/labels';
+@import 'components/cards';
+@import 'components/overviews';
+@import 'components/timeline';
+@import 'components/header';
+@import 'components/footer';
+@import 'components/tables';
+@import 'components/thumbnails';
+
+// View-Specific
+@import 'legislators';
 
 
 // Utilities
 @import 'utilities/colors';
 @import 'utilities/measure';
+@import 'utilities/spacing';
 
 
-
+// Styleguide
+@import 'styleguide';

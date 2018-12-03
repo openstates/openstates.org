@@ -1,0 +1,11 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+{% load static %}
+
+{% block scripts %} 
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHXDvbO733mGwjzREpnqnnkoz9sPQqwAk"> </script>
+{% endblock %}
+
+{% block content %}
+    <div data-hook="find-your-legislator"></div>
+{% endblock %}

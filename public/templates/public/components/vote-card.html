@@ -1,9 +1,16 @@
-<div>
-	<span>{{ vote.bill.identifier }}</span>
-	<span>{{ vote.motion_text }}</span>
-	<span>{{ vote.result|title }}</span>
-	<!-- If used on in a legislator view -->
-	{% if vote.legislator_vote %}
-		<span>{{ vote.legislator_vote.voter_name }} <span>voted {{ vote.legislator_vote.option|title }}</span></span>
-	{% endif %}
+<!-- If used on in a legislator view -->
+{% if vote.legislator_vote %}
+    <span>{{ vote.legislator_vote.voter_name }} <span>voted {{ vote.legislator_vote.option|title }}</span></span>
+{% endif %}
+<div class="card">
+    <div>
+        <h3 class="heading--small"><a href="#">{{ vote.bill.identifier }}</a></h3>
+        <p>
+            {{ vote.motion_text }}
+            <span class="label label--static">
+                {{ vote.result|title }}
+            </span>
+        </p>
+        <!-- TODO: Add more bill info -->
+    </div>
 </div>

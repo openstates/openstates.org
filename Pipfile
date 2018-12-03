@@ -19,6 +19,8 @@ raven = "*"
 represent-boundaries = "*"
 name-tools = "*"
 django-simplekeys = "*"
+"pybase62" = "*"
+pip = "==18.0"
 
 [dev-packages]
 "flake8" = "*"

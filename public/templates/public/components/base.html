@@ -4,29 +4,31 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
+    <head>
+        <meta charset="utf-8">
 
-		<title>{% block title %}{% endblock %}</title>
-		{% render_bundle 'main' 'css' %}
+        <title>{% block title %}{% endblock %}</title>
+        {% render_bundle 'main' 'css' %}
 
-		<!-- CSS required by utilized libraries; could alternatively be copied and saved to the local styles directory -->
-		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
-		<link rel="stylesheet" href="https://unpkg.com/react-table@6.8.0/react-table.css" />
-	</head>
+        <!-- CSS required by utilized libraries; could alternatively be copied and saved to the local styles directory -->
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+        <link rel="stylesheet" href="https://unpkg.com/react-table@6.8.0/react-table.css" />
+    </head>
 
-	<body>
-		{% header state %}
+    <body>
+        {% header %}
 
-		<div class="grid-container">
-			<div class="grid-x grid-padding-x">
-				<div class="cell medium-12">
-					{% block content %}{% endblock %}
-				</div>
-			</div>
-		</div>
+        <div class="grid-container">
+            <div class="grid-x grid-padding-x">
+                <div class="cell medium-12">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
 
-		{% include "./footer.html" %}
-		{% render_bundle 'main' 'js' %}
-	</body>
+        {% include "./footer.html" %}
+        {% render_bundle 'main' 'js' %}
+        {% block scripts %}
+        {% endblock %}
+    </body>
 </html>

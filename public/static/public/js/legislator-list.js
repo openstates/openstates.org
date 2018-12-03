@@ -1,6 +1,22 @@
 import _ from 'lodash'
 import React from 'react'
 
+
+function ChamberButtons(props) {
+    if (Object.keys(props.chambers).length > 1) {
+        return (
+            <div className="button-group">
+              <button type="button" onClick={() => props.setChamber('upper')} className={`button ${props.chamber === 'upper' ? 'button--active' : ''}`}>{props.chambers.upper}</button>
+              <button type="button" onClick={() => props.setChamber('lower')} className={`button ${props.chamber === 'lower' ? 'button--active' : ''}`}>{props.chambers.lower}</button>
+              <button type="button" onClick={() => props.setChamber(null)} className={`button ${props.chamber === null ? 'button--active' : ''}`}>Both Chambers</button>
+          </div>
+        );
+    } else {
+        return '';
+    }
+}
+
+
 export default class LegislatorList extends React.Component {
   constructor (props) {
     super(props)
@@ -8,8 +24,10 @@ export default class LegislatorList extends React.Component {
     this.state = {
       order: 'asc',
       orderBy: 'name',
-      chamber: queryParams.get('chamber') || null
+      chamber: queryParams.get('chamber') || null,
     }
+
+    this.setChamber = this.setChamber.bind(this);
   }
 
   setSortOrder (field) {
@@ -41,12 +59,7 @@ export default class LegislatorList extends React.Component {
   render () {
     return (
       <div>
-        <div className="button-group">
-          <button type="button" onClick={() => this.setChamber('upper')} className={`button ${this.state.chamber === 'upper' ? 'button--active' : ''}`}>Upper Chamber</button>
-          <button type="button" onClick={() => this.setChamber('lower')} className={`button ${this.state.chamber === 'lower' ? 'button--active' : ''}`}>Lower Chamber</button>
-          <button type="button" onClick={() => this.setChamber(null)} className={`button ${this.state.chamber === null ? 'button--active' : ''}`}>Both Chambers</button>
-        </div>
-
+        <ChamberButtons chambers={this.props.chambers} chamber={this.state.chamber} setChamber={this.setChamber} />
         <table>
           <thead>
             <tr>
@@ -68,7 +81,7 @@ export default class LegislatorList extends React.Component {
                       : <img alt="placeholder headshot" />
                     }
                   </td>
-                  <td><a href={`${window.location.href.split('?')[0]}/${b.id}`}>{b.name}</a></td>
+                  <td><a href={b.pretty_url}>{b.name}</a></td>
                   <td>{b.party}</td>
                   <td>{b.district}</td>
                   <td>{b.chamber}</td>

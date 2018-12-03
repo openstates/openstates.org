@@ -1,7 +1,8 @@
-import datetime
 from collections import defaultdict
 import name_tools
 from . import static
+from utils.common import jid_to_abbr
+from utils.people import get_current_role
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
@@ -40,7 +41,7 @@ def convert_post(post):
     }
 
 
-def state_metadata(abbr, jurisdiction):
+def v1_metadata(abbr, jurisdiction):
     orgs = {
         o.classification: o for o in
         jurisdiction.chambers
@@ -224,16 +225,11 @@ def convert_legislator(leg):
     district = None
     state = None
 
-    today = datetime.date.today().strftime('%Y-%m-%d')
-
-    for membership in leg.memberships.all():
-        if not membership.end_date or membership.end_date > today:
-            if membership.organization.classification == 'party':
-                party = membership.organization.name
-            elif membership.organization.classification in ('upper', 'lower', 'legislature'):
-                chamber = membership.organization.classification
-                district = membership.post.label
-                state = jid_to_abbr(membership.organization.jurisdiction_id)
+    cr = get_current_role(leg)
+    party = cr['party']
+    chamber = cr['chamber']
+    district = cr['district']
+    state = cr['state']
 
     email = None
     offices = defaultdict(dict)
