@@ -7,7 +7,6 @@ from graphapi.middleware import QueryProtectionMiddleware
 
 urlpatterns = [
     url(r'^djadmin/', admin.site.urls),
-    url(r'^djadmin/', include('opencivicdata.core.admin.urls')),
     url('', include('boundaries.urls')),
     url('', include('geo.urls')),
     url(r'^api/v1/', include('v1.urls')),
