@@ -8,33 +8,30 @@ export default () => {
   const container = document.querySelector('[data-hook="legislator-map"]')
   const districtId = container.getAttribute('data-value')
 
-  // Temporarily use the entire state as the bounds to zoom to
-  // Replace this with zooming to the district itself, once that static API is up:
-  // https://github.com/openstates/openstates-district-maps/issues/11
-  const state = districtId.match(/\/state:([a-z]{2})\//)[1]
-  const bounds = stateBounds[state]
-
   const map = new mapboxgl.Map({
     container,
     style: 'mapbox://styles/mapbox/light-v9',
     interactive: false,
     // These are the min and max zooms at which the SLD map tiles exist
-    // https://github.com/openstates/new-openstates.org
     minZoom: 2,
     maxZoom: 13
-  }).fitBounds(
-    bounds,
-    {
-      padding: 25,
-      animate: false
-    }
-  )
+  });
+
+  fetch('https://data.openstates.org/boundaries/2018/' + districtId + '.json')
+    .then(function(response) {
+        return response.json();
+    }).then(function(json) {
+        console.log(json.extent);
+        map.fitBounds(json.extent, 
+            { padding: 25, animate: false }
+        );
+    });
 
   map.on('load', function () {
     const districtType = districtId.includes('sldu') ? 'sldu' : 'sldl'
 
     map.addLayer({
-      id: 'sld',
+      id: 'other-districts',
       type: 'line',
       source: {
         type: 'vector',
@@ -42,14 +39,10 @@ export default () => {
       },
       'source-layer': 'sld',
       paint: {
-        'line-color': 'green',
-        'line-opacity': 0.2,
+        'line-color': 'black',
+        'line-opacity': 0.4,
         'line-width': 1.0
       },
-      filter: ['all',
-        ['==', 'type', districtType],
-        ['==', 'state', state]
-      ]
     })
 
     map.addLayer({
@@ -61,7 +54,7 @@ export default () => {
       },
       'source-layer': 'sld',
       paint: {
-        'fill-color': 'black',
+        'fill-color': 'green',
         'fill-opacity': 0.2
       },
       filter: ['==', 'ocdid', districtId]
@@ -76,9 +69,9 @@ export default () => {
       },
       'source-layer': 'sld',
       paint: {
-        'line-color': 'black',
+        'line-color': 'green',
         'line-opacity': 0.4,
-        'line-width': 2.0
+        'line-width': 1.0
       },
       filter: ['==', 'ocdid', districtId]
     })

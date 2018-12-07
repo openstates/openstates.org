@@ -1,3 +1,4 @@
+import dateutil.parser
 import json
 import bleach
 from django import template
@@ -71,3 +72,10 @@ def jsonify(data):
     uncleaned = json.dumps(data)
     clean = bleach.clean(uncleaned)
     return mark_safe(clean)
+
+
+@register.filter()
+def fdate(date, format):
+    if isinstance(date, str):
+        date = dateutil.parser.parse(date)
+    return date.strftime(format)

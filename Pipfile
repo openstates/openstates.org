@@ -21,6 +21,7 @@ name-tools = "*"
 django-simplekeys = "*"
 "pybase62" = "*"
 pip = "==18.0"
+python-dateutil = "*"
 
 [dev-packages]
 "flake8" = "*"
