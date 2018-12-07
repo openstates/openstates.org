@@ -13,20 +13,6 @@ def expand_date(date):
     return date + ' 00:00:00' if len(date) == 10 else date
 
 
-def jid_to_abbr(j):
-    return j.split(':')[-1].split('/')[0]
-
-
-def abbr_to_jid(abbr):
-    abbr = abbr.lower()
-    if abbr == 'dc':
-        return 'ocd-jurisdiction/country:us/district:dc/government'
-    elif abbr == 'pr':
-        return 'ocd-jurisdiction/country:us/territory:pr/government'
-    else:
-        return f'ocd-jurisdiction/country:us/state:{abbr}/government'
-
-
 def convert_post(post):
     abbr = jid_to_abbr(post.organization.jurisdiction_id)
     return {
