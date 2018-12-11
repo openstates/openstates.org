@@ -67,6 +67,11 @@ def state_name(state_abbr):
 
 
 @register.filter()
+def format_address(address):
+    return mark_safe(address.replace(";", "<br>"))
+
+
+@register.filter()
 def jsonify(data):
     # Source: https://gist.github.com/pirate/c18bfe4fd96008ffa0aef25001a2e88f
     uncleaned = json.dumps(data)
