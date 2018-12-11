@@ -7,7 +7,7 @@
         </a>
     </div>
 
-    {% if not disable_state_nav %}    
+    {% if state_nav != "disabled" %}
     <div class="navigation">
         <div class="grid-container">
             <div class="navigation__container">
@@ -25,11 +25,10 @@
 
                 <ul class="navigation__section navigation__menu">
                 {% if state %}
-                    <li><a href="{% url 'state' state %}">Overview </a></li>
-                    <li><a href="{% url 'legislators' state %}">Legislators</a></li>
-                    <li><a class="is-active" href="{% url 'bills' state %}">Bills</a></li>
-                    <!-- TODO: set active class based on view -->
-                    <li><a href="{% url 'committees' state %}">Committees</a></li>
+                    <li><a {% if state_nav == "state" %} class="is-active" {% endif %} href="{% url 'state' state %}">Overview </a></li>
+                    <li><a {% if state_nav == "legislators" %} class="is-active" {% endif %} href="{% url 'legislators' state %}">Legislators</a></li>
+                    <li><a {% if state_nav == "bills" %} class="is-active" {% endif %} href="{% url 'bills' state %}">Bills</a></li>
+                    <li><a {% if state_nav == "committees" %} class="is-active" {% endif %} href="{% url 'committees' state %}">Committees</a></li>
                 {% endif %}
                 </ul>
 

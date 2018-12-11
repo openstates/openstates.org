@@ -21,7 +21,7 @@ def canonical_url(obj):
 def header(context):
     return {
         'state': context.get('state'),
-        'disable_state_nav': context.get('disable_state_nav'),
+        'state_nav': context.get('state_nav'),
         'states': states,
     }
 
