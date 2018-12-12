@@ -52,10 +52,8 @@
             {% endif %}
 
             <div class="overview__subsection overview__subsection--map">
-                <p class="heading--xsmall">Serving District {{ person.district }}</p>
-                <!-- TODO: Replace with custom map -->
-                <img class="map" width="280" height="215" src="{% static 'public/images/map_placeholder.png' %} ">
-                <!-- <div style="width:280px;height:215px" data-hook="legislator-map" data-value="{{ person.division_id }}"></div> -->
+                <p class="heading--xsmall">Serving District {{ person.current_role.district }}</p>
+                <div style="width:280px;height:215px" data-hook="legislator-map" data-value="{{ person.current_role.division_id }}"></div>
             </div>
         </div>
         
