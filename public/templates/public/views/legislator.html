@@ -9,17 +9,16 @@
         
         <div class="overview__header">
             {% if person.image %}
-                <!-- TODO: Replace img source with resized thumbnails -->
-                <img class="thumbnail mr1" src="{{ person.image }}" alt="Headshot of {{ person.name }}">
+                <img class="thumbnail mr1" src="{{ person.image_url }}" alt="Headshot of {{ person.name }}">
             {% else %}
                 <div class="card__image card__image--placeholder"></div>
             {% endif %}
             <div>
                 <h2 class="overview__heading">{{ person.name }}</h2>
                 <ul class="card__detail-group">
-                    <li class="card__detail type--xsmall">{{ person.party }}</li>
-                    <li class="card__detail type--xsmall">{{ person.role }}</li>
-                    <li class="card__detail type--xsmall">District {{ person.district }}</a></li>
+                    <li class="card__detail type--xsmall">{{ person.current_role.party }}</li>
+                    <li class="card__detail type--xsmall">{{ person.current_role.role }}</li>
+                    <li class="card__detail type--xsmall">District {{ person.current_role.district }}</a></li>
                 </ul>
             </div>
         </div>
@@ -34,8 +33,7 @@
                         {% for cd in cd_list %}
                             <p>
                             {% if cd.type == 'address' %}
-                                <!-- TODO: Format address with line breaks -->
-                                {{ cd.value }}
+                                {{ cd.value|format_address }}
                             {% elif cd.type == 'voice' %}
                                 <span class="contact__label">Phone</span>
                                 <a href="tel:{{ cd.value }}">{{ cd.value }}</a>

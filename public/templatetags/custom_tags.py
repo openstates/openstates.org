@@ -21,7 +21,7 @@ def canonical_url(obj):
 def header(context):
     return {
         'state': context.get('state'),
-        'disable_state_nav': context.get('disable_state_nav'),
+        'state_nav': context.get('state_nav'),
         'states': states,
     }
 
@@ -64,6 +64,11 @@ def document_card(document):
 @register.filter()
 def state_name(state_abbr):
     return us.states.lookup(state_abbr).name
+
+
+@register.filter()
+def format_address(address):
+    return mark_safe(address.replace(";", "<br>"))
 
 
 @register.filter()

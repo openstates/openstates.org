@@ -72,16 +72,16 @@ export default class LegislatorList extends React.Component {
           </thead>
           <tbody>
             {_.orderBy(this.props.legislators, [this.state.orderBy], [this.state.order])
-              .filter(legislator => this.state.chamber === null || legislator.chamber === this.state.chamber)
+              .filter(legislator => this.state.chamber === null || legislator.current_role.chamber === this.state.chamber)
               .map(b =>
                 <tr key={b.id}>
                   <td>
-                     <img src={b.image_url} alt={`headshot for ${b.name}`} />
+                      <img className="thumbnail mr1" src={b.image_url} alt={`headshot for ${b.name}`} />
                   </td>
                   <td><a href={b.pretty_url}>{b.name}</a></td>
                   <td>{b.current_role.party}</td>
                   <td>{b.current_role.district}</td>
-                  <td>{b.current_role.chamber}</td>
+                  <td>{this.props.chambers[b.current_role.chamber]}</td>
                 </tr>
               )
             }

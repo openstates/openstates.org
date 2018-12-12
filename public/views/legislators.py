@@ -56,7 +56,7 @@ def find_your_legislator(request):
         return JsonResponse({'legislators': people})
 
     context = {
-        'disable_state_nav': True,
+        'state_nav': 'disabled',
     }
     return render(request, 'public/views/find_your_legislator.html', context)
 
@@ -77,6 +77,7 @@ def legislators(request, state):
             'state': state,
             'chambers': chambers,
             'legislators': legislators,
+            'state_nav': 'legislators',
         }
     )
 
@@ -111,5 +112,6 @@ def person(request, person_id):
         {
             'state': state,
             'person': person,
+            'state_nav': 'legislators',
         }
     )
