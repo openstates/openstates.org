@@ -14,10 +14,10 @@ class PersonProxy(Person):
 
     @property
     def current_role(self):
-        if not getattr(self, '_current_role', None):
+        if not getattr(self, "_current_role", None):
             self._current_role = get_current_role(self)
             try:
-                self._current_role['district'] = int(self._current_role['district'])
+                self._current_role["district"] = int(self._current_role["district"])
             except ValueError:
                 pass
         return self._current_role
@@ -26,14 +26,13 @@ class PersonProxy(Person):
         return pretty_url(self)
 
     def committee_memberships(self):
-        return self.memberships.filter(organization__classification='committee'
-                                       ).all()
+        return self.memberships.filter(organization__classification="committee").all()
 
     def as_dict(self):
         return {
-            'id': self.id,
-            'name': self.name,
-            'image_url': self.image_url(),
-            'current_role': self.current_role,
-            'pretty_url': self.pretty_url(),
+            "id": self.id,
+            "name": self.name,
+            "image_url": self.image_url(),
+            "current_role": self.current_role,
+            "pretty_url": self.pretty_url(),
         }

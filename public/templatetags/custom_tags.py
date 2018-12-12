@@ -17,48 +17,45 @@ def canonical_url(obj):
     return pretty_url(obj)
 
 
-@register.inclusion_tag('public/components/header.html', takes_context=True)
+@register.inclusion_tag("public/components/header.html", takes_context=True)
 def header(context):
     return {
-        'state': context.get('state'),
-        'state_nav': context.get('state_nav'),
-        'states': states,
+        "state": context.get("state"),
+        "state_nav": context.get("state_nav"),
+        "states": states,
     }
 
 
-@register.inclusion_tag('public/components/sources.html')
+@register.inclusion_tag("public/components/sources.html")
 def sources(state, sources=None):
     legislature = get_legislature_from_abbr(state)
     return {
-        'legislature_name': legislature.name,
-        'legislature_url': legislature.jurisdiction.url,
-        'sources': sources
+        "legislature_name": legislature.name,
+        "legislature_url": legislature.jurisdiction.url,
+        "sources": sources,
     }
 
 
-@register.inclusion_tag('public/components/bill-card.html')
+@register.inclusion_tag("public/components/bill-card.html")
 def bill_card(state, bill):
-    return {
-        'state': state,
-        'bill': bill
-    }
+    return {"state": state, "bill": bill}
 
 
-@register.inclusion_tag('public/components/vote-card.html')
+@register.inclusion_tag("public/components/vote-card.html")
 def vote_card(vote):
     # Model needs to be wrapped in a dict, per custom-tag requirements
-    return {'vote': vote}
+    return {"vote": vote}
 
 
-@register.inclusion_tag('public/components/action-card.html')
+@register.inclusion_tag("public/components/action-card.html")
 def action_card(action):
     # Model needs to be wrapped in a dict, per custom-tag requirements
-    return {'action': action}
+    return {"action": action}
 
 
-@register.inclusion_tag('public/components/document-card.html')
+@register.inclusion_tag("public/components/document-card.html")
 def document_card(document):
-    return {'document': document}
+    return {"document": document}
 
 
 @register.filter()

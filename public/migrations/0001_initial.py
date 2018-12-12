@@ -7,19 +7,13 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('core', '0004_auto_20171005_2028'),
-    ]
+    dependencies = [("core", "0004_auto_20171005_2028")]
 
     operations = [
         migrations.CreateModel(
-            name='PersonProxy',
-            fields=[
-            ],
-            options={
-                'proxy': True,
-                'indexes': [],
-            },
-            bases=('core.person',),
-        ),
+            name="PersonProxy",
+            fields=[],
+            options={"proxy": True, "indexes": []},
+            bases=("core.person",),
+        )
     ]

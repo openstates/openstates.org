@@ -24,6 +24,7 @@ pip = "==18.0"
 python-dateutil = "*"
 
 [dev-packages]
+black = "*"
 "flake8" = "*"
 pytest = "*"
 pytest-django = "*"
