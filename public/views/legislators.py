@@ -65,7 +65,8 @@ def legislators(request, state):
     chambers = get_chambers_from_abbr(state)
 
     legislators = [
-        p.as_dict() for p in PersonProxy.objects.filter(memberships__organization__in=chambers)
+        p.as_dict()
+        for p in PersonProxy.objects.filter(memberships__organization__in=chambers).prefetch_related("memberships", "memberships__organization", "memberships__post")
     ]
 
     chambers = {c.classification: c.name for c in chambers}
@@ -87,19 +88,19 @@ def person(request, person_id):
     RECENT_VOTES_TO_SHOW = 3
 
     ocd_person_id = decode_uuid(person_id)
-    person = get_object_or_404(PersonProxy, pk=ocd_person_id)
+    person = get_object_or_404(PersonProxy.objects.prefetch_related("memberships__organization"), pk=ocd_person_id)
 
     state = person.current_role['state']
     person.all_contact_details = person.contact_details.order_by('note')
 
     person.sponsored_bills = [
         sponsorship.bill for sponsorship in
-        person.billsponsorship_set.all().order_by(
+        person.billsponsorship_set.all().select_related("bill").order_by(
             'bill__created_at', 'bill_id'
         )[:SPONSORED_BILLS_TO_SHOW]
     ]
 
-    votes = person.votes.all()[:RECENT_VOTES_TO_SHOW]
+    votes = person.votes.all().select_related("vote_event", "vote_event__bill")[:RECENT_VOTES_TO_SHOW]
     person.vote_events = []
     for vote in votes:
         vote_event = vote.vote_event
