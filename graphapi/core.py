@@ -115,7 +115,7 @@ class PostNode(OCDBaseNode):
     division = graphene.Field(DivisionNode)
     start_date = graphene.String()
     end_date = graphene.String()
-    maximum_memberships = graphene.String()
+    maximum_memberships = graphene.Int()
 
     # organization excluded from this direction
     # contact_details and links not used
