@@ -104,7 +104,7 @@ def populate_db():
     b1.actions.create(description='Amended', order=20, organization=house,
                       date='2018-02-01')
     a = b1.actions.create(description='Passed House', order=30, organization=house,
-                          date='2018-03-01'
+                          date='2018-03-01', classification=["passage"]
                           )
     a.related_entities.create(name='House', entity_type='organization', organization=house)
 

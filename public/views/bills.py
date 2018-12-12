@@ -18,10 +18,10 @@ def bills(request, state):
             query
             chamber: lower|upper
             session
-            bill-status: passed-lower-chamber|passed-upper-chamber|signed-into-law
-            sponsor:
-            type:
-            subjects:
+            status: passed-lower-chamber|passed-upper-chamber|signed
+            sponsor (ocd-person ID)
+            classification
+            subjects
     """
     latest_actions = (
         BillAction.objects.filter(bill=OuterRef("pk"))
@@ -45,7 +45,9 @@ def bills(request, state):
     sessions = LegislativeSession.objects.filter(jurisdiction_id=jid).order_by(
         "-start_date"
     )
-    sponsors = Person.objects.filter(memberships__organization__jurisdiction_id=jid).distinct()
+    sponsors = Person.objects.filter(
+        memberships__organization__jurisdiction_id=jid
+    ).distinct()
     classifications = sorted(
         bills.annotate(type=Unnest("classification", distinct=True))
         .values_list("type", flat=True)
@@ -61,14 +63,44 @@ def bills(request, state):
     query = request.GET.get("query")
     chamber = request.GET.get("chamber")
     session = request.GET.get("session")
+    sponsor = request.GET.get("sponsor")
+    classification = request.GET.get("classification")
+    q_subjects = request.GET.getlist("subjects")
+    status = request.GET.getlist("status")
+
+    form = {
+        "query": query,
+        "chamber": chamber,
+        "session": session,
+        "sponsor": sponsor,
+        "classification": classification,
+        "subjects": q_subjects,
+        "status": status
+    }
+
     if query:
         bills = bills.filter(title__icontains=query)
     if chamber:
         bills = bills.filter(from_organization__classification=chamber)
     if session:
         bills = bills.filter(legislative_session__identifier=session)
+    if sponsor:
+        bills = bills.filter(sponsorships__person_id=sponsor)
+    if classification:
+        bills = bills.filter(classification__contains=[classification])
+    if q_subjects:
+        bills = bills.filter(subject__overlap=q_subjects)
+    if "passed-lower-chamber" in status:
+        bills = bills.filter(actions__classification__contains=["passage"],
+                             actions__organization__classification="lower")
+    elif "passed-upper-chamber" in status:
+        bills = bills.filter(actions__classification__contains=["passage"],
+                             actions__organization__classification="upper")
+    elif "signed" in status:
+        bills = bills.filter(actions__classification__contains=["executive-signature"])
 
     # pagination
+    bills = bills.order_by("latest_action_date")
     page_num = int(request.GET.get("page", 1))
     paginator = Paginator(bills, 20)
     bills = paginator.page(page_num)
@@ -80,6 +112,7 @@ def bills(request, state):
             "state": state,
             "state_nav": "bills",
             "bills": bills,
+            "form": form,
             "chambers": chambers,
             "sessions": sessions,
             "sponsors": sponsors,
