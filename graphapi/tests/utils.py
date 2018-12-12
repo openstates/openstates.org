@@ -4,8 +4,8 @@ from opencivicdata.core.models import Division, Jurisdiction, Organization, Pers
 from opencivicdata.legislative.models import Bill, VoteEvent
 
 
-def make_random_bill():
-    state = random.choice(Jurisdiction.objects.all())
+def make_random_bill(name):
+    state = Jurisdiction.objects.get(name=name)
     session = random.choice(state.legislative_sessions.all())
     org = state.organizations.get(classification=random.choice(('upper', 'lower')))
     b = Bill.objects.create(id='ocd-bill/' + str(uuid.uuid4()),
@@ -149,5 +149,7 @@ def populate_db():
                             relation_type='companion'
                             )
 
-    for x in range(24):
-        make_random_bill()
+    for x in range(10):
+        make_random_bill("Alaska")
+    for x in range(14):
+        make_random_bill("Wyoming")

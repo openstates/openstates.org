@@ -22,8 +22,8 @@
                     </td>
                     <td>{{ bill.first_action_date|fdate:"%b %d %Y" }}</td>
                     <td>
-                        <span>{{ bill.latest_action.description }}</span>
-                        <span>{{ bill.latest_action.date|fdate:"%b %d %Y" }}</span>
+                        <span>{{ bill.latest_action_description }}</span>
+                        <span>{{ bill.latest_action_date|fdate:"%b %d %Y" }}</span>
                     </td>
                 </tr>
             {% endfor %}

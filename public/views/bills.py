@@ -1,7 +1,8 @@
-from django.db.models import Min, Func
+from django.db.models import Min, Func, Max, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
-from opencivicdata.legislative.models import Bill, LegislativeSession
+from opencivicdata.core.models import Person
+from opencivicdata.legislative.models import Bill, LegislativeSession, BillAction
 from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id
@@ -22,7 +23,19 @@ def bills(request, state):
             type:
             subjects:
     """
-    bills = Bill.objects.all().annotate(first_action_date=Min("actions__date"))
+    latest_actions = (
+        BillAction.objects.filter(bill=OuterRef("pk"))
+        .order_by("date")
+        .values("description")[:1]
+    )
+    bills = (
+        Bill.objects.all()
+        .annotate(first_action_date=Min("actions__date"))
+        .annotate(latest_action_date=Max("actions__date"))
+        .annotate(latest_action_description=Subquery(latest_actions))
+        .select_related("legislative_session", "legislative_session__jurisdiction")
+        .prefetch_related("actions")
+    )
     jid = abbr_to_jid(state)
     bills = bills.filter(legislative_session__jurisdiction_id=jid)
 
@@ -32,8 +45,12 @@ def bills(request, state):
     sessions = LegislativeSession.objects.filter(jurisdiction_id=jid).order_by(
         "-start_date"
     )
-    sponsors = []  # TODO
-    types = ["bill", "resolution"]  # TODO
+    sponsors = Person.objects.filter(memberships__organization__jurisdiction_id=jid).distinct()
+    classifications = sorted(
+        bills.annotate(type=Unnest("classification", distinct=True))
+        .values_list("type", flat=True)
+        .distinct()
+    )
     subjects = sorted(
         bills.annotate(sub=Unnest("subject", distinct=True))
         .values_list("sub", flat=True)
@@ -56,21 +73,17 @@ def bills(request, state):
     paginator = Paginator(bills, 20)
     bills = paginator.page(page_num)
 
-    # augment
-    for bill in bills.object_list:
-        bill.latest_action = bill.actions.order_by("date").last()
-        print(type(bill.first_action_date))
-
     return render(
         request,
         "public/views/bills.html",
         {
             "state": state,
+            "state_nav": "bills",
             "bills": bills,
             "chambers": chambers,
             "sessions": sessions,
             "sponsors": sponsors,
-            "types": types,
+            "classifications": classifications,
             "subjects": subjects,
         },
     )
@@ -86,4 +99,8 @@ def bill(request, state, session, bill_id):
         identifier=identifier,
     )
 
-    return render(request, "public/views/bill.html", {"state": state, "bill": bill})
+    return render(
+        request,
+        "public/views/bill.html",
+        {"state": state, "bill": bill, "state_nav": "bills"},
+    )

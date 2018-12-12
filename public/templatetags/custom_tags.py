@@ -78,6 +78,8 @@ def jsonify(data):
 
 @register.filter()
 def fdate(date, format):
+    if not date:
+        return ""
     if isinstance(date, str):
         date = dateutil.parser.parse(date)
     return date.strftime(format)

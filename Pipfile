@@ -22,9 +22,10 @@ django-simplekeys = "*"
 "pybase62" = "*"
 pip = "==18.0"
 python-dateutil = "*"
+ipython = "*"
 
 [dev-packages]
-black = "*"
+ipython = "*"
 "flake8" = "*"
 pytest = "*"
 pytest-django = "*"
