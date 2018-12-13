@@ -3,7 +3,7 @@ import uuid
 import base62
 from django.utils.text import slugify
 from opencivicdata.core.models import Person
-from opencivicdata.legislative.models import Bill
+from opencivicdata.legislative.models import Bill, VoteEvent
 
 # Metadata for states that are available in the platform
 states = sorted(us.STATES + [us.states.PR], key=lambda s: s.name)
@@ -42,3 +42,6 @@ def pretty_url(obj):
         return (
             f"/public/{state}/bills/{obj.legislative_session.identifier}/{identifier}"
         )
+    elif isinstance(obj, VoteEvent):
+        vote_id = obj.id.split('/')[1]
+        return f"/public/vote/{vote_id}"

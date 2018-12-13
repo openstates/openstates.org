@@ -1,6 +1,7 @@
 import pytest
 from graphapi.tests.utils import populate_db
 from opencivicdata.core.models import Person
+from opencivicdata.legislative.models import VoteEvent
 
 
 @pytest.mark.django_db
@@ -124,3 +125,13 @@ def test_bill_view(client, django_assert_num_queries):
     assert len(resp.context["versions"]) == 2
     assert len(resp.context["documents"]) == 2
     assert resp.context["read_link"] == "https://example.com/f.txt"
+
+
+@pytest.mark.django_db
+def test_vote_view(client, django_assert_num_queries):
+    vid = VoteEvent.objects.get(motion_text="Vote on House Passage").id.split('/')[1]
+    with django_assert_num_queries(6):
+        resp = client.get(f"/public/vote/{vid}")
+    assert resp.status_code == 200
+    assert resp.context["state"] == "ak"
+    assert resp.context["state_nav"] == "bills"

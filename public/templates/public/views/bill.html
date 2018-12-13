@@ -49,7 +49,7 @@
 
     <section>
         <h1>Recent Votes</h1>
-        {% regroup votes.all by start_date as votes_by_date %}
+        {% regroup votes by start_date as votes_by_date %}
         {% for start_date in votes_by_date reversed %}
             <span>{{ start_date.grouper }}</span>
             {% for vote_event in start_date.list %}

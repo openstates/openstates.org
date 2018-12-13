@@ -1,0 +1,53 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+    <section>
+        <h1>{{ vote.organiation }} Vote on {{ vote.bill }}</h1>
+        <span>{{ vote.start_date }}</span>
+        <span>{{ vote.motion_text }}</span>
+        <span>{{ vote.legislative_session }}</span>
+        <span>Outcome: {{ vote.result }}</span>
+
+        TODO: Summary/Link to bill (bill_action if present)
+    </section>
+
+    <section>
+    <table>
+        <tbody>
+            {% for vc in vote_counts %}
+                <tr>
+                    <th>{{ vc.option|title }}</th>
+                    <td>{{ vc.value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </section>
+
+    <section>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Vote</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pv in person_votes %}
+            <tr>
+                {% if pv.voter %}
+                    <td>{{ pv.voter.name }}</td>
+                {% else %}
+                    <td>{{ pv.voter_name }}</td>
+                {% endif %}
+                <td>{{ pv.option|title }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </section>
+
+    {% sources state vote.sources.all %}
+{% endblock %}

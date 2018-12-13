@@ -7,8 +7,9 @@ from opencivicdata.legislative.models import (
     LegislativeSession,
     BillAction,
     BillActionRelatedEntity,
+    VoteEvent,
 )
-from utils.common import abbr_to_jid
+from utils.common import abbr_to_jid, jid_to_abbr
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id
 
@@ -156,9 +157,7 @@ def bill(request, state, session, bill_id):
         .select_related("organization")
         .prefetch_related(related_entities)
     )
-    votes = list(
-        bill.votes.all()  # .prefetch_related('counts')
-    )
+    votes = list(bill.votes.all())  # .prefetch_related('counts')
     versions = list(bill.versions.all().prefetch_related("links"))
     documents = list(bill.documents.all().prefetch_related("links"))
     try:
@@ -179,5 +178,43 @@ def bill(request, state, session, bill_id):
             "versions": versions,
             "documents": documents,
             "read_link": read_link,
+        },
+    )
+
+
+def _vote_sort_key(v):
+    if v.option == "yes":
+        return (1, v.option)
+    elif v.option == "no":
+        return (2, v.option)
+    else:
+        return (3, v.option)
+
+
+def vote(request, vote_id):
+    vote = get_object_or_404(
+        VoteEvent.objects.all().select_related(
+            "organization",
+            "legislative_session",
+            "bill",
+            "bill__legislative_session",
+            "bill__from_organization",
+            "bill__legislative_session__jurisdiction",
+        ),
+        pk="ocd-vote/" + vote_id,
+    )
+    state = jid_to_abbr(vote.organization.jurisdiction_id)
+    vote_counts = sorted(vote.counts.all(), key=_vote_sort_key)
+    person_votes = sorted(vote.votes.all().select_related("voter"), key=_vote_sort_key)
+
+    return render(
+        request,
+        "public/views/vote.html",
+        {
+            "state": state,
+            "state_nav": "bills",
+            "vote": vote,
+            "vote_counts": vote_counts,
+            "person_votes": person_votes,
         },
     )

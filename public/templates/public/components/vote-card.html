@@ -1,10 +1,12 @@
+{% load custom_tags %}
+
 <!-- If used on in a legislator view -->
 {% if vote.legislator_vote %}
     <span>{{ vote.legislator_vote.voter_name }} <span>voted {{ vote.legislator_vote.option|title }}</span></span>
 {% endif %}
 <div class="card">
     <div>
-        <h3 class="heading--small"><a href="#">{{ vote.bill.identifier }}</a></h3>
+        <h3 class="heading--small"><a href="{% canonical_url vote %}">{{ vote.bill.identifier }}</a></h3>
         <p>
             {{ vote.motion_text }}
             <span class="label label--static">
