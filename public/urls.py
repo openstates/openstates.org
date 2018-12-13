@@ -2,7 +2,7 @@ from django.urls import path, re_path
 
 from .views.other import styleguide, home, state, unslash
 from .views.legislators import legislators, person, find_your_legislator
-from .views.bills import bills, bill, vote
+from .views.bills import BillList, BillListFeed, bill, vote
 from .views.committees import committees, committee
 from utils.common import states
 
@@ -26,7 +26,10 @@ urlpatterns = [
     ),
     re_path(r"^person/.*\-(?P<person_id>[0-9A-Za-z]+)", person, name="person-detail"),
     # bills
-    re_path(r"^(?P<state>{})/bills$".format(state_abbr_pattern), bills, name="bills"),
+    re_path(r"^(?P<state>{})/bills$".format(state_abbr_pattern), BillList.as_view(), name="bills"),
+    # has trailing slash for consistency
+    re_path(r"^(?P<state>{})/bills/feed/$".format(state_abbr_pattern), BillListFeed.as_view(),
+            name="bills_feed"),
     re_path(
         r"^(?P<state>{})/bills/(?P<session>\w+)/(?P<bill_id>\w+)$".format(
             state_abbr_pattern
