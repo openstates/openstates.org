@@ -100,7 +100,7 @@ def bills(request, state):
         bills = bills.filter(actions__classification__contains=["executive-signature"])
 
     # pagination
-    bills = bills.order_by("latest_action_date")
+    bills = bills.order_by("-latest_action_date")
     page_num = int(request.GET.get("page", 1))
     paginator = Paginator(bills, 20)
     bills = paginator.page(page_num)
