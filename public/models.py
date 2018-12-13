@@ -1,4 +1,4 @@
-from opencivicdata.core.models import Person
+from opencivicdata.core.models import Person, Organization
 from utils.people import get_current_role
 from utils.common import pretty_url
 
@@ -35,4 +35,21 @@ class PersonProxy(Person):
             "image_url": self.image_url(),
             "current_role": self.current_role,
             "pretty_url": self.pretty_url(),
+        }
+
+
+class OrganizationProxy(Organization):
+    class Meta:
+        proxy = True
+
+    def pretty_url(self):
+        return pretty_url(self)
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "chamber": self.parent.classification,
+            "pretty_url": self.pretty_url(),
+            "member_count": self.member_count,
         }

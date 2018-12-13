@@ -2,7 +2,7 @@ import us
 import uuid
 import base62
 from django.utils.text import slugify
-from opencivicdata.core.models import Person
+from opencivicdata.core.models import Person, Organization
 from opencivicdata.legislative.models import Bill, VoteEvent
 
 # Metadata for states that are available in the platform
@@ -36,6 +36,9 @@ def decode_uuid(id, type="person"):
 def pretty_url(obj):
     if isinstance(obj, Person):
         return f"/public/person/{slugify(obj.name)}-{encode_uuid(obj.id)}"
+    elif isinstance(obj, Organization):
+        state = jid_to_abbr(obj.jurisdiction_id)
+        return f"/public/{state}/committee/{slugify(obj.name)}-{encode_uuid(obj.id)}"
     elif isinstance(obj, Bill):
         state = jid_to_abbr(obj.legislative_session.jurisdiction_id)
         identifier = obj.identifier.replace(" ", "")

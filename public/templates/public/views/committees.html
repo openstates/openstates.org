@@ -1,1 +1,20 @@
 {% extends "../components/base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+    <h1>{{ state|state_name }} Committees</h1>
+
+    <div data-hook="committee-list"></div>
+
+    <script>
+        window.committees = {{ committees|jsonify }};
+        window.chambers = {{ chambers|jsonify }};
+    </script>
+    <noscript>
+        <ul>
+        {% for com in committees %}
+        <li><a href="{% canonical_url com %}">{{ com.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </noscript>
+{% endblock %}

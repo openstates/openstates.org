@@ -2,7 +2,7 @@ import _ from 'lodash'
 import React from 'react'
 
 
-function ChamberButtons(props) {
+export function ChamberButtons(props) {
     if (Object.keys(props.chambers).length > 1) {
         return (
             <div className="button-group">
