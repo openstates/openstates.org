@@ -1,1 +1,29 @@
 {% extends "../components/base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+    <h1>{{ committee.name }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th width="50">Name</th>
+                <th>Party</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in committee_members %}
+            <tr>
+                <td>
+                    <img class="thumbnail thumbnail--small" src="{{ member.image_url }}">
+                </td>
+                <td>{{ member.name }}</td>
+                <td>{{ member.current_role.party }}</td>
+                <td>{{ member.committee_role }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -28,9 +28,9 @@ class BillList(View):
         bills = Bill.objects.all().filter(legislative_session__jurisdiction_id=jid)
         chambers = get_chambers_from_abbr(state)
         options["chambers"] = {c.classification: c.name for c in chambers}
-        options["sessions"] = LegislativeSession.objects.filter(jurisdiction_id=jid).order_by(
-            "-start_date"
-        )
+        options["sessions"] = LegislativeSession.objects.filter(
+            jurisdiction_id=jid
+        ).order_by("-start_date")
         options["sponsors"] = Person.objects.filter(
             memberships__organization__jurisdiction_id=jid
         ).distinct()
@@ -105,7 +105,9 @@ class BillList(View):
                 actions__organization__classification="upper",
             )
         elif "signed" in status:
-            bills = bills.filter(actions__classification__contains=["executive-signature"])
+            bills = bills.filter(
+                actions__classification__contains=["executive-signature"]
+            )
 
         bills = bills.order_by("-latest_action_date")
 
@@ -144,26 +146,38 @@ class BillListFeed(BillList):
     def get(self, request, state):
         bills, form = self.get_bills(request, state)
         host = request.get_host()
-        link = 'https://{}{}?{}'.format(host, reverse('bills', kwargs={"state": state}),
-                                        request.META['QUERY_STRING'])
-        feed_url = 'https://%s%s?%s' % (host, reverse('bills_feed', kwargs={"state": state}),
-                                        request.META['QUERY_STRING'])
+        link = "https://{}{}?{}".format(
+            host,
+            reverse("bills", kwargs={"state": state}),
+            request.META["QUERY_STRING"],
+        )
+        feed_url = "https://%s%s?%s" % (
+            host,
+            reverse("bills_feed", kwargs={"state": state}),
+            request.META["QUERY_STRING"],
+        )
         description = f"{state.upper()} Bills"
         if form["session"]:
             description += " ({form['session']})"
         # TODO: improve RSS description
-        feed = Rss201rev2Feed(title=description,
-                              link=link,
-                              feed_url=feed_url,
-                              ttl=360,
-                              description=description)
+        feed = Rss201rev2Feed(
+            title=description,
+            link=link,
+            feed_url=feed_url,
+            ttl=360,
+            description=description,
+        )
         for item in bills[:100]:
-            link = 'https://{}{}'.format(host, pretty_url(item))
-            feed.add_item(title=item.identifier, link=link, unique_id=link,
-                          description=f"""{item.title}<br />
+            link = "https://{}{}".format(host, pretty_url(item))
+            feed.add_item(
+                title=item.identifier,
+                link=link,
+                unique_id=link,
+                description=f"""{item.title}<br />
                           Latest Action: {item.latest_action_description}
-                          <i>{item.latest_action_date}</i>""")
-        return HttpResponse(feed.writeString('utf-8'), content_type='application/xml')
+                          <i>{item.latest_action_date}</i>""",
+            )
+        return HttpResponse(feed.writeString("utf-8"), content_type="application/xml")
 
 
 def bill(request, state, session, bill_id):

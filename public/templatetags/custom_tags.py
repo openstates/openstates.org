@@ -38,9 +38,7 @@ def sources(state, sources=None):
 
 @register.inclusion_tag("public/components/pagination.html")
 def pagination(page):
-    return {
-        "page": page,
-    }
+    return {"page": page}
 
 
 @register.inclusion_tag("public/components/bill-card.html")

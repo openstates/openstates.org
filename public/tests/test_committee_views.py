@@ -1,16 +1,27 @@
 import pytest
 from graphapi.tests.utils import populate_db
 from opencivicdata.core.models import Organization, Person, Membership
+from utils.common import pretty_url
 
 
 @pytest.mark.django_db
 def setup():
     populate_db()
-    house = Organization.objects.get(classification="lower", jurisdiction__name="Alaska")
-    r = Organization.objects.create(name="Robots", classification="committee", parent=house,
-                                    jurisdiction=house.jurisdiction)
-    w = Organization.objects.create(name="Wizards", classification="committee", parent=house,
-                                    jurisdiction=house.jurisdiction)
+    house = Organization.objects.get(
+        classification="lower", jurisdiction__name="Alaska"
+    )
+    r = Organization.objects.create(
+        name="Robots",
+        classification="committee",
+        parent=house,
+        jurisdiction=house.jurisdiction,
+    )
+    w = Organization.objects.create(
+        name="Wizards",
+        classification="committee",
+        parent=house,
+        jurisdiction=house.jurisdiction,
+    )
     # one robot
     p = Person.objects.get(name="Amanda Adams")
     Membership.objects.create(person=p, organization=r)
@@ -39,3 +50,14 @@ def test_committees_view(client, django_assert_num_queries):
     assert wizards["member_count"] == 5
 
 
+@pytest.mark.django_db
+def test_committee_detail(client, django_assert_num_queries):
+    o = Organization.objects.get(name="Wizards")
+    with django_assert_num_queries(1):
+        resp = client.get(pretty_url(o))
+    assert resp.status_code == 200
+    assert resp.context["state"] == "ak"
+    assert resp.context["state_nav"] == "committees"
+    org = resp.context["organization"]
+    assert org.name == "Wizards"
+    assert len(resp.context["current_memberships"]) == 5

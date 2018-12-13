@@ -26,10 +26,17 @@ urlpatterns = [
     ),
     re_path(r"^person/.*\-(?P<person_id>[0-9A-Za-z]+)", person, name="person-detail"),
     # bills
-    re_path(r"^(?P<state>{})/bills$".format(state_abbr_pattern), BillList.as_view(), name="bills"),
+    re_path(
+        r"^(?P<state>{})/bills$".format(state_abbr_pattern),
+        BillList.as_view(),
+        name="bills",
+    ),
     # has trailing slash for consistency
-    re_path(r"^(?P<state>{})/bills/feed/$".format(state_abbr_pattern), BillListFeed.as_view(),
-            name="bills_feed"),
+    re_path(
+        r"^(?P<state>{})/bills/feed/$".format(state_abbr_pattern),
+        BillListFeed.as_view(),
+        name="bills_feed",
+    ),
     re_path(
         r"^(?P<state>{})/bills/(?P<session>\w+)/(?P<bill_id>\w+)$".format(
             state_abbr_pattern
@@ -45,11 +52,11 @@ urlpatterns = [
         name="committees",
     ),
     re_path(
-        r"^(?P<state>{})/committees/(?P<bill_id>ocd-organization/{})$".format(
-            state_abbr_pattern, OCD_ID_PATTERN
+        r"^(?P<state>{})/committees/.*\-(?P<committee_id>[0-9A-Za-z]+)".format(
+            state_abbr_pattern
         ),
         committee,
-        name="committee",
+        name="committee-detail",
     ),
     # TODO: before release we need to make this sane and choose a side
     # redirect some old slashed URLs

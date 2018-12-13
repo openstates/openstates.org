@@ -38,7 +38,7 @@ def pretty_url(obj):
         return f"/public/person/{slugify(obj.name)}-{encode_uuid(obj.id)}"
     elif isinstance(obj, Organization):
         state = jid_to_abbr(obj.jurisdiction_id)
-        return f"/public/{state}/committee/{slugify(obj.name)}-{encode_uuid(obj.id)}"
+        return f"/public/{state}/committees/{slugify(obj.name)}-{encode_uuid(obj.id)}"
     elif isinstance(obj, Bill):
         state = jid_to_abbr(obj.legislative_session.jurisdiction_id)
         identifier = obj.identifier.replace(" ", "")

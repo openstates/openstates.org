@@ -129,7 +129,7 @@ def test_bill_view(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_vote_view(client, django_assert_num_queries):
-    vid = VoteEvent.objects.get(motion_text="Vote on House Passage").id.split('/')[1]
+    vid = VoteEvent.objects.get(motion_text="Vote on House Passage").id.split("/")[1]
     with django_assert_num_queries(6):
         resp = client.get(f"/public/vote/{vid}")
     assert resp.status_code == 200
