@@ -86,7 +86,7 @@ def test_bill_detail(client, django_assert_num_queries):
              'related_entities': [], 'actor': 'lower'},
             {'date': '2018-02-01 00:00:00', 'action': 'Amended', 'type': [],
              'related_entities': [], 'actor': 'lower'},
-            {'date': '2018-03-01 00:00:00', 'action': 'Passed House', 'type': [],
+            {'date': '2018-03-01 00:00:00', 'action': 'Passed House', 'type': ['bill:passed'],
              'related_entities': [], 'actor': 'lower'}
         ]
         assert len(bill['sources']) == 3
