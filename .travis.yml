@@ -11,6 +11,7 @@ env:
 install: 
     - pip install pipenv
     - pipenv install --dev
+    - npm install
     - npm run build
     - pipenv graph
 before_script:
