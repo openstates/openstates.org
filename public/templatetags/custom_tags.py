@@ -36,6 +36,13 @@ def sources(state, sources=None):
     }
 
 
+@register.inclusion_tag("public/components/pagination.html")
+def pagination(page):
+    return {
+        "page": page,
+    }
+
+
 @register.inclusion_tag("public/components/bill-card.html")
 def bill_card(state, bill):
     return {"state": state, "bill": bill}

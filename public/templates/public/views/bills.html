@@ -3,6 +3,9 @@
 
 {% block content %}
     <h1>{{ state|state_name }} Bills</h1>
+    Showing {{ bills.start_index }}-{{ bills.end_index }} of {{ bills.paginator.count }}.
+
+    {% pagination bills %}
 
     <table>
         <thead>
@@ -29,6 +32,8 @@
             {% endfor %}
         </tbody>
     </table>
+
+    {% pagination bills %}
 
     <div>
         <div>
