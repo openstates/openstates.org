@@ -16,7 +16,7 @@ def get_chambers_from_abbr(abbr):
 
 
 def get_legislature_from_abbr(abbr):
-    legislature = Organization.objects.get(
+    legislature = Organization.objects.select_related('jurisdiction').get(
         classification="legislature", jurisdiction_id=abbr_to_jid(abbr)
     )
     return legislature

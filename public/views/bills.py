@@ -1,8 +1,13 @@
-from django.db.models import Min, Func, Max, OuterRef, Subquery
+from django.db.models import Min, Func, Max, OuterRef, Subquery, Prefetch
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 from opencivicdata.core.models import Person
-from opencivicdata.legislative.models import Bill, LegislativeSession, BillAction
+from opencivicdata.legislative.models import (
+    Bill,
+    LegislativeSession,
+    BillAction,
+    BillActionRelatedEntity,
+)
 from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id
@@ -75,7 +80,7 @@ def bills(request, state):
         "sponsor": sponsor,
         "classification": classification,
         "subjects": q_subjects,
-        "status": status
+        "status": status,
     }
 
     if query:
@@ -91,11 +96,15 @@ def bills(request, state):
     if q_subjects:
         bills = bills.filter(subject__overlap=q_subjects)
     if "passed-lower-chamber" in status:
-        bills = bills.filter(actions__classification__contains=["passage"],
-                             actions__organization__classification="lower")
+        bills = bills.filter(
+            actions__classification__contains=["passage"],
+            actions__organization__classification="lower",
+        )
     elif "passed-upper-chamber" in status:
-        bills = bills.filter(actions__classification__contains=["passage"],
-                             actions__organization__classification="upper")
+        bills = bills.filter(
+            actions__classification__contains=["passage"],
+            actions__organization__classification="upper",
+        )
     elif "signed" in status:
         bills = bills.filter(actions__classification__contains=["executive-signature"])
 
@@ -125,15 +134,50 @@ def bills(request, state):
 def bill(request, state, session, bill_id):
     jid = abbr_to_jid(state)
     identifier = fix_bill_id(bill_id)
+
     bill = get_object_or_404(
-        Bill,
+        Bill.objects.all().select_related(
+            "legislative_session",
+            "legislative_session__jurisdiction",
+            "from_organization",
+        ),
         legislative_session__jurisdiction_id=jid,
         legislative_session__identifier=session,
         identifier=identifier,
     )
 
+    sponsorships = list(bill.sponsorships.all().select_related("person"))
+    related_entities = Prefetch(
+        "related_entities",
+        BillActionRelatedEntity.objects.all().select_related("person", "organization"),
+    )
+    actions = list(
+        bill.actions.all()
+        .select_related("organization")
+        .prefetch_related(related_entities)
+    )
+    votes = list(
+        bill.votes.all()  # .prefetch_related('counts')
+    )
+    versions = list(bill.versions.all().prefetch_related("links"))
+    documents = list(bill.documents.all().prefetch_related("links"))
+    try:
+        read_link = versions[0].links.all()[0].url
+    except IndexError:
+        read_link = None
+
     return render(
         request,
         "public/views/bill.html",
-        {"state": state, "bill": bill, "state_nav": "bills"},
+        {
+            "state": state,
+            "state_nav": "bills",
+            "bill": bill,
+            "sponsorships": sponsorships,
+            "actions": actions,
+            "votes": votes,
+            "versions": versions,
+            "documents": documents,
+            "read_link": read_link,
+        },
     )
