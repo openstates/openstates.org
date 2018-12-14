@@ -41,8 +41,8 @@ def test_metadata_detail(client, django_assert_num_queries):
             'chambers': {'upper': {'name': 'Alaska Senate', 'title': ''},
                          'lower': {'name': 'Alaska House', 'title': ''}},
             'session_details': {
-                '2018': {'display_name': '2018', 'type': ''},
-                '2017': {'display_name': '2017', 'type': ''}},
+                '2018': {'display_name': '2018', 'type': '', 'start_date': '2018-01-01 00:00:00'},
+                '2017': {'display_name': '2017', 'type': '', 'start_date': '2017-01-01 00:00:00'}},
             'latest_update': '2000-01-01 00:00:00',
             'capitol_timezone': 'America/Anchorage',
             'terms': [

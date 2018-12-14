@@ -55,8 +55,8 @@ def populate_db():
         j = Jurisdiction.objects.create(
             id='ocd-jurisdiction/country:us/state:' + abbr + '/government',
             name=state, division=d)
-        j.legislative_sessions.create(identifier='2017', name='2017')
-        j.legislative_sessions.create(identifier='2018', name='2018')
+        j.legislative_sessions.create(identifier='2017', name='2017', start_date="2017-01-01")
+        j.legislative_sessions.create(identifier='2018', name='2018', start_date="2018-01-01")
 
         leg = Organization.objects.create(jurisdiction=j, classification='legislature',
                                           name=state + ' Legislature')
