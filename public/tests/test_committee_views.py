@@ -53,11 +53,11 @@ def test_committees_view(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_committee_detail(client, django_assert_num_queries):
     o = Organization.objects.get(name="Wizards")
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(5):
         resp = client.get(pretty_url(o))
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "committees"
-    org = resp.context["organization"]
+    org = resp.context["committee"]
     assert org.name == "Wizards"
-    assert len(resp.context["current_memberships"]) == 5
+    assert len(resp.context["committee_members"]) == 5

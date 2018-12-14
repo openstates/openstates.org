@@ -30,14 +30,17 @@ def committees(request, state):
 
 def committee(request, state, committee_id):
     ocd_org_id = decode_uuid(committee_id, "organization")
-    org = get_object_or_404(
-        OrganizationProxy.objects.prefetch_related("memberships__organization"),
-        pk=ocd_org_id,
-    )
+    org = get_object_or_404(OrganizationProxy.objects.all(), pk=ocd_org_id)
 
-    members = PersonProxy.objects.filter(
-        memberships__organization_id=org.id, memberships__end_date=""
-    ).annotate(committee_role=F("memberships__role"))
+    members = (
+        PersonProxy.objects.filter(
+            memberships__organization_id=org.id, memberships__end_date=""
+        )
+        .annotate(committee_role=F("memberships__role"))
+        .prefetch_related(
+            "memberships", "memberships__organization", "memberships__post"
+        )
+    )
 
     return render(
         request,
