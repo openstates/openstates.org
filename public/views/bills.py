@@ -180,6 +180,13 @@ class BillListFeed(BillList):
         return HttpResponse(feed.writeString("utf-8"), content_type="application/xml")
 
 
+def _document_sort_key(doc):
+    ordering = ["text/html", "application/pdf"]
+    if doc.media_type in ordering:
+        return (ordering.index(doc.media_type), doc.media_type)
+    return (100, doc.media_type)
+
+
 def bill(request, state, session, bill_id):
     jid = abbr_to_jid(state)
     identifier = fix_bill_id(bill_id)
@@ -209,7 +216,8 @@ def bill(request, state, session, bill_id):
     versions = list(bill.versions.all().prefetch_related("links"))
     documents = list(bill.documents.all().prefetch_related("links"))
     try:
-        read_link = versions[0].links.all()[0].url
+        sorted_links = sorted(versions[0].links.all(), key=_document_sort_key)
+        read_link = sorted_links[0].url
     except IndexError:
         read_link = None
 

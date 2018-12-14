@@ -124,7 +124,7 @@ def test_bill_view(client, django_assert_num_queries):
     assert len(resp.context["votes"]) == 1
     assert len(resp.context["versions"]) == 2
     assert len(resp.context["documents"]) == 2
-    assert resp.context["read_link"] == "https://example.com/f.txt"
+    assert resp.context["read_link"] == "https://example.com/f.pdf"
 
 
 @pytest.mark.django_db
