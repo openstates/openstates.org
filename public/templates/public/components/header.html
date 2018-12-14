@@ -25,7 +25,7 @@
 
                 <ul class="navigation__section navigation__menu">
                 {% if state %}
-                    <li><a {% if state_nav == "state" %} class="is-active" {% endif %} href="{% url 'state' state %}">Overview </a></li>
+                    <li><a {% if state_nav == "overview" %} class="is-active" {% endif %} href="{% url 'state' state %}">Overview </a></li>
                     <li><a {% if state_nav == "legislators" %} class="is-active" {% endif %} href="{% url 'legislators' state %}">Legislators</a></li>
                     <li><a {% if state_nav == "bills" %} class="is-active" {% endif %} href="{% url 'bills' state %}">Bills</a></li>
                     <li><a {% if state_nav == "committees" %} class="is-active" {% endif %} href="{% url 'committees' state %}">Committees</a></li>
