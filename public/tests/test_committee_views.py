@@ -53,7 +53,7 @@ def test_committees_view(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_committee_detail(client, django_assert_num_queries):
     o = Organization.objects.get(name="Wizards")
-    with django_assert_num_queries(5):
+    with django_assert_num_queries(6):
         resp = client.get(pretty_url(o))
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"

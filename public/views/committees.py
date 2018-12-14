@@ -28,18 +28,23 @@ def committees(request, state):
     )
 
 
+def _role_sort_key(member):
+    return (member.committee_role.lower() == "member", member.committee_role)
+
+
 def committee(request, state, committee_id):
     ocd_org_id = decode_uuid(committee_id, "organization")
     org = get_object_or_404(OrganizationProxy.objects.all(), pk=ocd_org_id)
 
-    members = (
+    members = sorted(
         PersonProxy.objects.filter(
             memberships__organization_id=org.id, memberships__end_date=""
         )
         .annotate(committee_role=F("memberships__role"))
         .prefetch_related(
             "memberships", "memberships__organization", "memberships__post"
-        )
+        ),
+        key=_role_sort_key,
     )
 
     return render(

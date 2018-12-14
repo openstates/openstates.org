@@ -3,12 +3,13 @@
 
 {% block content %}
     <h1>{{ committee.name }}</h1>
+    <span>{{ state|state_name }} {{ committee.parent }} committee</span>
 
     <table>
         <thead>
             <tr>
                 <th></th>
-                <th width="50">Name</th>
+                <th>Name</th>
                 <th>Party</th>
                 <th>Role</th>
             </tr>
