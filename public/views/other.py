@@ -1,9 +1,10 @@
 from collections import Counter
-
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Sum, Count
 from django.shortcuts import render, redirect
-from opencivicdata.legislative.models import Bill
-from utils.orgs import get_chambers_from_abbr
+from opencivicdata.legislative.models import Bill, LegislativeSession
+from opencivicdata.core.models import Organization
+from utils.common import abbr_to_jid
+from ..models import PersonProxy
 
 
 def styleguide(request):
@@ -22,55 +23,68 @@ def state(request, state):
     RECENTLY_INTRODUCED_BILLS_TO_SHOW = 4
     RECENTLY_PASSED_BILLS_TO_SHOW = 4
 
-    chambers = get_chambers_from_abbr(state)
-    legislature = chambers[0].parent if chambers[0].parent else chambers[0]
+    jid = abbr_to_jid(state)
+
+    # we need basically all of the orgs, so let's just do one big query for them
+    legislature = None
+    committee_counts = Counter()
+    chambers = []
+
+    organizations = (
+        Organization.objects.filter(jurisdiction_id=jid)
+        .annotate(seats=Sum("posts__maximum_memberships"))
+    )
+
+    for org in organizations:
+        if org.classification == "legislature":
+            legislature = org
+        elif org.classification in ("upper", "lower"):
+            chambers.append(org)
+        elif org.classification == "committee":
+            committee_counts[org.parent.classification] += 1
+
+    # legislators
+    legislators = PersonProxy.get_current_legislators_with_roles(chambers)
 
     for chamber in chambers:
-        # For the party-count section
-        chamber.seats = sum([post.maximum_memberships for post in chamber.posts.all()])
-        legislators = chamber.get_current_members()
-        parties = [
-            # After resolving multiple-party individuals, we'll have
-            # a simpler way to return party
-            legislator.memberships.filter(organization__classification="party")
-            .last()
-            .organization.name
-            for legislator in legislators
-        ]
+        parties = [legislator.current_role['party'] for legislator in legislators if legislator.current_role["chamber"] == chamber.classification]
         chamber.parties = dict(Counter(parties))
-        chamber.parties["Vacancies"] = chamber.seats - len(legislators)
+        if chamber.seats - len(legislators) > 0:
+            chamber.parties["Vacancies"] = chamber.seats - len(legislators)
 
-        # For the committee-count block
-        chamber.committee_count = (
-            chamber.children.filter(classification="committee").count() or 0
-        )
-    # This will re-assign for unicameral legislatures, but that's okay
-    legislature.committee_count = legislature.children.filter(
-        classification="committee"
-    ).count()
+        chamber.committee_count = committee_counts[chamber.classification]
 
-    bills = Bill.objects.filter(from_organization__in=chambers)
+    # bills
+    bills = Bill.objects.filter(from_organization__in=chambers).prefetch_related("sponsorships")
 
-    recently_introduced_bills = (
+    recently_introduced_bills = list(
         bills.filter(actions__isnull=False)
         .annotate(introduced_date=Min("actions__date"))
         .order_by("-introduced_date")[:RECENTLY_INTRODUCED_BILLS_TO_SHOW]
     )
 
-    recently_passed_bills = (
+    recently_passed_bills = list(
         bills.filter(actions__classification__contains=["passage"])
         .annotate(passed_date=Max("actions__date"))
         .order_by("-passed_date")[:RECENTLY_PASSED_BILLS_TO_SHOW]
     )
+
+    all_sessions = (LegislativeSession.objects.filter(jurisdiction_id=jid)
+                    .annotate(bill_count=Count("bills"))
+                    .filter(bill_count__gt=0)
+                    .order_by("-end_date", "-identifier")
+                    )
 
     return render(
         request,
         "public/views/state.html",
         {
             "state": state,
+            "state_nav": "overview",
             "legislature": legislature,
             "chambers": chambers,
             "recently_introduced_bills": recently_introduced_bills,
             "recently_passed_bills": recently_passed_bills,
+            "all_sessions": all_sessions,
         },
     )

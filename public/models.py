@@ -7,6 +7,14 @@ class PersonProxy(Person):
     class Meta:
         proxy = True
 
+    @staticmethod
+    def get_current_legislators_with_roles(chambers):
+        return PersonProxy.objects.filter(
+            memberships__organization__in=chambers
+        ).prefetch_related(
+            "memberships", "memberships__organization", "memberships__post"
+        )
+
     def image_url(self):
         if self.image:
             return "https://data.openstates.org/images/small/" + self.id

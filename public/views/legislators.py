@@ -62,11 +62,7 @@ def legislators(request, state):
 
     legislators = [
         p.as_dict()
-        for p in PersonProxy.objects.filter(
-            memberships__organization__in=chambers
-        ).prefetch_related(
-            "memberships", "memberships__organization", "memberships__post"
-        )
+        for p in PersonProxy.get_current_legislators_with_roles(chambers)
     ]
 
     chambers = {c.classification: c.name for c in chambers}
