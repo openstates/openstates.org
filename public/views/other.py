@@ -46,6 +46,10 @@ def state(request, state):
     # legislators
     legislators = PersonProxy.get_current_legislators_with_roles(chambers)
 
+    # unicameral
+    if not chambers:
+        chambers = [legislature]
+
     for chamber in chambers:
         parties = [legislator.current_role['party'] for legislator in legislators if legislator.current_role["chamber"] == chamber.classification]
         chamber.parties = dict(Counter(parties))

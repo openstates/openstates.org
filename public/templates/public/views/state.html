@@ -37,7 +37,7 @@
                     </span>
                 </div>
             {% endfor %}
-            {% if legislature.committee_count %}
+            {% if legislature.committee_count and chambers|length > 1 %}
                 <div>
                     <span>{{ legislature.committee_count }}</span>
                     <span>Joint Committees</span>
