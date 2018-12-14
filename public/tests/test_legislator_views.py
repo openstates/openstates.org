@@ -11,7 +11,7 @@ def setup():
 @pytest.mark.django_db
 def test_legislators_view(client, django_assert_num_queries):
     with django_assert_num_queries(5):
-        resp = client.get("/public/ak/legislators")
+        resp = client.get("/ak/legislators")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "legislators"

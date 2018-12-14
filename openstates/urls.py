@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-# from django.conf import settings
+from django.conf import settings
 from django.contrib import admin
 from django.views.decorators.csrf import csrf_exempt
 from graphapi.views import KeyedGraphQLView
@@ -13,9 +13,11 @@ urlpatterns = [
         graphiql=True,
         middleware=[QueryProtectionMiddleware(5000)])
     )),
-    url(r'^public/', include('public.urls')),
+    url('', include('public.urls')),
+    url('', include('openstates.redirects')),
 ]
 
 
-# if settings.DEBUG:
+if settings.DEBUG:
+    pass
 #     urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]

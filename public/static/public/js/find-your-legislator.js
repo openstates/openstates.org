@@ -90,7 +90,7 @@ export default class FindYourLegislator extends React.Component {
             this.setState({legislators: []});
         } else { 
             const component = this;
-            fetch(`/public/find_your_legislator?lat=${this.state.lat}&lon=${this.state.lon}`)
+            fetch(`/find_your_legislator?lat=${this.state.lat}&lon=${this.state.lon}`)
                 .then(response => response.json())
                 .then(function(json) {
                     component.setState({legislators: json.legislators});
