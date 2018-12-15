@@ -41,5 +41,15 @@ def test_person_view(client, django_assert_num_queries):
     assert len(person.vote_events) == 1
 
 
+@pytest.mark.django_db
+def test_canonicalize_person(client):
+    p = PersonProxy.objects.get(name="Amanda Adams")
+    url = p.pretty_url().replace('amanda', 'xyz')
+    assert 'xyz' in url
+    resp = client.get(url)
+    assert resp.status_code == 301
+    assert resp.url == p.pretty_url()
+
+
 # TODO: test retired person
 # TODO: test find_your_legislator

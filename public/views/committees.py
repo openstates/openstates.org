@@ -1,6 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, Count, F
-from utils.common import decode_uuid
+from utils.common import decode_uuid, pretty_url
 from utils.orgs import get_chambers_from_abbr
 from ..models import OrganizationProxy, PersonProxy
 
@@ -35,6 +35,11 @@ def _role_sort_key(member):
 def committee(request, state, committee_id):
     ocd_org_id = decode_uuid(committee_id, "organization")
     org = get_object_or_404(OrganizationProxy.objects.all(), pk=ocd_org_id)
+
+    # canonicalize the URL
+    canonical_url = pretty_url(org)
+    if request.path != canonical_url:
+        return redirect(canonical_url, permanent=True)
 
     members = sorted(
         PersonProxy.objects.filter(

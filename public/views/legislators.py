@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from graphapi.schema import schema
 from utils.common import decode_uuid
@@ -88,6 +88,11 @@ def person(request, person_id):
         PersonProxy.objects.prefetch_related("memberships__organization"),
         pk=ocd_person_id,
     )
+
+    # canonicalize the URL
+    canonical_url = person.pretty_url()
+    if request.path != canonical_url:
+        return redirect(canonical_url, permanent=True)
 
     state = person.current_role["state"]
     person.all_contact_details = person.contact_details.order_by("note")
