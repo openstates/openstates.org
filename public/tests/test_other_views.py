@@ -1,5 +1,5 @@
 import pytest
-from graphapi.tests.utils import populate_db
+from graphapi.tests.utils import populate_db, populate_unicam
 
 
 @pytest.mark.django_db
@@ -35,7 +35,18 @@ def test_state_view(client, django_assert_num_queries):
 
     # sessions
     assert resp.context["all_sessions"][0].identifier == "2018"
-    assert (resp.context["all_sessions"][0].bill_count + 
+    assert (resp.context["all_sessions"][0].bill_count +
             resp.context["all_sessions"][1].bill_count) == 12
 
-    # TODO: test unicam
+
+@pytest.mark.django_db
+def test_state_view_unicam(client, django_assert_num_queries):
+    populate_unicam()
+    resp = client.get("/ne")
+    assert resp.status_code == 200
+    assert resp.context["state"] == "ne"
+    assert resp.context["state_nav"] == "overview"
+    assert len(resp.context["chambers"]) == 1
+    legislature = resp.context["chambers"][0]
+    assert legislature.parties == {"Nonpartisan": 2}
+    assert legislature.seats == 2

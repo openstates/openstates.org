@@ -153,3 +153,17 @@ def populate_db():
         make_random_bill("Alaska")
     for x in range(14):
         make_random_bill("Wyoming")
+
+
+def populate_unicam():
+    d = Division.objects.create(id='ocd-division/country:us/state:ne', name="Nebraska")
+    j = Jurisdiction.objects.create(id='ocd-jurisdiction/country:us/state:ne/government',
+                                    name="Nebraska", division=d)
+    j.legislative_sessions.create(identifier='2017', name='2017', start_date="2017-01-01")
+    j.legislative_sessions.create(identifier='2018', name='2018', start_date="2018-01-01")
+
+    Organization.objects.create(jurisdiction=j, classification='legislature',
+                                name='Nebraska Legislature')
+
+    make_person('Quincy Quip', 'Nebraska', 'legislature', '1', 'Nonpartisan')
+    make_person('Wendy Wind', 'Nebraska', 'legislature', '2', 'Nonpartisan')

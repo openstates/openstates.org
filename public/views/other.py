@@ -30,9 +30,8 @@ def state(request, state):
     committee_counts = Counter()
     chambers = []
 
-    organizations = (
-        Organization.objects.filter(jurisdiction_id=jid)
-        .annotate(seats=Sum("posts__maximum_memberships"))
+    organizations = Organization.objects.filter(jurisdiction_id=jid).annotate(
+        seats=Sum("posts__maximum_memberships")
     )
 
     for org in organizations:
@@ -43,15 +42,19 @@ def state(request, state):
         elif org.classification == "committee":
             committee_counts[org.parent.classification] += 1
 
-    # legislators
-    legislators = PersonProxy.get_current_legislators_with_roles(chambers)
-
     # unicameral
     if not chambers:
         chambers = [legislature]
 
+    # legislators
+    legislators = PersonProxy.get_current_legislators_with_roles(chambers)
+
     for chamber in chambers:
-        parties = [legislator.current_role['party'] for legislator in legislators if legislator.current_role["chamber"] == chamber.classification]
+        parties = [
+            legislator.current_role["party"]
+            for legislator in legislators
+            if legislator.current_role["chamber"] == chamber.classification
+        ]
         chamber.parties = dict(Counter(parties))
         if chamber.seats - len(legislators) > 0:
             chamber.parties["Vacancies"] = chamber.seats - len(legislators)
@@ -59,7 +62,9 @@ def state(request, state):
         chamber.committee_count = committee_counts[chamber.classification]
 
     # bills
-    bills = Bill.objects.filter(from_organization__in=chambers).prefetch_related("sponsorships")
+    bills = Bill.objects.filter(from_organization__in=chambers).prefetch_related(
+        "sponsorships"
+    )
 
     recently_introduced_bills = list(
         bills.filter(actions__isnull=False)
@@ -73,11 +78,12 @@ def state(request, state):
         .order_by("-passed_date")[:RECENTLY_PASSED_BILLS_TO_SHOW]
     )
 
-    all_sessions = (LegislativeSession.objects.filter(jurisdiction_id=jid)
-                    .annotate(bill_count=Count("bills"))
-                    .filter(bill_count__gt=0)
-                    .order_by("-end_date", "-identifier")
-                    )
+    all_sessions = (
+        LegislativeSession.objects.filter(jurisdiction_id=jid)
+        .annotate(bill_count=Count("bills"))
+        .filter(bill_count__gt=0)
+        .order_by("-end_date", "-identifier")
+    )
 
     return render(
         request,
