@@ -23,6 +23,7 @@ django-simplekeys = "*"
 pip = "==18.0"
 python-dateutil = "*"
 ipython = "*"
+stripe = "*"
 
 [dev-packages]
 ipython = "*"

@@ -68,6 +68,9 @@ DATABASE_URL = os.environ.get(
 DATABASES = {'default': dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
 
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
+
 if 'RAVEN_DSN' in os.environ:
     RAVEN_CONFIG = {
         'dsn': os.environ['RAVEN_DSN']

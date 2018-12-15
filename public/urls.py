@@ -4,6 +4,7 @@ from .views.other import styleguide, home, state, unslash
 from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
 from .views.committees import committees, committee
+from .views.donations import donate
 from utils.common import states
 
 
@@ -18,6 +19,7 @@ urlpatterns = [
     # flatpages
     path('about/', TemplateView.as_view(template_name='flat/about.html')),
     path('tos/', TemplateView.as_view(template_name='flat/tos.html')),
+    path('donate/', donate),
 
     # top level views
     path("", home, name="home"),
