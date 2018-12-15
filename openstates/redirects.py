@@ -18,9 +18,6 @@ redirects = [
     # old flatpages
     ('funding/', '/donate/'),
     ('contact/', '/about/'),
-    ('methodology/', 'https://docs.openstates.org/en/latest/infrastructure/index.html'),
-    ('contributing/', 'https://docs.openstates.org/en/latest/contributing/index.html'),
-    ('downloads/', 'https://docs.openstates.org/en/latest/data/index.html'),
     # TODO: reportcard
 ]
 

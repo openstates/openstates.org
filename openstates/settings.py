@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.sites',
     'raven.contrib.django.raven_compat',
     'webpack_loader',
     'opencivicdata.core.apps.BaseConfig',

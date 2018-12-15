@@ -1,0 +1,19 @@
+{% extends "public/components/base.html" %}
+
+{% block title %}Open States API Key Registration{% endblock %}
+
+{% block content %}
+      <h1>Register for an API Key</h1>
+        <p> Fill out the following form and your API key will be emailed to you
+          right away.  You must confirm your email address by clicking
+          a link in that email before your key will be active.</p>
+
+      <p>By signing up for an API key you are consenting to our
+          <a href="/tos/">Terms of Service &amp; Privacy Policy</a>.</p>
+
+        <form action="." method="POST">
+          {{ form.as_ul }}
+          <input type="submit">
+          {% csrf_token %}
+        </form>
+{% endblock %}
