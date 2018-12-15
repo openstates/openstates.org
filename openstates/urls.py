@@ -25,5 +25,9 @@ urlpatterns = [
 
 
 if settings.DEBUG:
-    pass
+    from django.views.defaults import page_not_found, server_error
+    urlpatterns += [
+        url(r'^404/$', page_not_found, {"exception": None}),
+        url(r'^500/$', server_error),
+    ]
 #     urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
