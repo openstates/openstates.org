@@ -6,8 +6,13 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Open States{% endblock %}</title>
+        <meta name="description" content="{% block description %}{% endblock %}">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@openstates">
+        {# TODO og:image, og:title, og:description, og:type, og:site_name #}
 
-        <title>{% block title %}{% endblock %}</title>
         {% render_bundle 'main' 'css' %}
 
         <!-- CSS required by utilized libraries; could alternatively be copied and saved to the local styles directory -->

@@ -1,6 +1,9 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
 
+{% block title %}{{ state|state_name }} Bills - Open States{% endblock %}
+{% block description %}Search and browse all bills introduced within {{ state|state_name }}.{% endblock %}
+
 {% block content %}
     <h1>{{ state|state_name }} Bills</h1>
     Showing {{ bills.start_index }}-{{ bills.end_index }} of {{ bills.paginator.count }}.

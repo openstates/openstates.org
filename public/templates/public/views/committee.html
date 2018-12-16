@@ -1,6 +1,9 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
 
+{% block title %}{{committee.name}} - {{ state|state_name }} - Open States{% endblock %}
+{% block description %}Members of {{committee.name}} ({{ state|state_name }}  {{committee.parent}} Committee).{% endblock %}
+
 {% block content %}
     <h1>{{ committee.name }}</h1>
     <span>{{ state|state_name }} {{ committee.parent }} committee</span>

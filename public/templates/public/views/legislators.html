@@ -1,6 +1,9 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
 
+{% block title %}{{ state|state_name }} Legislators - Open States{% endblock %}
+{% block description %}Learn more about who represents you in {{state|state_name}}.{% endblock %}
+
 {% block content %}
     <h1>{{ state|state_name }} Legislators</h1>
 

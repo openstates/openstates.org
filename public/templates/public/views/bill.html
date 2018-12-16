@@ -2,10 +2,13 @@
 {% load custom_tags %}
 {% load static %}
 
+{% block title %}{{ bill.identifier }} - {{ state|state_name }} {{ bill.from_organization.name }} ({{bill.legislative_session.identifier }}) - Open States{% endblock %}
+{% block description %}Details on {{ state|state_name }} {{ bill.identifier}} ({{ bill.legislative_session }}) - {{ bill.title }}{% endblock %}
+
 {% block content %}
     <section>
         <h1>{{ bill.identifier }}</h1>
-        <span>{{ bill.from_organization.name }} {{ bill.classification.0|title }} · {{ bill.legislative_session.name }}</span>
+        <span>{{state|state_name}} {{ bill.from_organization.name }} {{ bill.classification.0|title }} · {{ bill.legislative_session.name }}</span>
 
         <div>
             TO-DO: BILL STATUS PROGRESS BAR

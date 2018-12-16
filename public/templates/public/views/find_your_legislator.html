@@ -2,10 +2,14 @@
 {% load custom_tags %}
 {% load static %}
 
-{% block scripts %} 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHXDvbO733mGwjzREpnqnnkoz9sPQqwAk"> </script>
-{% endblock %}
+{% block title %}Find Your State Legislators - Open States{% endblock %}
+{% block description %}Find out who represents you in your state legislature with Open States.{% endblock %}
 
 {% block content %}
     <div data-hook="find-your-legislator"></div>
+{% endblock %}
+
+
+{% block scripts %} 
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHXDvbO733mGwjzREpnqnnkoz9sPQqwAk"> </script>
 {% endblock %}

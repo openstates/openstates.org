@@ -2,6 +2,9 @@
 {% load custom_tags %}
 {% load static %}
 
+{% block title %}{{ vote.organization }} vote on {{ vote.bill }} - Open States {% endblock %}
+{% block description %}View the {{ state|state_name }} {{ vote.organization }} vote history on {{ vote.bill }}.{% endblock %}
+
 {% block content %}
     <section>
         <h1>{{ vote.organiation }} Vote on {{ vote.bill }}</h1>
