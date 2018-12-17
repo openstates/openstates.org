@@ -27,7 +27,7 @@ def _get_latest_updates():
 
 
 def _get_random_bills():
-    return Bill.objects.all().order_by('-updated_at')[:3]
+    return Bill.objects.all().order_by('-updated_at').prefetch_related("sponsorships")[:3]
 
 
 def home(request):
