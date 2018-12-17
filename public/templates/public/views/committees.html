@@ -7,6 +7,17 @@
 {% block content %}
     <h1>{{ state|state_name }} Committees</h1>
 
+    {% if not committees %}
+    
+    <p>
+        No committee data is currently available for {{ state|state_name}}.
+        It may be that the state hasn't yet published the information, or we may 
+        need some help acquiring this data.  If you're interested in helping,
+        <a href="https://discourse.openstates.org">join the discussion</a>.
+    </p>
+
+    {% else %}
+
     <div data-hook="committee-list"></div>
 
     <script>
@@ -20,4 +31,6 @@
         {% endfor %}
         </ul>
     </noscript>
+
+    {% endif %}
 {% endblock %}
