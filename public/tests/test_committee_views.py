@@ -32,7 +32,7 @@ def setup():
 
 @pytest.mark.django_db
 def test_committees_view(client, django_assert_num_queries):
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(3):
         resp = client.get("/ak/committees/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
@@ -53,7 +53,7 @@ def test_committees_view(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_committee_detail(client, django_assert_num_queries):
     o = Organization.objects.get(name="Wizards")
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(9):
         resp = client.get(pretty_url(o))
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
