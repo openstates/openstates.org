@@ -1,7 +1,7 @@
 from collections import Counter
 import feedparser
 from django.db.models import Min, Max, Sum, Count
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.core.cache import cache
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Organization
@@ -42,10 +42,6 @@ def home(request):
         "blog_updates": updates,
     }
     return render(request, "public/views/home.html", context)
-
-
-def unslash(request, *args, **kwargs):
-    return redirect(request.path.rstrip("/"), permanent=True)
 
 
 def state(request, state):

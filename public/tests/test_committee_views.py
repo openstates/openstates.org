@@ -33,7 +33,7 @@ def setup():
 @pytest.mark.django_db
 def test_committees_view(client, django_assert_num_queries):
     with django_assert_num_queries(2):
-        resp = client.get("/ak/committees")
+        resp = client.get("/ak/committees/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "committees"

@@ -10,7 +10,7 @@ def setup():
 @pytest.mark.django_db
 def test_state_view(client, django_assert_num_queries):
     with django_assert_num_queries(11):
-        resp = client.get("/ak")
+        resp = client.get("/ak/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "overview"
@@ -42,7 +42,7 @@ def test_state_view(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_state_view_unicam(client, django_assert_num_queries):
     populate_unicam()
-    resp = client.get("/ne")
+    resp = client.get("/ne/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ne"
     assert resp.context["state_nav"] == "overview"

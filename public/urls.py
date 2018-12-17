@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from django.views.generic import TemplateView
-from .views.other import styleguide, home, state, unslash
+from .views.other import styleguide, home, state
 from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
 from .views.committees import committees, committee
@@ -23,18 +23,18 @@ urlpatterns = [
 
     # top level views
     path("", home, name="home"),
-    path("find_your_legislator", find_your_legislator, name="find_your_legislator"),
-    re_path(r"^(?P<state>{})$".format(state_abbr_pattern), state, name="state"),
+    path("find_your_legislator/", find_your_legislator, name="find_your_legislator"),
+    re_path(r"^(?P<state>{})/$".format(state_abbr_pattern), state, name="state"),
     # people
     re_path(
-        r"^(?P<state>{})/legislators$".format(state_abbr_pattern),
+        r"^(?P<state>{})/legislators/$".format(state_abbr_pattern),
         legislators,
         name="legislators",
     ),
-    re_path(r"^person/.*\-(?P<person_id>[0-9A-Za-z]+)", person, name="person-detail"),
+    re_path(r"^person/.*\-(?P<person_id>[0-9A-Za-z]+)/$", person, name="person-detail"),
     # bills
     re_path(
-        r"^(?P<state>{})/bills$".format(state_abbr_pattern),
+        r"^(?P<state>{})/bills/$".format(state_abbr_pattern),
         BillList.as_view(),
         name="bills",
     ),
@@ -45,31 +45,24 @@ urlpatterns = [
         name="bills_feed",
     ),
     re_path(
-        r"^(?P<state>{})/bills/(?P<session>\w+)/(?P<bill_id>\w+)$".format(
+        r"^(?P<state>{})/bills/(?P<session>\w+)/(?P<bill_id>\w+)/$".format(
             state_abbr_pattern
         ),
         bill,
         name="bill",
     ),
-    re_path(r"^vote/(?P<vote_id>[-0-9a-f]+)$", vote, name="vote-detail"),
+    re_path(r"^vote/(?P<vote_id>[-0-9a-f]+)/$", vote, name="vote-detail"),
     # committees
     re_path(
-        r"^(?P<state>{})/committees$".format(state_abbr_pattern),
+        r"^(?P<state>{})/committees/$".format(state_abbr_pattern),
         committees,
         name="committees",
     ),
     re_path(
-        r"^(?P<state>{})/committees/.*\-(?P<committee_id>[0-9A-Za-z]+)".format(
+        r"^(?P<state>{})/committees/.*\-(?P<committee_id>[0-9A-Za-z]+)/$".format(
             state_abbr_pattern
         ),
         committee,
         name="committee-detail",
     ),
-    # TODO: before release we need to make this sane and choose a side
-    # redirect some old slashed URLs
-    path("find_your_legislator/", unslash),
-    re_path(r"^(?P<state>{})/$".format(state_abbr_pattern), unslash),
-    re_path(r"^(?P<state>{})/legislators/$".format(state_abbr_pattern), unslash),
-    re_path(r"^(?P<state>{})/bills/$".format(state_abbr_pattern), unslash),
-    re_path(r"^(?P<state>{})/committees/$".format(state_abbr_pattern), unslash),
 ]
