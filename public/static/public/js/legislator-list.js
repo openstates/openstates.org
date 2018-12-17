@@ -1,12 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
 
-function imgError(e) {
-    var placeholder = document.createElement('div');
-    placeholder.classList.add("thumbnail", "thumbnail--placeholder");
-    e.target.parentNode.replaceChild(placeholder, e.target);
-}
-
 
 export function ChamberButtons(props) {
     if (Object.keys(props.chambers).length > 1) {

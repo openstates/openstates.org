@@ -7,8 +7,10 @@ def get_current_role(person):
     party = None
     post = None
     state = None
+    chamber = None
 
-    # TODO: optimize this query
+    # assume that this person object was fetched with appropriate
+    # related data, if not this can get expensive
     for membership in person.memberships.all():
         if not membership.end_date or membership.end_date > today:
             if membership.organization.classification == "party":
@@ -26,7 +28,7 @@ def get_current_role(person):
         "party": party,
         "chamber": chamber,
         "state": state,
-        "district": post.label,
-        "division_id": post.division_id,
-        "role": post.role,
+        "district": post.label if post else "",
+        "division_id": post.division_id if post else "",
+        "role": post.role if post else "",
     }

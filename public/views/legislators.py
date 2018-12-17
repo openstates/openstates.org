@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from graphapi.schema import schema
-from utils.common import decode_uuid
+from utils.common import decode_uuid, jid_to_abbr
 from utils.orgs import get_chambers_from_abbr
 from ..models import PersonProxy
 
@@ -95,6 +95,14 @@ def person(request, person_id):
         return redirect(canonical_url, permanent=True)
 
     state = person.current_role["state"]
+    if not state:
+        #  this breaks if they held office in two states, but we don't really worry about that
+        for m in person.memberships.all():
+            if m.organization.classification in ("upper", "lower", "legislature"):
+                state = jid_to_abbr(m.organization.jurisdiction_id)
+        retired = True
+    else:
+        retired = False
     person.all_contact_details = person.contact_details.order_by("note")
 
     person.sponsored_bills = [
@@ -116,5 +124,6 @@ def person(request, person_id):
     return render(
         request,
         "public/views/legislator.html",
-        {"state": state, "person": person, "state_nav": "legislators"},
+        {"state": state, "person": person, "state_nav": "legislators",
+         "retired": retired},
     )

@@ -9,6 +9,17 @@ import FindYourLegislator from './find-your-legislator'
 import CommitteeList from './committee-list'
 
 
+window.imgError = function(t) {
+    // handle Event or Element
+    if(t.target) {
+        t = t.target;
+    }
+    var placeholder = document.createElement('div');
+    placeholder.classList.add("thumbnail", "thumbnail--placeholder");
+    t.parentNode.replaceChild(placeholder, t);
+}
+
+
 window.addEventListener('load', () => {
     if (document.querySelector('[data-hook="legislator-map"]')) {
         legislatorMap()
