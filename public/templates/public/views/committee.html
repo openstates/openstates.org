@@ -6,7 +6,13 @@
 
 {% block content %}
     <h1>{{ committee.name }}</h1>
-    <span>{{ state|state_name }} {{ committee.parent }} committee</span>
+    <span>
+        {% if committee.parent.classification == "legislature" %}
+        {{ committee.parent }}
+        {% else %}
+        {{ state|state_name }} {{ committee.parent }} Committee
+        {% endif %}
+    </span>
 
     <table>
         <thead>
@@ -18,14 +24,22 @@
             </tr>
         </thead>
         <tbody>
-            {% for member in committee_members %}
+            {% for membership in memberships %}
             <tr>
+                {% if membership.member %}
                 <td>
-                    <img class="thumbnail thumbnail--small" src="{{ member.image_url }}">
+                    <img class="thumbnail thumbnail--small" src="{{ membership.member.image_url }}">
                 </td>
-                <td>{{ member.name }}</td>
-                <td>{{ member.current_role.party }}</td>
-                <td>{{ member.committee_role }}</td>
+                <td><a href="{{ membership.member.pretty_url }}">{{ membership.member.name }}</a></td>
+                <td>{{ membership.member.current_role.party }}</td>
+                {% else %}
+                <td>
+                    <div class="thumbnail thumbnail--small thumbnail--placeholder"></div>
+                </td>
+                <td>{{ membership.person_name }}</td>
+                <td></td>
+                {% endif %}
+                <td>{{ membership.role }}</td>
             </tr>
             {% endfor %}
         </tbody>

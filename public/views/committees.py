@@ -28,8 +28,8 @@ def committees(request, state):
     )
 
 
-def _role_sort_key(member):
-    return (member.committee_role.lower() == "member", member.committee_role)
+def _role_sort_key(membership):
+    return (membership.role.lower() == "member", membership.role)
 
 
 def committee(request, state, committee_id):
@@ -41,16 +41,24 @@ def committee(request, state, committee_id):
     if request.path != canonical_url:
         return redirect(canonical_url, permanent=True)
 
-    members = sorted(
-        PersonProxy.objects.filter(
-            memberships__organization_id=org.id, memberships__end_date=""
-        )
+    # because there are memberships without person records, we need to do this
+    # piecemeal, we'll grab the people and memberships separately and combine them
+    memberships = sorted(
+        org.memberships.filter(end_date="").select_related("post"), key=_role_sort_key
+    )
+
+    members = {
+        p.id: p
+        for p in PersonProxy.objects.filter(memberships__in=memberships)
         .annotate(committee_role=F("memberships__role"))
         .prefetch_related(
             "memberships", "memberships__organization", "memberships__post"
-        ),
-        key=_role_sort_key,
-    )
+        )
+    }
+
+    for membership in memberships:
+        if membership.person_id:
+            membership.member = members[membership.person_id]
 
     return render(
         request,
@@ -59,6 +67,6 @@ def committee(request, state, committee_id):
             "state": state,
             "state_nav": "committees",
             "committee": org,
-            "committee_members": members,
+            "memberships": memberships,
         },
     )
