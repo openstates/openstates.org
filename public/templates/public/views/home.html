@@ -13,8 +13,10 @@
     <div>
         <img src="{% static "public/images/person.svg" %}">
         <h4>Find Your Legislators</h4>
-        <input placeholder="123 Main St, Portland, ME">
-        <button>Search</button>
+        <form action="/find_your_legislator">
+            <input placeholder="123 Main St, Portland, ME" name="address" />
+            <input type="submit" value="Search" />
+        </form>
     </div>
 
     <div>

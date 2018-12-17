@@ -2,6 +2,7 @@ from collections import Counter
 import feedparser
 from django.db.models import Min, Max, Sum, Count
 from django.shortcuts import render, redirect
+from django.core.cache import cache
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Organization
 from utils.common import abbr_to_jid, states
@@ -12,21 +13,32 @@ def styleguide(request):
     return render(request, "public/views/styleguide.html")
 
 
-def home(request):
+def _get_latest_updates():
     RSS_FEED = "https://blog.openstates.org/feed"
 
     feed = feedparser.parse(RSS_FEED)
-    updates = [
+    return [
         {
             "title": entry.title,
             "link": entry.link,
         }
         for entry in feed.entries
-    ]
+    ][:3]
+
+
+def _get_random_bills():
+    return Bill.objects.all().order_by('-updated_at')[:3]
+
+
+def home(request):
+    # cache these to try to keep the homepage as cheap as possible
+    cache_time = 60*60*24   # cache for a full day
+    updates = cache.get_or_set('homepage-blog-updates', _get_latest_updates, cache_time)
+    recent_bills = cache.get_or_set('homepage-bills', _get_random_bills, cache_time)
 
     context = {
         "states": states,
-        "recent_bills": Bill.objects.all()[:3],
+        "recent_bills": recent_bills,
         "blog_updates": updates,
     }
     return render(request, "public/views/home.html", context)

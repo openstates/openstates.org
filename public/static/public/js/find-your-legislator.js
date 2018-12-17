@@ -32,8 +32,9 @@ const Map = withGoogleMap(function(props) {
 export default class FindYourLegislator extends React.Component {
     constructor (props) {
         super(props);
+        const queryParams = new URLSearchParams(window.location.search)
         this.state = {
-            address: '',
+            address: queryParams.get("address") || '',
             lat: 0,
             lon: 0,
             legislators: [],
@@ -41,6 +42,10 @@ export default class FindYourLegislator extends React.Component {
         this.handleAddressChange = this.handleAddressChange.bind(this);
         this.geocode = this.geocode.bind(this);
         this.geolocate = this.geolocate.bind(this);
+
+        if(this.state.address) {
+            this.geocode();
+        }
     }
 
     handleAddressChange(event) {
