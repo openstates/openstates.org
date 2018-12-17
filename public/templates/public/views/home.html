@@ -1,8 +1,75 @@
 {% extends "../components/base.html" %}
+{% load static %}
+{% load custom_tags %}
 
 {% block title %}Open States: discover politics in your state{% endblock %}
 {% block description %}Follow politics in your state legislature. Find your legislators, see how they vote and browse bills and committees.{% endblock %}
 
 {% block content %}
-	<h1>Welcome to Open States!</h1>
+<h1>Discover Politics In Your State</h1>
+
+
+<div id="home-top">
+    <div>
+        <img src="{% static "public/images/person.svg" %}">
+        <h4>Find Your Legislators</h4>
+        <input placeholder="123 Main St, Portland, ME">
+        <button>Search</button>
+    </div>
+
+    <div>
+        <img src="{% static "public/images/nounproject/national_assembly.svg" %}">
+        <h4>See What's Happening In Your State</h4>
+        <select class="navigation__select" onchange="window.location.href = '/' + this.value">
+            {% if not state %}
+                <option value="">Select a state</option>
+            {% endif %}
+            {% for st in states %}
+                <option value="{{ st.abbr|lower }}">{{ st.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <img src="{% static "public/images/nounproject/legislation.svg" %}">
+        <h4>Track Bills In Your State</h4>
+    </div>
+
+    <div>
+        <img src="{% static "public/images/nounproject/data.svg" %}">
+        <h4>Dig In To Our Data &amp; APIs</h4>
+        <p>
+            We make all of our data available for <a href="/downloads/">bulk download</a>
+            and via our powerful <a href="/api/">API</a>.  <a href="/api/register/">Register for an API key</a> and get started now.
+        </p>
+    </div>
+</div>
+
+<div id="home-donate">
+    <a href="/donate/">Donate to Open States</a>
+    <p>
+        Open States is a volunteer-driven project.  Help us keep Open States free for everyone.
+    </p>
+</div>
+
+<div id="home-bottom">
+
+    <div>
+        <h3>Latest Activity</h3>
+        {% for bill in recent_bills %}
+            {% bill_card state bill %}
+        {% endfor %}
+    </div>
+
+    <div>
+        <h3>Project Updates</h3>
+
+        {% for update in blog_updates %}
+        <div class="blog-update">
+            <a href="{{ update.link }}">{{ update.title }}</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}

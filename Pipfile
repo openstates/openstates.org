@@ -24,6 +24,7 @@ pip = "==18.0"
 python-dateutil = "*"
 ipython = "*"
 stripe = "*"
+feedparser = "*"
 
 [dev-packages]
 ipython = "*"

@@ -13,7 +13,7 @@
             <div class="navigation__container">
 
                 <div class="navigation__section navigation__select-wrapper">
-                    <select class="navigation__select" onchange="window.location.href = {% url 'home' %} + this.value">
+                    <select class="navigation__select" onchange="window.location.href = '/' + this.value">
                         {% if not state %}
                             <option value="">Select a state</option>
                         {% endif %}

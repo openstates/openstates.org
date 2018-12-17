@@ -1,9 +1,10 @@
 from collections import Counter
+import feedparser
 from django.db.models import Min, Max, Sum, Count
 from django.shortcuts import render, redirect
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Organization
-from utils.common import abbr_to_jid
+from utils.common import abbr_to_jid, states
 from ..models import PersonProxy
 
 
@@ -12,7 +13,23 @@ def styleguide(request):
 
 
 def home(request):
-    return render(request, "public/views/home.html")
+    RSS_FEED = "https://blog.openstates.org/feed"
+
+    feed = feedparser.parse(RSS_FEED)
+    updates = [
+        {
+            "title": entry.title,
+            "link": entry.link,
+        }
+        for entry in feed.entries
+    ]
+
+    context = {
+        "states": states,
+        "recent_bills": Bill.objects.all()[:3],
+        "blog_updates": updates,
+    }
+    return render(request, "public/views/home.html", context)
 
 
 def unslash(request, *args, **kwargs):
