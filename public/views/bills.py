@@ -213,8 +213,8 @@ def bill(request, state, session, bill_id):
         .prefetch_related(related_entities)
     )
     votes = list(bill.votes.all())  # .prefetch_related('counts')
-    versions = list(bill.versions.all().prefetch_related("links"))
-    documents = list(bill.documents.all().prefetch_related("links"))
+    versions = list(bill.versions.order_by("-date").prefetch_related("links"))
+    documents = list(bill.documents.order_by("-date").prefetch_related("links"))
     try:
         sorted_links = sorted(versions[0].links.all(), key=_document_sort_key)
         read_link = sorted_links[0].url
