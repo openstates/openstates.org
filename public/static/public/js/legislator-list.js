@@ -1,6 +1,12 @@
 import _ from 'lodash'
 import React from 'react'
 
+function imgError(e) {
+    var placeholder = document.createElement('div');
+    placeholder.classList.add("thumbnail", "thumbnail--placeholder");
+    e.target.parentNode.replaceChild(placeholder, e.target);
+}
+
 
 export function ChamberButtons(props) {
     if (Object.keys(props.chambers).length > 1) {
@@ -67,7 +73,9 @@ export default class LegislatorList extends React.Component {
               <th onClick={() => this.setSortOrder('name')}>Name</th>
               <th onClick={() => this.setSortOrder('party')}>Party</th>
               <th onClick={() => this.setSortOrder('district')}>District</th>
-              <th onClick={() => this.setSortOrder('chamber')}>Chamber</th>
+              {this.props.chambers.length > 1 &&
+                  <th onClick={() => this.setSortOrder('chamber')}>Chamber</th>
+              }
             </tr>
           </thead>
           <tbody>
@@ -76,12 +84,14 @@ export default class LegislatorList extends React.Component {
               .map(b =>
                 <tr key={b.id}>
                   <td>
-                      <img className="thumbnail mr1" src={b.image_url} alt={`headshot for ${b.name}`} />
+                      <img className="thumbnail mr1" src={b.image_url} alt={`headshot for ${b.name}`} onError={imgError} />
                   </td>
                   <td><a href={b.pretty_url}>{b.name}</a></td>
                   <td>{b.current_role.party}</td>
                   <td>{b.current_role.district}</td>
-                  <td>{this.props.chambers[b.current_role.chamber]}</td>
+                  {this.props.chambers.length > 1 &&
+                      <td>{this.props.chambers[b.current_role.chamber]}</td>
+                  }
                 </tr>
               )
             }
