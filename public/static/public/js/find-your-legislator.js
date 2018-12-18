@@ -15,7 +15,6 @@ const Map = withGoogleMap(function(props) {
     var shapes = [];
     for(var leg of props.legislators) {
         if(leg.shape) {
-            console.log(multipolyToPath(leg.shape.coordinates));
             shapes.push(<Polygon key={leg.division_id}
                 defaultPaths={multipolyToPath(leg.shape.coordinates)} />);
         }
@@ -38,6 +37,7 @@ export default class FindYourLegislator extends React.Component {
             lat: 0,
             lon: 0,
             legislators: [],
+            error: "",
         };
         this.handleAddressChange = this.handleAddressChange.bind(this);
         this.geocode = this.geocode.bind(this);
@@ -52,6 +52,14 @@ export default class FindYourLegislator extends React.Component {
       this.setState({address: event.target.value});
     }
 
+    setError(message) {
+        this.setState({
+            error: message,
+            legislators: [],
+            showMap: false
+        });
+    }
+
     geolocate() {
         const component = this;
         if (navigator.geolocation) {
@@ -62,10 +70,10 @@ export default class FindYourLegislator extends React.Component {
             });
             component.updateLegislators();
           }, function() {
-            console.warn('could not geolocate');
+            component.setError("Geolocation was not available, try entering your address.");
           });
         } else {
-            console.warn('could not geolocate');
+            component.setError("Geolocation was not available, try entering your address.");
         }
     }
 
@@ -84,15 +92,14 @@ export default class FindYourLegislator extends React.Component {
                 });
                 component.updateLegislators();
             } else {
-                // TODO 
-                console.warn('could not geocode');
+                component.setError("Unable to geolocate your address, try adding more information.");
             }
         });
     }
 
     updateLegislators() {
         if(!this.state.lat || !this.state.lon) {
-            this.setState({legislators: []});
+            this.setState({legislators: [], showMap: false});
         } else { 
             const component = this;
             fetch(`/find_your_legislator/?lat=${this.state.lat}&lon=${this.state.lon}`)
@@ -109,7 +116,7 @@ export default class FindYourLegislator extends React.Component {
                                         stleg.shape = json.shape;
                                     }
                                 }
-                                component.setState({legislators: component.state.legislators});
+                                component.setState({legislators: component.state.legislators, showMap: true, error: null});
                             });
                     }
                 });
@@ -118,22 +125,19 @@ export default class FindYourLegislator extends React.Component {
     }
 
     render() {
-        const legTable = this.state.legislators.map(leg => <tr key={leg.name}>
+        const rows = this.state.legislators.map(leg => <tr key={leg.name}>
             <td>{leg.name}</td>
             <td>{leg.party}</td>
             <td>{leg.district}</td>
             <td>{leg.chamber}</td>
         </tr>);
 
-        return (
-        <div>
-            <h1>Find Your Legislators</h1>
-            <label htmlFor="address">Enter Your Address:</label>
-            <input id="address" name="address" value={this.state.address} onChange={this.handleAddressChange} />
-            <button id="address-lookup" className="button" onClick={this.geocode}>Search by Address</button>
-            <button id="locate" className="button" onClick={this.geolocate}>Use Current Location</button>
+        var table = null;
+        var map = null;
+        var error = null;
 
-            <table id="results">
+        if (this.state.legislators.length) {
+            table = (<table id="results">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -143,18 +147,38 @@ export default class FindYourLegislator extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {legTable}
+                    {rows}
                 </tbody>
-            </table>
+            </table>)
+        }
 
-            <Map
+        if (this.state.showMap) {
+            map = (<Map
               zoom={11}
               lat={this.state.lat}
               lon={this.state.lon}
               legislators={this.state.legislators}
               containerElement={<div style={{ height: `400px` }} />}
               mapElement={<div style={{ height: `100%` }} />}
-            />
+          />)
+        }
+
+        if (this.state.error) {
+            error = (<div class="fyl-error">{this.state.error}</div>);
+        }
+
+        return (
+        <div>
+            <h1>Find Your Legislators</h1>
+            <label htmlFor="address">Enter Your Address:</label>
+            <input id="address" name="address" value={this.state.address} onChange={this.handleAddressChange} />
+            <button id="address-lookup" className="button" onClick={this.geocode}>Search by Address</button>
+            <button id="locate" className="button" onClick={this.geolocate}>Use Current Location</button>
+
+            {error}
+            {table}
+            {map}
+
         </div>
         );
     }
