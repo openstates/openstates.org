@@ -1,6 +1,5 @@
 import mapboxgl from 'mapbox-gl'
-
-import stateBounds from './state-bounds'
+import config from './config'
 
 export default () => {
   mapboxgl.accessToken = 'pk.eyJ1Ijoib3BlbnN0YXRlcyIsImEiOiJjamU2NmJ2dmsxdTFzMzRycTNhejNjdTUzIn0.QHziTq0NGFutvZzo9Wmc0w'
@@ -10,7 +9,7 @@ export default () => {
 
   const map = new mapboxgl.Map({
     container,
-    style: 'mapbox://styles/mapbox/light-v9',
+    style: config.MAP_BASE_STYLE,
     interactive: false,
     // These are the min and max zooms at which the SLD map tiles exist
     minZoom: 2,
@@ -35,50 +34,11 @@ export default () => {
   map.on('load', function () {
     const districtType = districtId.includes('sldu') ? 'sldu' : 'sldl'
 
-    map.addLayer({
-      id: 'other-districts',
-      type: 'line',
-      source: {
-        type: 'vector',
-        url: 'mapbox://openstates.sld'
-      },
-      'source-layer': 'sld',
-      paint: {
-        'line-color': 'black',
-        'line-opacity': 0.4,
-        'line-width': 1.0
-      },
-    })
-
-    map.addLayer({
-      id: 'district-fill',
-      type: 'fill',
-      source: {
-        type: 'vector',
-        url: 'mapbox://openstates.sld'
-      },
-      'source-layer': 'sld',
-      paint: {
-        'fill-color': 'green',
-        'fill-opacity': 0.2
-      },
-      filter: ['==', 'ocdid', districtId]
-    })
-
-    map.addLayer({
-      id: 'district-stroke',
-      type: 'line',
-      source: {
-        type: 'vector',
-        url: 'mapbox://openstates.sld'
-      },
-      'source-layer': 'sld',
-      paint: {
-        'line-color': 'green',
-        'line-opacity': 0.4,
-        'line-width': 1.0
-      },
-      filter: ['==', 'ocdid', districtId]
-    })
+    const outline = {...config.MAP_DISTRICTS_OUTLINE};
+    map.addLayer(outline);
+    const fill = {...config.MAP_DISTRICTS_FILL, filter: ['==', 'ocdid', districtId]};
+    map.addLayer(fill);
+    const stroke = {...config.MAP_DISTRICTS_STROKE, filter: ['==', 'ocdid', districtId]}
+    map.addLayer(stroke);
   })
 }
