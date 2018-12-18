@@ -266,7 +266,7 @@ def test_people_num_queries(django_assert_num_queries):
         }
         }''')
     assert result.errors is None
-    assert len(result.data['people']['edges']) == 8
+    assert len(result.data['people']['edges']) == 9
     total_memberships = 0
     for person in result.data['people']['edges']:
         total_memberships += len(person['node']['currentMemberships'])
@@ -287,8 +287,8 @@ def test_people_total_count(django_assert_num_queries):
         }
         }''')
     assert result.errors is None
-    assert result.data['people']['totalCount'] == 8
-    assert len(result.data['people']['edges']) == 8
+    assert result.data['people']['totalCount'] == 9
+    assert len(result.data['people']['edges']) == 9
 
     with django_assert_num_queries(2):
         result = schema.execute(''' {
@@ -321,7 +321,6 @@ def test_people_current_memberships_classification(django_assert_num_queries):
         }
         }''')
     assert result.errors is None
-    assert len(result.data['people']['edges']) == 8
     total_memberships = 0
     for person in result.data['people']['edges']:
         total_memberships += len(person['node']['currentMemberships'])
@@ -343,11 +342,10 @@ def test_people_old_memberships(django_assert_num_queries):
         }
         }''')
     assert result.errors is None
-    assert len(result.data['people']['edges']) == 8
     old_memberships = 0
     for person in result.data['people']['edges']:
         old_memberships += len(person['node']['oldMemberships'])
-    assert old_memberships == 1      # one old membership in test data right now
+    assert old_memberships == 3      # three old memberships in test data right now
 
 
 @pytest.mark.django_db
@@ -437,8 +435,8 @@ def test_people_by_updated_since():
     }''' % middle_date)
 
     assert result.errors is None
-    assert len(result.data['all']['edges']) == 8
-    assert len(result.data['some']['edges']) == 6
+    assert len(result.data['all']['edges']) == 9
+    assert len(result.data['some']['edges']) == 7
     assert len(result.data['none']['edges']) == 0
 
 

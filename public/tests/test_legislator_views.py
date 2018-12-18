@@ -16,7 +16,7 @@ def test_legislators_view(client, django_assert_num_queries):
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "legislators"
     assert len(resp.context["chambers"]) == 2
-    assert len(resp.context["legislators"]) == 7
+    assert len(resp.context["legislators"]) == 6
 
 
 @pytest.mark.django_db
@@ -39,6 +39,21 @@ def test_person_view(client, django_assert_num_queries):
     }
     assert len(person.sponsored_bills) == 1
     assert len(person.vote_events) == 1
+    assert resp.context["retired"] is False
+
+
+@pytest.mark.django_db
+def test_person_view_retired(client, django_assert_num_queries):
+    p = PersonProxy.objects.get(name="Rhonda Retired")
+    # fewer views, we don't do the bill queries
+    with django_assert_num_queries(9):
+        resp = client.get(p.pretty_url())
+    assert resp.status_code == 200
+    assert resp.context["state"] == "ak"
+    assert resp.context["state_nav"] == "legislators"
+    person = resp.context["person"]
+    assert person.name == "Rhonda Retired"
+    assert resp.context["retired"] is True
 
 
 @pytest.mark.django_db
@@ -51,5 +66,4 @@ def test_canonicalize_person(client):
     assert resp.url == p.pretty_url()
 
 
-# TODO: test retired person
 # TODO: test find_your_legislator

@@ -23,7 +23,7 @@ def test_bills_view_basics(client, django_assert_num_queries):
     assert len(resp.context["chambers"]) == 2
     assert len(resp.context["sessions"]) == 2
     assert "nature" in resp.context["subjects"]
-    assert len(resp.context["sponsors"]) == 6
+    assert len(resp.context["sponsors"]) == 7
     assert len(resp.context["classifications"]) == 3
     # 10 random bills, 2 full featured
     assert len(resp.context["bills"]) == ALASKA_BILLS
@@ -41,7 +41,7 @@ def test_bills_view_query(client, django_assert_num_queries):
     assert len(resp.context["sessions"]) == 2
     assert "nature" in resp.context["subjects"]
     assert len(resp.context["subjects"]) > 10
-    assert len(resp.context["sponsors"]) == 6
+    assert len(resp.context["sponsors"]) == 7
     assert len(resp.context["classifications"]) == 3
 
 

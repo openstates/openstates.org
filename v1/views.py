@@ -9,6 +9,7 @@ from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
 from . import static
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
 from utils.common import jid_to_abbr, abbr_to_jid
+from utils.people import current_role_filters
 
 
 def jsonp(view_func):
@@ -97,12 +98,7 @@ def legislator_list(request, geo=False):
     chamber = request.GET.get('chamber')
     district = request.GET.get('district')
 
-    today = datetime.date.today().isoformat()
-    filter_params = [Q(memberships__start_date='') |
-                     Q(memberships__start_date__lte=today),
-                     Q(memberships__end_date='') |
-                     Q(memberships__end_date__gte=today),
-                     ]
+    filter_params = current_role_filters()
 
     if geo:
         latitude = request.GET.get('lat')
@@ -112,6 +108,7 @@ def legislator_list(request, geo=False):
             return JsonResponse("Bad Request: must include lat & long",
                                 status=400, safe=False)
 
+        today = datetime.date.today().isoformat()
         filter_params += [
             Q(memberships__post__division__geometries__boundary__shape__contains=(
                 Point(float(longitude), float(latitude))

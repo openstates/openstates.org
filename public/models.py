@@ -1,5 +1,5 @@
 from opencivicdata.core.models import Person, Organization
-from utils.people import get_current_role
+from utils.people import get_current_role, current_role_filters
 from utils.common import pretty_url
 
 
@@ -10,6 +10,7 @@ class PersonProxy(Person):
     @staticmethod
     def get_current_legislators_with_roles(chambers):
         return PersonProxy.objects.filter(
+            *current_role_filters(),
             memberships__organization__in=chambers
         ).prefetch_related(
             "memberships", "memberships__organization", "memberships__post"

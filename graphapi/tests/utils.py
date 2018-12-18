@@ -80,6 +80,12 @@ def populate_db():
     post = house.posts.create(label='5')
     ellen.memberships.create(post=post, organization=house, end_date='2017-01-01')
 
+    # retired house member
+    rhonda = make_person('Rhonda Retired', 'Alaska', 'upper', 'B', 'Democratic')
+    for m in rhonda.memberships.all():
+        m.end_date = '2017-01-01'
+        m.save()
+
     # WY House (multi-member districts)
     make_person('Greta Gonzalez', 'Wyoming', 'lower', '1', 'Democratic')
     make_person('Hank Horn', 'Wyoming', 'lower', '1', 'Republican')

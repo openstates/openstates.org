@@ -1,4 +1,5 @@
 import datetime
+from django.db.models import Q
 from .common import jid_to_abbr
 
 
@@ -32,3 +33,9 @@ def get_current_role(person):
         "division_id": post.division_id if post else "",
         "role": post.role if post else "",
     }
+
+
+def current_role_filters():
+    today = datetime.date.today().isoformat()
+    return [Q(memberships__start_date='') | Q(memberships__start_date__lte=today),
+            Q(memberships__end_date='') | Q(memberships__end_date__gte=today)]
