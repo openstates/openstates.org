@@ -24,7 +24,7 @@
                     {% else %}
                     <li class="card__detail type--xsmall">{{ person.current_role.party }}</li>
                     <li class="card__detail type--xsmall">{{ person.current_role.role }}</li>
-                    <li class="card__detail type--xsmall">District {{ person.current_role.district }}</a></li>
+                    <li class="card__detail type--xsmall">{{ district_maybe }} {{ person.current_role.district }}</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -60,7 +60,7 @@
 
             {% if not retired %}
             <div class="overview__subsection overview__subsection--map">
-                <p class="heading--xsmall">Serving District {{ person.current_role.district }}</p>
+                <p class="heading--xsmall">Serving {{ district_maybe }} {{ person.current_role.district }}</p>
                 <div style="width:280px;height:215px" data-hook="legislator-map" data-value="{{ person.current_role.division_id }}"></div>
             </div>
             {% endif %}

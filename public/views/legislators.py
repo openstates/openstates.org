@@ -61,8 +61,7 @@ def legislators(request, state):
     chambers = get_chambers_from_abbr(state)
 
     legislators = [
-        p.as_dict()
-        for p in PersonProxy.get_current_legislators_with_roles(chambers)
+        p.as_dict() for p in PersonProxy.get_current_legislators_with_roles(chambers)
     ]
 
     chambers = {c.classification: c.name for c in chambers}
@@ -89,6 +88,9 @@ def person(request, person_id):
         pk=ocd_person_id,
     )
 
+    # to display district in front of district name, or not?
+    district_maybe = ""
+
     # canonicalize the URL
     canonical_url = person.pretty_url()
     if request.path != canonical_url:
@@ -103,6 +105,9 @@ def person(request, person_id):
         retired = True
     else:
         retired = False
+        # does it start with a number?
+        if str(person.current_role["district"])[0] in "0123456789":
+            district_maybe = "District"
     person.all_contact_details = person.contact_details.order_by("note")
 
     person.sponsored_bills = [
@@ -124,6 +129,11 @@ def person(request, person_id):
     return render(
         request,
         "public/views/legislator.html",
-        {"state": state, "person": person, "state_nav": "legislators",
-         "retired": retired},
+        {
+            "state": state,
+            "person": person,
+            "state_nav": "legislators",
+            "retired": retired,
+            "district_maybe": district_maybe,
+        },
     )

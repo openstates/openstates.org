@@ -19,12 +19,17 @@ export default () => {
 
   fetch('https://data.openstates.org/boundaries/2018/' + districtId + '.json')
     .then(function(response) {
+        if(!response.ok) {
+            throw Error(response.status);
+        }
         return response.json();
     }).then(function(json) {
-        console.log(json.extent);
         map.fitBounds(json.extent, 
             { padding: 25, animate: false }
         );
+    }).catch(function(error) {
+        console.log(error);
+        container.style.display = "none";
     });
 
   map.on('load', function () {
