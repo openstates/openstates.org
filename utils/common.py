@@ -2,8 +2,9 @@ import us
 import uuid
 import base62
 from django.utils.text import slugify
+from django.db.models import Count
 from opencivicdata.core.models import Person, Organization
-from opencivicdata.legislative.models import Bill, VoteEvent
+from opencivicdata.legislative.models import Bill, VoteEvent, LegislativeSession
 
 # Metadata for states that are available in the platform
 states = sorted(us.STATES + [us.states.PR], key=lambda s: s.name)
@@ -48,3 +49,12 @@ def pretty_url(obj):
     elif isinstance(obj, VoteEvent):
         vote_id = obj.id.split('/')[1]
         return f"/vote/{vote_id}/"
+
+
+def sessions_with_bills(jid):
+    return (
+        LegislativeSession.objects.filter(jurisdiction_id=jid)
+        .annotate(bill_count=Count("bills"))
+        .filter(bill_count__gt=0)
+        .order_by("-end_date", "-identifier")
+    )

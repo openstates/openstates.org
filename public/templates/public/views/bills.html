@@ -120,6 +120,7 @@
                 {% endfor %}
             </select>
 
+            {% if subjects %}
             <label for="subjects">Subjects</label>
             <select id="subjects" name="subjects" multiple>
                 {% for subject in subjects %}
@@ -127,6 +128,7 @@
                     {{ subject }}</option>
                 {% endfor %}
             </select>
+            {% endif %}
 
             <input type="submit" value="Submit" />
         </form>

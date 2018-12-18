@@ -7,12 +7,11 @@ from django.views import View
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import (
     Bill,
-    LegislativeSession,
     BillAction,
     BillActionRelatedEntity,
     VoteEvent,
 )
-from utils.common import abbr_to_jid, jid_to_abbr, pretty_url
+from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id
 
@@ -28,9 +27,7 @@ class BillList(View):
         bills = Bill.objects.all().filter(legislative_session__jurisdiction_id=jid)
         chambers = get_chambers_from_abbr(state)
         options["chambers"] = {c.classification: c.name for c in chambers}
-        options["sessions"] = LegislativeSession.objects.filter(
-            jurisdiction_id=jid
-        ).order_by("-start_date")
+        options["sessions"] = sessions_with_bills(jid)
         options["sponsors"] = Person.objects.filter(
             memberships__organization__jurisdiction_id=jid
         ).distinct()

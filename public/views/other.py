@@ -1,11 +1,11 @@
 from collections import Counter
 import feedparser
-from django.db.models import Min, Max, Sum, Count
+from django.db.models import Min, Max, Sum
 from django.shortcuts import render
 from django.core.cache import cache
-from opencivicdata.legislative.models import Bill, LegislativeSession
+from opencivicdata.legislative.models import Bill
 from opencivicdata.core.models import Organization
-from utils.common import abbr_to_jid, states
+from utils.common import abbr_to_jid, states, sessions_with_bills
 from ..models import PersonProxy
 
 
@@ -103,12 +103,7 @@ def state(request, state):
         .order_by("-passed_date")[:RECENTLY_PASSED_BILLS_TO_SHOW]
     )
 
-    all_sessions = (
-        LegislativeSession.objects.filter(jurisdiction_id=jid)
-        .annotate(bill_count=Count("bills"))
-        .filter(bill_count__gt=0)
-        .order_by("-end_date", "-identifier")
-    )
+    all_sessions = sessions_with_bills(jid)
 
     return render(
         request,
