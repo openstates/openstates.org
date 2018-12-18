@@ -21,7 +21,8 @@ module.exports = {
         query: {
           plugins: ['transform-runtime']
         }
-      }, {
+      },
+        {
         test: /\.scss$/,
         use: [{
             loader: "style-loader"
@@ -34,8 +35,11 @@ module.exports = {
               includePaths: [path.resolve(__dirname, 'node_modules')],
               sourceMap: true
             }
-        }]
-    }]
+        }]},
+        { test: /\.css$/,
+            use: [{loader: "css-loader"}]
+        },
+    ]
   },
 
   plugins: [

@@ -4,7 +4,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import legislatorMap from './legislator-map'
-import stateMap from './state-map'
+import StateMap from './state-map'
 import LegislatorList from './legislator-list'
 import FindYourLegislator from './find-your-legislator'
 import CommitteeList from './committee-list'
@@ -28,7 +28,11 @@ window.addEventListener('load', () => {
 
     const sm = document.querySelector('[data-hook="state-map"]');
     if (sm) {
-        stateMap(sm);
+        ReactDOM.render(React.createElement(
+            StateMap,
+            {state: sm.getAttribute('data-value')}),
+            sm
+        );
     }
 
     const ll = document.querySelector('[data-hook="legislator-list"]');

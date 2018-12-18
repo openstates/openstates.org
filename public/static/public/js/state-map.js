@@ -1,32 +1,35 @@
+import React from 'react'
 import mapboxgl from 'mapbox-gl'
+import ReactMapboxGl, {Source, Layer} from "react-mapbox-gl";
 import stateBounds from './state-bounds'
 import config from './config'
 
-export default (container) => {
-  mapboxgl.accessToken = config.MAPBOX_ACCESS_TOKEN
+const Map = ReactMapboxGl({
+    accessToken: config.MAPBOX_ACCESS_TOKEN,
+});
 
-  const state = container.getAttribute('data-value')
+export default class StateMap extends React.Component {
+    render () {
+        return (<Map
+            style={config.MAP_BASE_STYLE}
+            minZoom={2}
+            maxZoom={13}
+            interactive={true}
+            fitBounds={stateBounds[this.props.state]}
 
-  const map = new mapboxgl.Map({
-    container,
-    style: config.MAP_BASE_STYLE,
-    interactive: true,
-    // These are the min and max zooms at which the SLD map tiles exist
-    minZoom: 2,
-    maxZoom: 13
-  });
-
-  map.fitBounds(stateBounds[state], 
-    { padding: 25, animate: false }
-  );
-
-    map.on('load', function () {
-        // const districtType = districtId.includes('sldu') ? 'sldu' : 'sldl'
-        const outline = {...config.MAP_DISTRICTS_OUTLINE, filter: ['==', 'state', state]};
-        map.addLayer(outline);
-        const fill = {...config.MAP_DISTRICTS_FILL, filter: ['==', 'state', state]};
-        map.addLayer(fill);
-        const stroke = {...config.MAP_DISTRICTS_STROKE, filter: ['==', 'state', state]}
-        map.addLayer(stroke);
-    })
+        >
+            <Source id="sld" tileJsonSource={{type: "vector", url: "mapbox://openstates.sld"}} />
+            <Layer
+                id={config.MAP_DISTRICTS_FILL.id}
+                type={config.MAP_DISTRICTS_FILL.type}
+                sourceId="sld"
+                sourceLayer="sld"
+                paint={config.MAP_DISTRICTS_FILL.paint} />
+        </Map>);
+    }
 }
+
+  // map.fitBounds(stateBounds[state], 
+  //   { padding: 25, animate: false }
+  // );
+
