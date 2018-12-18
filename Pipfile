@@ -25,6 +25,7 @@ python-dateutil = "*"
 ipython = "*"
 stripe = "*"
 feedparser = "*"
+"boto3" = "*"
 
 [dev-packages]
 ipython = "*"
