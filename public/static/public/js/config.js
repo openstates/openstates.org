@@ -2,6 +2,7 @@
 export default {
     MAPBOX_ACCESS_TOKEN: 'pk.eyJ1Ijoib3BlbnN0YXRlcyIsImEiOiJjamU2NmJ2dmsxdTFzMzRycTNhejNjdTUzIn0.QHziTq0NGFutvZzo9Wmc0w',
     MAP_BASE_STYLE: 'mapbox://styles/mapbox/light-v9',
+    MAP_SLD_SOURCE: 'mapbox://openstates.sld',
     MAP_DISTRICTS_OUTLINE: {
       id: 'other-districts',
       type: 'line',
@@ -25,8 +26,8 @@ export default {
       },
       'source-layer': 'sld',
       paint: {
-        'fill-color': 'green',
-        'fill-opacity': 0.2
+          'fill-color': 'green',
+          'fill-opacity': 0.2,
       },
     },
     MAP_DISTRICTS_STROKE: {
