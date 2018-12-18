@@ -225,6 +225,10 @@ def compute_bill_stages(actions, first_chamber, second_chamber):
             stages[3]["text"] = "Became Law"
         # TODO: veto, failure, etc?
 
+    # if we're unicameral, remove second stage
+    if second_chamber is None:
+        stages.pop(2)
+
     return stages
 
 
@@ -258,9 +262,12 @@ def bill(request, state, session, bill_id):
     # stage calculation
     # get other chamber name
     chambers = {c.classification: c.name for c in get_chambers_from_abbr(state)}
-    second_chamber = {
-        'upper': chambers['lower'],
-        'lower': chambers['upper']}[bill.from_organization.classification]
+    second_chamber = None
+    if len(chambers) > 1:
+        second_chamber = {
+            'upper': chambers['lower'],
+            'lower': chambers['upper']
+        }[bill.from_organization.classification]
     stages = compute_bill_stages(actions, bill.from_organization.name, second_chamber)
 
     versions = list(bill.versions.order_by("-date").prefetch_related("links"))
