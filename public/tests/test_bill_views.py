@@ -113,7 +113,7 @@ def test_bills_view_status(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_view(client, django_assert_num_queries):
-    with django_assert_num_queries(11):
+    with django_assert_num_queries(12):
         resp = client.get("/ak/bills/2018/HB1/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
@@ -125,6 +125,11 @@ def test_bill_view(client, django_assert_num_queries):
     assert len(resp.context["versions"]) == 2
     assert len(resp.context["documents"]) == 2
     assert resp.context["read_link"] == "https://example.com/f.pdf"
+    assert resp.context["stages"][1] == {
+        "date": "2018-03-01",
+        "stage": "Alaska House",
+        "text": "Passed Alaska House",
+    }
 
 
 @pytest.mark.django_db

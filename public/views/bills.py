@@ -184,6 +184,50 @@ def _document_sort_key(doc):
     return (100, doc.media_type)
 
 
+def compute_bill_stages(actions, first_chamber, second_chamber):
+    """
+        return a structure with four entries like
+            stage: Introduced
+            text: Introduced in House
+            date: 2018-01-01
+        or, if empty
+            stage: Senate
+            text: None
+            date: None
+    """
+    stages = [
+        {"stage": "Introduced",
+         "text": None, "date": None},
+        {"stage": first_chamber,
+         "text": None, "date": None},
+        {"stage": second_chamber,
+         "text": None, "date": None},
+        {"stage": "Governor",
+         "text": None, "date": None},
+    ]
+
+    for action in actions:
+        if "introduction" in action.classification and stages[0]["date"] is None:
+            stages[0]["date"] = action.date
+            stages[0]["text"] = f"Introduced in {first_chamber}"
+        elif "passage" in action.classification:
+            if action.organization.name == first_chamber:
+                stages[1]["date"] = action.date
+                stages[1]["text"] = f"Passed {first_chamber}"
+            elif action.organization.name == second_chamber:
+                stages[2]["date"] = action.date
+                stages[2]["text"] = f"Passed {second_chamber}"
+        elif "executive-signed" in action.classification and stages[3]["date"] is None:
+            stages[3]["date"] = action.date
+            stages[3]["text"] = "Signed by Governor"
+        elif "became-law" in action.classification and stages[3]["date"] is None:
+            stages[3]["date"] = action.date
+            stages[3]["text"] = "Became Law"
+        # TODO: veto, failure, etc?
+
+    return stages
+
+
 def bill(request, state, session, bill_id):
     jid = abbr_to_jid(state)
     identifier = fix_bill_id(bill_id)
@@ -210,6 +254,15 @@ def bill(request, state, session, bill_id):
         .prefetch_related(related_entities)
     )
     votes = list(bill.votes.all())  # .prefetch_related('counts')
+
+    # stage calculation
+    # get other chamber name
+    chambers = {c.classification: c.name for c in get_chambers_from_abbr(state)}
+    second_chamber = {
+        'upper': chambers['lower'],
+        'lower': chambers['upper']}[bill.from_organization.classification]
+    stages = compute_bill_stages(actions, bill.from_organization.name, second_chamber)
+
     versions = list(bill.versions.order_by("-date").prefetch_related("links"))
     documents = list(bill.documents.order_by("-date").prefetch_related("links"))
     try:
@@ -227,6 +280,7 @@ def bill(request, state, session, bill_id):
             "bill": bill,
             "sponsorships": sponsorships,
             "actions": actions,
+            "stages": stages,
             "votes": votes,
             "versions": versions,
             "documents": documents,

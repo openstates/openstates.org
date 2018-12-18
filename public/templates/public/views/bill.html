@@ -10,19 +10,24 @@
         <h1>{{ bill.identifier }}</h1>
         <span>{{state|state_name}} {{ bill.from_organization.name }} {{ bill.classification.0|title }} · {{ bill.legislative_session.name }}</span>
 
-        <div>
-            TO-DO: BILL STATUS PROGRESS BAR
+        <div class="stages">
+            {% for stage in stages %}
+            <div class="stage">
+                {% if stage.date %}
+                    <span>{{ stage.text }}</span>
+                    <div style="stage--green"></div>
+                    <span>{{ stage.date }}</span>
+                {% else %}
+                    <span>{{ stage.stage }}</span>
+                    <div style="stage--gray"></div>
+                    <span>{{ stage.date }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
         </div>
 
         <span>{{ bill.title }}</span>
         <a class="button" href="{{ read_link }}">View Latest Bill Text</a>
-
-        {% if bill.subject %}
-            <h2>Bill Subjects</h2>
-            {% for subject in bill.subject %}
-                <a class="button">{{ subject }}</a>
-            {% endfor %}
-        {% endif %}
 
         <h2>Bill Sponsors</h2>
         {% for sponsor in sponsorships|dictsortreversed:"primary" %}
@@ -48,6 +53,13 @@
                 {% endif %}
             </div>
         {% endfor %}
+
+        {% if bill.subject %}
+            <h2>Bill Subjects</h2>
+            {% for subject in bill.subject %}
+                <a class="button">{{ subject }}</a>
+            {% endfor %}
+        {% endif %}
     </section>
 
     <section>
