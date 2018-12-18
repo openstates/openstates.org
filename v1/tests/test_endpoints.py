@@ -248,7 +248,7 @@ def test_districts_list(client, django_assert_num_queries):
     with django_assert_num_queries(1):
         resp = client.get('/api/v1/districts/ak/')
         assert resp.status_code == 200
-        assert len(resp.json()) == 7
+        assert len(resp.json()) == 8
         expected = {'division_id': 'ocd-division/country:us/state:Alaska/district:B',
                     'boundary_id': 'ocd-division/country:us/state:Alaska/district:B',
                     'name': 'B', 'chamber': 'upper', 'abbr': 'ak',
@@ -257,6 +257,6 @@ def test_districts_list(client, django_assert_num_queries):
 
     # test filtering by URL
     resp = client.get('/api/v1/districts/ak/upper/')
-    assert len(resp.json()) == 2
+    assert len(resp.json()) == 3
     resp = client.get('/api/v1/districts/ak/lower/')
     assert len(resp.json()) == 5
