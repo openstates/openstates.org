@@ -12,11 +12,7 @@
             {% for chamber in chambers %}
                 <div>
                     <a href="
-                        {% url 'legislators' state %}
-                            {% if chambers|length > 1 %}
-                                ?chamber={{ chamber.classification }}
-                            {% endif %}
-                    ">
+                        {% url 'legislators' state %}{% if chambers|length > 1 %}?chamber={{ chamber.classification }}{% endif %}">
                         <span>{{ chamber.seats }}</span>
                         <span>
                             {% if chambers|length > 1 %}{{ chamber.name }} {% endif %}Seats
@@ -48,7 +44,12 @@
             {% endif %}
         </div>
 
-        <div style="width:480px;height:315px" data-hook="state-map" data-value="{{ state }}"></div>
+        <script>
+            window.chambers = {{ chambers_json|jsonify }};
+        </script>
+        <div style="width:480px;height:315px" data-hook="state-map"
+            data-state="{{ state }}"></div>
+
     </section>
 
     <section>

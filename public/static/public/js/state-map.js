@@ -1,6 +1,5 @@
 import React from 'react'
-import mapboxgl from 'mapbox-gl'
-import ReactMapboxGl, {Source, Layer, Feature} from "react-mapbox-gl";
+import ReactMapboxGl, {Source, Layer} from "react-mapbox-gl";
 import stateBounds from './state-bounds'
 import config from './config'
 
@@ -10,10 +9,22 @@ const Map = ReactMapboxGl({
 
 export default class StateMap extends React.Component {
     constructor (props) {
-        super(props);
+        super(props)
         this.state = {
-            chamberType: 'sldl',
+            chamberType: (props.state === 'dc' ? 'sldu' : 'sldl')
         };
+    }
+
+    buttonGroup() {
+        console.log(this.props);
+        if(this.props.chambers.lower) {
+            return (<div className="button-group">
+                <button className={this.state.chamberType === 'sldl' ? 'button button--active':'button'}
+                    onClick={() => this.setState({chamberType: "sldl"})}>{this.props.chambers.lower}</button>
+                <button className={this.state.chamberType === 'sldu' ? 'button button--active':'button'}
+                    onClick={() => this.setState({chamberType: "sldu"})}>{this.props.chambers.upper}</button>
+            </div>);
+        }
     }
 
     render () {
@@ -50,12 +61,7 @@ export default class StateMap extends React.Component {
                 filter={filter}
             />
         </Map>
-        <div class="button-group">
-            <button className={this.state.chamberType === 'sldl' ? 'button button--active':'button'}
-                onClick={() => this.setState({chamberType: "sldl"})}>House</button>
-            <button className={this.state.chamberType === 'sldu' ? 'button button--active':'button'}
-                onClick={() => this.setState({chamberType: "sldu"})}>Senate</button>
-        </div>
+        {this.buttonGroup()}
         </div>);
     }
 }

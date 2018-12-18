@@ -3,7 +3,7 @@ import '../styles/app.scss'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import legislatorMap from './legislator-map'
+import DistrictMap from './legislator-map'
 import StateMap from './state-map'
 import LegislatorList from './legislator-list'
 import FindYourLegislator from './find-your-legislator'
@@ -22,15 +22,26 @@ window.imgError = function(t) {
 
 
 window.addEventListener('load', () => {
-    if (document.querySelector('[data-hook="legislator-map"]')) {
-        legislatorMap()
+    const dm = document.querySelector('[data-hook="legislator-map"]');
+    if (dm) {
+        ReactDOM.render(React.createElement(
+            DistrictMap,
+            {
+                districtId: dm.getAttribute('data-division-id'),
+                state: dm.getAttribute('data-state')
+            }),
+            dm
+        );
     }
 
     const sm = document.querySelector('[data-hook="state-map"]');
     if (sm) {
         ReactDOM.render(React.createElement(
             StateMap,
-            {state: sm.getAttribute('data-value')}),
+            {
+                state: sm.getAttribute('data-state'),
+                chambers: window.chambers
+            }),
             sm
         );
     }

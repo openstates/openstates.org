@@ -113,6 +113,7 @@ def state(request, state):
             "state_nav": "overview",
             "legislature": legislature,
             "chambers": chambers,
+            "chambers_json": {c.classification: c.name for c in chambers},
             "recently_introduced_bills": recently_introduced_bills,
             "recently_passed_bills": recently_passed_bills,
             "all_sessions": all_sessions,
