@@ -42,6 +42,7 @@ class PersonProxy(Person):
             "id": self.id,
             "name": self.name,
             "image_url": self.image_url(),
+            "image": self.image,
             "current_role": self.current_role,
             "pretty_url": self.pretty_url(),
         }

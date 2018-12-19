@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import LegislatorImage from './legislator-image'
 
 
 export function ChamberButtons(props) {
@@ -78,7 +79,7 @@ export default class LegislatorList extends React.Component {
               .map(b =>
                 <tr key={b.id}>
                   <td>
-                      <img className="thumbnail mr1" src={b.image_url} alt={`headshot for ${b.name}`} onError={imgError} />
+                    <LegislatorImage id={b.id} image={b.image} />
                   </td>
                   <td><a href={b.pretty_url}>{b.name}</a></td>
                   <td>{b.current_role.party}</td>
