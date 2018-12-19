@@ -37,7 +37,7 @@
                     {% if sponsor.person.headshot_url %}
                         <img src="{{ sponsor.person.headshot_url }}" alt="headshot for {{ sponsor.person.name }}" />
                     {% else %}
-                        <img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
+                        <img src="public/img/placeholder-headshot.png" alt="placeholder headshot" />
                     {% endif %}
 
                     <span>{{ sponsor.person.name }}</span>
@@ -45,7 +45,7 @@
 
                     <span>{{ sponsor.classification|title }}</span>
                 {% else %}
-                    <img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
+                    <img src="public/img/placeholder-headshot.png" alt="placeholder headshot" />
 
                     <span>{{ sponsor.name }}</span>
 

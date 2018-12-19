@@ -25,7 +25,7 @@
     <noscript>
         <ul>
         {% for com in committees %}
-        <li><a href="{% canonical_url com %}">{{ com.name }}</a></li>
+        <li><a href="{{ com.pretty_url }}">{{ com.name }}</a></li>
         {% endfor %}
         </ul>
     </noscript>
