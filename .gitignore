@@ -34,3 +34,6 @@ yarn-error.log*
 geo/shapefiles/nh*
 geo/shapefiles/sldl*
 geo/shapefiles/sldu*
+
+# django build
+collected_static
