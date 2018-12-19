@@ -13,7 +13,7 @@
     position: relative;
     background: $color-gray-light;
     height: 12px;
-    min-width: 130px;
+    min-width: 135px;
     font-size: 0.75rem;
 
     & + & {
@@ -33,7 +33,7 @@
 
     .meter-bar--inactive {
         .meter-bar__title {
-            color: $color-gray;
+            color: darken($color-gray, 12%);
         }
     }
 

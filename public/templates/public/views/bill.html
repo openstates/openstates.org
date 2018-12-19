@@ -19,25 +19,28 @@
                         <li class="card__detail type--xsmall">{{ bill.legislative_session.name }}</li>
                     </ul>
                     </div>
-                    <!-- TODO: Real bill status data -->
                     <!-- TODO: Make meter responsive -->
                     <ul class="meter align-self-middle">
-                        <li class="meter-bar meter-bar--green">
-                            <span class="meter-bar__title">Introduced in House</span>
-                            <span class="meter-bar__detail">Jan 17, 2018</span>
-                        </li>
-                        <li class="meter-bar meter-bar--current meter-bar--red">
-                            <span class="meter-bar__title">Failed in House</span>
-                            <span class="meter-bar__detail">Feb 9, 2018</span>
-                        </li>
-                        <li class="meter-bar meter-bar--inactive">
-                            <span class="meter-bar__title">Senate</span>
-                            <span class="meter-bar__detail"></span>
-                        </li>
-                        <li class="meter-bar meter-bar--inactive">
-                            <span class="meter-bar__title">Governor</span>
-                            <span class="meter-bar__detail"></span>
-                        </li>
+                    {% for stage in stages %}
+                        {% if not stage.date and not stage.stage == 'Introduced'%}
+                            <li class="meter-bar meter-bar--inactive">
+                                <span class="meter-bar__title">{{ stage.stage }}</span>
+                            </li>
+                        {% else %}
+                            <li class="meter-bar meter-bar--green">
+                                <span class="meter-bar__title">
+                                    {% if stage.stage == 'Introduced' %}
+                                        Introduced in {{ bill.from_organization.name }}
+                                    {% else %}
+                                        {{ stage.text }}
+                                    {% endif %}
+                                </span>
+                                {% if stage.date %}
+                                    <span class="meter-bar__detail">{{ stage.date }}</span>
+                                {% endif %}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
                     </ul>
                 </div>
                 <div class="grid-x grid-margin-x align-justify">
@@ -58,7 +61,7 @@
                 <h3 class="heading--xsmall">Bill Subjects</h3>
                 {% for subject in bill.subject %}
                     <!-- TODO: Link to bill subjects -->
-                    <a class="label" link="#">{{ subject }}</a>
+                    <a class="label" link="#">{{ subject|title }}</a>
                 {% endfor %}
             </div>
             {% endif %}
@@ -79,10 +82,11 @@
                                 {% endif %}
                                     <div>
                                         <h3 class="card__heading heading--small">{{ sponsor.person.name }}</h3>
+                                        <!-- TODO: Include party and distict -->
                                         <ul class="card__detail-group">
-                                            <li class="card__detail type--xsmall">TO-DO (PARTY) DISTRICT</li>
-                                            <li class="card__detail type--xsmall">Details</li>
-                                            <li class="card__detail type--xsmall">Details</li>
+                                            <li class="card__detail type--xsmall">Party</li>
+                                            <li class="card__detail type--xsmall">Chamber</li>
+                                            <li class="card__detail type--xsmall">District</li>
                                         </ul>
                                         <div class="heading--xsmall">{{ sponsor.classification|title }}</div>
                                     </div>
