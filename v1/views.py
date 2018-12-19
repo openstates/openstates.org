@@ -242,7 +242,7 @@ def bill_list(request):
         start = per_page * (page - 1)
         end = start + per_page
         bills = bills[start:end]
-        too_big = False
+        too_big = (per_page > 100)
     elif too_big or bills.count() > 200:
         return JsonResponse("Bad Request: request too large, try narrowing your search by "
                             "adding more filters or using pagination.", status=400, safe=False)
