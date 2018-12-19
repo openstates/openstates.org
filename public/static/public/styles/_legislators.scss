@@ -31,3 +31,21 @@
     }
 }
 
+
+.find-your-legislator {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 3em;
+}
+.find-your-legislator label {
+    font-size: 120%;
+    display: inline-block;
+    margin-right: 1em;
+}
+.find-your-legislator input {
+    font-size: 120%;
+}
+.find-your-legislator span {
+    font-size: 120%;
+    margin: 1em;
+}

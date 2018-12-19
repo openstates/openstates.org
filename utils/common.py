@@ -37,6 +37,8 @@ def decode_uuid(id, type="person"):
 def pretty_url(obj):
     if isinstance(obj, Person):
         return f"/person/{slugify(obj.name)}-{encode_uuid(obj.id)}/"
+    elif isinstance(obj, dict) and obj['id'].startswith('ocd-person'):
+        return f"/person/{slugify(obj['name'])}-{encode_uuid(obj['id'])}/"
     elif isinstance(obj, Organization):
         state = jid_to_abbr(obj.jurisdiction_id)
         return f"/{state}/committees/{slugify(obj.name)}-{encode_uuid(obj.id)}/"
@@ -49,6 +51,8 @@ def pretty_url(obj):
     elif isinstance(obj, VoteEvent):
         vote_id = obj.id.split('/')[1]
         return f"/vote/{vote_id}/"
+    else:
+        raise NotImplementedError(obj)
 
 
 def sessions_with_bills(jid):

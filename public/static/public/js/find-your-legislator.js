@@ -1,5 +1,7 @@
 import React from 'react';
 import { withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
+import LegislatorImage from './legislator-image';
+import config from "./config";
 
 
 function multipolyToPath(coordinates) {
@@ -10,18 +12,26 @@ function multipolyToPath(coordinates) {
     )
 }
 
+function chamberColor(leg) {
+  return (leg.chamber === "lower" ?  config.LOWER_CHAMBER_COLOR : config.UPPER_CHAMBER_COLOR);
+}
 
 const Map = withGoogleMap(function(props) {
-    var shapes = [];
-    for(var leg of props.legislators) {
-        if(leg.shape) {
-            shapes.push(<Polygon key={leg.division_id}
-                defaultPaths={multipolyToPath(leg.shape.coordinates)} />);
-        }
+  var shapes = [];
+  for(var leg of props.legislators) {
+    if(leg.shape) {
+      const color = chamberColor(leg);
+      shapes.push(<Polygon key={leg.division_id}
+        defaultPaths={multipolyToPath(leg.shape.coordinates)}
+        options={{fillColor: color, strokeColor: color, strokeWeight: 2}}
+      />);
     }
+  }
 
     return <GoogleMap defaultZoom={props.zoom}
-        center={{ lat: props.lat, lng: props.lon }}>
+      center={{ lat: props.lat, lng: props.lon }}
+      options={{styles: GOOGLE_MAP_STYLES, disableDefaultUI: true}}
+    >
         <Marker position={{ lat: props.lat, lng: props.lon }} />
         {shapes}
     </GoogleMap>
@@ -31,7 +41,7 @@ const Map = withGoogleMap(function(props) {
 export default class FindYourLegislator extends React.Component {
     constructor (props) {
         super(props);
-        const queryParams = new URLSearchParams(window.location.search)
+        const queryParams = new URLSearchParams(window.location.search);
         this.state = {
             address: queryParams.get("address") || '',
             lat: 0,
@@ -125,62 +135,297 @@ export default class FindYourLegislator extends React.Component {
     }
 
     render() {
-        const rows = this.state.legislators.map(leg => <tr key={leg.name}>
-            <td>{leg.name}</td>
-            <td>{leg.party}</td>
-            <td>{leg.district}</td>
-            <td>{leg.chamber}</td>
-        </tr>);
+      const rows = this.state.legislators.map(leg => <tr key={leg.name}>
+        <td><LegislatorImage id={leg.id} image={leg.image} /></td>
+        <td><a href={leg.pretty_url}>{leg.name}</a></td>
+        <td>{leg.party}</td>
+        <td>{leg.district}</td>
+        <td style={{backgroundColor: chamberColor(leg)}}>{leg.chamber}</td>
+      </tr>);
 
-        var table = null;
-        var map = null;
-        var error = null;
+      var table = null;
+      var map = null;
+      var error = null;
 
-        if (this.state.legislators.length) {
-            table = (<table id="results">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Party</th>
-                        <th>District</th>
-                        <th>Chamber</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>)
-        }
+      if (this.state.legislators.length) {
+          table = (<table id="results">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Party</th>
+                  <th>District</th>
+                  <th>Chamber</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {rows}
+              </tbody>
+          </table>)
+      }
 
-        if (this.state.showMap) {
-            map = (<Map
-              zoom={11}
-              lat={this.state.lat}
-              lon={this.state.lon}
-              legislators={this.state.legislators}
-              containerElement={<div style={{ height: `400px` }} />}
-              mapElement={<div style={{ height: `100%` }} />}
-          />)
-        }
+      if (this.state.showMap) {
+          map = (<Map
+            zoom={11}
+            lat={this.state.lat}
+            lon={this.state.lon}
+            legislators={this.state.legislators}
+            containerElement={<div style={{ height: `400px` }} />}
+            mapElement={<div style={{ height: `100%` }} />}
+        />)
+      }
 
-        if (this.state.error) {
-            error = (<div class="fyl-error">{this.state.error}</div>);
-        }
+      if (this.state.error) {
+          error = (<div class="fyl-error">{this.state.error}</div>);
+      }
 
         return (
-        <div>
-            <h1>Find Your Legislators</h1>
-            <label htmlFor="address">Enter Your Address:</label>
-            <input id="address" name="address" value={this.state.address} onChange={this.handleAddressChange} />
+        <div className="find-your-legislator">
+          <div className="fyl-search">
+            <label htmlFor="fyl-address">Enter Your Address:</label>
+            <input id="fyl-address" name="address" value={this.state.address} onChange={this.handleAddressChange} />
             <button id="address-lookup" className="button" onClick={this.geocode}>Search by Address</button>
+          </div>
+          <div className="fyl-locate">
             <button id="locate" className="button" onClick={this.geolocate}>Use Current Location</button>
+          </div>
 
-            {error}
-            {table}
-            {map}
+          {error}
+          {table}
+          {map}
 
         </div>
         );
     }
 
 }
+
+// exported from https://mapstyle.withgoogle.com/
+const GOOGLE_MAP_STYLES = [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#bdbdbd"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.neighborhood",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#eeeeee"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.business",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e5e5e5"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#ffffff"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dadada"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e5e5e5"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#eeeeee"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#c9c9c9"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  }
+]

@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from graphapi.schema import schema
-from utils.common import decode_uuid, jid_to_abbr
+from utils.common import decode_uuid, jid_to_abbr, pretty_url
 from utils.orgs import get_chambers_from_abbr
 from ..models import PersonProxy
 
@@ -11,6 +11,8 @@ def _people_from_lat_lon(lat, lon):
       people(latitude: %s, longitude: %s, first: 10) {
         edges {
           node {
+            id
+            image
             name
             currentMemberships(classification: ["upper", "lower", "legislature", "party"]) {
               post {
@@ -31,7 +33,12 @@ def _people_from_lat_lon(lat, lon):
     nodes = [node["node"] for node in resp.data["people"]["edges"]]
     people = []
     for node in nodes:
-        person = {"name": node["name"]}
+        person = {
+            "name": node["name"],
+            "id": node["id"],
+            "image": node["image"],
+            "pretty_url": pretty_url(node)
+        }
         for m in node["currentMemberships"]:
             if m["organization"]["classification"] == "party":
                 person["party"] = m["organization"]["name"]
@@ -53,8 +60,7 @@ def find_your_legislator(request):
         people = _people_from_lat_lon(lat, lon)
         return JsonResponse({"legislators": people})
 
-    context = {"state_nav": "disabled"}
-    return render(request, "public/views/find_your_legislator.html", context)
+    return render(request, "public/views/find_your_legislator.html", {})
 
 
 def legislators(request, state):
