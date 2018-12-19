@@ -5,7 +5,7 @@
 {% block description %}Donate to Open States, support our work to make state legislative information widely available.{% endblock %}
 
 {% block content %}
-<h1>Support Open States</h1>
+<h1 class="heading--large">Support Open States</h1>
 
 {% if success %}
 <div class="success">
@@ -13,7 +13,7 @@
 </div>
 {% endif %}
 
-<section>
+<section class="mt1">
     <p>
         Open States serves millions of API calls and sees thousands of visitors daily without charging a dollar, we depend upon the generosity of donors to fund our work and expenses. 
         Donations to Open States will help us pay our server costs and allow the all-volunteer core team to continue to dedicate their time to maintaining and improving the project.
@@ -43,7 +43,7 @@
     <label for="reg-other">Custom
         <input id="other-amount">
     </label>
-    <button data-amount="custom" class="btn-stripe">Donate!</button>
+    <button data-amount="custom" class="btn-stripe button">Donate!</button>
 
     <p>
         <br>
@@ -73,7 +73,7 @@
     <br>
     <br>
 
-    <button data-amount="custom" class="btn-stripe">Donate!</button>
+    <button data-amount="custom" class="btn-stripe button">Donate!</button>
 
     {% csrf_token %}
 </div>
@@ -87,6 +87,8 @@
 
     <p>
         <a href="https://stripe.com"><img class="stripe-logo" src="{% static "/public/images/powered_by_stripe.svg" %}" alt="powered by Stripe" /></a>
+    </p>
+    <p>
         Donation processing is powered by Stripe,
         none of your credit card information touches our servers.
     </p>

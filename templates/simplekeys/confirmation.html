@@ -3,18 +3,14 @@
 {% block title %}Open States API Key Confirmation{% endblock %}
 
 {% block content %}
-  <div id="about">
-    <div class="module fullWidth clearfix" >
-      <h2>API Key Confirmation</h2>
-      <div class="fiveCol colLt">
-        <p> Click submit to confirm your key: </p>
+<h2 class="heading--large">API Key Confirmation</h2>
+<div>
+<p> Click submit to confirm your key: </p>
 
-        <form action="." method="POST">
-          {{ form.as_ul }}
-          <input type="submit">
-          {% csrf_token %}
-        </form>
-      </div>
-    </div>
-  </div>
+<form action="." method="POST">
+  {{ form.as_ul }}
+  <input type="submit" class="button">
+  {% csrf_token %}
+</form>
+</div>
 {% endblock %}
