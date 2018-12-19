@@ -1,0 +1,87 @@
+// Meters
+
+.meter {
+    margin-left: 0;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    list-style-type: none;
+    display: flex;
+}
+
+.meter-bar {
+    display: inline-block;
+    position: relative;
+    background: $color-gray-light;
+    height: 12px;
+    min-width: 130px;
+    font-size: 0.75rem;
+
+    & + & {
+        margin-left: 3px;
+    }
+
+    &:first-child {
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+    }
+
+    &:last-child {
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+}
+
+    .meter-bar--inactive {
+        .meter-bar__title {
+            color: $color-gray;
+        }
+    }
+
+    .meter-bar--current {
+        .meter-bar__title {
+            font-weight: 700;
+            color: $color-primary;
+
+            &:after {
+                content: '';
+                display: block;
+                position: relative;
+                left: calc(50% - 2px);
+                top: 2px;
+                width: 0; 
+                height: 0; 
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+                border-top: 4px solid $color-primary;
+            }
+        }
+    }
+
+    .meter-bar--red {
+        background: $color-red;
+    }
+
+    .meter-bar--green {
+        background: $color-green;
+    }
+
+.meter-bar__title,
+.meter-bar__detail {
+    position: absolute;
+    padding: 0.5rem;
+    display: block;
+    width: 100%;
+    left: 0;
+    text-align: center;
+}
+
+.meter-bar__title {
+    color: $color-primary;
+    top: -2rem;
+}
+
+.meter-bar__detail {
+    bottom: -1.5rem;
+    font-size: 0.65rem;
+}
+

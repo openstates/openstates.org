@@ -6,18 +6,40 @@
 {% block description %}Details on {{ state|state_name }} {{ bill.identifier}} ({{ bill.legislative_session }}) - {{ bill.title }}{% endblock %}
 
 {% block content %}
-
-
 <section class="section">
     <div class="overview">
         
         <div class="overview__header">
             <div>
-                <h1 class="overview__heading">{{ bill.identifier }}</h1>
-                <ul class="card__detail-group">
-                    <li class="card__detail type--xsmall">{{state|state_name}} {{ bill.from_organization.name }} {{ bill.classification.0|title }}</li>
-                    <li class="card__detail type--xsmall">{{ bill.legislative_session.name }}</li>
-                </ul>
+                <div class="flex-container align-justify">
+                    <div>
+                    <h1 class="overview__heading">{{ bill.identifier }}</h1>
+                    <ul class="card__detail-group">
+                        <li class="card__detail type--xsmall">{{state|state_name}} {{ bill.from_organization.name }} {{ bill.classification.0|title }}</li>
+                        <li class="card__detail type--xsmall">{{ bill.legislative_session.name }}</li>
+                    </ul>
+                    </div>
+                    <!-- TODO: Real bill status data -->
+                    <!-- TODO: Make meter responsive -->
+                    <ul class="meter align-self-middle">
+                        <li class="meter-bar meter-bar--green">
+                            <span class="meter-bar__title">Introduced in House</span>
+                            <span class="meter-bar__detail">Jan 17, 2018</span>
+                        </li>
+                        <li class="meter-bar meter-bar--current meter-bar--red">
+                            <span class="meter-bar__title">Failed in House</span>
+                            <span class="meter-bar__detail">Feb 9, 2018</span>
+                        </li>
+                        <li class="meter-bar meter-bar--inactive">
+                            <span class="meter-bar__title">Senate</span>
+                            <span class="meter-bar__detail"></span>
+                        </li>
+                        <li class="meter-bar meter-bar--inactive">
+                            <span class="meter-bar__title">Governor</span>
+                            <span class="meter-bar__detail"></span>
+                        </li>
+                    </ul>
+                </div>
                 <div class="grid-x grid-margin-x align-justify">
                     <div class="cell small-12 medium-9">
                         <h3 class="heading--medium">{{ bill.title }}</h3>
@@ -28,7 +50,6 @@
                     </div>
                 </div>
             </div>
-            <!-- TODO: BILL STATUS PROGRESS BAR -->
         </div>
         
         <div class="overview__section">
