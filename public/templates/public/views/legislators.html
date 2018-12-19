@@ -5,9 +5,21 @@
 {% block description %}Learn more about who represents you in {{state|state_name}}.{% endblock %}
 
 {% block content %}
-    <h1>{{ state|state_name }} Legislators</h1>
+    <h1 class="heading--large">{{ state|state_name }} Legislators</h1>
 
-    <div data-hook="legislator-list"></div>
+    <div class="legislators-container">
+
+    <div id="fyl-aside">
+        <h4 class="heading--small">Don't know who your legislator is?</h4>
+        <h4 class="heading--small">Find them now!</h4>
+
+        <form action="/find_your_legislator/">
+            <input placeholder="123 Main St, Portland, ME" name="address" id="fyl-input" />
+            <input type="submit" value="Search" class="button" />
+        </form>
+    </div>
+
+    <div id="legislator-list" data-hook="legislator-list"></div>
 
     <script>
         window.legislators = {{ legislators|jsonify }};
@@ -20,4 +32,6 @@
         {% endfor %}
         </ul>
     </noscript>
+
+    </div>
 {% endblock %}

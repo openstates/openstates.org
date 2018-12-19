@@ -60,14 +60,14 @@ export default class LegislatorList extends React.Component {
     return (
       <div>
         <ChamberButtons chambers={this.props.chambers} chamber={this.state.chamber} setChamber={this.setChamber} />
-        <table>
+        <table className="hover">
           <thead>
             <tr>
               <th></th>
               <th onClick={() => this.setSortOrder('name')}>Name</th>
               <th onClick={() => this.setSortOrder('party')}>Party</th>
               <th onClick={() => this.setSortOrder('district')}>District</th>
-              {this.props.chambers.length > 1 &&
+              {this.props.chambers.lower &&
                   <th onClick={() => this.setSortOrder('chamber')}>Chamber</th>
               }
             </tr>
@@ -83,7 +83,7 @@ export default class LegislatorList extends React.Component {
                   <td><a href={b.pretty_url}>{b.name}</a></td>
                   <td>{b.current_role.party}</td>
                   <td>{b.current_role.district}</td>
-                  {this.props.chambers.length > 1 &&
+                  {this.props.chambers.lower &&
                       <td>{this.props.chambers[b.current_role.chamber]}</td>
                   }
                 </tr>

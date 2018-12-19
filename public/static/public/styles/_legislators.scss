@@ -1,0 +1,33 @@
+.legislators-container {
+    display: grid;
+    grid-template-columns: auto 20em;
+    grid-column-gap: 3em;
+
+    @include breakpoint(small down) {
+        grid-template-columns: auto;
+    }
+}
+
+#fyl-aside {
+    grid-row: 1;
+    grid-column: 2;
+
+    @include breakpoint(small down) {
+        grid-column: 1;
+    }
+}
+
+#fyl-input {
+    width: 90%;
+    margin-bottom: 1rem;
+}
+
+#legislator-list {
+    grid-row: 1;
+    grid-column: 1;
+
+    @include breakpoint(small down) {
+        grid-row: 2;
+    }
+}
+
