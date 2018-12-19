@@ -36,7 +36,20 @@
 - name: add env_vars for project user
   template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
   become_user: "openstates"
+- name: copy robots.txt
+  copy: src=files/robots.txt dest=/home/openstates/robots.txt mode=644
 
+# node
+- name: download nodesource script
+  get_url:
+    url: https://deb.nodesource.com/setup_10.x
+    dest: /tmp/nodesource-setup.sh
+    mode: 0770
+- name: run nodesource script
+  command: /tmp/nodesource-setup.sh
+- name: install nodejs
+  apt:
+    pkg: nodejs
 
 # letsencrypt
 
@@ -79,6 +92,18 @@
   notify:
     - restart django-application
 
+# npm installation & build
+- name: npm install
+  command: npm ci   # use this to ensure we only build from package-lock
+  become_user: "openstates"
+  args:
+    chdir: /home/openstates/src/openstates.org
+- name: npm run build
+  command: npm run build
+  become_user: "openstates"
+  args:
+    chdir: /home/openstates/src/openstates.org
+
 # nginx
 - name: make certs dir
   file: path=/etc/nginx/certs/ state=directory
@@ -99,11 +124,10 @@
 - name: rename new relic app
   replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='beta.openstates.org'
 
-# django
-# - name: collectstatic
-#   command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
-#   environment: '{{django_environment}}'
-
+# django commands
+- name: collectstatic
+  command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
+  environment: '{{django_environment}}'
 - name: migrate
   command: /home/openstates/virt/bin/python manage.py migrate --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
