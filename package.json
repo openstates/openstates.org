@@ -13,7 +13,7 @@
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-google-maps": "^9.4.5",
-    "react-mapbox-gl": "^4.0.2"
+    "react-mapbox-gl": "^3.8.0"
   },
   "devDependencies": {
     "babel": "^6.23.0",
