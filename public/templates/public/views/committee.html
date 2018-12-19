@@ -5,16 +5,16 @@
 {% block description %}Members of {{committee.name}} ({{ state|state_name }}  {{committee.parent}} Committee).{% endblock %}
 
 {% block content %}
-    <h1>{{ committee.name }}</h1>
-    <span>
+    <h1 class="heading--large">{{ committee.name }}</h1>
+    <h2 class="heading--small">
         {% if committee.parent.classification == "legislature" %}
         {{ committee.parent }}
         {% else %}
         {{ state|state_name }} {{ committee.parent }} Committee
         {% endif %}
-    </span>
+    </h2>
 
-    <table>
+    <table class="hover">
         <thead>
             <tr>
                 <th></th>
@@ -44,7 +44,6 @@
             {% endfor %}
         </tbody>
     </table>
-
 
     {% sources state committee.sources.all %}
 {% endblock %}
