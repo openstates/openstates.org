@@ -202,6 +202,7 @@ def bill_list(request):
     # search_window only ever really worked w/ state- and judging by analytics that's how
     # it was used in every case
     if state:
+        state = state.lower()
         if search_window == 'session':
             latest_session = LegislativeSession.objects.filter(
                 jurisdiction_id=jid
