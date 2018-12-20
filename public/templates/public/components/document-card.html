@@ -1,7 +1,8 @@
-<li>
-    {{ document.note }}
+<tr>
+    <td>{{ document.note }}</td>
+    <td>
     {% for link in document.links.all %}
-        <span><a href="{{ link.url }}">{{ link.media_type }}</a></span>
+        <a class="label" href="{{ link.url }}">{{ link.media_type|upper|cut:"APPLICATION/"|cut:"TEXT/" }}</a>
     {% endfor %}
-    <span><a href="#">second media type</a></span>
-</li>
+    </td>
+</tr>

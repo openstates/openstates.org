@@ -10,14 +10,14 @@
     <div class="overview">
         
         <div class="overview__header">
-            <div>
+            <div width="100%">
                 <div class="flex-container align-justify">
                     <div>
-                    <h1 class="overview__heading">{{ bill.identifier }}</h1>
-                    <ul class="card__detail-group">
-                        <li class="card__detail type--xsmall">{{state|state_name}} {{ bill.from_organization.name }} {{ bill.classification.0|title }}</li>
-                        <li class="card__detail type--xsmall">{{ bill.legislative_session.name }}</li>
-                    </ul>
+                        <h1 class="overview__heading">{{ bill.identifier }}</h1>
+                        <ul class="card__detail-group">
+                            <li class="card__detail type--xsmall">{{state|state_name}} {{ bill.from_organization.name }} {{ bill.classification.0|title }}</li>
+                            <li class="card__detail type--xsmall">{{ bill.legislative_session.name }}</li>
+                        </ul>
                     </div>
                     <!-- TODO: Make meter responsive -->
                     <ul class="meter align-self-middle">
@@ -154,20 +154,42 @@
 
 <section>
     <h2 class="heading--medium">Bill Text</h2>
-    <ul>
-        {% for version in versions reversed %}
-        {% document_card version %}
-        {% endfor %}
-    </ul>
+    <!-- <hr> -->
+     <table class="hover">
+        <thead>
+            <tr>
+                <th>Bill Text Versions</th>
+                <th>Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for version in versions reversed %}
+                {% document_card version %}
+            {% endfor %}
+        </tbody>
+    </table>
 </section>
 
 <section>
-    <h1>Related Documents</h1>
-    <ul>
-        {% for document in documents reversed %}
-        {% document_card document %}
-        {% endfor %}
-    </ul>
+    <h2 class="heading--medium">Related Documents</h2>
+    <!-- <hr> -->
+    <table class="hover">
+        <thead>
+            <tr>
+                <th>Document</th>
+                <th>Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents reversed %}
+                {% document_card document %}
+            {% empty %}
+                <tr>
+                    <td colspan="100%">No related documents.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </section>
 
 {% sources state bill.sources.all %}
