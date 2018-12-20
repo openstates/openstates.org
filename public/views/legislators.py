@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
+from django.db.models import Min
 from graphapi.schema import schema
 from utils.common import decode_uuid, jid_to_abbr, pretty_url
 from utils.orgs import get_chambers_from_abbr
+from utils.bills import get_bills_with_action_annotation
 from ..models import PersonProxy
 
 
@@ -116,12 +118,12 @@ def person(request, person_id):
             district_maybe = "District"
     person.all_contact_details = person.contact_details.order_by("note")
 
-    person.sponsored_bills = [
-        sponsorship.bill
-        for sponsorship in person.billsponsorship_set.all()
-        .select_related("bill")
-        .order_by("bill__created_at", "bill_id")[:SPONSORED_BILLS_TO_SHOW]
-    ]
+    person.sponsored_bills = list(
+        get_bills_with_action_annotation()
+        .filter(sponsorships__person=person)
+        .annotate(first_action_date=Min("actions__date"))
+        .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
+    )
 
     votes = person.votes.all().select_related("vote_event", "vote_event__bill")[
         :RECENT_VOTES_TO_SHOW

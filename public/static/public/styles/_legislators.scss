@@ -1,3 +1,4 @@
+// legislators list
 .legislators-container {
     display: grid;
     grid-template-columns: auto 20em;
@@ -7,7 +8,6 @@
         grid-template-columns: auto;
     }
 }
-
 #fyl-aside {
     grid-row: 1;
     grid-column: 2;
@@ -16,12 +16,10 @@
         grid-column: 1;
     }
 }
-
 #fyl-input {
     width: 90%;
     margin-bottom: 1rem;
 }
-
 #legislator-list {
     grid-row: 1;
     grid-column: 1;
@@ -31,7 +29,7 @@
     }
 }
 
-
+// find your legislator
 .find-your-legislator {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -48,4 +46,16 @@
 .find-your-legislator span {
     font-size: 120%;
     margin: 1em;
+}
+
+
+// legislator detail
+.bill-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 3em;
+
+    @include breakpoint(small down) {
+        grid-template-columns: 1fr;
+    }
 }

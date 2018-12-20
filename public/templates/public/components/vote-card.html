@@ -2,7 +2,10 @@
 
 <!-- If used on in a legislator view -->
 {% if vote.legislator_vote %}
-    <span>{{ vote.legislator_vote.voter_name }} <span>voted {{ vote.legislator_vote.option|title }}</span></span>
+<p>{{ vote.legislator_vote.voter_name }}
+    <strong class="u-color--green">voted {{ vote.legislator_vote.option|title }}</strong>
+    on {{ vote.motion_text}}.
+</p>
 {% endif %}
 <div class="card">
     <div>

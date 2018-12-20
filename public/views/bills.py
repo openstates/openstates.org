@@ -13,7 +13,7 @@ from opencivicdata.legislative.models import (
 )
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import fix_bill_id
+from utils.bills import fix_bill_id, get_bills_with_action_annotation
 
 
 class Unnest(Func):
@@ -44,20 +44,8 @@ class BillList(View):
         return options
 
     def get_bills(self, request, state):
-        latest_actions = (
-            BillAction.objects.filter(bill=OuterRef("pk"))
-            .order_by("date")
-            .values("description")[:1]
-        )
-        bills = (
-            Bill.objects.all()
-            .annotate(first_action_date=Min("actions__date"))
-            .annotate(latest_action_date=Max("actions__date"))
-            .annotate(latest_action_description=Subquery(latest_actions))
-            .select_related("legislative_session", "legislative_session__jurisdiction")
-            .prefetch_related("actions")
-        )
         jid = abbr_to_jid(state)
+        bills = get_bills_with_action_annotation()
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
 
         # query parameter filtering
