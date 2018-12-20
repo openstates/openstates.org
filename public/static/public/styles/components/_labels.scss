@@ -32,7 +32,7 @@ a.label {
 
     .label--green {
         background-color: lighten($color-green, 20%);
-        color: darken($color-green, 25%);
+        color: darken($color-green, 20%);
         font-weight: $global-weight-bold;
     }
 

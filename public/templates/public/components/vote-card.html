@@ -2,19 +2,37 @@
 
 <!-- If used on in a legislator view -->
 {% if vote.legislator_vote %}
-<p>{{ vote.legislator_vote.voter_name }}
-    <strong class="u-color--green">voted {{ vote.legislator_vote.option|title }}</strong>
-    on {{ vote.motion_text}}.
-</p>
+    <p>
+        {{ vote.legislator_vote.voter_name }} voted
+        <strong class="
+            {% if vote.legislator_vote.option == 'yes' %}
+                u-color--green
+            {% elif vote.legislator_vote.option == 'no' %}
+                u-color--red
+            {% endif %}
+            ">
+            {{ vote.legislator_vote.option|title }}
+        </strong>
+    </p>
 {% endif %}
 <div class="card">
     <div>
-        <h3 class="heading--small"><a href="{% canonical_url vote %}">{{ vote.bill.identifier }}</a></h3>
-        <p>
-            {{ vote.motion_text }}
-            <span class="label label--static">
+        <div class="flex-container align-justify">
+            <h3 class="heading--small">
+                <a href="{% canonical_url vote %}">{{ vote.bill.identifier }}</a>
+            </h3>
+            <span class="label
+                {% if vote.result == 'pass' %}
+                    label--green
+                {% elif vote.result == 'fail' %}
+                    label--red
+                {% endif %}
+            ">
                 {{ vote.result|title }}
             </span>
+        </div>
+        <p>
+            {{ vote.motion_text }}
         </p>
         <!-- TODO: Add more bill info -->
     </div>
