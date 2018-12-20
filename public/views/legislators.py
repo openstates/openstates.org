@@ -39,7 +39,7 @@ def _people_from_lat_lon(lat, lon):
             "name": node["name"],
             "id": node["id"],
             "image": node["image"],
-            "pretty_url": pretty_url(node)
+            "pretty_url": pretty_url(node),
         }
         for m in node["currentMemberships"]:
             if m["organization"]["classification"] == "party":

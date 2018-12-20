@@ -35,8 +35,10 @@ def test_state_view(client, django_assert_num_queries):
 
     # sessions
     assert resp.context["all_sessions"][0].identifier == "2018"
-    assert (resp.context["all_sessions"][0].bill_count +
-            resp.context["all_sessions"][1].bill_count) == 12
+    assert (
+        resp.context["all_sessions"][0].bill_count
+        + resp.context["all_sessions"][1].bill_count
+    ) == 12
 
 
 @pytest.mark.django_db

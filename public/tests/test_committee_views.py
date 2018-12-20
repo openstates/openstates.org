@@ -66,8 +66,8 @@ def test_committee_detail(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_canonicalize_committee(client):
     o = Organization.objects.get(name="Wizards")
-    url = pretty_url(o).replace('wizards', 'xyz')
-    assert 'xyz' in url
+    url = pretty_url(o).replace("wizards", "xyz")
+    assert "xyz" in url
     resp = client.get(url)
     assert resp.status_code == 301
     assert resp.url == pretty_url(o)

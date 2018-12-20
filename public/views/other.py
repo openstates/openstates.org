@@ -17,30 +17,22 @@ def _get_latest_updates():
     RSS_FEED = "https://blog.openstates.org/feed"
 
     feed = feedparser.parse(RSS_FEED)
-    return [
-        {
-            "title": entry.title,
-            "link": entry.link,
-        }
-        for entry in feed.entries
-    ][:3]
+    return [{"title": entry.title, "link": entry.link} for entry in feed.entries][:3]
 
 
 def _get_random_bills():
-    return Bill.objects.all().order_by('-updated_at').prefetch_related("sponsorships")[:3]
+    return (
+        Bill.objects.all().order_by("-updated_at").prefetch_related("sponsorships")[:3]
+    )
 
 
 def home(request):
     # cache these to try to keep the homepage as cheap as possible
-    cache_time = 60*60*24   # cache for a full day
-    updates = cache.get_or_set('homepage-blog-updates', _get_latest_updates, cache_time)
-    recent_bills = cache.get_or_set('homepage-bills', _get_random_bills, cache_time)
+    cache_time = 60 * 60 * 24  # cache for a full day
+    updates = cache.get_or_set("homepage-blog-updates", _get_latest_updates, cache_time)
+    recent_bills = cache.get_or_set("homepage-bills", _get_random_bills, cache_time)
 
-    context = {
-        "states": states,
-        "recent_bills": recent_bills,
-        "blog_updates": updates,
-    }
+    context = {"states": states, "recent_bills": recent_bills, "blog_updates": updates}
     return render(request, "public/views/home.html", context)
 
 

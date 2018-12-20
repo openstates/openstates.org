@@ -59,8 +59,8 @@ def test_person_view_retired(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_canonicalize_person(client):
     p = PersonProxy.objects.get(name="Amanda Adams")
-    url = p.pretty_url().replace('amanda', 'xyz')
-    assert 'xyz' in url
+    url = p.pretty_url().replace("amanda", "xyz")
+    assert "xyz" in url
     resp = client.get(url)
     assert resp.status_code == 301
     assert resp.url == p.pretty_url()

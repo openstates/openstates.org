@@ -10,8 +10,7 @@ class PersonProxy(Person):
     @staticmethod
     def get_current_legislators_with_roles(chambers):
         return PersonProxy.objects.filter(
-            *current_role_filters(),
-            memberships__organization__in=chambers
+            *current_role_filters(), memberships__organization__in=chambers
         ).prefetch_related(
             "memberships", "memberships__organization", "memberships__post"
         )

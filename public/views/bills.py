@@ -1,16 +1,11 @@
 from django.core.paginator import Paginator
-from django.db.models import Min, Func, Max, OuterRef, Subquery, Prefetch
+from django.db.models import Func, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, reverse
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
 from opencivicdata.core.models import Person
-from opencivicdata.legislative.models import (
-    Bill,
-    BillAction,
-    BillActionRelatedEntity,
-    VoteEvent,
-)
+from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, VoteEvent
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id, get_bills_with_action_annotation
@@ -184,14 +179,10 @@ def compute_bill_stages(actions, first_chamber, second_chamber):
             date: None
     """
     stages = [
-        {"stage": "Introduced",
-         "text": None, "date": None},
-        {"stage": first_chamber,
-         "text": None, "date": None},
-        {"stage": second_chamber,
-         "text": None, "date": None},
-        {"stage": "Governor",
-         "text": None, "date": None},
+        {"stage": "Introduced", "text": None, "date": None},
+        {"stage": first_chamber, "text": None, "date": None},
+        {"stage": second_chamber, "text": None, "date": None},
+        {"stage": "Governor", "text": None, "date": None},
     ]
 
     for action in actions:
@@ -252,10 +243,9 @@ def bill(request, state, session, bill_id):
     chambers = {c.classification: c.name for c in get_chambers_from_abbr(state)}
     second_chamber = None
     if len(chambers) > 1:
-        second_chamber = {
-            'upper': chambers['lower'],
-            'lower': chambers['upper']
-        }[bill.from_organization.classification]
+        second_chamber = {"upper": chambers["lower"], "lower": chambers["upper"]}[
+            bill.from_organization.classification
+        ]
     stages = compute_bill_stages(actions, bill.from_organization.name, second_chamber)
 
     versions = list(bill.versions.order_by("-date").prefetch_related("links"))

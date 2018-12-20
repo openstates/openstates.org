@@ -16,13 +16,11 @@ state_abbr_pattern = r"({})".format("|".join(state_abbrs))
 
 urlpatterns = [
     path("styleguide", styleguide, name="styleguide"),
-
     # flatpages
-    path('about/', TemplateView.as_view(template_name='flat/about.html')),
-    path('tos/', TemplateView.as_view(template_name='flat/tos.html')),
-    path('api/registered/', TemplateView.as_view(template_name='flat/registered.html')),
-    path('donate/', donate),
-
+    path("about/", TemplateView.as_view(template_name="flat/about.html")),
+    path("tos/", TemplateView.as_view(template_name="flat/tos.html")),
+    path("api/registered/", TemplateView.as_view(template_name="flat/registered.html")),
+    path("donate/", donate),
     # top level views
     path("", home, name="home"),
     path("find_your_legislator/", find_your_legislator, name="find_your_legislator"),
@@ -67,8 +65,7 @@ urlpatterns = [
         committee,
         name="committee-detail",
     ),
-
     # fallbacks
-    path('reportcard/', fallback),
+    path("reportcard/", fallback),
     # re_path(r'[a-z]{2}/bills/', fallback),
 ]
