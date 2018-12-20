@@ -135,23 +135,13 @@
 {% endblock %}
 
     <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
+    {% for bill in person.sponsored_bills %}
+        <div class="card">
+            <h3 class="heading--small"><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></h3>
+            <p>{{ bill.title }}</p>
         </div>
-        {% endfor %}
+    {% empty %}
+        <p>No bills to display.</p>
     {% endfor %}
     </div>
 </section>
@@ -173,263 +163,16 @@
                 {% endif %}
             </div>
             
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-{% sources state person.sources.all %}
-
-{% endblock %}
-
-    <h2 class="heading--medium">Sponsored Bills</h2>
-    <hr>
-    <hr>
-    <div class="timeline">
-    {% regroup person.vote_events by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
-        {% for vote_event in start_date.list %}
-        <div class="timeline-item">
-            <div class="timeline-date">
-                {% if forloop.first %}
-                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
-                {% endif %}
-            </div>
-            
-            {% for vote_event in start_date.list %}
-            <div class="timeline-activity">
-                {% vote_card vote_event %}
-            
-            {% for vote_event in start_date.list %}
             <div class="timeline-activity__group">
+            {% for vote_event in start_date.list %}
                 <div class="timeline-activity">
                     {% vote_card vote_event %}
                 </div>
+            {% endfor %}
             </div>
         </div>
-        {% endfor %}
+    {% empty %}
+        <p>No votes to display.</p>
     {% endfor %}
     </div>
 </section>

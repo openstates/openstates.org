@@ -126,6 +126,8 @@
                 {% endfor %}
             </div>
         </div>
+        {% empty %}
+            <p>No votes to display</p>
     {% endfor %}
     </div>
 </section>
@@ -148,13 +150,14 @@
                     {% endfor %}
                 </div>
             </div>
+        {% empty %}
+            <p>No actions to display</p>
         {% endfor %}
     </div>
 </section>
 
 <section>
     <h2 class="heading--medium">Bill Text</h2>
-    <!-- <hr> -->
      <table class="hover">
         <thead>
             <tr>
@@ -165,6 +168,10 @@
         <tbody>
             {% for version in versions reversed %}
                 {% document_card version %}
+            {% empty %}
+                <tr>
+                    <td colspan="100%">No related documents.</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -172,7 +179,6 @@
 
 <section>
     <h2 class="heading--medium">Related Documents</h2>
-    <!-- <hr> -->
     <table class="hover">
         <thead>
             <tr>
