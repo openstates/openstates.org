@@ -4,13 +4,13 @@
         {% if page.number > 2 %}
             <a href="?page=1" class="button">First</a>
         {% endif %}
+        
         {% if page.has_previous %}
-            <a href="?page={{ page.previous_page_number }}" class="button">&laquo;</a>
+            <a href="?page={{ page.previous_page_number }}" class="button">&laquo; Previous</a>
         {% endif %}
         
-        
         {% if page.has_next %}
-            <a href="?page={{ page.next_page_number }}" class="button">&raquo;</a>
+            <a href="?page={{ page.next_page_number }}" class="button">Next &raquo;</a>
         {% endif %}
     </div>
 </section>
