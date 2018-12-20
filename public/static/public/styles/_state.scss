@@ -1,0 +1,25 @@
+.state-overview-people {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 3em;
+
+    @include breakpoint(small down) {
+        grid-template-columns: auto;
+    }
+}
+
+.state-map {
+    grid-area: 1 / 1 / span 2 / span 1;
+}
+
+.state-overview-chambers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.state-overview-title {
+    display: block;
+}
+
+
+.state-overview-committees {
+}

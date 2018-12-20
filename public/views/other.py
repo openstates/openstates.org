@@ -49,6 +49,7 @@ def state(request, state):
 
     organizations = Organization.objects.filter(jurisdiction_id=jid).annotate(
         seats=Sum("posts__maximum_memberships")
+
     )
 
     for org in organizations:
@@ -67,12 +68,15 @@ def state(request, state):
     legislators = PersonProxy.get_current_legislators_with_roles(chambers)
 
     for chamber in chambers:
-        parties = [
-            legislator.current_role["party"]
-            for legislator in legislators
-            if legislator.current_role["chamber"] == chamber.classification
-        ]
+        parties = []
+        titles = []
+        for legislator in legislators:
+            if legislator.current_role["chamber"] == chamber.classification:
+                parties.append(legislator.current_role["party"])
+                titles.append(legislator.current_role["role"])
+
         chamber.parties = dict(Counter(parties))
+        chamber.title = titles[0]
         if chamber.seats - len(legislators) > 0:
             chamber.parties["Vacancies"] = chamber.seats - len(legislators)
 

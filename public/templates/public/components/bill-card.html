@@ -1,27 +1,30 @@
 {% load custom_tags %}
 
-<div>
-	<span>{{ bill.identifier }}</span>
-	<span>{{ bill.title }}</span>
+<div class="cell"><div class="card"><div>
+    <h3 class="heading--small">{{ bill.identifier }}</h3>
+    <p>{{ bill.title }}</p>
 
-	{% if bill.introduced_date %}
-		<span>Introduced {{ bill.introduced_date }}</span>
-	{% elif bill.passed_date %}
-		<span>Passed {{ bill.passed_date }}</span>
-	{% endif %}
+    <ul class="card__detail-group">
+    {% if bill.introduced_date %}
+        <li class="card__detail type--xsmall">Introduced {{ bill.introduced_date }}</li>
+    {% elif bill.passed_date %}
+        <li class="card__detail type--xsmall">Passed {{ bill.passed_date }}</li>
+    {% endif %}
+        <li class="card__detail type--xsmall">Sponsored by <a href="#">David W. Marsden</a></li>
+    </ul>
 
-	<span>
-		Sponsored by 
-		{% for sponsorship in bill.sponsorships.all %}
-			{% if sponsorship.primary %}
-				{% if sponsorship.person %}
-					<a href="{% canonical_url sponsorship.person %}">{{ sponsorship.person }}</a>
-				{% elif sponsorship.organization %}
-					<a href="{% url 'committee' state sponsorship.organization_id %}">{{ sponsorship.organization }}</a>
-				{% else %}
-					{{ sponsorship.name }}
-				{% endif %}
-			{% endif %}
-		{% endfor %}
-	</span>
-</div>
+    <span>
+        Sponsored by 
+        {% for sponsorship in bill.sponsorships.all %}
+            {% if sponsorship.primary %}
+                {% if sponsorship.person %}
+                    <a href="{% canonical_url sponsorship.person %}">{{ sponsorship.person }}</a>
+                {% elif sponsorship.organization %}
+                    <a href="{% url 'committee' state sponsorship.organization_id %}">{{ sponsorship.organization }}</a>
+                {% else %}
+                    {{ sponsorship.name }}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </span>
+</div></div></div>
