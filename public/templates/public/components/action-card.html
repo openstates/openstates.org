@@ -1,14 +1,25 @@
-<div>
-    <span>
-        {{ action.organization }}
-    </span>
-    <span>{{ action.description }}</span>
-    <span>{{ action.classification }}</span>
-    {% if action.related_entities.count %}
-    <ul>
-        {% for re in action.related_entities.all %}
-        <li>{{ re.entity_name }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+<div class="card">
+    <div>
+        <h3 class="heading--xsmall">
+            {{ action.organization }}
+        </h3>
+
+        <p>{{ action.description }}</p>
+
+        {% if action.related_entities.count %}
+        <ul class="card__detail-group">
+            {% for classification in action.classification %}
+            <li class="card__detail type--xsmall">
+                {{ classification|title }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if action.related_entities.count %}
+            {% for re in action.related_entities.all %}
+                <a class="label" link="#">{{ re.entity_name }}</a>
+            {% endfor %}
+        {% endif %}
+    </div>
 </div>
