@@ -20,6 +20,7 @@ urlpatterns = [
     # flatpages
     path('about/', TemplateView.as_view(template_name='flat/about.html')),
     path('tos/', TemplateView.as_view(template_name='flat/tos.html')),
+    path('api/registered/', TemplateView.as_view(template_name='flat/registered.html')),
     path('donate/', donate),
 
     # top level views

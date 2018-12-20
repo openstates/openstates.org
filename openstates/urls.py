@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^api/register/$', RegistrationView.as_view(
         confirmation_url='/api/confirm/',
         email_subject='Open States API Key Registration',
+        redirect="/api/registered/"
     )),
     url(r'^api/confirm/$', ConfirmationView.as_view()),
     url(r'^graphql', csrf_exempt(KeyedGraphQLView.as_view(
