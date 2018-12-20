@@ -6,24 +6,18 @@
     border-radius: 3px;
     color: $color-primary;
     font-size: 0.8rem;
-    font-weight: $global-weight-bold;
     line-height: 1;
     margin-bottom: 0.25rem;
     padding: 0.75em 1rem;
-    transition: background-color 200ms ease;
     white-space: nowrap;
-
-    &:hover {
-        background-color: $color-gray;
-    }
 }
 
-.label--static {
-    font-weight: normal;
+a.label {
+    font-weight: $global-weight-bold;
+    transition: opacity 200ms ease;
 
     &:hover {
-        background-color: $color-gray-light;
-        cursor: default;
+        opacity: 0.75;
     }
 }
 
@@ -35,3 +29,16 @@
         margin-right: 0.25rem;
         vertical-align: middle;
     }
+
+    .label--green {
+        background-color: lighten($color-green, 20%);
+        color: darken($color-green, 25%);
+        font-weight: $global-weight-bold;
+    }
+
+    .label--red {
+        background-color: lighten($color-red, 20%);
+        color: darken($color-red, 20%);
+        font-weight: $global-weight-bold;
+    }
+

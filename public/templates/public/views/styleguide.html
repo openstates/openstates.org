@@ -219,12 +219,23 @@
     <h2 class="heading--small">Labels</h2>
     <hr>
     <h3 class="heading--xsmall">Default Labels</h3>
+
+    
+    <p>By default, labels are wrapped in a <code>span</code>.</p>
+    <span class="label">PDF</span>
+    <span class="label">HTML</span>
+    
+    <br><br>
+
+    <h3 class="heading--xsmall">Linked Labels</h3>
+    <p>Use an anchor tag when you want a label to link to something else. These labels will automatically have a different treatment to indicate it is linked.</p>
     <a class="label" link="#">Welfare and Poverty</a>
     <a class="label" link="#">Municipal and County Issues</a>
     <a class="label" link="#">Crime</a>
     <a class="label" link="#">Other</a>
-    <br>
-    <br>
+
+    <br><br>
+
     <h3 class="heading--xsmall">Labels with icons</h3>
     <a class="label" link="#">
         <svg class="label__icon"><use xlink:href="{% static 'public/images/icons.svg' %}#icon-group"></use></svg>
@@ -238,12 +249,15 @@
         <svg class="label__icon"><use xlink:href="{% static 'public/images/icons.svg' %}#icon-group"></use></svg>
         Agriculture, Conservation, and Natural Resources
     </a>
-    <br>
-    <br>
-    <h3 class="heading--xsmall">Static Labels</h3>
-    <p>Static labels don't link to anything.</p>
-    <span class="label label--static">PDF</span>
-    <span class="label label--static">HTML</span>
+
+    <br><br>
+    <h3 class="heading--xsmall">Linked Labels</h3>
+    <p>Labels can also be colored to illustrate status. Available color modifiers include <code>.label--green</code> and <code>.label--red</code></p>
+    
+    <span class="label label--green">Success</span>
+    <span class="label label--green">Pass</span>
+    <span class="label label--red">Vetoed</span>
+    <span class="label label--red">Fail</span>
 </div>
 
 <!-- Tables -->
