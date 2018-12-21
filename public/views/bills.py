@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import Func, Prefetch
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, reverse
+from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
 from opencivicdata.core.models import Person
@@ -9,6 +9,7 @@ from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, Vote
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id, get_bills_with_action_annotation
+from .fallback import fallback
 
 
 class Unnest(Func):
@@ -212,19 +213,28 @@ def compute_bill_stages(actions, first_chamber, second_chamber):
 
 
 def bill(request, state, session, bill_id):
+    # canonicalize without space
+    if ' ' in bill_id:
+        return redirect("bill", state, session,
+                        bill_id.replace(' ', ''), permanent=True)
+
     jid = abbr_to_jid(state)
     identifier = fix_bill_id(bill_id)
 
-    bill = get_object_or_404(
-        Bill.objects.all().select_related(
+    try:
+        bill = Bill.objects.select_related(
             "legislative_session",
             "legislative_session__jurisdiction",
             "from_organization",
-        ),
-        legislative_session__jurisdiction_id=jid,
-        legislative_session__identifier=session,
-        identifier=identifier,
-    )
+        ).get(
+            legislative_session__jurisdiction_id=jid,
+            legislative_session__identifier=session,
+            identifier=identifier
+        )
+    except Bill.DoesNotExist:
+        # try to find the asset in S3
+        request.path = request.path.replace(bill_id, identifier)
+        return fallback(request)
 
     sponsorships = list(bill.sponsorships.all().select_related("person"))
     related_entities = Prefetch(
