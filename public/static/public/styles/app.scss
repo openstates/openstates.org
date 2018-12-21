@@ -42,6 +42,7 @@
 // @include foundation-top-bar;
 @include foundation-visibility-classes;
 @include foundation-float-classes;
+@include foundation-flex-classes;
 
 // Components
 @import 'typography';
@@ -54,6 +55,9 @@
 @import 'components/footer';
 @import 'components/tables';
 @import 'components/thumbnails';
+@import 'components/meters';
+@import 'components/inputs';
+@import 'components/sidebar';
 
 // View-Specific
 @import 'legislators';

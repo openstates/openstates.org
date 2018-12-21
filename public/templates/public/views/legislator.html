@@ -17,14 +17,14 @@
                 <div class="card__image card__image--placeholder"></div>
             {% endif %}
             <div>
-                <h2 class="overview__heading">{{ person.name }}</h2>
+                <h1 class="overview__heading">{{ person.name }}</h1>
                 <ul class="card__detail-group">
                     {% if retired %}
                     <li class="card__detail type--xsmall">Former {{ state|state_name}} Legislator</li>
                     {% else %}
-                    <li class="card__detail type--xsmall">{{ person.current_role.party }}</li>
                     <li class="card__detail type--xsmall">{{ state|state_name }}</li>
                     <li class="card__detail type--xsmall">{{ person.current_role.role }}</li>
+                    <li class="card__detail type--xsmall">{{ person.current_role.party }}</li>
                     <li class="card__detail type--xsmall">{{ district_maybe }} {{ person.current_role.district }}</a></li>
                     {% endif %}
                 </ul>
@@ -91,8 +91,8 @@
 
 {% if person.sponsored_bills %}
 <section class="section">
-    <h3 class="heading--medium">Sponsored Bills</h3>
-
+    <h2 class="heading--medium">Sponsored Bills</h2>
+    <hr>
     <div class="bill-grid">
     {% for bill in person.sponsored_bills %}
         {% bill_card state bill %}
@@ -108,7 +108,8 @@
 
 {% if person.vote_events %}
 <section class="section">
-    <h3 class="heading--medium">Recent Votes</h3>
+    <h2 class="heading--medium">Recent Votes</h2>
+    <hr>
 
     <div class="timeline">
     {% regroup person.vote_events by start_date as votes_by_date %}

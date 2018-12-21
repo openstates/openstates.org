@@ -5,7 +5,7 @@
 .u-fill--secondary { background-color: $color-secondary; }
 .u-fill--accent { background-color: $color-accent; }
 
-// Text and background colors
+// Background colors
 .u-fill--black { background-color: $color-black; }
 .u-fill--gray { background-color: $color-gray; }
 .u-fill--gray-light { background-color: $color-gray-light; }
@@ -21,7 +21,8 @@
 
 
 // Text Colors
-.u-color-primary { color: $color-primary; }
+.u-color--primary { color: $color-primary; }
+.u-color--gray { color: darken($color-gray, 30%); }
 .u-color--red { color: $color-red; }
 .u-color--yellow { color: $color-yellow; }
 .u-color--green { color: $color-green; }
