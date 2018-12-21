@@ -14,10 +14,10 @@
 .heading--medium {
     font-family: $body-font-family;
     font-weight: $global-weight-bold;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
 
     @include breakpoint(medium) {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
 }
 
