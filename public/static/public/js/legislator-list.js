@@ -66,10 +66,10 @@ export default class LegislatorList extends React.Component {
             <tr>
               <th></th>
               <th onClick={() => this.setSortOrder('name')}>Name</th>
-              <th onClick={() => this.setSortOrder('party')}>Party</th>
-              <th onClick={() => this.setSortOrder('district')}>District</th>
+              <th onClick={() => this.setSortOrder('current_role.party')}>Party</th>
+              <th onClick={() => this.setSortOrder('current_role.district')}>District</th>
               {this.props.chambers.lower &&
-                  <th onClick={() => this.setSortOrder('chamber')}>Chamber</th>
+                  <th onClick={() => this.setSortOrder('current_role.chamber')}>Chamber</th>
               }
             </tr>
           </thead>
