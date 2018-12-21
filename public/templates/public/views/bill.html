@@ -36,7 +36,7 @@
                                     {% endif %}
                                 </span>
                                 {% if stage.date %}
-                                    <span class="meter-bar__detail">{{ stage.date }}</span>
+                                    <span class="meter-bar__detail">{{ stage.date|fdate:"%b %d, %Y" }}</span>
                                 {% endif %}
                             </li>
                         {% endif %}
@@ -116,7 +116,7 @@
     {% for start_date in votes_by_date reversed %}
         <div class="timeline-item">
             <div class="timeline-date">
-                <h3 class="heading--xsmall">{{ start_date.grouper }}</h3>
+                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
             </div>
             <div class="timeline-activity__group">
                 {% for vote_event in start_date.list %}
@@ -140,7 +140,7 @@
         {% for date in actions_by_date reversed %}
             <div class="timeline-item">
                 <div class="timeline-date">
-                    <h3 class="heading--xsmall">{{ date.grouper }}</h3>
+                    <h3 class="heading--xsmall">{{ date.grouper|fdate:"%b %d, %Y" }}</h3>
                 </div>
                 <div class="timeline-activity__group">
                     {% for action in date.list %}

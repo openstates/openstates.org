@@ -22,9 +22,9 @@
                     {% if retired %}
                     <li class="card__detail type--xsmall">Former {{ state|state_name}} Legislator</li>
                     {% else %}
-                    <li class="card__detail type--xsmall">{{ person.current_role.party }}</li>
                     <li class="card__detail type--xsmall">{{ state|state_name }}</li>
                     <li class="card__detail type--xsmall">{{ person.current_role.role }}</li>
+                    <li class="card__detail type--xsmall">{{ person.current_role.party }}</li>
                     <li class="card__detail type--xsmall">{{ district_maybe }} {{ person.current_role.district }}</a></li>
                     {% endif %}
                 </ul>
@@ -99,12 +99,12 @@
                 <h3 class="heading--small"><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></h3>
                 <p>{{ bill.title }}</p>
                 <ul class="card__detail-group">
-                    <li class="card__detail">
-                        Introduced {{ bill.first_action_date|fdate:"%b %d %Y" }}
+                    <li class="card__detail type--xsmall">
+                        Introduced {{ bill.first_action_date|fdate:"%b %d, %Y" }}
                     </li>
                     {% if bill.latest_action_date != bill.first_action_date %}
-                    <li class="card__detail">
-                        {{ bill.latest_action_description }} {{ bill.latest_action_date|fdate:"%b %d %Y" }}
+                    <li class="card__detail type--xsmall">
+                        {{ bill.latest_action_description }} {{ bill.latest_action_date|fdate:"%b %d, %Y" }}
                     </li>
                     {% endif %}
                 </ul>
