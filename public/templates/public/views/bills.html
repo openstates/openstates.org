@@ -8,7 +8,7 @@
 <section class="section">
     <h1 class="heading--large">{{ state|state_name }} Bills</h1>
 
-    <div class="grid-x grid-padding-x">
+    <div class="grid-x grid-margin-x">
         <div class="cell medium-9">
 
             <table class="hover">
@@ -43,99 +43,107 @@
             {% pagination bills %}</p>
         </div>
         <div class="cell medium-3">
-            <div>
-                <h2 class="heading--small">Search Bills</h2>
-                <span>Clear all filters</span>
-            </div>
-            <form>
-                <label for="query">Search text</label>
-                <input id="query" name="query" type="text" placeholder="Search text" value="{{ form.query }}" />
+            <div class="sidebar">
+                <h2 class="heading--medium">Filter Bills</h2>
+                <!-- TODO: Add a reset / clear all filters link -->
+                <!-- <span>Clear all filters</span> -->
+                <form>
+                    <label for="query">Search text</label>
+                    <input id="query" name="query" type="text" placeholder="Search text" value="{{ form.query }}" />
 
-                <span>Bill Status</span>
-                <div>
+                    <fieldset class="mb1">
+                        <legend>Status</legend>
+                        {% if chambers|length > 1 %}
+                        <input type="checkbox" name="status" id="passed-lower-chamber" value="passed-lower-chamber"
+                        {% if "passed-lower-chamber" in form.status %} checked {% endif %}
+                        />
+                        <label for="passed-lower-chamber">Passed {{ chambers.lower }}</label>
+                        <br>
+                        
+                        <input type="checkbox" name="status" id="passed-upper-chamber" value="passed-upper-chamber"
+                        {% if "passed-upper-chamber" in form.status %} checked {% endif %}
+                        />
+                        <label for="passed-upper-chamber">Passed {{ chambers.upper }}</label>
+                        <br>
+
+                        {% else %}
+                        <input type="checkbox" name="status" id="passed-upper-chamber" value="passed-upper-chamber"
+                        {% if "passed-upper-chamber" in form.status %} checked {% endif %}
+                        />
+                        <label for="passed-upper-chamber">Passed {{ chambers.legislature }}</label>
+                        <br>
+                        {% endif %}
+
+                        <input type="checkbox" name="status" id="signed" value="signed"
+                        {% if "signed" in form.status %} checked {% endif %}
+                        />
+                        <label for="signed">Signed into Law</label>
+                    </fieldset>
+
+                    <label for="session">Session</label>
+                    <select id="session" name="session">
+                        <option value="">All Available Sessions</option>
+                        {% for session in sessions %}
+                        <option value="{{ session.identifier }}"
+                            {% if session.identifier == form.session %}selected{% endif %}
+                            {% if not session.identifier and forloop.first %}selected{% endif %}>
+                            {{ session }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
                     {% if chambers|length > 1 %}
-                    <input type="checkbox" name="status" id="passed-lower-chamber" value="passed-lower-chamber"
-                    {% if "passed-lower-chamber" in form.status %} checked {% endif %}
-                    />
-                    <label for="passed-lower-chamber">Passed {{ chambers.lower }}</label>
+                    <fieldset class="mb1">
+                        <legend>Chamber of Origin</legend>
 
-                    <input type="checkbox" name="status" id="passed-upper-chamber" value="passed-upper-chamber"
-                    {% if "passed-upper-chamber" in form.status %} checked {% endif %}
-                    />
-                    <label for="passed-upper-chamber">Passed {{ chambers.upper }}</label>
+                        <input type="radio" name="chamber" id="either-chamber" value=""
+                        {% if form.chamber == "" %} checked {% endif %} />
+                        <label for="either-chamber">Either Chamber</label>
+                        <br>
 
-                    {% else %}
-                    <input type="checkbox" name="status" id="passed-upper-chamber" value="passed-upper-chamber"
-                    {% if "passed-upper-chamber" in form.status %} checked {% endif %}
-                    />
-                    <label for="passed-upper-chamber">Passed {{ chambers.legislature }}</label>
+                        <input type="radio" name="chamber" id="lower-chamber" value="lower"
+                        {% if form.chamber == "lower" %} checked {% endif %} />
+                        <label for="lower-chamber">{{ chambers.lower }}</label>
+                        <br>
+
+                        <input type="radio" name="chamber" id="upper-chamber" value="upper"
+                        {% if form.chamber == "upper" %} checked {% endif %} />
+                        <label for="upper-chamber">{{ chambers.upper }}</label>
+                    </fieldset>
                     {% endif %}
-                    <input type="checkbox" name="status" id="signed" value="signed"
-                    {% if "signed" in form.status %} checked {% endif %}
-                    />
-                    <label for="signed">Signed into Law</label>
-                </div>
 
-                <label for="session">Session</label>
-                <select id="session" name="session">
-                    <option value="">(all sessions)</option>
-                    {% for session in sessions %}
-                    <option value="{{ session.identifier }}"
-                        {% if session.identifier == form.session %}selected{% endif %}
-                        {% if not session.identifier and forloop.first %}selected{% endif %}>
-                        {{ session }}
-                    </option>
-                    {% endfor %}
-                </select>
+                    <label for="sponsor">Sponsor</label>
+                    <select id="sponsor" name="sponsor">
+                        <option value="">Any sponsor</option>
+                        {% for sponsor in sponsors %}
+                        <option value="{{ sponsor.id }}" {% if sponsor.id == form.sponsor %} selected {% endif %}>
+                            {{ sponsor.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
 
-                {% if chambers|length > 1 %}
-                <span>Chamber of Origin</span>
-                <div>
-                    <input type="radio" name="chamber" id="either-chamber" value=""
-                    {% if form.chamber == "" %} checked {% endif %} />
-                    <label for="either-chamber">Either Chamber</label>
+                    <label for="classification">Type</label>
+                    <select id="classification" name="classification">
+                        <option value="">All</option>
+                        {% for classification in classifications %}
+                            <option value="{{ classification }}" {% if classification == form.classification %} selected {% endif %}>
+                            {{ classification|title }}</option>
+                        {% endfor %}
+                    </select>
 
-                    <input type="radio" name="chamber" id="lower-chamber" value="lower"
-                    {% if form.chamber == "lower" %} checked {% endif %} />
-                    <label for="lower-chamber">{{ chambers.lower }}</label>
+                    {% if subjects %}
+                    <label for="subjects">Subjects</label>
+                    <select id="subjects" name="subjects" multiple>
+                        {% for subject in subjects %}
+                            <option value="{{ subject }}" {% if subject in form.subjects %} selected {% endif %}>
+                            {{ subject }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
 
-                    <input type="radio" name="chamber" id="upper-chamber" value="upper"
-                    {% if form.chamber == "upper" %} checked {% endif %} />
-                    <label for="upper-chamber">{{ chambers.upper }}</label>
-                </div>
-                {% endif %}
-
-                <label for="sponsor">Sponsor Name</label>
-                <select id="sponsor" name="sponsor">
-                    <option value=""></option>
-                    {% for sponsor in sponsors %}
-                    <option value="{{ sponsor.id }}" {% if sponsor.id == form.sponsor %} selected {% endif %}>
-                        {{ sponsor.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-
-                <label for="classification">Type</label>
-                <select id="classification" name="classification">
-                    <option value=""></option>
-                    {% for classification in classifications %}
-                        <option value="{{ classification }}" {% if classification == form.classification %} selected {% endif %}>
-                        {{ classification|title }}</option>
-                    {% endfor %}
-                </select>
-
-                {% if subjects %}
-                <label for="subjects">Subjects</label>
-                <select id="subjects" name="subjects" multiple>
-                    {% for subject in subjects %}
-                        <option value="{{ subject }}" {% if subject in form.subjects %} selected {% endif %}>
-                        {{ subject }}</option>
-                    {% endfor %}
-                </select>
-                {% endif %}
-
-                <input type="submit" value="Submit" />
-            </form>
+                    <button type="submit" class="button button--primary">Search</button>
+                </form>
+            </div>
         </div>
     </div>
 </section>

@@ -260,6 +260,75 @@
     <span class="label label--red">Fail</span>
 </div>
 
+<!-- Forms -->
+<div class="section">
+    <h2 class="heading--small">Forms</h2>
+    <hr>
+
+    <div class="grid-x grid-margin-x">
+        <div class="cell medium-5">
+            <form>
+                <label>Input Label
+                    <p class="help-text" id="exampleHelpText">Example help text</p>
+                    <input type="text" placeholder="Placeholder input text" aria-describedby="exampleHelpText">
+                </label>
+
+                <label>
+                    What's the password?
+                    <input type="password">
+                </label>
+            
+                <label>
+                    Enter a few items or a long comment.
+                    <textarea placeholder="A long comment…" rows="3"></textarea>
+                </label>
+
+                <label>Select one of these items from the list.
+                    <select>
+                        <option value="husker">Item One</option>
+                        <option value="starbuck">Item Two</option>
+                        <option value="hotdog">Item Three</option>
+                        <option value="apollo">Item Four</option>
+                    </select>
+                </label>
+
+                <fieldset class="mb1">
+                    <legend>Choose one of these items.</legend>
+                    <input type="radio" name="item" value="Red" id="formRed" required>
+                    <label for="formRed">Red Dog</label>
+                    <br>
+                    <input type="radio" name="item" value="Blue" id="formBlue">
+                    <label for="formBlue">Blue Dog</label>
+                    <br>
+                    <input type="radio" name="item" value="Yellow" id="formYellow">
+                    <label for="formYellow">Yellow Dog</label>
+                </fieldset>
+
+                <fieldset class="mb1">
+                    <legend>Select all that are in your pocket.</legend>
+                    <input id="formCheckbox1" type="checkbox">
+                    <label for="formCheckbox1">Wallet</label>
+                    <br>
+                    <input id="formCheckbox2" type="checkbox">
+                    <label for="formCheckbox2">Phone</label>
+                    <br>
+                    <input id="formCheckbox3" type="checkbox">
+                    <label for="formCheckbox3">Keys</label>
+                </fieldset>
+
+
+                <div class="input-group">
+                    <input class="input-group-field" type="search" placeholder="Search for any term">
+                    <div class="input-group-button">
+                        <input type="submit" class="button button--primary" value="Search">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Tables -->
 <div class="section">
     <h2 class="heading--small">Tables</h2>
@@ -367,6 +436,7 @@
         </tbody>
     </table>
 </div>
+
 
 <!-- Generic Card -->
 <div class="section">
