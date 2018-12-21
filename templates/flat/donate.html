@@ -8,7 +8,7 @@
 <h1 class="heading--large">Support Open States</h1>
 
 {% if success %}
-<div class="success">
+<div id="donate-success">
   Thank you for your donation!  You should receive an email receipt shortly, if you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
 </div>
 {% endif %}
@@ -24,12 +24,15 @@
 <section>
     <div class="donor-form">
     <div>
-        <label for="donor-name">Name:</label> <input id="donor-name" >
+        <label for="donor-name">Name:</label> <input id="donor-name" type="text" />
         <p>
         </p>
     </div>
 
-    <br />
+    <p>
+        <br>
+        <strong>Give a one time donation to support our work:</strong>
+    </p>
 
     <input type="radio" id="reg-2500" value="reg-2500" name="donation">
     <label for="reg-2500">$25</label>
@@ -40,8 +43,8 @@
     <input type="radio" id="reg-10000" value="reg-10000" name="donation">
     <label for="reg-10000">$100</label>
     <input type="radio" id="reg-other" value="reg-other" name="donation">
-    <label for="reg-other">Custom
-        <input id="other-amount">
+    <label for="reg-other">
+        <input id="other-amount" type="text" placeholder="custom">
     </label>
     <button data-amount="custom" class="btn-stripe button">Donate!</button>
 
