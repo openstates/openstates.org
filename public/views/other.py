@@ -1,11 +1,12 @@
 from collections import Counter
+import datetime
 import feedparser
 from django.db.models import Min, Max, Sum
 from django.shortcuts import render
 from django.core.cache import cache
 from opencivicdata.legislative.models import Bill
 from opencivicdata.core.models import Organization
-from utils.common import abbr_to_jid, states, sessions_with_bills
+from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
 from utils.bills import get_bills_with_action_annotation
 from ..models import PersonProxy
 
@@ -22,9 +23,17 @@ def _get_latest_updates():
 
 
 def _get_random_bills():
-    return (
-        Bill.objects.all().order_by("-updated_at").prefetch_related("sponsorships")[:3]
-    )
+    bills = (
+        Bill.objects.all()
+        .filter(updated_at__gte=datetime.datetime.now() - datetime.timedelta(days=3))
+        .annotate(first_action_date=Min("actions__date"))
+        .select_related("legislative_session", "legislative_session__jurisdiction")
+        .prefetch_related("sponsorships")
+        .order_by("?")
+    )[:3]
+    for bill in bills:
+        bill.state = jid_to_abbr(bill.legislative_session.jurisdiction_id)
+    return bills
 
 
 def home(request):
