@@ -55,17 +55,25 @@
         <h2 class="heading--large">Bills</h2>
         <div>
             <h3 class="heading--medium">Recently Introduced</h3>
-            {% for bill in recently_introduced_bills %}
-                {% bill_card state bill %}
-            {% endfor %}
+            <div class="grid-container full">
+                <div class="grid-x grid-margin-x medium-up-2">
+                {% for bill in recently_introduced_bills %}
+                    {% bill_card state bill %}
+                {% endfor %}
+                </div>
+            </div>
             <a class="button" href="{% url 'bills' state %}">View more bills</a>
         </div>
 
         <div>
             <h3 class="heading--medium">Recently Passed</h3>
-            {% for bill in recently_passed_bills %}
-                {% bill_card state bill %}
-            {% endfor %}
+            <div class="grid-container full">
+                <div class="grid-x grid-margin-x medium-up-2">
+                {% for bill in recently_passed_bills %}
+                    {% bill_card state bill %}
+                {% endfor %}
+                </div>
+            </div>
             <a class="button" href="{% url 'bills' state %}">View more bills</a>
         </div>
     </section>

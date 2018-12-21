@@ -6,6 +6,7 @@ from django.core.cache import cache
 from opencivicdata.legislative.models import Bill
 from opencivicdata.core.models import Organization
 from utils.common import abbr_to_jid, states, sessions_with_bills
+from utils.bills import get_bills_with_action_annotation
 from ..models import PersonProxy
 
 
@@ -49,7 +50,6 @@ def state(request, state):
 
     organizations = Organization.objects.filter(jurisdiction_id=jid).annotate(
         seats=Sum("posts__maximum_memberships")
-
     )
 
     for org in organizations:
@@ -83,8 +83,10 @@ def state(request, state):
         chamber.committee_count = committee_counts[chamber.classification]
 
     # bills
-    bills = Bill.objects.filter(from_organization__in=chambers).prefetch_related(
-        "sponsorships"
+    bills = (
+        get_bills_with_action_annotation()
+        .filter(from_organization__in=chambers)
+        .prefetch_related("sponsorships", "sponsorships__person")
     )
 
     recently_introduced_bills = list(
@@ -98,6 +100,9 @@ def state(request, state):
         .annotate(passed_date=Max("actions__date"))
         .order_by("-passed_date")[:RECENTLY_PASSED_BILLS_TO_SHOW]
     )
+
+    _preprocess_sponsors(recently_introduced_bills)
+    _preprocess_sponsors(recently_passed_bills)
 
     all_sessions = sessions_with_bills(jid)
 
@@ -115,3 +120,15 @@ def state(request, state):
             "all_sessions": all_sessions,
         },
     )
+
+
+def _preprocess_sponsors(bills):
+    FIRST_SPONSORS_COUNT = 3
+
+    for bill in bills:
+        bill.first_sponsors = []
+        sponsorships = list(bill.sponsorships.all())
+        bill.first_sponsors = sorted(
+            sponsorships, key=lambda s: (s.primary, s.person_id or "zzz", s.id)
+        )[:FIRST_SPONSORS_COUNT]
+        bill.extra_sponsors = len(sponsorships) - len(bill.first_sponsors)

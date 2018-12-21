@@ -9,7 +9,7 @@ def setup():
 
 @pytest.mark.django_db
 def test_state_view(client, django_assert_num_queries):
-    with django_assert_num_queries(11):
+    with django_assert_num_queries(15):
         resp = client.get("/ak/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"

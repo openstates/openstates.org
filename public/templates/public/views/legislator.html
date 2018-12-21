@@ -95,21 +95,8 @@
 
     <div class="bill-grid">
     {% for bill in person.sponsored_bills %}
-        <div class="card">
-                <h3 class="heading--small"><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></h3>
-                <p>{{ bill.title }}</p>
-                <ul class="card__detail-group">
-                    <li class="card__detail">
-                        Introduced {{ bill.first_action_date|fdate:"%b %d %Y" }}
-                    </li>
-                    {% if bill.latest_action_date != bill.first_action_date %}
-                    <li class="card__detail">
-                        {{ bill.latest_action_description }} {{ bill.latest_action_date|fdate:"%b %d %Y" }}
-                    </li>
-                    {% endif %}
-                </ul>
-        </div>
-        {% endfor %}
+        {% bill_card state bill %}
+    {% endfor %}
     </div>
 
     <a class="button" href="/{{state}}/bills/?sponsor={{person.id}}">
