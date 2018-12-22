@@ -24,7 +24,7 @@
                     {% else %}
                     <li class="card__detail type--xsmall">{{ state|state_name }}</li>
                     <li class="card__detail type--xsmall">{{ person.current_role.role }}</li>
-                    <li class="card__detail type--xsmall">{{ person.current_role.party }}</li>
+                    <li class="card__detail type--xsmall">{{ person.current_role.party|party_noun }}</li>
                     <li class="card__detail type--xsmall">{{ district_maybe }} {{ person.current_role.district }}</a></li>
                     {% endif %}
                 </ul>

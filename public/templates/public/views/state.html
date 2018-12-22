@@ -21,7 +21,7 @@
                     <span class="heading--xsmall state-overview-title"> {{ chamber.title }}s </span>
                     <ul class="state-overview-party-breakdown mt1">
                         {% for party, count in chamber.parties.items %}
-                            <li>{{ count }} {{ party }}</li>
+                            <li>{{ count }} {{ party|party_pluralize:count }}</li>
                         {% endfor %}
                     </ul>
                 </div>
