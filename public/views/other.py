@@ -59,7 +59,7 @@ def state(request, state):
 
     organizations = Organization.objects.filter(jurisdiction_id=jid).annotate(
         seats=Sum("posts__maximum_memberships")
-    )
+    ).select_related("parent")
 
     for org in organizations:
         if org.classification == "legislature":
