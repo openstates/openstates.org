@@ -1,6 +1,6 @@
 {% load custom_tags %}
 
-<div class="cell"><div class="card"><div>
+<div class="cell"><div class="card" onclick="this.querySelector('a').click()"><div>
     <h3 class="heading--small"><a href="{% canonical_url bill %}">
         {{ bill.identifier }}
         {% if bill.state %} ({{ bill.state|state_name }}) {% endif %}
