@@ -2,13 +2,13 @@ const path = require("path")
 const BundleTracker = require('webpack-bundle-tracker')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const output_dir = path.resolve('./public/static/public/bundles/')
+const output_dir = 'public/static/public/bundles'
 
 
 module.exports = {
   entry: ['babel-polyfill', './public/static/public/js/index'],
   output: {
-    path: output_dir,
+    path: path.resolve(output_dir),
     filename: "[name]-[hash].js",
   },
   module: {
@@ -35,6 +35,6 @@ module.exports = {
   },
   plugins: [
     new BundleTracker({filename: './webpack-stats.json'}),
-    new CleanWebpackPlugin([output_dir])
+    new CleanWebpackPlugin([output_dir], {watch: true})
   ]
 }
