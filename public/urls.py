@@ -5,7 +5,7 @@ from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
 from .views.committees import committees, committee
 from .views.donations import donate
-from .views.fallback import fallback
+from .views.fallback import fallback, legislator_fallback
 from utils.common import states
 
 
@@ -67,4 +67,7 @@ urlpatterns = [
     ),
     # fallbacks
     path("reportcard/", fallback),
+    re_path("[a-z]{2}/votes/[A-Z]{2}V\d{8}/$", fallback),
+    re_path("[a-z]{2}/legislators/(?P<legislator_id>[A-Z]{2}L\d{6})/$",
+            legislator_fallback),
 ]

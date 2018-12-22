@@ -1,6 +1,8 @@
 from django.http import Http404, HttpResponse
+from django.shortcuts import redirect
 import boto3
 from botocore.errorfactory import ClientError
+from ..models import PersonProxy
 
 
 def fallback(request):
@@ -14,3 +16,12 @@ def fallback(request):
         return HttpResponse(obj["Body"].read())
     except ClientError:
         raise Http404(request.path + "index.html")
+
+
+def legislator_fallback(request, legislator_id):
+    try:
+        p = PersonProxy.objects.get(identifiers__scheme='legacy_openstates',
+                                    identifiers__identifier=legislator_id)
+        return redirect(p.pretty_url(), permanent=True)
+    except PersonProxy.DoesNotExist:
+        return fallback(request)
