@@ -97,7 +97,6 @@ INSTALLED_APPS = [
     'graphapi',
     'v1',
     'simplekeys',
-    # 'silk',
 ]
 
 MIDDLEWARE = [
@@ -111,8 +110,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simplekeys.middleware.SimpleKeysMiddleware',
-    # 'silk.middleware.SilkyMiddleware',
 ]
+
+# silk
+if DEBUG:
+    INSTALLED_APPS.append('silk')
+    MIDDLEWARE.append('silk.middleware.SilkyMiddleware')
+
 
 ROOT_URLCONF = 'openstates.urls'
 WSGI_APPLICATION = 'openstates.wsgi.application'
