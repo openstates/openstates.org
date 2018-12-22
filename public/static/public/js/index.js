@@ -8,17 +8,7 @@ import StateMap from './state-map'
 import LegislatorList from './legislator-list'
 import FindYourLegislator from './find-your-legislator'
 import CommitteeList from './committee-list'
-
-
-window.imgError = function(t) {
-    // handle Event or Element
-    if(t.target) {
-        t = t.target;
-    }
-    var placeholder = document.createElement('div');
-    placeholder.classList.add("thumbnail", "thumbnail--placeholder");
-    t.parentNode.replaceChild(placeholder, t);
-}
+import LegislatorImage from './legislator-image'
 
 
 window.addEventListener('load', () => {
@@ -68,4 +58,18 @@ window.addEventListener('load', () => {
     if (fyl) {
         ReactDOM.render(React.createElement(FindYourLegislator, {}), fyl);
     }
+
+  const images = document.querySelectorAll('[data-hook="legislator-image"]');
+  for (var img of images) {
+    ReactDOM.render(React.createElement(
+      LegislatorImage,
+      {
+        image: img.getAttribute("data-image"),
+        id: img.getAttribute("data-person-id"),
+        size: img.getAttribute("data-size"),
+      }),
+      img
+    );
+  }
+
 })

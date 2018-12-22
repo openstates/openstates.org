@@ -11,11 +11,7 @@
     <div class="overview">
         
         <div class="overview__header">
-            {% if person.image %}
-                <img class="thumbnail mr1" src="{{ person.image_url }}" alt="Headshot of {{ person.name }}" onerror="window.imgError(this)">
-            {% else %}
-                <div class="card__image card__image--placeholder"></div>
-            {% endif %}
+            <div data-hook="legislator-image" data-image="{{ person.image }}" data-person-id="{{ person.id }}" data-size="medium"> </div>
             <div>
                 <h1 class="overview__heading">{{ person.name }}</h1>
                 <ul class="card__detail-group">

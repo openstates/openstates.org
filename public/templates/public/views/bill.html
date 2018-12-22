@@ -75,11 +75,8 @@
                     <div class="cell">
                         <div class="card card--profile">
                             {% if sponsor.person %}
-                                {% if sponsor.person.headshot_url %}
-                                    <img class="thumbnail thumbnail--small mr1" src="{{ sponsor.person.headshot_url }}" alt="Headshot for {{ sponsor.person.name }}">
-                                {% else %}
-                                    <div class="thumbnail thumbnail--placeholder thumbnail--small mr1"></div>
-                                {% endif %}
+
+                                <div class="mr1" data-hook="legislator-image" data-image="{{ sponsor.person.image }}" data-person-id="{{ sponsor.person.id }}"> </div>
                                     <div>
                                         <h3 class="card__heading heading--small">{{ sponsor.person.name }}</h3>
                                         <!-- TODO: Include party and distict -->

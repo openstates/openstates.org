@@ -18,10 +18,11 @@ export default class LegislatorImage extends React.Component {
 
   render() {
     const component = this;
+    const modifier = this.props.size === "medium" ? "mr1" : "thumbnail--small";
     if(!this.state.url) {
-      return <div className="thumbnail thumbnail--placeholder thumbnail--small"></div>;
+      return <div className={"thumbnail thumbnail--placeholder " + modifier}></div>;
     } else {
-      return (<img className="thumbnail thumbnail--small" src={this.state.url} alt="headshot for legislator" onError={() => component.setState({url: null})} />)
+      return (<img className={"thumbnail " + modifier} src={this.state.url} alt="headshot for legislator" onError={() => component.setState({url: null})} />)
     }
   }
 }

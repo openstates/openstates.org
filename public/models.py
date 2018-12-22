@@ -15,11 +15,6 @@ class PersonProxy(Person):
             "memberships", "memberships__organization", "memberships__post"
         )
 
-    def image_url(self):
-        if self.image:
-            return "https://data.openstates.org/images/small/" + self.id
-        # TODO: placeholder image
-
     @property
     def current_role(self):
         if not getattr(self, "_current_role", None):
@@ -40,7 +35,6 @@ class PersonProxy(Person):
         return {
             "id": self.id,
             "name": self.name,
-            "image_url": self.image_url(),
             "image": self.image,
             "current_role": self.current_role,
             "pretty_url": self.pretty_url(),

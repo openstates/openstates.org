@@ -28,7 +28,7 @@
             <tr>
                 {% if membership.member %}
                 <td>
-                    <img class="thumbnail thumbnail--small" src="{{ membership.member.image_url }}">
+                    <div data-hook="legislator-image" data-image="{{ membership.member.image }}" data-person-id="{{ membership.person_id }}"> </div>
                 </td>
                 <td><a href="{{ membership.member.pretty_url }}">{{ membership.member.name }}</a></td>
                 <td>{{ membership.member.current_role.party }}</td>
