@@ -79,11 +79,10 @@
                                 <div class="mr1" data-hook="legislator-image" data-image="{{ sponsor.person.image }}" data-person-id="{{ sponsor.person.id }}"> </div>
                                     <div>
                                         <h3 class="card__heading heading--small">{{ sponsor.person.name }}</h3>
-                                        <!-- TODO: Include party and distict -->
                                         <ul class="card__detail-group">
-                                            <li class="card__detail type--xsmall">Party</li>
-                                            <li class="card__detail type--xsmall">Chamber</li>
-                                            <li class="card__detail type--xsmall">District</li>
+                                            <li class="card__detail type--xsmall">{{ sponsor.person.current_role.party }}</li>
+                                            <li class="card__detail type--xsmall">{{ sponsor.person.current_role.chamber }}</li>
+                                            <li class="card__detail type--xsmall">{{ sponsor.person.current_role.district }}</li>
                                         </ul>
                                         <div class="heading--xsmall">{{ sponsor.classification|title }}</div>
                                     </div>

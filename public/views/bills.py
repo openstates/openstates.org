@@ -4,12 +4,12 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
-from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, VoteEvent
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id, get_bills_with_action_annotation
 from .fallback import fallback
+from ..models import PersonProxy
 
 
 class Unnest(Func):
@@ -24,7 +24,7 @@ class BillList(View):
         chambers = get_chambers_from_abbr(state)
         options["chambers"] = {c.classification: c.name for c in chambers}
         options["sessions"] = sessions_with_bills(jid)
-        options["sponsors"] = Person.objects.filter(
+        options["sponsors"] = PersonProxy.objects.filter(
             memberships__organization__jurisdiction_id=jid
         ).distinct()
         options["classifications"] = sorted(
@@ -236,7 +236,12 @@ def bill(request, state, session, bill_id):
         request.path = request.path.replace(bill_id, identifier)
         return fallback(request)
 
+    # sponsorships, attach people manually
     sponsorships = list(bill.sponsorships.all().select_related("person"))
+    sponsor_people = {p.id: p for p in PersonProxy.objects.filter(id__in=[s.person_id for s in sponsorships if s.person_id])}
+    for s in sponsorships:
+        s.person = sponsor_people.get(s.person_id)
+
     related_entities = Prefetch(
         "related_entities",
         BillActionRelatedEntity.objects.all().select_related("person", "organization"),
