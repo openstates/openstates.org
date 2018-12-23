@@ -215,9 +215,10 @@ def compute_bill_stages(actions, first_chamber, second_chamber):
 
 def bill(request, state, session, bill_id):
     # canonicalize without space
-    if ' ' in bill_id:
-        return redirect("bill", state, session,
-                        bill_id.replace(' ', ''), permanent=True)
+    if " " in bill_id:
+        return redirect(
+            "bill", state, session, bill_id.replace(" ", ""), permanent=True
+        )
 
     jid = abbr_to_jid(state)
     identifier = fix_bill_id(bill_id)
@@ -230,7 +231,7 @@ def bill(request, state, session, bill_id):
         ).get(
             legislative_session__jurisdiction_id=jid,
             legislative_session__identifier=session,
-            identifier=identifier
+            identifier=identifier,
         )
     except Bill.DoesNotExist:
         # try to find the asset in S3
@@ -238,8 +239,15 @@ def bill(request, state, session, bill_id):
         return fallback(request)
 
     # sponsorships, attach people manually
-    sponsorships = list(bill.sponsorships.all().select_related("person"))
-    sponsor_people = {p.id: p for p in PersonProxy.objects.filter(id__in=[s.person_id for s in sponsorships if s.person_id])}
+    sponsorships = list(bill.sponsorships.all())
+    sponsor_people = {
+        p.id: p
+        for p in PersonProxy.objects.filter(
+            id__in=[s.person_id for s in sponsorships if s.person_id]
+        ).prefetch_related(
+            "memberships", "memberships__organization", "memberships__post"
+        )
+    }
     for s in sponsorships:
         s.person = sponsor_people.get(s.person_id)
 
@@ -278,7 +286,7 @@ def bill(request, state, session, bill_id):
         {
             "state": state,
             "state_nav": "bills",
-            "unicameral": state in ('dc', 'ne'),
+            "unicameral": state in ("dc", "ne"),
             "bill": bill,
             "sponsorships": sponsorships,
             "actions": actions,

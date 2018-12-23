@@ -104,7 +104,7 @@ def test_bills_view_status(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_view(client, django_assert_num_queries):
-    with django_assert_num_queries(12):
+    with django_assert_num_queries(16):
         resp = client.get("/ak/bills/2018/HB1/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
