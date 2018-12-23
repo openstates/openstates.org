@@ -2,7 +2,7 @@ import uuid
 import pytest
 from utils.common import jid_to_abbr, abbr_to_jid, encode_uuid, decode_uuid, sessions_with_bills
 from opencivicdata.core.models import Division, Jurisdiction
-from opencivicdata.legislative.models import LegislativeSession, Bill
+from opencivicdata.legislative.models import Bill
 
 
 def test_jid_to_abbr():
