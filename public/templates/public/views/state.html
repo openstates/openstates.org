@@ -65,6 +65,7 @@
             <a class="button" href="{% url 'bills' state %}">View more bills</a>
         </div>
 
+        {% if recently_passed_bills %}
         <div>
             <h3 class="heading--medium">Recently Passed</h3>
             <div class="grid-container full">
@@ -76,6 +77,7 @@
             </div>
             <a class="button" href="{% url 'bills' state %}">View more bills</a>
         </div>
+        {% endif %}
     </section>
 
     <section class="section">
