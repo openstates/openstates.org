@@ -112,12 +112,6 @@ MIDDLEWARE = [
     'simplekeys.middleware.SimpleKeysMiddleware',
 ]
 
-# silk
-if DEBUG:
-    INSTALLED_APPS.append('silk')
-    MIDDLEWARE.append('silk.middleware.SilkyMiddleware')
-
-
 ROOT_URLCONF = 'openstates.urls'
 WSGI_APPLICATION = 'openstates.wsgi.application'
 
