@@ -15,14 +15,14 @@
                     <div>
                         <h1 class="overview__heading">{{ bill.identifier }}</h1>
                         <ul class="card__detail-group">
-                            <li class="card__detail type--xsmall">{{state|state_name}} {{ bill.from_organization.name }} {{ bill.classification.0|title }}</li>
+                            <li class="card__detail type--xsmall">{% if not unicameral %}{{state|state_name}}{% endif %} {{ bill.from_organization.name }} {{ bill.classification.0|title }}</li>
                             <li class="card__detail type--xsmall">{{ bill.legislative_session.name }}</li>
                         </ul>
                     </div>
                     <!-- TODO: Make meter responsive -->
                     <ul class="meter align-self-middle">
                     {% for stage in stages %}
-                        {% if not stage.date and not stage.stage == 'Introduced'%}
+                        {% if not stage.date and not stage.stage == 'Introduced' %}
                             <li class="meter-bar meter-bar--inactive">
                                 <span class="meter-bar__title">{{ stage.stage }}</span>
                             </li>
@@ -30,7 +30,7 @@
                             <li class="meter-bar meter-bar--green">
                                 <span class="meter-bar__title">
                                     {% if stage.stage == 'Introduced' %}
-                                        Introduced in {{ bill.from_organization.name }}
+                                        Introduced {% if not unicameral %}in {{ bill.from_organization.name }}{% endif %}
                                     {% else %}
                                         {{ stage.text }}
                                     {% endif %}

@@ -205,9 +205,10 @@ def compute_bill_stages(actions, first_chamber, second_chamber):
             stages[3]["text"] = "Became Law"
         # TODO: veto, failure, etc?
 
-    # if we're unicameral, remove second stage
+    # if we're unicameral, remove second stage and make first stage name simpler
     if second_chamber is None:
         stages.pop(2)
+        stages[1]["stage"] = "Legislature"
 
     return stages
 
@@ -277,6 +278,7 @@ def bill(request, state, session, bill_id):
         {
             "state": state,
             "state_nav": "bills",
+            "unicameral": state in ('dc', 'ne'),
             "bill": bill,
             "sponsorships": sponsorships,
             "actions": actions,
