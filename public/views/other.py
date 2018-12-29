@@ -7,7 +7,6 @@ from django.core.cache import cache
 from opencivicdata.legislative.models import Bill
 from opencivicdata.core.models import Organization
 from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
-from utils.bills import get_bills_with_action_annotation
 from ..models import PersonProxy
 
 
@@ -93,21 +92,21 @@ def state(request, state):
 
     # bills
     bills = (
-        get_bills_with_action_annotation()
+        Bill.objects.all().select_related("legislative_session",
+                                          "legislative_session__jurisdiction",
+                                          "billstatus")
         .filter(from_organization__in=chambers)
         .prefetch_related("sponsorships", "sponsorships__person")
     )
 
     recently_introduced_bills = list(
-        bills.filter(actions__isnull=False)
-        .annotate(introduced_date=Min("actions__date"))
-        .order_by("-introduced_date")[:RECENTLY_INTRODUCED_BILLS_TO_SHOW]
+        bills.filter(billstatus__first_action_date__isnull=False)
+        .order_by("-billstatus__first_action_date")[:RECENTLY_INTRODUCED_BILLS_TO_SHOW]
     )
 
     recently_passed_bills = list(
-        bills.filter(actions__classification__contains=["passage"])
-        .annotate(passed_date=Max("actions__date"))
-        .order_by("-passed_date")[:RECENTLY_PASSED_BILLS_TO_SHOW]
+        bills.filter(billstatus__latest_passage_date__isnull=False)
+        .order_by("-billstatus__latest_passage_date")[:RECENTLY_PASSED_BILLS_TO_SHOW]
     )
 
     _preprocess_sponsors(recently_introduced_bills)

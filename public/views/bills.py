@@ -7,7 +7,7 @@ from django.views import View
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, VoteEvent
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import fix_bill_id, get_bills_with_action_annotation
+from utils.bills import fix_bill_id
 from .fallback import fallback
 from ..models import PersonProxy
 
@@ -41,7 +41,9 @@ class BillList(View):
 
     def get_bills(self, request, state):
         jid = abbr_to_jid(state)
-        bills = get_bills_with_action_annotation()
+        bills = Bill.objects.all().select_related("legislative_session",
+                                                  "legislative_session__jurisdiction",
+                                                  "billstatus")
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
 
         # query parameter filtering
@@ -90,7 +92,7 @@ class BillList(View):
                 actions__classification__contains=["executive-signature"]
             )
 
-        bills = bills.order_by("-latest_action_date")
+        bills = bills.order_by("-billstatus__latest_action_date")
 
         return bills, form
 

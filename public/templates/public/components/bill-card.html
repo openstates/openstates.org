@@ -9,11 +9,11 @@
 
     <ul class="card__detail-group">
     <li class="card__detail type--xsmall">
-        Introduced {{ bill.first_action_date|fdate:"%b %d %Y" }}
+        Introduced {{ bill.billstatus.first_action_date|fdate:"%b %d %Y" }}
     </li>
-    {% if bill.latest_action_date != bill.first_action_date %}
+    {% if bill.billstatus.latest_action_date != bill.billstatus.first_action_date %}
     <li class="card__detail type--xsmall">
-        {{ bill.latest_action_description }} {{ bill.latest_action_date|fdate:"%b %d %Y" }}
+        {{ bill.billstatus.latest_action_description }} {{ bill.billstatus.latest_action_date|fdate:"%b %d %Y" }}
     </li>
     {% endif %}
     {% if bill.first_sponsors %}

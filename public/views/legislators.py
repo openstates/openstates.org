@@ -4,8 +4,7 @@ from django.db.models import Min
 from graphapi.schema import schema
 from utils.common import decode_uuid, jid_to_abbr, pretty_url
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import get_bills_with_action_annotation
-from ..models import PersonProxy
+from ..models import PersonProxy, Bill
 
 
 def _people_from_lat_lon(lat, lon):
@@ -119,9 +118,10 @@ def person(request, person_id):
     person.all_contact_details = person.contact_details.order_by("note")
 
     person.sponsored_bills = list(
-        get_bills_with_action_annotation()
+        Bill.objects.all().select_related("legislative_session",
+                                          "legislative_session__jurisdiction",
+                                          "billstatus")
         .filter(sponsorships__person=person)
-        .annotate(first_action_date=Min("actions__date"))
         .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
     )
 
