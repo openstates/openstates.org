@@ -1,7 +1,7 @@
 from collections import Counter
 import datetime
 import feedparser
-from django.db.models import Min, Max, Sum
+from django.db.models import Sum
 from django.shortcuts import render
 from django.core.cache import cache
 from opencivicdata.legislative.models import Bill

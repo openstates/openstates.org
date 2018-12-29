@@ -67,8 +67,8 @@ urlpatterns = [
     ),
     # fallbacks
     path("reportcard/", fallback),
-    re_path("[a-z]{2}/votes/[A-Z]{2}V\d{8}/$", fallback),
+    re_path(r"[a-z]{2}/votes/[A-Z]{2}V\d{8}/$", fallback),
     re_path(
-        "[a-z]{2}/legislators/(?P<legislator_id>[A-Z]{2}L\d{6})/$", legislator_fallback
+        r"[a-z]{2}/legislators/(?P<legislator_id>[A-Z]{2}L\d{6})/$", legislator_fallback
     ),
 ]

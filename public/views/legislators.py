@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
-from django.db.models import Min
 from graphapi.schema import schema
 from utils.common import decode_uuid, jid_to_abbr, pretty_url
 from utils.orgs import get_chambers_from_abbr
