@@ -1,4 +1,6 @@
+from django.db import models
 from opencivicdata.core.models import Person, Organization
+from opencivicdata.legislative.models import Bill
 from utils.people import get_current_role, current_role_filters
 from utils.common import pretty_url
 
@@ -56,3 +58,14 @@ class OrganizationProxy(Organization):
             "pretty_url": self.pretty_url(),
             "member_count": self.member_count,
         }
+
+
+class BillStatus(models.Model):
+    bill = models.OneToOneField(Bill, on_delete=models.CASCADE, primary_key=True)
+    first_action_date = models.CharField(max_length=25)
+    latest_action_date = models.CharField(max_length=25)
+    latest_action_description = models.TextField()
+    latest_passage_date = models.CharField(max_length=25)
+
+    class Meta:
+        managed = False
