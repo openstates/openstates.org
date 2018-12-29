@@ -7,25 +7,32 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('legislative', '0008_longer_event_name'),
-        ('public', '0002_organizationproxy'),
+        ("legislative", "0008_longer_event_name"),
+        ("public", "0002_organizationproxy"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BillStatus',
+            name="BillStatus",
             fields=[
-                ('bill', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='legislative.Bill')),
-                ('first_action_date', models.CharField(max_length=25)),
-                ('latest_action_date', models.CharField(max_length=25)),
-                ('latest_action_description', models.TextField()),
-                ('latest_passage_date', models.CharField(max_length=25)),
+                (
+                    "bill",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to="legislative.Bill",
+                    ),
+                ),
+                ("first_action_date", models.CharField(max_length=25)),
+                ("latest_action_date", models.CharField(max_length=25)),
+                ("latest_action_description", models.TextField()),
+                ("latest_passage_date", models.CharField(max_length=25)),
             ],
-            options={
-                'managed': False,
-            },
+            options={"managed": False},
         ),
-        migrations.RunSQL("""
+        migrations.RunSQL(
+            """
            CREATE MATERIALIZED VIEW public_billstatus AS
            SELECT b.id as bill_id,
            (SELECT MIN(date) from opencivicdata_billaction WHERE bill_id = b.id) as "first_action_date",
@@ -35,8 +42,8 @@ class Migration(migrations.Migration):
            FROM opencivicdata_bill b;
            CREATE UNIQUE INDEX public_billstatus_pk ON public_billstatus(bill_id);
            """,
-           """
+            """
            DROP MATERIALIZED VIEW public_billstatus
-           """
-       )
+           """,
+        ),
     ]

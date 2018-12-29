@@ -25,8 +25,9 @@ def _get_random_bills():
     bills = (
         Bill.objects.all()
         .filter(updated_at__gte=datetime.datetime.now() - datetime.timedelta(days=3))
-        .annotate(first_action_date=Min("actions__date"))
-        .select_related("legislative_session", "legislative_session__jurisdiction")
+        .select_related(
+            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+        )
         .prefetch_related("sponsorships")
         .order_by("?")
     )[:3]
@@ -56,9 +57,11 @@ def state(request, state):
     committee_counts = Counter()
     chambers = []
 
-    organizations = Organization.objects.filter(jurisdiction_id=jid).annotate(
-        seats=Sum("posts__maximum_memberships")
-    ).select_related("parent")
+    organizations = (
+        Organization.objects.filter(jurisdiction_id=jid)
+        .annotate(seats=Sum("posts__maximum_memberships"))
+        .select_related("parent")
+    )
 
     for org in organizations:
         if org.classification == "legislature":
@@ -92,21 +95,24 @@ def state(request, state):
 
     # bills
     bills = (
-        Bill.objects.all().select_related("legislative_session",
-                                          "legislative_session__jurisdiction",
-                                          "billstatus")
+        Bill.objects.all()
+        .select_related(
+            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+        )
         .filter(from_organization__in=chambers)
         .prefetch_related("sponsorships", "sponsorships__person")
     )
 
     recently_introduced_bills = list(
-        bills.filter(billstatus__first_action_date__isnull=False)
-        .order_by("-billstatus__first_action_date")[:RECENTLY_INTRODUCED_BILLS_TO_SHOW]
+        bills.filter(billstatus__first_action_date__isnull=False).order_by(
+            "-billstatus__first_action_date"
+        )[:RECENTLY_INTRODUCED_BILLS_TO_SHOW]
     )
 
     recently_passed_bills = list(
-        bills.filter(billstatus__latest_passage_date__isnull=False)
-        .order_by("-billstatus__latest_passage_date")[:RECENTLY_PASSED_BILLS_TO_SHOW]
+        bills.filter(billstatus__latest_passage_date__isnull=False).order_by(
+            "-billstatus__latest_passage_date"
+        )[:RECENTLY_PASSED_BILLS_TO_SHOW]
     )
 
     _preprocess_sponsors(recently_introduced_bills)

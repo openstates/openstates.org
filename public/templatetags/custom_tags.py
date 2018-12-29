@@ -70,19 +70,19 @@ def state_name(state_abbr):
 
 @register.filter()
 def party_pluralize(party_name, count):
-    if party_name == 'Democratic':
-        party_name = 'Democrat'
+    if party_name == "Democratic":
+        party_name = "Democrat"
 
     if count > 1:
-        return party_name + 's'
+        return party_name + "s"
     else:
         return party_name
 
 
 @register.filter()
 def party_noun(party_name):
-    if party_name == 'Democratic':
-        return 'Democrat'
+    if party_name == "Democratic":
+        return "Democrat"
     else:
         return party_name
 

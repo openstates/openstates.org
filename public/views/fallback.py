@@ -20,8 +20,10 @@ def fallback(request):
 
 def legislator_fallback(request, legislator_id):
     try:
-        p = PersonProxy.objects.get(identifiers__scheme='legacy_openstates',
-                                    identifiers__identifier=legislator_id)
+        p = PersonProxy.objects.get(
+            identifiers__scheme="legacy_openstates",
+            identifiers__identifier=legislator_id,
+        )
         return redirect(p.pretty_url(), permanent=True)
     except PersonProxy.DoesNotExist:
         return fallback(request)

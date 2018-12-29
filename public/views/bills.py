@@ -41,9 +41,9 @@ class BillList(View):
 
     def get_bills(self, request, state):
         jid = abbr_to_jid(state)
-        bills = Bill.objects.all().select_related("legislative_session",
-                                                  "legislative_session__jurisdiction",
-                                                  "billstatus")
+        bills = Bill.objects.all().select_related(
+            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+        )
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
 
         # query parameter filtering

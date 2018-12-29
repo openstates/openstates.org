@@ -118,9 +118,10 @@ def person(request, person_id):
     person.all_contact_details = person.contact_details.order_by("note")
 
     person.sponsored_bills = list(
-        Bill.objects.all().select_related("legislative_session",
-                                          "legislative_session__jurisdiction",
-                                          "billstatus")
+        Bill.objects.all()
+        .select_related(
+            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+        )
         .filter(sponsorships__person=person)
         .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
     )

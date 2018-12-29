@@ -1,15 +1,17 @@
 import pytest
+from django.core.management import call_command
 from graphapi.tests.utils import populate_db, populate_unicam
 
 
 @pytest.mark.django_db
 def setup():
     populate_db()
+    call_command("update_materialized_views")
 
 
 @pytest.mark.django_db
 def test_state_view(client, django_assert_num_queries):
-    with django_assert_num_queries(15):
+    with django_assert_num_queries(13):
         resp = client.get("/ak/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
