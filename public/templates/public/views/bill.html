@@ -81,7 +81,9 @@
                                         <h3 class="card__heading heading--small">{{ sponsor.person.name }}</h3>
                                         <ul class="card__detail-group">
                                             <li class="card__detail type--xsmall">{{ sponsor.person.current_role.party }}</li>
+                                            {% if not unicameral %}
                                             <li class="card__detail type--xsmall">{{ sponsor.person.current_role.chamber }}</li>
+                                            {% endif %}
                                             <li class="card__detail type--xsmall">{{ sponsor.person.current_role.district }}</li>
                                         </ul>
                                         <div class="heading--xsmall">{{ sponsor.classification|title }}</div>
