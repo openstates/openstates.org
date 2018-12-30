@@ -88,6 +88,14 @@ def party_noun(party_name):
 
 
 @register.filter()
+def titlecase_caps(title):
+    if title.isupper():
+        return title.title()
+    else:
+        return title
+
+
+@register.filter()
 def format_address(address):
     return mark_safe(address.replace(";", "<br>"))
 

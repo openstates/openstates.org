@@ -26,7 +26,7 @@
                                 <strong><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></strong>
                                 <span class="u-color--gray">({{ bill.legislative_session.name }})</span>
                                 <br>
-                                <span>{{ bill.title }}</span>
+                                <span>{{ bill.title|titlecase_caps }}</span>
                             </td>
                             <td>{{ bill.billstatus.first_action_date|fdate:"%b %d %Y" }}</td>
                             <td>

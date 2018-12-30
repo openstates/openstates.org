@@ -5,7 +5,7 @@
         {{ bill.identifier }}
         {% if bill.state %} ({{ bill.state|state_name }}) {% endif %}
     </a></h3>
-    <p>{{ bill.title }}</p>
+    <p>{{ bill.title|titlecase_caps }}</p>
 
     <ul class="card__detail-group">
     <li class="card__detail type--xsmall">
