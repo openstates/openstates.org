@@ -262,7 +262,7 @@ def bill(request, state, session, bill_id):
         .select_related("organization")
         .prefetch_related(related_entities)
     )
-    votes = list(bill.votes.all())  # .prefetch_related('counts')
+    votes = list(bill.votes.all().select_related("organization"))  # .prefetch_related('counts')
 
     # stage calculation
     # get other chamber name
