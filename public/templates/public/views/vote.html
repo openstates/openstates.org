@@ -12,7 +12,7 @@
             <div style="width: 100%;">
                 <div class="flex-container align-justify">
                     <h3 class="overview__heading">{{ vote.organization }} Vote on {{ vote.bill.identifier }}</h3>
-                    <span class="label
+                    <span style="height: min-content;" class="label
                         {% if vote.result == 'pass' %}
                             label--green
                         {% elif vote.result == 'fail' %}
