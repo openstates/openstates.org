@@ -6,30 +6,78 @@
 {% block description %}View the {{ state|state_name }} {{ vote.organization }} vote history on {{ vote.bill }}.{% endblock %}
 
 {% block content %}
-    <section>
-        <h1>{{ vote.organiation }} Vote on {{ vote.bill }}</h1>
-        <span>{{ vote.start_date }}</span>
-        <span>{{ vote.motion_text }}</span>
-        <span>{{ vote.legislative_session }}</span>
-        <span>Outcome: {{ vote.result }}</span>
+<section class="section">
+    <div class="overview">
+        <div class="overview__header">
+            <div style="width: 100%;">
+                <div class="flex-container align-justify">
+                    <h3 class="overview__heading">{{ vote.organization }} Vote on {{ vote.bill.identifier }}</h3>
+                    <span class="label
+                        {% if vote.result == 'pass' %}
+                            label--green
+                        {% elif vote.result == 'fail' %}
+                            label--red
+                        {% endif %}
+                    ">
+                        {{ vote.result|title }}
+                    </span>
+                </div>
+                <ul class="no-bullet">
+                    <li>
+                        <strong>Motion Text:</strong> {{ vote.motion_text }}
+                    </li>
+                    <li>
+                        <strong>Legislative Session:</strong> {{ vote.legislative_session }}
+                    </li>
+                    <li>
+                        <strong>Date:</strong> {{ vote.start_date|fdate:"%b %d, %Y" }}
+                    </li>
+                    <li>
+                        <strong>Outcome:</strong> {{ vote.result|title }}
+                    </li>
+                </ul>
+        </div>
+        </div>
+        <div class="overview__section overview__section--parent">
+            <div class="overview__subsection">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Breakdown by Votes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vc in vote_counts %}
+                            <tr>
+                                <th>{{ vc.option|title }}</th>
+                                <td>{{ vc.value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- TODO: Include party totals for votes -->
+            <div class="overview__subsection">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Breakdown by Party</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- <div class="overview__section"></div> -->
+    </div>
+    <!-- TODO: Summary/Link to bill (bill_action if present) -->
+</section>
 
-        TODO: Summary/Link to bill (bill_action if present)
-    </section>
-
-    <section>
-    <table>
-        <tbody>
-            {% for vc in vote_counts %}
-                <tr>
-                    <th>{{ vc.option|title }}</th>
-                    <td>{{ vc.value }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    </section>
-
-    <section>
+<section class="section">
+    <h2 class="heading--medium">Roll Call</h2>
+    <hr>
     <table>
         <thead>
             <tr>
@@ -50,7 +98,6 @@
             {% endfor %}
         </tbody>
     </table>
-    </section>
-
-    {% sources state vote.sources.all %}
+</section>
+{% sources state vote.sources.all %}
 {% endblock %}
