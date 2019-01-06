@@ -71,8 +71,8 @@ def populate_db():
     # AK House
     amanda = make_person('Amanda Adams', 'Alaska', 'lower', '1', 'Republican')
     birch = make_person('Bob Birch', 'Alaska', 'lower', '2', 'Republican')
-    make_person('Carrie Carr', 'Alaska', 'lower', '3', 'Democratic')
-    make_person('Don Dingle', 'Alaska', 'lower', '4', 'Republican')
+    carrie = make_person('Carrie Carr', 'Alaska', 'lower', '3', 'Democratic')
+    don = make_person('Don Dingle', 'Alaska', 'lower', '4', 'Republican')
     # AK Senate
     ellen = make_person('Ellen Evil', 'Alaska', 'upper', 'A', 'Independent')
     make_person('Frank Fur', 'Alaska', 'upper', 'B', 'Democratic')
@@ -140,8 +140,8 @@ def populate_db():
     ve.counts.create(option='no', value=4)
     ve.votes.create(option='yes', voter_name='Amanda Adams', voter=amanda)
     ve.votes.create(option='no', voter_name='Birch', voter=birch)
-    ve.votes.create(option='no', voter_name='Carr')
-    ve.votes.create(option='no', voter_name='Dingle')
+    ve.votes.create(option='no', voter_name='Carr', voter=carrie)
+    ve.votes.create(option='no', voter_name='Dingle', voter=don)
     ve.votes.create(option='no', voter_name='Speaker')
 
     rb = Bill.objects.create(id='ocd-bill/3', title='Alces alces Freedom Act',

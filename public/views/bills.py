@@ -1,9 +1,11 @@
+from collections import defaultdict
 from django.core.paginator import Paginator
 from django.db.models import Func, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
+from opencivicdata.core.models import Membership
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, VoteEvent
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
@@ -262,7 +264,9 @@ def bill(request, state, session, bill_id):
         .select_related("organization")
         .prefetch_related(related_entities)
     )
-    votes = list(bill.votes.all().select_related("organization"))  # .prefetch_related('counts')
+    votes = list(
+        bill.votes.all().select_related("organization")
+    )  # .prefetch_related('counts')
 
     # stage calculation
     # get other chamber name
@@ -326,6 +330,38 @@ def vote(request, vote_id):
     vote_counts = sorted(vote.counts.all(), key=_vote_sort_key)
     person_votes = sorted(vote.votes.all().select_related("voter"), key=_vote_sort_key)
 
+    # add percentages to vote_counts
+
+    # aggregate voter ids into one query
+    voter_ids_to_query = [pv.voter_id for pv in person_votes if pv.voter_id]
+    voter_parties = defaultdict(list)
+    # party -> option -> value
+    party_votes = defaultdict(lambda: defaultdict(int))
+    for membership in Membership.objects.filter(
+        person_id__in=voter_ids_to_query, organization__classification="party"
+    ).select_related("organization"):
+        voter_parties[membership.person_id].append(membership.organization.name)
+
+    # attach party to people & calculate party-option crosstab
+    for pv in person_votes:
+        # combine other options
+        if pv.option not in ('yes', 'no'):
+            option = 'other'
+        else:
+            option = pv.option
+
+        if pv.voter_id:
+            pv.party = voter_parties[pv.voter_id][0]
+            party_votes[pv.party][option] += 1
+        else:
+            party_votes['Unknown'][option] += 1
+
+    # only show party breakdown if most people are matched
+    if len(voter_parties) / len(person_votes) < 0.8:
+        party_votes = None
+    else:
+        party_votes = sorted(dict(party_votes).items())
+
     return render(
         request,
         "public/views/vote.html",
@@ -335,5 +371,6 @@ def vote(request, vote_id):
             "vote": vote,
             "vote_counts": vote_counts,
             "person_votes": person_votes,
+            "party_votes": party_votes,
         },
     )

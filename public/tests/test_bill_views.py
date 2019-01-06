@@ -126,8 +126,25 @@ def test_bill_view(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_vote_view(client, django_assert_num_queries):
     vid = VoteEvent.objects.get(motion_text="Vote on House Passage").id.split("/")[1]
-    with django_assert_num_queries(6):
+    with django_assert_num_queries(7):
         resp = client.get(f"/vote/{vid}/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "bills"
+    assert len(resp.context["person_votes"]) == 5
+
+    # vote counts in order, yes, no, others
+    assert resp.context["vote_counts"][0].option == "yes"
+    assert resp.context["vote_counts"][1].option == "no"
+    assert resp.context["vote_counts"][0].value == 1
+    assert resp.context["vote_counts"][1].value == 4
+
+    # sorted list of (party, counts) pairs
+    assert resp.context["party_votes"][0][0] == "Democratic"
+    assert resp.context["party_votes"][0][1]["no"] == 1
+    assert resp.context["party_votes"][0][1]["yes"] == 0
+    assert resp.context["party_votes"][1][0] == "Republican"
+    assert resp.context["party_votes"][1][1]["no"] == 2
+    assert resp.context["party_votes"][1][1]["yes"] == 1
+    assert resp.context["party_votes"][2][0] == "Unknown"
+    assert resp.context["party_votes"][2][1]["no"] == 1

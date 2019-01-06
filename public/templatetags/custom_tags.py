@@ -88,6 +88,18 @@ def party_noun(party_name):
 
 
 @register.filter()
+def party_color(party_name):
+    if party_name == "Democratic":
+        return "#00abff"
+    elif party_name == "Republican":
+        return "#9e0e44"
+    elif party_name == "Unknown":
+        return "#dbe6f1"
+    else:
+        return "#ffd03f"
+
+
+@register.filter()
 def titlecase_caps(title):
     if title.isupper():
         return title.title()
