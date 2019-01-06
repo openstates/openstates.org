@@ -55,6 +55,7 @@
                             <tr>
                                 <th>{{ vc.option|title }}</th>
                                 <td>{{ vc.value }}</td>
+                                <td class="bar-column"><div class="horizontal-bar" style="width: {{ vc.percent }}%"></div></td>
                             </tr>
                         {% endfor %}
                     </tbody>

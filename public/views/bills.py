@@ -331,6 +331,9 @@ def vote(request, vote_id):
     person_votes = sorted(vote.votes.all().select_related("voter"), key=_vote_sort_key)
 
     # add percentages to vote_counts
+    total = sum(vc.value for vc in vote_counts)
+    for vc in vote_counts:
+        vc.percent = vc.value / total * 100
 
     # aggregate voter ids into one query
     voter_ids_to_query = [pv.voter_id for pv in person_votes if pv.voter_id]
