@@ -6,8 +6,18 @@ thead {
     border-bottom: 2px solid $color-secondary;
 
 }
+
+tbody {
+    background-color: transparent;
+}
+
 tbody tr {
     border-bottom: 1px solid $color-gray;
+    background-color: transparent;
+}
+
+tbody th {
+    text-align: left;
 }
 
 table {
