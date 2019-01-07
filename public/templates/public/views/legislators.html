@@ -2,6 +2,7 @@
 {% load custom_tags %}
 
 {% block title %}{{ state|state_name }} Legislators - Open States{% endblock %}
+{% block og_title %}{{ state|state_name }} Legislators - Open States{% endblock %}
 {% block description %}Learn more about who represents you in {{state|state_name}}.{% endblock %}
 
 {% block content %}
@@ -9,7 +10,7 @@
 
     <div class="legislators-container">
 
-    <div id="fyl-aside">
+    <div id="fyl-aside" class="sidebar">
         <h4 class="heading--small">Don't know who your legislator is?</h4>
         <h4 class="heading--small">Find them now!</h4>
 

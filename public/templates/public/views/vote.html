@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block title %}{{ vote.organization }} vote on {{ vote.bill }} - Open States {% endblock %}
+{% block og_title %}{{ vote.organization }} vote on {{ vote.bill }} - Open States {% endblock %}
 {% block description %}View the {{ state|state_name }} {{ vote.organization }} vote history on {{ vote.bill }}.{% endblock %}
 
 {% block content %}

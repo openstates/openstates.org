@@ -2,6 +2,7 @@
 {% load custom_tags %}
 
 {% block title %}{{committee.name}} - {{ state|state_name }} - Open States{% endblock %}
+{% block og_title %}{{committee.name}} - {{ state|state_name }} - Open States{% endblock %}
 {% block description %}Members of {{committee.name}} ({{ state|state_name }}  {{committee.parent}} Committee).{% endblock %}
 
 {% block content %}
