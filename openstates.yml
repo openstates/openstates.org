@@ -1,7 +1,0 @@
----
-- name: Install openstates.org
-  hosts: openstates.org
-  user: ubuntu
-  sudo: yes
-  roles:
-    - role: openstates
