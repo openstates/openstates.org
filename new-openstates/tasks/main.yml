@@ -57,6 +57,8 @@
   command: certbot certonly --dns-route53 -d beta.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/beta.openstates.org/fullchain.pem
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
+- name: add update_materialized_views cron
+  cron: job="source /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="daily" name="renew certificate"
 - name: restart nginx weekly
   cron: job="systemctl restart nginx" special_time="weekly" name="restart nginx"
 # - name: archive letsencrypt stuff
