@@ -10,7 +10,7 @@
 <section class="section">
 
     <div class="grid-x grid-margin-x">
-        <div class="cell medium-9">
+        <div class="cell medium-8">
             <div class="u-measure--wide text-center">
                 <h1 class="heading--large">Discover Politics In Your State</h1>
                 <img width="150" src="{% static "public/images/nounproject/national_assembly.svg" %}">
@@ -27,19 +27,9 @@
                     {% bill_card state bill %}
                 {% endfor %}
             </div>
-
-            <div class="mt3">
-                <hr>
-                <h2 class="heading--medium">Open States Updates</h2>
-                {% for update in blog_updates %}
-                <div class="blog-update">
-                    <a href="{{ update.link }}">{{ update.title }}</a>
-                </div>
-                {% endfor %}
-            </div>
         </div>
 
-        <div class="cell medium-3 text-center">
+        <div class="cell medium-4 text-center">
             <div class="sidebar">
                 <div class="text-center">
                     <h2 class="heading--medium">Find Your Legislators</h2>
@@ -73,6 +63,18 @@
                         Open States is a volunteer-driven project. Your donations help us keep the data fresh and this website free for everyone to use.
                     </p>
                     <a class="button button--primary" href="/donate/">Donate $25 Today</a>
+                </div>
+
+                <div class="mt3">
+                    <hr>
+                    <h2 class="heading--medium">Project Updates</h2>
+                    {% for update in blog_updates %}
+                    <div class="blog-update">
+                        <div class="blog-date">{{ update.date|fdate:"%B %-d, %Y" }}</div>
+                        <a href="{{ update.link }}">{{ update.title }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

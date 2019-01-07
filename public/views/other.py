@@ -18,7 +18,7 @@ def _get_latest_updates():
     RSS_FEED = "https://blog.openstates.org/feed"
 
     feed = feedparser.parse(RSS_FEED)
-    return [{"title": entry.title, "link": entry.link} for entry in feed.entries][:3]
+    return [{"title": entry.title, "link": entry.link, "date": entry.date} for entry in feed.entries][:3]
 
 
 def _get_random_bills():
