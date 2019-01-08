@@ -63,11 +63,25 @@ server {
         expires 2h;
     }
 
+    location /static {
+        uwsgi_pass unix:///home/openstates/uwsgi.sock;
+        include uwsgi_params;
+        uwsgi_cache_key $request_method$request_uri$http_x_api_key;
+        uwsgi_cache_methods GET;
+        uwsgi_cache_valid 200 2h;
+        uwsgi_cache_valid 301 302 404 2h;
+        uwsgi_cache_valid any     1m;
+        uwsgi_cache my_cache;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header X-Cache-Status $upstream_cache_status;
+        expires max;
+    }
+
     location /robots.txt {
         alias /home/openstates/robots.txt;
     }
     location /favicon.ico {
-        root /home/openstates/src/openstates.org/media/images/;
+        alias /home/openstates/src/openstates.org/public/static/public/images/favicon/favicon.ico;
     }
     location /.well-known/ {
         root /home/openstates/letsencrypt/;

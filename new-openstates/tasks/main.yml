@@ -58,7 +58,7 @@
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
 - name: add update_materialized_views cron
-  cron: job="source /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="daily" name="renew certificate"
+  cron: job="source /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="daily" name="update materialized views"
 - name: restart nginx weekly
   cron: job="systemctl restart nginx" special_time="weekly" name="restart nginx"
 # - name: archive letsencrypt stuff
