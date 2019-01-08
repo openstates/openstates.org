@@ -67,7 +67,7 @@ def test_metadata_list(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_detail(client, django_assert_num_queries):
-    with django_assert_num_queries(18):
+    with django_assert_num_queries(19):
         resp = client.get('/api/v1/bills/ak/2018/HB 1/')
         assert resp.status_code == 200
         bill = resp.json()
@@ -116,7 +116,7 @@ def test_bill_detail_alternate_forms(client):
 
 @pytest.mark.django_db
 def test_bill_list_basic(client, django_assert_num_queries):
-    with django_assert_num_queries(19):
+    with django_assert_num_queries(13):
         # need updated_since on there to avoid too-big detection
         resp = client.get('/api/v1/bills/?updated_since=2017-01-01')
         assert len(resp.json()) == 26
@@ -237,7 +237,6 @@ def test_legislator_list_params(client, django_assert_num_queries):
     assert len(resp.json()) == 3
 
 
-# TODO: need mock data for this in graphapi tests
 # @pytest.mark.django_db
 # def test_legislator_geo(client, django_assert_num_queries):
 #     pass

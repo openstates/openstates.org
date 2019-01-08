@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
-from . import static
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
 from utils.common import jid_to_abbr, abbr_to_jid
 from utils.people import current_role_filters
@@ -48,8 +47,8 @@ def jurisdictions_qs():
         )
 
 
-def bill_qs():
-    return Bill.objects.annotate(
+def bill_qs(include_votes):
+    qs = Bill.objects.annotate(
         last_action=Max('actions__date'),
         first_action=Min('actions__date')
     ).select_related(
@@ -58,10 +57,13 @@ def bill_qs():
     ).prefetch_related(
         'documents__links', 'versions__links', 'actions__organization',
         'abstracts', 'sources', 'sponsorships', 'other_titles',
-        'votes__counts', 'votes__votes', 'votes__sources',
-        'votes__legislative_session', 'votes__organization',
         'legacy_mapping',
     )
+    if include_votes:
+        qs = qs.prefetch_related('votes__counts', 'votes__votes', 'votes__sources',
+                                 'votes__votes__voter',
+                                 'votes__legislative_session', 'votes__organization')
+    return qs
 
 
 def person_qs():
@@ -165,9 +167,9 @@ def bill_detail(request,
             chamber = 'legislature'
         params['from_organization__classification'] = chamber
 
-    bills = bill_qs()
+    bills = bill_qs(include_votes=True)
     bill = get_object_or_404(bills, **params)
-    return JsonResponse(convert_bill(bill))
+    return JsonResponse(convert_bill(bill, include_votes=True))
 
 
 @jsonp
@@ -181,7 +183,7 @@ def bill_list(request):
     sort = request.GET.get('sort', 'last')
 
     too_big = True
-    bills = bill_qs()
+    bills = bill_qs(include_votes=False)
     if state:
         jid = abbr_to_jid(state)
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
@@ -203,15 +205,11 @@ def bill_list(request):
     # it was used in every case
     if state:
         state = state.lower()
-        if search_window == 'session':
+        if search_window == 'session' or search_window == 'term':
             latest_session = LegislativeSession.objects.filter(
                 jurisdiction_id=jid
             ).order_by('-start_date').values_list('identifier', flat=True)[0]
             bills = bills.filter(legislative_session__identifier=latest_session)
-            too_big = False
-        elif search_window == 'term':
-            latest_sessions = static.TERMS[state][-1]['sessions']
-            bills = bills.filter(legislative_session__identifier__in=latest_sessions)
             too_big = False
         elif search_window.startswith('session:'):
             bills = bills.filter(
@@ -248,4 +246,4 @@ def bill_list(request):
         return JsonResponse("Bad Request: request too large, try narrowing your search by "
                             "adding more filters or using pagination.", status=400, safe=False)
 
-    return JsonResponse([convert_bill(b) for b in bills], safe=False)
+    return JsonResponse([convert_bill(b, include_votes=False) for b in bills], safe=False)
