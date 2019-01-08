@@ -143,7 +143,7 @@ class BillListFeed(BillList):
         )
         description = f"{state.upper()} Bills"
         if form["session"]:
-            description += " ({form['session']})"
+            description += f" ({form['session']})"
         # TODO: improve RSS description
         feed = Rss201rev2Feed(
             title=description,
@@ -159,8 +159,8 @@ class BillListFeed(BillList):
                 link=link,
                 unique_id=link,
                 description=f"""{item.title}<br />
-                          Latest Action: {item.latest_action_description}
-                          <i>{item.latest_action_date}</i>""",
+                          Latest Action: {item.billstatus.latest_action_description}
+                          <i>{item.billstatus.latest_action_date}</i>""",
             )
         return HttpResponse(feed.writeString("utf-8"), content_type="application/xml")
 
