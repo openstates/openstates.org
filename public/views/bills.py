@@ -360,7 +360,7 @@ def vote(request, vote_id):
             party_votes['Unknown'][option] += 1
 
     # only show party breakdown if most people are matched
-    if len(voter_parties) / len(person_votes) < 0.8:
+    if not person_votes or (len(voter_parties) / len(person_votes) < 0.8):
         party_votes = None
     else:
         party_votes = sorted(dict(party_votes).items())
