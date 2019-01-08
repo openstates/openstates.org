@@ -67,7 +67,7 @@ def test_metadata_list(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_detail(client, django_assert_num_queries):
-    with django_assert_num_queries(18):
+    with django_assert_num_queries(19):
         resp = client.get('/api/v1/bills/ak/2018/HB 1/')
         assert resp.status_code == 200
         bill = resp.json()
