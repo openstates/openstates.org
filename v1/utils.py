@@ -157,7 +157,7 @@ def convert_bill(b, include_votes):
         openstates_id = b.legacy_mapping.all()[0].legacy_id
     except IndexError:
         openstates_id = ''
-   
+
     if include_votes:
         votes = [convert_vote(v, chamber, state, openstates_id) for v in b.votes.all()]
     else:

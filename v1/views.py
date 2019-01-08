@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
-from . import static
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
 from utils.common import jid_to_abbr, abbr_to_jid
 from utils.people import current_role_filters
@@ -65,6 +64,7 @@ def bill_qs(include_votes):
                                  'votes__votes__voter',
                                  'votes__legislative_session', 'votes__organization')
     return qs
+
 
 def person_qs():
     return Person.objects.prefetch_related(
