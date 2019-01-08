@@ -14,7 +14,7 @@
         <meta name="twitter:site" content="@openstates">
         <meta property="og:url" content="{{ request.build_absolute_uri }}">
         <meta property="og:title" content="{% block og_title %}Open States{% endblock %}">
-        <meta property="og:image" content="{% block og_image %}{% static "public/images/openstates_icon_transparent.png" %}{% endblock %}">
+        <meta property="og:image" content="{% block og_image %}https://{{ request.get_host }}{% static "public/images/openstates_icon_transparent.png" %}{% endblock %}">
         
         <!-- Favicon -->
         <link rel="apple-touch-icon" sizes="180x180" href="{% static 'public/images/favicon/apple-touch-icon.png?v=20190106' %}">
