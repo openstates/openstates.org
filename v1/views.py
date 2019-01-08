@@ -185,6 +185,7 @@ def bill_list(request):
     too_big = True
     bills = bill_qs(include_votes=False)
     if state:
+        state = state.lower()
         jid = abbr_to_jid(state)
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
     if chamber:
@@ -204,7 +205,6 @@ def bill_list(request):
     # search_window only ever really worked w/ state- and judging by analytics that's how
     # it was used in every case
     if state:
-        state = state.lower()
         if search_window == 'session' or search_window == 'term':
             latest_session = LegislativeSession.objects.filter(
                 jurisdiction_id=jid
