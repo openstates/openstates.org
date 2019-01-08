@@ -144,7 +144,7 @@ def convert_versions(version_list):
     return versions
 
 
-def convert_bill(b):
+def convert_bill(b, include_votes):
     try:
         abstract = b.abstracts.all()[0].abstract
     except IndexError:
@@ -157,6 +157,11 @@ def convert_bill(b):
         openstates_id = b.legacy_mapping.all()[0].legacy_id
     except IndexError:
         openstates_id = ''
+   
+    if include_votes:
+        votes = [convert_vote(v, chamber, state, openstates_id) for v in b.votes.all()]
+    else:
+        votes = None
 
     return {
         'title': b.title,
@@ -176,7 +181,7 @@ def convert_bill(b):
         'versions': convert_versions(b.versions.all()),
         'documents': convert_versions(b.documents.all()),
         'alternate_titles': [alt.title for alt in b.other_titles.all()],
-        'votes': [convert_vote(v, chamber, state, openstates_id) for v in b.votes.all()],
+        'votes': votes,
         'action_dates': {
             'first': expand_date(b.first_action),
             'last': expand_date(b.last_action),
