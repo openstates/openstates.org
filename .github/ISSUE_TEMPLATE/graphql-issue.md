@@ -1,6 +1,6 @@
 ---
 name: GraphQL Issue
-about: Describe this issue template's purpose here.
+about: Issues with the v2 GraphQL API
 title: ''
 labels: API
 assignees: ''
