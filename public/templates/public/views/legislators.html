@@ -15,8 +15,12 @@
         <h4 class="heading--small">Find them now!</h4>
 
         <form action="/find_your_legislator/">
-            <input type="text" placeholder="123 Main St, Portland, ME" name="address" id="fyl-input" />
-            <input type="submit" value="Search" class="button" />
+            <div class="input-group">
+                <input class="input-group-field" type="search" placeholder="Enter Address" name="address">
+                <div class="input-group-button">
+                    <input type="submit" class="button button--primary" value="Search">
+                </div>
+            </div>
         </form>
     </div>
 
