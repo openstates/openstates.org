@@ -18,7 +18,6 @@ redirects = [
     # old flatpages
     ('funding/', '/donate/'),
     ('contact/', '/about/'),
-    # TODO: reportcard
 ]
 
 urlpatterns = [

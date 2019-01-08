@@ -52,6 +52,47 @@
                     <label for="query">Search text</label>
                     <input id="query" name="query" type="text" placeholder="Search text" value="{{ form.query }}" />
 
+                    <label for="session">Session</label>
+                    <select id="session" name="session">
+                        <option value="">All Available Sessions</option>
+                        {% for session in sessions %}
+                        <option value="{{ session.identifier }}"
+                            {% if session.identifier == form.session %}selected{% endif %}
+                            {% if not session.identifier and forloop.first %}selected{% endif %}>
+                            {{ session }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+                    {% if chambers|length > 1 %}
+                    <fieldset class="mb1">
+                        <legend>Chamber of Origin</legend>
+
+                        <input type="radio" name="chamber" id="either-chamber" value=""
+                        {% if form.chamber == "" %} checked {% endif %} />
+                        <label for="either-chamber">Either Chamber</label>
+                        <br>
+
+                        <input type="radio" name="chamber" id="lower-chamber" value="lower"
+                        {% if form.chamber == "lower" %} checked {% endif %} />
+                        <label for="lower-chamber">{{ chambers.lower }}</label>
+                        <br>
+
+                        <input type="radio" name="chamber" id="upper-chamber" value="upper"
+                        {% if form.chamber == "upper" %} checked {% endif %} />
+                        <label for="upper-chamber">{{ chambers.upper }}</label>
+                    </fieldset>
+                    {% endif %}
+
+                    <label for="classification">Type</label>
+                    <select id="classification" name="classification">
+                        <option value="">All</option>
+                        {% for classification in classifications %}
+                            <option value="{{ classification }}" {% if classification == form.classification %} selected {% endif %}>
+                            {{ classification|title }}</option>
+                        {% endfor %}
+                    </select>
+
                     <fieldset class="mb1">
                         <legend>Status</legend>
                         {% if chambers|length > 1 %}
@@ -81,38 +122,6 @@
                         <label for="signed">Signed into Law</label>
                     </fieldset>
 
-                    <label for="session">Session</label>
-                    <select id="session" name="session">
-                        <option value="">All Available Sessions</option>
-                        {% for session in sessions %}
-                        <option value="{{ session.identifier }}"
-                            {% if session.identifier == form.session %}selected{% endif %}
-                            {% if not session.identifier and forloop.first %}selected{% endif %}>
-                            {{ session }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    
-                    {% if chambers|length > 1 %}
-                    <fieldset class="mb1">
-                        <legend>Chamber of Origin</legend>
-
-                        <input type="radio" name="chamber" id="either-chamber" value=""
-                        {% if form.chamber == "" %} checked {% endif %} />
-                        <label for="either-chamber">Either Chamber</label>
-                        <br>
-
-                        <input type="radio" name="chamber" id="lower-chamber" value="lower"
-                        {% if form.chamber == "lower" %} checked {% endif %} />
-                        <label for="lower-chamber">{{ chambers.lower }}</label>
-                        <br>
-
-                        <input type="radio" name="chamber" id="upper-chamber" value="upper"
-                        {% if form.chamber == "upper" %} checked {% endif %} />
-                        <label for="upper-chamber">{{ chambers.upper }}</label>
-                    </fieldset>
-                    {% endif %}
-
                     <label for="sponsor">Sponsor</label>
                     <select id="sponsor" name="sponsor">
                         <option value="">Any sponsor</option>
@@ -120,15 +129,6 @@
                         <option value="{{ sponsor.id }}" {% if sponsor.id == form.sponsor %} selected {% endif %}>
                             {{ sponsor.name }}
                         </option>
-                        {% endfor %}
-                    </select>
-
-                    <label for="classification">Type</label>
-                    <select id="classification" name="classification">
-                        <option value="">All</option>
-                        {% for classification in classifications %}
-                            <option value="{{ classification }}" {% if classification == form.classification %} selected {% endif %}>
-                            {{ classification|title }}</option>
                         {% endfor %}
                     </select>
 
