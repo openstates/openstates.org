@@ -24,10 +24,7 @@ function addBanner(content) {
 
 function checkIE() {
   var ua = window.navigator.userAgent;
-  var msie = ua.indexOf('MSIE ');
-  var trident = ua.indexOf('Trident/');
-
-  if (ua.indexOf('MSIE ') > 0 || ua.indexOf("Trident/ ") > 0) {
+  if (ua.indexOf('MSIE') > 0 || ua.indexOf("Trident/") > 0) {
     addBanner("You are viewing this site in an outdated browser, some features may not work.");
   }
 }
