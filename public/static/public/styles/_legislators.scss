@@ -34,11 +34,19 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 3em;
+
+    @include breakpoint(small down) {
+        grid-template-columns: auto;
+    }
 }
 .find-your-legislator label {
     font-size: 120%;
     display: inline-block;
     margin-right: 1em;
+
+    @include breakpoint(small down) {
+        display: none;
+    }
 }
 .find-your-legislator input {
     font-size: 120%;

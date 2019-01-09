@@ -180,14 +180,18 @@ export default class FindYourLegislator extends React.Component {
       }
 
         return (
-        <div className="find-your-legislator">
-          <div className="fyl-search">
-            <label htmlFor="fyl-address">Enter Your Address:</label>
-            <input id="fyl-address" name="address" value={this.state.address} onChange={this.handleAddressChange} />
-            <button id="address-lookup" className="button" onClick={this.geocode}>Search by Address</button>
+          <div className="find-your-legislator">
+          <div className="input-group">
+            <label htmlFor="fyl-address" id="fyl-address-label">Enter Your Address:</label>
+            <input className="input-group-field" id="fyl-address" name="address" value={this.state.address} onChange={this.handleAddressChange} />
+            <div className="input-group-button">
+              <button id="address-lookup" className="button button--primary" onClick={this.geocode}>Search by Address</button>
+            </div>
           </div>
+
+
           <div className="fyl-locate">
-            <button id="locate" className="button" onClick={this.geolocate}>Use Current Location</button>
+            <button id="locate" className="button button--primary" onClick={this.geolocate}>Use Current Location</button>
           </div>
 
           {error}
