@@ -63,6 +63,7 @@ server {
         expires 2h;
     }
 
+    # long cache time for static files
     location /static {
         uwsgi_pass unix:///home/openstates/uwsgi.sock;
         include uwsgi_params;
@@ -77,6 +78,12 @@ server {
         expires max;
     }
 
+    # for legacy js/css
+    location /media {
+        proxy_pass https://legacy.openstates.org/media/;
+    }
+
+    # various static files
     location /robots.txt {
         alias /home/openstates/robots.txt;
     }
