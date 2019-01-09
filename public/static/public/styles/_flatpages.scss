@@ -14,6 +14,18 @@ div.about-openstates {
     }
 }
 
+div.registration-field input {
+    @include breakpoint(medium) {
+        width: 20em;
+    }
+}
+div.registration-field .errorlist {
+    background-color: $color-red;
+    display: block;
+    padding: 1em;
+    list-style: none;
+}
+
 div.tos h2 {
     margin-top: 0.5em;
     margin-bottom: 0.1em;

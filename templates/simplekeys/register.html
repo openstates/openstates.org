@@ -13,7 +13,17 @@
   <a href="/tos/">Terms of Service &amp; Privacy Policy</a>.</p>
 
 <form action="." method="POST">
-  {{ form.as_ul }}
+
+    {% for field in form %}
+        <div class="registration-field">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+            {% if field.help_text %}
+            <p class="help">{{ field.help_text|safe }}</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+
   <input type="submit" class="button">
   {% csrf_token %}
 </form>
