@@ -1,9 +1,17 @@
+div.flatpage {
+    margin-left: 1em;
+    margin-right: 1em;
+}
 div.about-openstates {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: auto;
     grid-column-gap: 5em;
-    margin-left: 2em;
-    margin-right: 2em;
+
+    @include breakpoint(medium) {
+        grid-template-columns: auto auto;
+        margin-left: 1em;
+        margin-right: 1em;
+    }
 }
 
 div.tos h2 {
