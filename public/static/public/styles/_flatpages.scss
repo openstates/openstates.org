@@ -26,6 +26,13 @@ input#donor-name {
     padding: 1em;
     font-weight: 600;
 }
+#donate-failure {
+    border: $color-red 1px solid;
+    background-color: $color-red;
+    margin: 1em;
+    padding: 1em;
+    font-weight: 600;
+}
 
 .blog-date {
     color: $color-black;

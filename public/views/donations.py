@@ -1,6 +1,7 @@
 import stripe
 from django.conf import settings
 from django.shortcuts import render
+from django.http import JsonResponse
 
 
 def donate(request):
@@ -31,8 +32,9 @@ def donate(request):
                 metadata=metadata,
                 receipt_email=request.POST["email"],
             )
-        success = True
+        return JsonResponse({"success": "OK"})
 
+    print(request.method, success)
     return render(
         request,
         "flat/donate.html",

@@ -8,11 +8,13 @@
 {% block content %}
 <h1 class="heading--large">Support Open States</h1>
 
-{% if success %}
-<div id="donate-success">
+<div id="donate-success" style="display: none;">
   Thank you for your donation!  You should receive an email receipt shortly, if you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
 </div>
-{% endif %}
+<div id="donate-failure" style="display: none;">
+  Something went wrong!  This has been logged, If you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
+</div>
+
 
 <section class="mt1">
     <p>
@@ -121,20 +123,36 @@ var handler = StripeCheckout.configure({
             'yr-20000': 'yearly200',
             'yr-50000': 'yearly500',
         };
-        var plan = subscriptions[donation];
 
-        var request = new XMLHttpRequest();
-        request.open('POST', '/donate/', true);
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-        request.send({
-            stripeToken: token.id,
-            email: token.email,
-            csrfmiddlewaretoken: document.querySelector('[name="csrfmiddlewaretoken"]').value,
-            amount: amount,
-            plan: plan,
-            source: 'funding-page',
-            donor_name: name,
-        });
+        var data = new URLSearchParams()
+        data.append("stripeToken", token.id);
+        data.append("email", token.email);
+        data.append("csrfmiddlewaretoken", document.querySelector('[name="csrfmiddlewaretoken"]').value);
+        if (subscriptions[donation]) {
+            data.append("plan", subscriptions[donation]);
+        } else {
+            data.append("amount", amount);
+        }
+        data.append("source", "funding-page");
+        data.append("donor_name", name);
+
+        fetch("/donate/", {
+            method: "POST",
+            cache: "no-cache",
+            body: data
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            document.querySelector("#donate-success").style.display = "block";
+            window.scrollTo(0, 0);
+        })
+        .catch(function(e) {
+            document.querySelector("#donate-failure").style.display = "block";
+            window.scrollTo(0, 0);
+            console.error(e);
+        })
     }
 });
 
