@@ -61,8 +61,8 @@
   cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="hourly" name="update materialized views"
 - name: restart nginx weekly
   cron: job="systemctl restart nginx" special_time="weekly" name="restart nginx"
-# - name: archive letsencrypt stuff
-#   cron: job='bash -c "tar cvf /tmp/le$(date +\%Y\%m\%d).gz /etc/letsencrypt/ && aws s3 cp /tmp/le$(date +\%Y\%m\%d).gz s3://openstates-backups/letsencrypt/ && rm /tmp/le$(date +\%Y\%m\%d).gz"' special_time="monthly" name="backup letsencrypt"
+- name: archive letsencrypt stuff
+  cron: job='bash -c "tar cvf /tmp/newle$(date +\%Y\%m\%d).gz /etc/letsencrypt/ && aws s3 cp /tmp/newle$(date +\%Y\%m\%d).gz s3://openstates-backups/letsencrypt/ && rm /tmp/newle$(date +\%Y\%m\%d).gz"' special_time="monthly" name="backup letsencrypt"
 
 # virtualenv
 - name: checkout project directories
