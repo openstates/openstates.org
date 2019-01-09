@@ -11,6 +11,13 @@
 .state-map {
     grid-area: 1 / 1 / span 2 / span 1;
 }
+#state-map-container {
+    height: 100%;
+}
+#state-map-container .mapboxgl-map {
+    width: 100%;
+    height: 90%;
+}
 
 .state-overview-chambers {
     display: grid;

@@ -16,7 +16,6 @@ export default class StateMap extends React.Component {
     }
 
     buttonGroup() {
-        console.log(this.props);
         if(this.props.chambers.lower) {
             return (<div className="button-group">
                 <button className={this.state.chamberType === 'sldl' ? 'button button--active':'button'}
@@ -33,7 +32,7 @@ export default class StateMap extends React.Component {
             ["==", "type", this.state.chamberType]
         ];
         return (
-            <div style={{height: "100%"}}>
+            <div id="state-map-container">
             <Map
                 style={config.MAP_BASE_STYLE}
                 minZoom={2}
@@ -41,7 +40,6 @@ export default class StateMap extends React.Component {
                 interactive={true}
                 fitBounds={stateBounds[this.props.state]}
                 fitBoundsOptions={{padding: 25, animate: false}}
-                containerStyle={{height: "100%", width: "100%" }}
             >
             <Source id="sld" tileJsonSource={{type: "vector", url: config.MAP_SLD_SOURCE}} />
             <Layer
