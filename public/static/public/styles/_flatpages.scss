@@ -68,11 +68,3 @@ input#donor-name {
     padding: 1em;
     font-weight: 600;
 }
-
-
-// IE 11 svg fia
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-  img[src$=".svg"] {
-    width: 100%;
-  }
-}
