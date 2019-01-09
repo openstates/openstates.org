@@ -1,5 +1,11 @@
 // Meters
 
+.meter-container {
+    @include breakpoint(medium) {
+        display: flex;
+    }
+}
+
 .meter {
     margin-left: 0;
     margin-top: 2rem;
