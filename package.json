@@ -46,5 +46,6 @@
   "scripts": {
     "start": "webpack --watch --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
-  }
+  },
+  "browserslist": ["> 1% in US", "IE 11"]
 }
