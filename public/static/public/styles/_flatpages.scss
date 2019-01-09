@@ -58,3 +58,11 @@ input#donor-name {
     color: $color-black;
     font-weight: bold;
 }
+
+
+// IE 11 svg fia
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  img[src$=".svg"] {
+    width: 100%;
+  }
+}
