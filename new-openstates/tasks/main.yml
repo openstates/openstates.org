@@ -58,7 +58,7 @@
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
 - name: add update_materialized_views cron
-  cron: job="source /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="daily" name="update materialized views"
+  cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="hourly" name="update materialized views"
 - name: restart nginx weekly
   cron: job="systemctl restart nginx" special_time="weekly" name="restart nginx"
 # - name: archive letsencrypt stuff
@@ -66,7 +66,7 @@
 
 # virtualenv
 - name: checkout project directories
-  git: repo=https://github.com/openstates/new-openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=master
+  git: repo=https://github.com/openstates/new-openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=develop
   become_user: "openstates"
   notify:
     - restart django-application
@@ -134,7 +134,7 @@
   command: /home/openstates/virt/bin/python manage.py migrate --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
 - name: create Site
-  command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='beta.openstates.org', name='beta.openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=openstates.settings chdir=/home/openstates/src/openstates.org
+  command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=openstates.settings chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
 # TODO: add run of shapefiles/download.py
 # - name: loadshapefiles
