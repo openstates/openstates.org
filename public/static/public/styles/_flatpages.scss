@@ -54,9 +54,19 @@ input#donor-name {
     font-weight: 600;
 }
 
+// homepage
 .blog-date {
     color: $color-black;
     font-weight: bold;
+}
+
+.notification-banner {
+    text-align: center;
+    border: $color-red 2px solid;
+    border-radius: 3px;
+    margin: 1em;
+    padding: 1em;
+    font-weight: 600;
 }
 
 
