@@ -1,0 +1,122 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}{{ vote.organization }} vote on {{ vote.bill }} - Open States {% endblock %}
+{% block og_title %}{{ vote.organization }} vote on {{ vote.bill }} - Open States {% endblock %}
+{% block description %}View the {{ state|state_name }} {{ vote.organization }} vote history on {{ vote.bill }}.{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="overview">
+        <div class="overview__header">
+            <div style="width: 100%;">
+                <div class="flex-container align-justify">
+                    <h3 class="overview__heading">Vote on {{ vote.bill.identifier }} - {{ vote.motion_text }}</h3>
+                    <span style="height: min-content;" class="label
+                        {% if vote.result == 'pass' %}
+                            label--green
+                        {% elif vote.result == 'fail' %}
+                            label--red
+                        {% endif %}
+                    ">
+                        {{ vote.result|title }}
+                    </span>
+                </div>
+                <ul class="no-bullet">
+                    <li>
+                        <strong>Bill:</strong> 
+                        <a href="{% canonical_url vote.bill %}">{{ vote.bill.identifier }}</a>
+                    </li>
+                    <li>
+                        <strong>Motion Text:</strong> {{ vote.motion_text }}
+                    </li>
+                    <li>
+                        <strong>Legislative Session:</strong> {{ vote.legislative_session }}
+                    </li>
+                    <li>
+                        <strong>Date:</strong> {{ vote.start_date|fdate:"%b %d, %Y" }}
+                    </li>
+                    <li>
+                        <strong>Outcome:</strong> {{ vote.result|title }}
+                    </li>
+                </ul>
+        </div>
+        </div>
+        <div class="overview__section overview__section--parent">
+            <div class="overview__subsection">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vote Totals</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vc in vote_counts %}
+                            <tr>
+                                <th>{{ vc.option|title }}</th>
+                                <td>{{ vc.value }}</td>
+                                <td class="bar-column"><div class="horizontal-bar" style="width: {{ vc.percent }}%"></div></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="overview__subsection">
+            {% if party_votes %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Breakdown by Party</th>
+                            <th>Yes</th>
+                            <th>No</th>
+                            <th>Other</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for party, counts in party_votes %}
+                            <tr>
+                                <td style="background-color: {{ party|party_color }}">{{ party }}</td>
+                                <td>{{ counts.yes }}</td>
+                                <td>{{ counts.no }}</td>
+                                <td>{{ counts.other }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="heading--medium">Roll Call</h2>
+    <hr>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Party</th>
+                <th>Vote</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pv in person_votes %}
+            <tr>
+                {% if pv.voter %}
+                    <td><a href="{% canonical_url pv.voter %}">{{ pv.voter.name }}</a></td>
+                    <td style="background-color: {{ pv.party|party_color }}">{{ pv.party }}</td>
+                {% else %}
+                    <td>{{ pv.voter_name }}</td>
+                    <td></td>
+                {% endif %}
+                <td>{{ pv.option|title }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% sources state vote.sources.all %}
+{% endblock %}

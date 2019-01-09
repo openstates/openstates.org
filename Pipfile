@@ -19,8 +19,17 @@ raven = "*"
 represent-boundaries = "*"
 name-tools = "*"
 django-simplekeys = "*"
+"pybase62" = "*"
+pip = "==18.0"
+python-dateutil = "*"
+ipython = "*"
+stripe = "*"
+feedparser = "*"
+"boto3" = "*"
+whitenoise = {version = "*", extras = ["brotli"]}
 
 [dev-packages]
+ipython = "*"
 "flake8" = "*"
 pytest = "*"
 pytest-django = "*"

@@ -1,4 +1,25 @@
-<div>
-	<span>TO-DO: PERSON OR ORGANIZATION PERFORMING ACTION</span>
-	<span>{{ action.description }}</span>
+<div class="card">
+    <div>
+        <h3 class="heading--xsmall">
+            {{ action.organization }}
+        </h3>
+
+        <p>{{ action.description }}</p>
+
+        {% if action.related_entities.count %}
+        <ul class="card__detail-group">
+            {% for classification in action.classification %}
+            <li class="card__detail type--xsmall">
+                {{ classification|title }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if action.related_entities.count %}
+            {% for re in action.related_entities.all %}
+                <a class="label" link="#">{{ re.entity_name }}</a>
+            {% endfor %}
+        {% endif %}
+    </div>
 </div>

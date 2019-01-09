@@ -1,72 +1,133 @@
-from django.shortcuts import get_object_or_404, render
-from opencivicdata.core.models import Person
+from django.shortcuts import get_object_or_404, render, redirect
+from django.http import JsonResponse
+from graphapi.schema import schema
+from utils.common import decode_uuid, jid_to_abbr, pretty_url
+from utils.orgs import get_chambers_from_abbr
+from ..models import PersonProxy, Bill
 
-from ..utils import (
-    get_chambers_from_state_abbr,
-    get_legislative_post
-)
+
+def _people_from_lat_lon(lat, lon):
+    PERSON_GEO_QUERY = """{
+      people(latitude: %s, longitude: %s, first: 10) {
+        edges {
+          node {
+            id
+            image
+            name
+            currentMemberships(classification: ["upper", "lower", "legislature", "party"]) {
+              post {
+                label
+                division { id }
+              }
+              organization {
+                classification
+                name
+              }
+            }
+          }
+        }
+      }
+    }"""
+    resp = schema.execute(PERSON_GEO_QUERY % (lat, lon))
+
+    nodes = [node["node"] for node in resp.data["people"]["edges"]]
+    people = []
+    for node in nodes:
+        person = {
+            "name": node["name"],
+            "id": node["id"],
+            "image": node["image"],
+            "pretty_url": pretty_url(node),
+        }
+        for m in node["currentMemberships"]:
+            if m["organization"]["classification"] == "party":
+                person["party"] = m["organization"]["name"]
+            else:
+                person["chamber"] = m["organization"]["classification"]
+                person["district"] = m["post"]["label"]
+                person["division_id"] = m["post"]["division"]["id"]
+        people.append(person)
+
+    return people
+
+
+def find_your_legislator(request):
+    lat = request.GET.get("lat")
+    lon = request.GET.get("lon")
+
+    if lat and lon:
+        # got a passed lat/lon. Let's build off it.
+        people = _people_from_lat_lon(lat, lon)
+        return JsonResponse({"legislators": people})
+
+    return render(request, "public/views/find_your_legislator.html", {})
 
 
 def legislators(request, state):
-    chambers = get_chambers_from_state_abbr(state)
+    chambers = get_chambers_from_abbr(state)
 
     legislators = [
-        {
-            'headshot_url': '',
-            'id': p.id,
-            'name': p.name,
-            'party': p.memberships.filter(
-                organization__classification='party').last().organization.name,
-            'district': get_legislative_post(p).label,
-            'chamber': get_legislative_post(p).organization.classification
-        }
-        for p
-        in Person.objects.filter(memberships__organization__in=chambers)
+        p.as_dict() for p in PersonProxy.get_current_legislators_with_roles(chambers)
     ]
+
+    chambers = {c.classification: c.name for c in chambers}
 
     return render(
         request,
-        'public/views/legislators.html',
+        "public/views/legislators.html",
         {
-            'state': state,
-            'legislators': legislators
-        }
+            "state": state,
+            "chambers": chambers,
+            "legislators": legislators,
+            "state_nav": "legislators",
+        },
     )
 
 
-def legislator(request, state, legislator_id):
+def person(request, person_id):
     SPONSORED_BILLS_TO_SHOW = 4
     RECENT_VOTES_TO_SHOW = 3
 
-    person = get_object_or_404(Person, pk=legislator_id)
+    ocd_person_id = decode_uuid(person_id)
+    person = get_object_or_404(
+        PersonProxy.objects.prefetch_related("memberships__organization"),
+        pk=ocd_person_id,
+    )
 
-    # TO DO
-    person.headshot_url = ''
+    # to display district in front of district name, or not?
+    district_maybe = ""
 
-    person.party = person.memberships.get(organization__classification='party').organization.name
-    person.legislative_post = get_legislative_post(person)
-    person.committee_memberships = person.memberships.filter(
-        organization__classification='committee').all()
+    # canonicalize the URL
+    canonical_url = person.pretty_url()
+    if request.path != canonical_url:
+        return redirect(canonical_url, permanent=True)
 
-    # These contact information values may not exist, so allow database fetch to find nothing
-    email = getattr(person.contact_details.filter(type='email').first(), 'value', None)
-    capitol_address = getattr(person.contact_details.filter(note='Capitol Office').first(),
-                              'value', None)
-    capitol_phone = getattr(person.contact_details.filter(note='Capitol Office Phone').first(),
-                            'value', None)
-    district_address = getattr(person.contact_details.filter(note='District Office').first(),
-                               'value', None)
-    district_phone = getattr(person.contact_details.filter(note='District Office Phone').first(),
-                             'value', None)
+    state = person.current_role["state"]
+    if not state:
+        #  this breaks if they held office in two states, but we don't really worry about that
+        for m in person.memberships.all():
+            if m.organization.classification in ("upper", "lower", "legislature"):
+                state = jid_to_abbr(m.organization.jurisdiction_id)
+        retired = True
+    else:
+        retired = False
+        # does it start with a number?
+        if str(person.current_role["district"])[0] in "0123456789":
+            district_maybe = "District"
+    person.all_contact_details = person.contact_details.order_by("note")
 
-    person.sponsored_bills = [
-        sponsorship.bill for sponsorship in
-        person.billsponsorship_set.all().order_by(
-            'bill__created_at', 'bill_id'
-        )[:SPONSORED_BILLS_TO_SHOW]
+    person.sponsored_bills = list(
+        Bill.objects.all()
+        .select_related(
+            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+        )
+        .filter(sponsorships__person=person)
+        .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
+    )
+
+    votes = person.votes.all().select_related("vote_event", "vote_event__bill")[
+        :RECENT_VOTES_TO_SHOW
     ]
-
-    votes = person.votes.all()[:RECENT_VOTES_TO_SHOW]
     person.vote_events = []
     for vote in votes:
         vote_event = vote.vote_event
@@ -75,16 +136,12 @@ def legislator(request, state, legislator_id):
 
     return render(
         request,
-        'public/views/legislator.html',
+        "public/views/legislator.html",
         {
-            'state': state,
-
-            'person': person,
-
-            'email': email,
-            'capitol_address': capitol_address,
-            'capitol_phone': capitol_phone,
-            'district_address': district_address,
-            'district_phone': district_phone
-        }
+            "state": state,
+            "person": person,
+            "state_nav": "legislators",
+            "retired": retired,
+            "district_maybe": district_maybe,
+        },
     )

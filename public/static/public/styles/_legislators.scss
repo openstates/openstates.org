@@ -1,0 +1,69 @@
+// legislators list
+.legislators-container {
+    display: grid;
+    grid-template-columns: auto 20em;
+    grid-column-gap: 3em;
+
+    @include breakpoint(small down) {
+        grid-template-columns: auto;
+    }
+}
+#fyl-aside {
+    grid-row: 1;
+    grid-column: 2;
+
+    @include breakpoint(small down) {
+        grid-column: 1;
+    }
+}
+#fyl-input {
+    width: 90%;
+    margin-bottom: 1rem;
+}
+#legislator-list {
+    grid-row: 1;
+    grid-column: 1;
+
+    @include breakpoint(small down) {
+        grid-row: 2;
+    }
+}
+
+// find your legislator
+.find-your-legislator {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 3em;
+
+    @include breakpoint(small down) {
+        grid-template-columns: auto;
+    }
+}
+.find-your-legislator label {
+    font-size: 120%;
+    display: inline-block;
+    margin-right: 1em;
+
+    @include breakpoint(small down) {
+        display: none;
+    }
+}
+.find-your-legislator input {
+    font-size: 120%;
+}
+.find-your-legislator span {
+    font-size: 120%;
+    margin: 1em;
+}
+
+
+// legislator detail
+.bill-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 3em;
+
+    @include breakpoint(small down) {
+        grid-template-columns: 1fr;
+    }
+}

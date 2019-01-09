@@ -1,0 +1,111 @@
+{% extends "public/components/base.html" %}
+
+{% block title %}About Open States{% endblock %}
+{% block description %}Open States strives to improve civic engagement at the state level by providing data and tools regarding state legislatures.{% endblock %}
+
+{% block content %}
+<div class="flatpage">
+<h1 class="heading--large">About Open States</h1>
+
+<section>
+<p>Open States strives to improve civic engagement at the state level by providing data and tools regarding state legislatures.  We aim to serve members of the public, activist groups, journalists, and researchers with better data on what is happening in their state capital, and to provide tools to reduce barriers to participation and increase engagement.
+</p>
+
+<p>
+Open States aggregates legislative information from all 50 states, Washington, D.C., and Puerto Rico.  This information is then standardized, cleaned, and published to the public via OpenStates.org, a powerful <a href="https://docs.openstates.org/en/latest/api/v2/index.html">API</a>, and bulk downloads.  OpenStates.org enables individuals to <a href="/find_your_legislator/">find out who represents them</a>, look up information on an important bill that’s been in the news, discover how their representatives are voting, or just stay current with what is happening in their capital.  Additionally, our API and bulk downloads see millions of hits every month from advocacy organizations, journalists, researchers, and many others.
+</p>
+
+<p>
+    Bill, vote, legislator, and committee data is collected from official sources, linked at the bottom of relevant pages.  In general bill &amp; vote data is collected nightly <a href="https://github.com/openstates/openstates/">via our scrapers</a> while legislator data is <a href="https://github.com/openstates/people/">curated by our team &amp; volunteers like you</a>.
+</p>
+</section>
+
+<div class="about-openstates">
+    
+<section>
+<h2 class="heading--medium">The Team</h2>
+
+<p>
+    Since November 2016 Open States has been an independently run project, mostly run by volunteers in their free time.  We work hard to keep Open States available free of charge.
+
+</p>
+
+<p>
+    As of 2019, the core team consists of:
+    <ul>
+        <li><a href="https://jamesturk.net">James Turk</a></li>
+        <li>Miles Watkins</li>
+        <li>Tim Showers</li>
+        <li>Josh Carp</li>
+        <li><a href="https://twitter.com/heyitsolivia">Olivia Cheng</a></li>
+    </ul>
+
+<p>But that's by no means everyone that makes the project run. A special thanks to all of our <a href="https://github.com/openstates/openstates/graphs/contributors">contributors</a> and the authors and maintainers of all of the libraries that we depend upon.</p>
+
+<p>From 2009-2016, Open States was a project of the <a href="https://sunlightfoundation.com">Sunlight Foundation</a>.  For more details see <a href="https://blog.openstates.org/post/adopting-open-states/">our announcement</a> and <a href="https://sunlightfoundation.com/2016/11/01/sunlight-labs-update-nonprofits-step-up-to-preserve-tools-for-transparency/">Sunlight's announcement</a>.
+</section>
+
+<section>
+    <h2 class="heading--medium">Funding</h2>
+    <p>
+        Open States does not currently have a dedicated source of funding.  We currently rely on donations from organizations and individuals using our services.
+    </p>
+
+    <a class="button" href="/donate/">Donate to Open States Today</a>
+
+    <p>Open States is under the <a href="http://openmediafoundation.org/open-states">Open Media Foundation</a> umbrella via their <a href="https://en.wikipedia.org/wiki/Fiscal_sponsorship">fiscal sponsorship</a> program.  As such, contributions are tax-deductible.</p>
+
+    <p>If you'd like to discuss funding specific work or make a larger donation please get in touch at <a href="mailto:funding@openstates.org">funding@openstates.org</a>.</p>
+
+    <h3 class="heading--small">Other Contributions &amp; Services</h3>
+    <ul>
+        <li>2018 - <a href="https://summerofcode.withgoogle.com/archive/2018/projects/">Google Summer of Code 2018</a></li>
+        <li>2017 - <a href="https://summerofcode.withgoogle.com/archive/2017/projects/">Google Summer of Code 2017</a></li>
+        <li>2017 - 1 Year, WeWork Office Space via <a href="https://creatorawards.wework.com/">Creator Awards</a></li>
+        <li>2016 - $5,000 for Amazon Web Services - <a href="https://aws.amazon.com/government-education/nonprofits/">Cloud Credits for Nonprofits program</a></li>
+        <li><a href="https://newrelic.com/nonprofit">NewRelic nonprofit plan</a></li>
+        <li><a href="https://github.com/nonprofit">GitHub nonprofit plan</a></li>
+    </ul>
+    
+    <h3 class="heading--small">Pre-2016</h3>
+    <p>Prior to November 2016 Open States was a project of the <a href="https://sunlightfoundation.com">Sunlight Foundation</a> from 2009-2016.  Thanks to Sunlight Foundation and all of the <a href="https://sunlightfoundation.com/about/funding/">generous donors</a> that supported Open States.  A special thanks to <a href="http://www.ritaallen.org/">Rita Allen Foundation</a>, <a href="https://mnhs.org">Minnesota Historical Society</a> and <a href="https://www.mccormickfoundation.org/">Robert R. McCormick Foundation</a>, which all supported Open States directly.</p>
+</section>
+
+<section>
+    <a name="contact"></a>
+    <h2 class="heading--medium">Contact Us</h2>
+    <p>
+        If you're looking to discuss Open States, ask general questions, or otherwise get involved, check out our <a href="https://discourse.openstates.org">Community Forum</a>.
+    </p>
+
+    <p>If you notice any data irregularities, issue reports are very useful:
+        <ul>
+            <li><a href="https://github.com/openstates/openstates/issues">Issues with Bills &amp; Votes</a></li>
+            <li><a href="https://github.com/openstates/people/issues">Issues with People &amp; Committees</a></li>
+            <li><a href="https://github.com/openstates/new-openstates.org/issues">Site Functionality</a></li>
+        </ul>
+    </p>
+
+    <p>If you want to get in contact for another reason, or have a security concern that you don't feel comfortable posting about publicly you can <a href="mailto:contact@openstates.org">email us</a> as well.</p>
+</section>
+
+<section>
+    <h2 class="heading--medium">Examples of Usage</h2>
+
+    <p>Notable uses of Open States data include:</p>
+    <ul>
+        <li><a href="https://stateimpact.npr.org/teamblog/">NPR's StateImpact</a></li>
+        <li><a href="https://newsapps.wordpress.com/2011/12/19/analyzing-illinois-pension-codes-using-the-open-states-project/">Chicago Tribune</a></li>
+        <li><a href="https://www.minnpost.com/data/2013/04/minnesota-2013-legislative-bill-tracker/#categorie">MinnPost</a></li>
+        <li><a href="https://sunlightfoundation.com/2014/06/11/how-partisan-are-your-states-legislators/">Legislative Partisanship Analysis by former Sunlighter Thom Neale</a></li>
+        <li><a href="https://dssg.uchicago.edu/lid/">UChicago's Data Science for Social Good</a></li>
+    </ul>
+
+    <p>
+        If you have a use of Open States you'd like us to know about, <a href="mailto:contact@openstates.org">contact us</a>.
+    </p>
+</section>
+</div>
+
+</div>
+{% endblock %}

@@ -2,86 +2,200 @@
 {% load custom_tags %}
 {% load static %}
 
+{% block title %}{{ bill.identifier }} - {{ state|state_name }} {{ bill.from_organization.name }} ({{bill.legislative_session.identifier }}) - Open States{% endblock %}
+{% block og_title %}{{ bill.identifier }} - {{ state|state_name }} {{ bill.from_organization.name }} ({{bill.legislative_session.identifier }}) - Open States{% endblock %}
+{% block description %}Details on {{ state|state_name }} {{ bill.identifier}} ({{ bill.legislative_session }}) - {{ bill.title|titlecase_caps }}{% endblock %}
+
 {% block content %}
-	<section>
-		<h1>{{ bill.identifier }}</h1>
-		<span>{{ bill.from_organization.name }} {{ bill.classification.0|title }} · {{ bill.legislative_session.name }}</span>
+<section class="section">
+    <div class="overview">
+        
+        <div class="overview__header">
+            <div style="width: 100%;">
+                <div class="align-justify meter-container">
+                    <div>
+                        <h1 class="overview__heading">{{ bill.identifier }}</h1>
+                        <ul class="card__detail-group">
+                            <li class="card__detail type--xsmall">{% if not unicameral %}{{state|state_name}}{% endif %} {{ bill.from_organization.name }} {{ bill.classification.0|title }}</li>
+                            <li class="card__detail type--xsmall">{{ bill.legislative_session.name }}</li>
+                        </ul>
+                    </div>
+                    <!-- TODO: Make meter responsive -->
+                    <ul class="meter align-self-middle">
+                    {% for stage in stages %}
+                        {% if not stage.date and not stage.stage == 'Introduced' %}
+                            <li class="meter-bar meter-bar--inactive">
+                                <span class="meter-bar__title">{{ stage.stage }}</span>
+                            </li>
+                        {% else %}
+                            <li class="meter-bar meter-bar--green">
+                                <span class="meter-bar__title">
+                                    {% if stage.stage == 'Introduced' %}
+                                        Introduced {% if not unicameral %}in {{ bill.from_organization.name }}{% endif %}
+                                    {% else %}
+                                        {{ stage.text }}
+                                    {% endif %}
+                                </span>
+                                {% if stage.date %}
+                                    <span class="meter-bar__detail">{{ stage.date|fdate:"%b %d, %Y" }}</span>
+                                {% endif %}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div class="grid-x grid-margin-x align-justify">
+                    <div class="cell small-12 medium-9">
+                        <h3 class="heading--medium">{{ bill.title|titlecase_caps }}</h3>
+                    </div>
+                    <div class="cell shrink">
+                        <!-- TODO: Add icon indicating external link -->
+                        <a class="button" href="{{ read_link }}">View Latest Bill Text</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="overview__section">
+            {% if bill.subject %}
+            <div class="mb2">
+                <h3 class="heading--xsmall">Bill Subjects</h3>
+                {% for subject in bill.subject %}
+                    <!-- TODO: Link to bill subjects -->
+                    <a class="label" link="#">{{ subject|title }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-		<div>
-			TO-DO: BILL STATUS PROGRESS BAR
-		</div>
 
-		<span>{{ bill.title }}</span>
-		<a class="button" href="{{ bill.versions.last.links.first.url }}">View Latest Bill Text</a>
+            <h3 class="heading--xsmall">Bill Sponsors ({{ sponsorships|length }})</h3>
+            
+            <div class="grid-container full">
+                <div class="grid-x grid-margin-x medium-up-2 large-up-3">
+                    {% for sponsor in sponsorships|dictsortreversed:"primary" %}
+                    <div class="cell">
+                        <div class="card card--profile">
+                            {% if sponsor.person %}
 
-		{% if bill.subject %}
-			<h2>Bill Subjects</h2>
-			{% for subject in bill.subject %}
-				<a class="button">{{ subject }}</a>
-			{% endfor %}
-		{% endif %}
+                                <div class="mr1" data-hook="legislator-image" data-image="{{ sponsor.person.image }}" data-person-id="{{ sponsor.person.id }}"> </div>
+                                    <div>
+                                        <h3 class="card__heading heading--small">{{ sponsor.person.name }}</h3>
+                                        <ul class="card__detail-group">
+                                            <li class="card__detail type--xsmall">{{ sponsor.person.current_role.party }}</li>
+                                            {% if not unicameral %}
+                                            <li class="card__detail type--xsmall">{{ sponsor.person.current_role.chamber }}</li>
+                                            {% endif %}
+                                            <li class="card__detail type--xsmall">{{ sponsor.person.current_role.district }}</li>
+                                        </ul>
+                                        <div class="heading--xsmall">{{ sponsor.classification|title }}</div>
+                                    </div>
+                            {% else %}
+                                <div class="thumbnail thumbnail--placeholder thumbnail--small mr1"></div>
+                                <div>
+                                    <h3 class="card__heading heading--small">{{ sponsor.name }}</h3>
+                                    <div class="heading--xsmall">{{ sponsor.classification|title }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <!-- TODO: Paginate/hide lengthier lists of sponsors -->
+                </div>
+            </div>
 
-		<h2>Bill Sponsors</h2>
-		{% for sponsor in bill.sponsorships.all|dictsortreversed:"primary" %}
-			<div>
-				<!-- Can offer much more information if the Person object is properly linked -->
-				{% if sponsor.person %}
-					{% if sponsor.person.headshot_url %}
-						<img src="{{ sponsor.person.headshot_url }}" alt="headshot for {{ sponsor.person.name }}" />
-					{% else %}
-						<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
-					{% endif %}
+        </div>
+    </div>
+</section>
 
-					<span>{{ sponsor.person.name }}</span>
-					<span>TO-DO (PARTY) DISTRICT</span>
+<section>
+    <h2 class="heading--medium">Recent Votes</h2>
+    <hr>
+    <div class="timeline">
+    {% regroup votes by start_date as votes_by_date %}
+    {% for start_date in votes_by_date reversed %}
+        <div class="timeline-item">
+            <div class="timeline-date">
+                <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
+            </div>
+            <div class="timeline-activity__group">
+                {% for vote_event in start_date.list %}
+                <div class="timeline-activity">
+                    {% vote_card vote_event %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+            <p>No votes to display</p>
+    {% endfor %}
+    </div>
+</section>
 
-					<span>{{ sponsor.classification|title }}</span>
-				{% else %}
-					<img src="{% static "public/img/placeholder-headshot.png" %}" alt="placeholder headshot" />
+<section>    
+    <h2 class="heading--medium">Actions</h2>
+    <hr>
+    <div class="timeline">
+        {% regroup actions by date as actions_by_date %}
+        {% for date in actions_by_date reversed %}
+            <div class="timeline-item">
+                <div class="timeline-date">
+                    <h3 class="heading--xsmall">{{ date.grouper|fdate:"%b %d, %Y" }}</h3>
+                </div>
+                <div class="timeline-activity__group">
+                    {% for action in date.list %}
+                    <div class="timeline-activity">
+                        {% action_card action %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No actions to display</p>
+        {% endfor %}
+    </div>
+</section>
 
-					<span>{{ sponsor.name }}</span>
+<section>
+    <h2 class="heading--medium">Bill Text</h2>
+     <table class="hover">
+        <thead>
+            <tr>
+                <th>Bill Text Versions</th>
+                <th>Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for version in versions reversed %}
+                {% document_card version %}
+            {% empty %}
+                <tr>
+                    <td colspan="100%">No related documents.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
 
-					<span>{{ sponsor.classification|title }}</span>
-				{% endif %}
-			</div>
-		{% endfor %}
-	</section>
+<section>
+    <h2 class="heading--medium">Related Documents</h2>
+    <table class="hover">
+        <thead>
+            <tr>
+                <th>Document</th>
+                <th>Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents reversed %}
+                {% document_card document %}
+            {% empty %}
+                <tr>
+                    <td colspan="100%">No related documents.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
 
-	<section>
-		<h1>Recent Votes</h1>
-		{% regroup bill.votes.all by start_date as votes_by_date %}
-		{% for start_date in votes_by_date reversed %}
-			<span>{{ start_date.grouper }}</span>
-			{% for vote_event in start_date.list %}
-				{% vote_card vote_event %}
-			{% endfor %}
-		{% endfor %}
-	</section>
-
-	<section>
-		<h1>Actions</h1>
-		{% regroup bill.actions.all by date as actions_by_date %}
-		{% for date in actions_by_date reversed %}
-			<span>{{ date.grouper }}</span>
-			{% for action in date.list %}
-				{% action_card action %}
-			{% endfor %}
-		{% endfor %}
-	</section>
-
-	<section>
-		<h1>Bill Text</h1>
-		<table>
-			<tbody>
-				{% for version in bill.versions.all reversed %}
-					<tr>
-						<td><a href="{{ version.links.first.url }}">{{ version.note }}</a></td>
-						<td>{{ version.links.first.media_type }}</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</section>
-
-	{% sources state bill.sources.all %}
+{% sources state bill.sources.all %}
 {% endblock %}

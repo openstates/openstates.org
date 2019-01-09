@@ -1,0 +1,16 @@
+{% extends "public/components/base.html" %}
+
+{% block title %}Open States API Key Confirmation{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">API Key Confirmation</h1>
+<div>
+<p> Click submit to confirm your key: </p>
+
+<form action="." method="POST">
+  {{ form.as_ul }}
+  <input type="submit" class="button">
+  {% csrf_token %}
+</form>
+</div>
+{% endblock %}

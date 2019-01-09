@@ -1,0 +1,63 @@
+// Timeline Component
+
+.timeline {}
+
+.timeline-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2px;
+    margin-left: 1rem;
+
+    @include breakpoint(large) {
+        flex-direction: row;
+    }
+}
+
+.timeline-date {
+    padding: 1rem 2rem;
+    padding-bottom: 0;
+    position: relative;
+    border-left: 1px dashed lighten($color-primary, 40%);
+    position: relative;
+    margin-bottom: 2px;
+
+    @include breakpoint(large) {
+        text-align: right;
+        width: 200px;
+        border-left: 0;
+        padding-bottom: 1rem;
+    } 
+
+    &:after {
+        content: '';
+        display: block;
+        width: 14px;
+        height: 14px;
+        background-color: $color-primary;
+        position: absolute;
+        top: 1.15rem;
+        left: -7px;
+        border-radius: 50%;
+        border: 3px solid $color-white;
+        
+        @include breakpoint(large) {
+            left: auto;
+            right: -7px;
+        }
+    }
+}
+
+.timeline-activity__group {
+    flex: 1;
+}
+
+.timeline-activity {
+    padding: 1rem 2rem;
+    padding-top: 0;
+    flex: 1;
+    border-left: 1px dashed lighten($color-primary, 40%);
+
+    @include breakpoint(large) {
+        padding-top: 1rem;
+    }
+}

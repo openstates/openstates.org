@@ -1,89 +1,104 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
 
+{% block title %}{{ legislature.name }} - Open States{% endblock %}
+{% block og_title %}{{ legislature.name }} - Open States{% endblock %}
+{% block description %}Follow along with what is happening in the {{ legislature.name }} with Open States.{% endblock %}
+
 {% block content %}
-	<h1>{{ legislature.name }}</h1>
+    <script> window.chambers = {{ chambers_json|jsonify }}; </script>
 
-	<section>
-		<div>
-			{% for chamber in chambers %}
-				<div>
-					<a href="
-						{% url 'legislators' state %}
-							{% if chambers|length > 1 %}
-								?chamber={{ chamber.classification }}
-							{% endif %}
-					">
-						<span>{{ chamber.seats }}</span>
-						<span>
-							{% if chambers|length > 1 %}{{ chamber.name }} {% endif %}Seats
-						</span>
-					</a>
-					<ul>
-						{% for party, count in chamber.parties.items %}
-							<li>{{ count }} {{ party }}</li>
-						{% endfor %}
-					</ul>
-				</div>
-				{% endfor %}
-		</div>
+    <h1 class="heading--large">{{ legislature.name }}</h1>
 
-		<div>
-			{% for chamber in chambers %}
-				<div>
-					<span>{{ chamber.committee_count }}</span>
-					<span>
-						{% if chambers|length > 1 %}{{ chamber.name }} {% endif %}Committees
-					</span>
-				</div>
-			{% endfor %}
-			{% if legislature.committee_count and chambers|length > 1 %}
-				<div>
-					<span>{{ legislature.committee_count }}</span>
-					<span>Joint Committees</span>
-				</div>
-			{% endif %}
-		</div>
-	</section>
+    <section class="state-overview-people">
+        <div style="width:100%; height: 300px;" class="state-map" data-hook="state-map" data-state="{{ state }}">
+        </div>
+        <div class="state-overview-chambers">
+            {% for chamber in chambers %}
+                <div class="state-overview-chamber">
+                    <a  href="{% url 'legislators' state %}{% if chambers|length > 1 %}?chamber={{ chamber.classification }}{% endif %}">
+                    <span class="heading--large">{{ chamber.seats }}</span>
+                    </a>
+                    <span class="heading--xsmall state-overview-title"> {{ chamber.title }}s </span>
+                    <ul class="state-overview-party-breakdown mt1">
+                        {% for party, count in chamber.parties.items %}
+                            <li>{{ count }} {{ party|party_pluralize:count }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+        </div>
 
-	<section>
-		<h2>Bills</h2>
+        <div class="state-overview-chambers">
+            {% for chamber in chambers %}
+                <div class="state-overview-chamber">
+                    <a href="{% url 'committees' state %}{% if chambers|length > 1 %}?chamber={{ chamber.classification }}{% endif %}">
+                        <span class="heading--large">{{ chamber.committee_count }}</span>
+                    </a>
+                    <span class="heading--xsmall state-overview-title">
+                        {% if chambers|length > 1 %}{{ chamber.name }} {% endif %}Committees
+                    </span>
+                </div>
+            {% endfor %}
+            {% comment %}
+            {% if legislature.committee_count and chambers|length > 1 %}
+                <div>
+                    <span>{{ legislature.committee_count }}</span>
+                    <span>Joint Committees</span>
+                </div>
+            {% endif %}
+            {% endcomment %}
+        </div>
 
-		<div>
-			<h3>Recently Introduced</h3>
-			{% for bill in recently_introduced_bills %}
-				{% bill_card state bill %}
-			{% endfor %}
-			<a class="button" href="{% url 'bills' state %}">View more bills</a>
-		</div>
+    </section>
 
-		<div>
-			<h3>Recently Passed</h3>
-			{% for bill in recently_passed_bills %}
-				{% bill_card state bill %}
-			{% endfor %}
-			<a class="button" href="{% url 'bills' state %}">View more bills</a>
-		</div>
-	</section>
+    <section class="section">
+        <h2 class="heading--large">Bills</h2>
+        <div>
+            <h3 class="heading--medium">Recently Introduced</h3>
+            <div class="grid-container full">
+                <div class="grid-x grid-margin-x medium-up-2">
+                {% for bill in recently_introduced_bills %}
+                    {% bill_card state bill %}
+                {% endfor %}
+                </div>
+            </div>
+            <a class="button" href="{% url 'bills' state %}">View more bills</a>
+        </div>
 
-	<section>
-		<h2>Available Sessions</h2>
+        {% if recently_passed_bills %}
+        <div>
+            <h3 class="heading--medium">Recently Passed</h3>
+            <div class="grid-container full">
+                <div class="grid-x grid-margin-x medium-up-2">
+                {% for bill in recently_passed_bills %}
+                    {% bill_card state bill %}
+                {% endfor %}
+                </div>
+            </div>
+            <a class="button" href="{% url 'bills' state %}">View more bills</a>
+        </div>
+        {% endif %}
+    </section>
 
-		<table>
-			<thead>
-				<th>Session</th>
-				<th>Bill Count</th>
-			</thead>
-			<tbody>
-				{% for session in legislature.jurisdiction.legislative_sessions.all %}
-					<tr>
-						<td>{{ session.name }}</td>
-						<td><a href="{% url 'bills' state %}">{{ session.bills.count }}</a></td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</section>
+    <section class="section">
+        <h2 class="heading--large">Available Sessions</h2>
 
-	{% sources state %}
+        <table class="hover">
+            <thead>
+                <th>Session</th>
+                <th>Bill Count</th>
+            </thead>
+            <tbody>
+                {% for session in all_sessions %}
+                    <tr>
+                        <td><a href="{% url 'bills' state %}?session={{ session.identifier }}">{{ session.name }}</a></td>
+                        <td><a href="{% url 'bills' state %}?session={{ session.identifier }}">{{ session.bill_count }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    {% sources state %}
 {% endblock %}

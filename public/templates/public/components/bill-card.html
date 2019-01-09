@@ -1,25 +1,40 @@
-<div>
-	<span>{{ bill.identifier }}</span>
-	<span>{{ bill.title }}</span>
+{% load custom_tags %}
 
-	{% if bill.introduced_date %}
-		<span>Introduced {{ bill.introduced_date }}</span>
-	{% elif bill.passed_date %}
-		<span>Passed {{ bill.passed_date }}</span>
-	{% endif %}
+<div class="cell"><div class="card" onclick="this.querySelector('a').click()"><div>
+    <h3 class="heading--small"><a href="{% canonical_url bill %}">
+        {{ bill.identifier }}
+        {% if bill.state %} ({{ bill.state|state_name }}) {% endif %}
+    </a></h3>
+    <p>{{ bill.title|titlecase_caps }}</p>
 
-	<span>
-		Sponsored by 
-		{% for sponsorship in bill.sponsorships.all %}
-			{% if sponsorship.primary %}
-				{% if sponsorship.person %}
-					<a href="{% url 'legislator' state sponsorship.person_id %}">{{ sponsorship.person }}</a>
-				{% elif sponsorship.organization %}
-					<a href="{% url 'committee' state sponsorship.organization_id %}">{{ sponsorship.organization }}</a>
-				{% else %}
-					{{ sponsorship.name }}
-				{% endif %}
-			{% endif %}
-		{% endfor %}
-	</span>
-</div>
+    <ul class="card__detail-group">
+    <li class="card__detail type--xsmall">
+        Introduced {{ bill.billstatus.first_action_date|fdate:"%b %d %Y" }}
+    </li>
+    {% if bill.billstatus.latest_action_date != bill.billstatus.first_action_date %}
+    <li class="card__detail type--xsmall">
+        {{ bill.billstatus.latest_action_description }} {{ bill.billstatus.latest_action_date|fdate:"%b %d %Y" }}
+    </li>
+    {% endif %}
+    {% if bill.first_sponsors %}
+    <li class="card__detail type--xsmall">Sponsored by
+        {% spaceless %}
+        {% for sponsorship in bill.first_sponsors %}
+            {% if sponsorship.person %}
+            <a href="{% canonical_url sponsorship.person %}">{{ sponsorship.person }}</a>{% if not forloop.last or bill.extra_sponsors %},{% endif %} 
+
+            {% elif sponsorship.organization %}
+            <a href="{% url 'committee' state sponsorship.organization_id %}">{{ sponsorship.organization }}</a>{% if not forloop.last or bill.extra_sponsors %},{% endif %}
+
+            {% else %}
+                {{ sponsorship.name|title }}{% if not forloop.last or bill.extra_sponsors %},{% endif %}
+            {% endif %}
+        {% endfor %}
+            {% if bill.extra_sponsors %}
+            and {{ bill.extra_sponsors}} more.
+            {% endif %}
+        {% endspaceless %}
+    </li>
+    {% endif %}
+    </ul>
+</div></div></div>

@@ -1,22 +1,39 @@
-<header>
-	<a href="{% url 'home' %}"><img alt="Open States logo" /></a>
-	<nav>
-		<select onchange="window.location.href = {% url 'home' %} + this.value">
-			{% if not state %}
-				<option value="">Select a state</option>
-			{% endif %}
-			{% for st in states %}
-				<option value="{{ st.abbr|lower }}" {% if st.abbr|lower == state %}selected{% endif %}>{{ st.name }}</option>
-			{% endfor %}
-		</select>
+{% load staticfiles %}
 
-		{% if state %}
-			<ul>
-				<li><a href="{% url 'state' state %}">Overview</a></li>
-				<li><a href="{% url 'legislators' state %}">Legislators</a></li>
-				<li><a href="{% url 'bills' state %}">Bills</a></li>
-				<li><a href="{% url 'committees' state %}">Committees</a></li>
-			</ul>
-		{% endif %}
-	</nav>
+<header class="header">
+    <div class="grid-container">
+        <a href="{% url 'home' %}">
+            <img class="header__logo" width="250" src="{% static 'public/images/openstates_logo.svg' %}" alt="OpenStates Logo">
+        </a>
+    </div>
+
+    {% if state_nav != "disabled" %}
+    <div class="navigation">
+        <div class="grid-container">
+            <div class="navigation__container">
+
+                <div class="navigation__section navigation__select-wrapper">
+                    <select class="navigation__select" onchange="window.location.href = '/' + this.value">
+                        {% if not state %}
+                            <option value="">Select a state</option>
+                        {% endif %}
+                        {% for st in states %}
+                            <option value="{{ st.abbr|lower }}" {% if st.abbr|lower == state %}selected{% endif %}>{{ st.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <ul class="navigation__section navigation__menu">
+                {% if state %}
+                    <li><a {% if state_nav == "overview" %} class="is-active" {% endif %} href="{% url 'state' state %}">Overview </a></li>
+                    <li><a {% if state_nav == "legislators" %} class="is-active" {% endif %} href="{% url 'legislators' state %}">Legislators</a></li>
+                    <li><a {% if state_nav == "bills" %} class="is-active" {% endif %} href="{% url 'bills' state %}">Bills</a></li>
+                    <li><a {% if state_nav == "committees" %} class="is-active" {% endif %} href="{% url 'committees' state %}">Committees</a></li>
+                {% endif %}
+                </ul>
+
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </header>

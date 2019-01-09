@@ -1,19 +1,36 @@
 import datetime
+import functools
 from django.http import JsonResponse
 from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
-from . import utils, static
+from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
+from utils.common import jid_to_abbr, abbr_to_jid
+from utils.people import current_role_filters
 
+
+def jsonp(view_func):
+    @functools.wraps(view_func)
+    def new_view(request, *args, **kwargs):
+        callback = request.GET.get('callback')
+        resp = view_func(request, *args, **kwargs)
+        print(callback)
+        if callback:
+            resp.content = bytes(callback, 'utf8') + b'(' + resp.content + b')'
+        return resp
+    return new_view
 
 # these are to mimic empty committee/event responses
 
+
+@jsonp
 def empty_list(request):
     return JsonResponse([], safe=False)
 
 
+@jsonp
 def item_404(request, id):
     return JsonResponse("Not Found", safe=False, status=404)
 
@@ -30,8 +47,8 @@ def jurisdictions_qs():
         )
 
 
-def bill_qs():
-    return Bill.objects.annotate(
+def bill_qs(include_votes):
+    qs = Bill.objects.annotate(
         last_action=Max('actions__date'),
         first_action=Min('actions__date')
     ).select_related(
@@ -40,10 +57,13 @@ def bill_qs():
     ).prefetch_related(
         'documents__links', 'versions__links', 'actions__organization',
         'abstracts', 'sources', 'sponsorships', 'other_titles',
-        'votes__counts', 'votes__votes', 'votes__sources',
-        'votes__legislative_session', 'votes__organization',
         'legacy_mapping',
     )
+    if include_votes:
+        qs = qs.prefetch_related('votes__counts', 'votes__votes', 'votes__sources',
+                                 'votes__votes__voter',
+                                 'votes__legislative_session', 'votes__organization')
+    return qs
 
 
 def person_qs():
@@ -53,39 +73,34 @@ def person_qs():
     )
 
 
+@jsonp
 def state_metadata(request, abbr):
-    jid = utils.abbr_to_jid(abbr)
+    jid = abbr_to_jid(abbr.lower())
     jurisdiction = jurisdictions_qs().get(pk=jid)
-    return JsonResponse(utils.state_metadata(abbr, jurisdiction))
+    return JsonResponse(v1_metadata(abbr.lower(), jurisdiction))
 
 
+@jsonp
 def all_metadata(request):
-    return JsonResponse(
-        [utils.state_metadata(utils.jid_to_abbr(j.id), j) for j in jurisdictions_qs()],
-        safe=False
-    )
+    return JsonResponse([v1_metadata(jid_to_abbr(j.id), j) for j in jurisdictions_qs()],
+                        safe=False)
 
 
+@jsonp
 def legislator_detail(request, id):
     person = get_object_or_404(person_qs(),
                                identifiers__scheme='legacy_openstates',
                                identifiers__identifier=id)
-    return JsonResponse(
-        utils.convert_legislator(person)
-    )
+    return JsonResponse(convert_legislator(person))
 
 
+@jsonp
 def legislator_list(request, geo=False):
     abbr = request.GET.get('state')
     chamber = request.GET.get('chamber')
     district = request.GET.get('district')
 
-    today = datetime.date.today().isoformat()
-    filter_params = [Q(memberships__start_date='') |
-                     Q(memberships__start_date__lte=today),
-                     Q(memberships__end_date='') |
-                     Q(memberships__end_date__gte=today),
-                     ]
+    filter_params = current_role_filters()
 
     if geo:
         latitude = request.GET.get('lat')
@@ -95,6 +110,7 @@ def legislator_list(request, geo=False):
             return JsonResponse("Bad Request: must include lat & long",
                                 status=400, safe=False)
 
+        today = datetime.date.today().isoformat()
         filter_params += [
             Q(memberships__post__division__geometries__boundary__shape__contains=(
                 Point(float(longitude), float(latitude))
@@ -104,7 +120,7 @@ def legislator_list(request, geo=False):
         ]
 
     if abbr:
-        jid = utils.abbr_to_jid(abbr)
+        jid = abbr_to_jid(abbr)
         filter_params.append(Q(memberships__organization__jurisdiction_id=jid))
     if chamber:
         filter_params.append(Q(memberships__organization__classification=chamber))
@@ -113,14 +129,12 @@ def legislator_list(request, geo=False):
 
     people = person_qs().filter(*filter_params).distinct()
 
-    return JsonResponse(
-        [utils.convert_legislator(l) for l in people],
-        safe=False
-    )
+    return JsonResponse([convert_legislator(l) for l in people], safe=False)
 
 
+@jsonp
 def district_list(request, abbr, chamber=None):
-    jid = utils.abbr_to_jid(abbr)
+    jid = abbr_to_jid(abbr)
     if chamber is None:
         posts = Post.objects.filter(
             organization__jurisdiction_id=jid,
@@ -132,18 +146,16 @@ def district_list(request, abbr, chamber=None):
 
     posts = posts.select_related('organization')
 
-    return JsonResponse(
-        [utils.convert_post(p) for p in posts],
-        safe=False
-    )
+    return JsonResponse([convert_post(p) for p in posts], safe=False)
 
 
+@jsonp
 def bill_detail(request,
                 abbr=None, session=None, bill_id=None, chamber=None,
                 billy_bill_id=None,
                 ):
     if abbr:
-        jid = utils.abbr_to_jid(abbr)
+        jid = abbr_to_jid(abbr)
         params = {'legislative_session__jurisdiction_id': jid,
                   'legislative_session__identifier': session,
                   'identifier': bill_id}
@@ -155,11 +167,12 @@ def bill_detail(request,
             chamber = 'legislature'
         params['from_organization__classification'] = chamber
 
-    bills = bill_qs()
+    bills = bill_qs(include_votes=True)
     bill = get_object_or_404(bills, **params)
-    return JsonResponse(utils.convert_bill(bill))
+    return JsonResponse(convert_bill(bill, include_votes=True))
 
 
+@jsonp
 def bill_list(request):
     state = request.GET.get('state')
     chamber = request.GET.get('chamber')
@@ -169,9 +182,11 @@ def bill_list(request):
     updated_since = request.GET.get('updated_since')
     sort = request.GET.get('sort', 'last')
 
-    bills = bill_qs()
+    too_big = True
+    bills = bill_qs(include_votes=False)
     if state:
-        jid = utils.abbr_to_jid(state)
+        state = state.lower()
+        jid = abbr_to_jid(state)
         bills = bills.filter(legislative_session__jurisdiction_id=jid)
     if chamber:
         if state in ('ne', 'dc') and chamber == 'upper':
@@ -179,26 +194,28 @@ def bill_list(request):
         bills = bills.filter(from_organization__classification=chamber)
     if query:
         bills = bills.filter(title__icontains=query)
+        too_big = False
     if updated_since:
         bills = bills.filter(updated_at__gt=updated_since)
+        too_big = False
     if bill_id:
         bills = bills.filter(identifier=bill_id)
+        too_big = False
 
     # search_window only ever really worked w/ state- and judging by analytics that's how
     # it was used in every case
     if state:
-        if search_window == 'session':
+        if search_window == 'session' or search_window == 'term':
             latest_session = LegislativeSession.objects.filter(
                 jurisdiction_id=jid
             ).order_by('-start_date').values_list('identifier', flat=True)[0]
             bills = bills.filter(legislative_session__identifier=latest_session)
-        elif search_window == 'term':
-            latest_sessions = static.TERMS[state][-1]['sessions']
-            bills = bills.filter(legislative_session__identifier__in=latest_sessions)
+            too_big = False
         elif search_window.startswith('session:'):
             bills = bills.filter(
                 legislative_session__identifier=search_window.split('session:')[1]
             )
+            too_big = False
         elif search_window != 'all':
             raise ValueError('invalid search_window. valid choices are "term", "session", "all"')
 
@@ -224,10 +241,9 @@ def bill_list(request):
         start = per_page * (page - 1)
         end = start + per_page
         bills = bills[start:end]
-    else:
-        # limit response size
-        if len(bills) > 1000:
-            return JsonResponse("Bad Request: request too large, try narrowing your search by "
-                                "adding more filters.", status=400, safe=False)
+        too_big = (per_page > 100)
+    elif too_big or bills.count() > 200:
+        return JsonResponse("Bad Request: request too large, try narrowing your search by "
+                            "adding more filters or using pagination.", status=400, safe=False)
 
-    return JsonResponse([utils.convert_bill(b) for b in bills], safe=False)
+    return JsonResponse([convert_bill(b, include_votes=False) for b in bills], safe=False)

@@ -1,0 +1,16 @@
+{{ key.name }},
+
+Your Open States API key registration is almost done-
+
+Your new API key is: {{ key.key }}
+
+To activate your key please visit: {{ confirmation_url|safe }}
+
+By signing up for an API key you are consenting to our
+Terms of Service & Privacy Policy - https://openstates.org/tos/
+
+Also, please keep in mind Open States is a nonprofit resource driven by
+volunteers.  Please consider giving credit or donating to support continued
+development and server costs: https://openstates.org/donate/
+
+Thanks!

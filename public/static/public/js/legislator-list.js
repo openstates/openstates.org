@@ -1,5 +1,22 @@
 import _ from 'lodash'
 import React from 'react'
+import LegislatorImage from './legislator-image'
+
+
+export function ChamberButtons(props) {
+    if (Object.keys(props.chambers).length > 1) {
+        return (
+            <div className="button-group">
+              <button type="button" onClick={() => props.setChamber('upper')} className={`button ${props.chamber === 'upper' ? 'button--active' : ''}`}>{props.chambers.upper}</button>
+              <button type="button" onClick={() => props.setChamber('lower')} className={`button ${props.chamber === 'lower' ? 'button--active' : ''}`}>{props.chambers.lower}</button>
+              <button type="button" onClick={() => props.setChamber(null)} className={`button ${props.chamber === null ? 'button--active' : ''}`}>Both Chambers</button>
+          </div>
+        );
+    } else {
+        return '';
+    }
+}
+
 
 export default class LegislatorList extends React.Component {
   constructor (props) {
@@ -8,8 +25,10 @@ export default class LegislatorList extends React.Component {
     this.state = {
       order: 'asc',
       orderBy: 'name',
-      chamber: queryParams.get('chamber') || null
+      chamber: queryParams.get('chamber') || null,
     }
+
+    this.setChamber = this.setChamber.bind(this);
   }
 
   setSortOrder (field) {
@@ -41,37 +60,33 @@ export default class LegislatorList extends React.Component {
   render () {
     return (
       <div>
-        <div className="button-group">
-          <button type="button" onClick={() => this.setChamber('upper')} className={`button ${this.state.chamber === 'upper' ? 'button--active' : ''}`}>Upper Chamber</button>
-          <button type="button" onClick={() => this.setChamber('lower')} className={`button ${this.state.chamber === 'lower' ? 'button--active' : ''}`}>Lower Chamber</button>
-          <button type="button" onClick={() => this.setChamber(null)} className={`button ${this.state.chamber === null ? 'button--active' : ''}`}>Both Chambers</button>
-        </div>
-
-        <table>
+        <ChamberButtons chambers={this.props.chambers} chamber={this.state.chamber} setChamber={this.setChamber} />
+        <table className="hover">
           <thead>
             <tr>
               <th></th>
               <th onClick={() => this.setSortOrder('name')}>Name</th>
-              <th onClick={() => this.setSortOrder('party')}>Party</th>
-              <th onClick={() => this.setSortOrder('district')}>District</th>
-              <th onClick={() => this.setSortOrder('chamber')}>Chamber</th>
+              <th onClick={() => this.setSortOrder('current_role.party')}>Party</th>
+              <th onClick={() => this.setSortOrder('current_role.district')}>District</th>
+              {this.props.chambers.lower &&
+                  <th onClick={() => this.setSortOrder('current_role.chamber')}>Chamber</th>
+              }
             </tr>
           </thead>
           <tbody>
             {_.orderBy(this.props.legislators, [this.state.orderBy], [this.state.order])
-              .filter(legislator => this.state.chamber === null || legislator.chamber === this.state.chamber)
+              .filter(legislator => this.state.chamber === null || legislator.current_role.chamber === this.state.chamber)
               .map(b =>
                 <tr key={b.id}>
                   <td>
-                    {b.headshot_url
-                      ? <img src={b.headshot_url} alt={`headshot for ${b.name}`} />
-                      : <img alt="placeholder headshot" />
-                    }
+                    <LegislatorImage id={b.id} image={b.image} />
                   </td>
-                  <td><a href={`${window.location.href.split('?')[0]}/${b.id}`}>{b.name}</a></td>
-                  <td>{b.party}</td>
-                  <td>{b.district}</td>
-                  <td>{b.chamber}</td>
+                  <td><a href={b.pretty_url}>{b.name}</a></td>
+                  <td>{b.current_role.party}</td>
+                  <td>{b.current_role.district}</td>
+                  {this.props.chambers.lower &&
+                      <td>{this.props.chambers[b.current_role.chamber]}</td>
+                  }
                 </tr>
               )
             }

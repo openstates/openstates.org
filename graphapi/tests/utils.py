@@ -4,8 +4,8 @@ from opencivicdata.core.models import Division, Jurisdiction, Organization, Pers
 from opencivicdata.legislative.models import Bill, VoteEvent
 
 
-def make_random_bill():
-    state = random.choice(Jurisdiction.objects.all())
+def make_random_bill(name):
+    state = Jurisdiction.objects.get(name=name)
     session = random.choice(state.legislative_sessions.all())
     org = state.organizations.get(classification=random.choice(('upper', 'lower')))
     b = Bill.objects.create(id='ocd-bill/' + str(uuid.uuid4()),
@@ -55,8 +55,8 @@ def populate_db():
         j = Jurisdiction.objects.create(
             id='ocd-jurisdiction/country:us/state:' + abbr + '/government',
             name=state, division=d)
-        j.legislative_sessions.create(identifier='2017', name='2017')
-        j.legislative_sessions.create(identifier='2018', name='2018')
+        j.legislative_sessions.create(identifier='2017', name='2017', start_date="2017-01-01")
+        j.legislative_sessions.create(identifier='2018', name='2018', start_date="2018-01-01")
 
         leg = Organization.objects.create(jurisdiction=j, classification='legislature',
                                           name=state + ' Legislature')
@@ -71,14 +71,20 @@ def populate_db():
     # AK House
     amanda = make_person('Amanda Adams', 'Alaska', 'lower', '1', 'Republican')
     birch = make_person('Bob Birch', 'Alaska', 'lower', '2', 'Republican')
-    make_person('Carrie Carr', 'Alaska', 'lower', '3', 'Democratic')
-    make_person('Don Dingle', 'Alaska', 'lower', '4', 'Republican')
+    carrie = make_person('Carrie Carr', 'Alaska', 'lower', '3', 'Democratic')
+    don = make_person('Don Dingle', 'Alaska', 'lower', '4', 'Republican')
     # AK Senate
     ellen = make_person('Ellen Evil', 'Alaska', 'upper', 'A', 'Independent')
     make_person('Frank Fur', 'Alaska', 'upper', 'B', 'Democratic')
     # Ellen used to be a house member
     post = house.posts.create(label='5')
     ellen.memberships.create(post=post, organization=house, end_date='2017-01-01')
+
+    # retired house member
+    rhonda = make_person('Rhonda Retired', 'Alaska', 'upper', 'B', 'Democratic')
+    for m in rhonda.memberships.all():
+        m.end_date = '2017-01-01'
+        m.save()
 
     # WY House (multi-member districts)
     make_person('Greta Gonzalez', 'Wyoming', 'lower', '1', 'Democratic')
@@ -104,7 +110,7 @@ def populate_db():
     b1.actions.create(description='Amended', order=20, organization=house,
                       date='2018-02-01')
     a = b1.actions.create(description='Passed House', order=30, organization=house,
-                          date='2018-03-01'
+                          date='2018-03-01', classification=["passage"]
                           )
     a.related_entities.create(name='House', entity_type='organization', organization=house)
 
@@ -116,10 +122,10 @@ def populate_db():
     d.links.create(url='https://example.com/fn')
     d = b1.documents.create(note='Legal Justification')
     d.links.create(url='https://example.com/lj')
-    d = b1.versions.create(note='First Draft')
+    d = b1.versions.create(note='First Draft', date="2017-01-01")
     d.links.create(url='https://example.com/1.txt', media_type='text/plain')
     d.links.create(url='https://example.com/1.pdf', media_type='application/pdf')
-    d = b1.versions.create(note='Final Draft')
+    d = b1.versions.create(note='Final Draft', date="2017-06-01")
     d.links.create(url='https://example.com/f.txt', media_type='text/plain')
     d.links.create(url='https://example.com/f.pdf', media_type='application/pdf')
     b1.sources.create(url='https://example.com/s1')
@@ -134,8 +140,8 @@ def populate_db():
     ve.counts.create(option='no', value=4)
     ve.votes.create(option='yes', voter_name='Amanda Adams', voter=amanda)
     ve.votes.create(option='no', voter_name='Birch', voter=birch)
-    ve.votes.create(option='no', voter_name='Carr')
-    ve.votes.create(option='no', voter_name='Dingle')
+    ve.votes.create(option='no', voter_name='Carr', voter=carrie)
+    ve.votes.create(option='no', voter_name='Dingle', voter=don)
     ve.votes.create(option='no', voter_name='Speaker')
 
     rb = Bill.objects.create(id='ocd-bill/3', title='Alces alces Freedom Act',
@@ -149,5 +155,21 @@ def populate_db():
                             relation_type='companion'
                             )
 
-    for x in range(24):
-        make_random_bill()
+    for x in range(10):
+        make_random_bill("Alaska")
+    for x in range(14):
+        make_random_bill("Wyoming")
+
+
+def populate_unicam():
+    d = Division.objects.create(id='ocd-division/country:us/state:ne', name="Nebraska")
+    j = Jurisdiction.objects.create(id='ocd-jurisdiction/country:us/state:ne/government',
+                                    name="Nebraska", division=d)
+    j.legislative_sessions.create(identifier='2017', name='2017', start_date="2017-01-01")
+    j.legislative_sessions.create(identifier='2018', name='2018', start_date="2018-01-01")
+
+    Organization.objects.create(jurisdiction=j, classification='legislature',
+                                name='Nebraska Legislature')
+
+    make_person('Quincy Quip', 'Nebraska', 'legislature', '1', 'Nonpartisan')
+    make_person('Wendy Wind', 'Nebraska', 'legislature', '2', 'Nonpartisan')

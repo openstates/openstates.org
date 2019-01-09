@@ -1,1 +1,37 @@
 {% extends "../components/base.html" %}
+{% load custom_tags %}
+
+{% block title %}{{ state|state_name }} Committees - Open States{% endblock %}
+{% block og_title %}{{ state|state_name }} Committees - Open States{% endblock %}
+{% block description %}Browse {{ state|state_name }} legislative committees.{% endblock %}
+
+{% block content %}
+    <h1 class="heading--large">{{ state|state_name }} Committees</h1>
+
+    {% if not committees %}
+    <p>
+        No committee data is currently available for {{ state|state_name}}.
+        It may be that the state hasn't yet published the information, or we may 
+        need some help acquiring this data.  If you're interested in helping,
+        <a href="https://discourse.openstates.org">join the discussion</a>.
+    </p>
+    {% else %}
+
+    <div data-hook="committee-list"></div>
+
+    <script>
+        window.committees = {{ committees|jsonify }};
+        window.chambers = {{ chambers|jsonify }};
+    </script>
+    <noscript>
+        <ul>
+        {% for com in committees %}
+        <li><a href="{{ com.pretty_url }}">{{ com.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </noscript>
+
+    {% endif %}
+
+    {% sources state %}
+{% endblock %}

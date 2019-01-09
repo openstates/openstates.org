@@ -1,0 +1,8 @@
+<tr>
+    <td>{{ document.note }}</td>
+    <td>
+    {% for link in document.links.all %}
+        <a class="label" href="{{ link.url }}">{{ link.media_type|upper|cut:"APPLICATION/"|cut:"TEXT/" }}</a>
+    {% endfor %}
+    </td>
+</tr>

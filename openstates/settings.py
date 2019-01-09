@@ -68,6 +68,9 @@ DATABASE_URL = os.environ.get(
 DATABASES = {'default': dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
 
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
+
 if 'RAVEN_DSN' in os.environ:
     RAVEN_CONFIG = {
         'dsn': os.environ['RAVEN_DSN']
@@ -81,6 +84,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.sites',
     'raven.contrib.django.raven_compat',
     'webpack_loader',
     'opencivicdata.core.apps.BaseConfig',
@@ -93,12 +97,12 @@ INSTALLED_APPS = [
     'graphapi',
     'v1',
     'simplekeys',
-    # 'silk',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -106,7 +110,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simplekeys.middleware.SimpleKeysMiddleware',
-    # 'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'openstates.urls'
@@ -130,6 +133,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+SITE_ID = 1
+
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -141,8 +146,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, '/public/static/'),
+    os.path.join(BASE_DIR, 'public/static/'),
 )
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 LOGGING = {

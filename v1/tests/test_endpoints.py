@@ -41,8 +41,8 @@ def test_metadata_detail(client, django_assert_num_queries):
             'chambers': {'upper': {'name': 'Alaska Senate', 'title': ''},
                          'lower': {'name': 'Alaska House', 'title': ''}},
             'session_details': {
-                '2018': {'display_name': '2018', 'type': ''},
-                '2017': {'display_name': '2017', 'type': ''}},
+                '2018': {'display_name': '2018', 'type': '', 'start_date': '2018-01-01 00:00:00'},
+                '2017': {'display_name': '2017', 'type': '', 'start_date': '2017-01-01 00:00:00'}},
             'latest_update': '2000-01-01 00:00:00',
             'capitol_timezone': 'America/Anchorage',
             'terms': [
@@ -67,7 +67,7 @@ def test_metadata_list(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_detail(client, django_assert_num_queries):
-    with django_assert_num_queries(18):
+    with django_assert_num_queries(19):
         resp = client.get('/api/v1/bills/ak/2018/HB 1/')
         assert resp.status_code == 200
         bill = resp.json()
@@ -86,7 +86,7 @@ def test_bill_detail(client, django_assert_num_queries):
              'related_entities': [], 'actor': 'lower'},
             {'date': '2018-02-01 00:00:00', 'action': 'Amended', 'type': [],
              'related_entities': [], 'actor': 'lower'},
-            {'date': '2018-03-01 00:00:00', 'action': 'Passed House', 'type': [],
+            {'date': '2018-03-01 00:00:00', 'action': 'Passed House', 'type': ['bill:passed'],
              'related_entities': [], 'actor': 'lower'}
         ]
         assert len(bill['sources']) == 3
@@ -116,24 +116,25 @@ def test_bill_detail_alternate_forms(client):
 
 @pytest.mark.django_db
 def test_bill_list_basic(client, django_assert_num_queries):
-    with django_assert_num_queries(18):
-        resp = client.get('/api/v1/bills/')
+    with django_assert_num_queries(13):
+        # need updated_since on there to avoid too-big detection
+        resp = client.get('/api/v1/bills/?updated_since=2017-01-01')
         assert len(resp.json()) == 26
         assert resp.status_code == 200
 
 
 @pytest.mark.django_db
 def test_bill_list_state_param(client):
-    wy = client.get('/api/v1/bills/?state=wy')
-    ak = client.get('/api/v1/bills/?state=ak')
+    wy = client.get('/api/v1/bills/?state=wy&updated_since=2017-01-01')
+    ak = client.get('/api/v1/bills/?state=ak&updated_since=2017-01-01')
     assert len(wy.json()) + len(ak.json()) == 26
 
 
 @pytest.mark.django_db
 def test_bill_list_chamber_param(client):
-    wy = client.get('/api/v1/bills/?state=wy')
-    upper = client.get('/api/v1/bills/?state=wy&chamber=upper')
-    lower = client.get('/api/v1/bills/?state=wy&chamber=lower')
+    wy = client.get('/api/v1/bills/?state=wy&updated_since=2017-01-01')
+    upper = client.get('/api/v1/bills/?state=wy&chamber=upper&updated_since=2017-01-01')
+    lower = client.get('/api/v1/bills/?state=wy&chamber=lower&updated_since=2017-01-01')
     assert len(upper.json()) + len(lower.json()) == len(wy.json())
 
 
@@ -152,7 +153,7 @@ def test_bill_list_q_param(client):
 
 @pytest.mark.django_db
 def test_bill_list_search_window_param(client):
-    wy = client.get('/api/v1/bills/?state=wy')
+    wy = client.get('/api/v1/bills/?state=wy&updated_since=2017-01-01')
     session2017 = client.get('/api/v1/bills/?state=wy&search_window=session:2017')
     session2018 = client.get('/api/v1/bills/?state=wy&search_window=session:2018')
     session_now = client.get('/api/v1/bills/?state=wy&search_window=session')
@@ -170,13 +171,13 @@ def test_bill_list_updated_since_param(client):
 
 @pytest.mark.django_db
 def test_bill_list_sort(client):
-    all = client.get('/api/v1/bills/?sort=created_at').json()
+    all = client.get('/api/v1/bills/?sort=created_at&updated_since=2017-01-01').json()
     assert all[0]['created_at'] >= all[10]['created_at'] >= all[-1]['created_at']
 
     some_bill = Bill.objects.all()[16]
     some_bill.title = 'latest updated'
     some_bill.save()
-    all = client.get('/api/v1/bills/?sort=updated_at').json()
+    all = client.get('/api/v1/bills/?sort=updated_at&updated_since=2017-01-01').json()
     assert all[0]['updated_at'] >= all[10]['updated_at'] >= all[-1]['updated_at']
     assert all[0]['title'] == 'latest updated'
 
@@ -236,7 +237,6 @@ def test_legislator_list_params(client, django_assert_num_queries):
     assert len(resp.json()) == 3
 
 
-# TODO: need mock data for this in graphapi tests
 # @pytest.mark.django_db
 # def test_legislator_geo(client, django_assert_num_queries):
 #     pass
@@ -247,7 +247,7 @@ def test_districts_list(client, django_assert_num_queries):
     with django_assert_num_queries(1):
         resp = client.get('/api/v1/districts/ak/')
         assert resp.status_code == 200
-        assert len(resp.json()) == 7
+        assert len(resp.json()) == 8
         expected = {'division_id': 'ocd-division/country:us/state:Alaska/district:B',
                     'boundary_id': 'ocd-division/country:us/state:Alaska/district:B',
                     'name': 'B', 'chamber': 'upper', 'abbr': 'ak',
@@ -256,6 +256,6 @@ def test_districts_list(client, django_assert_num_queries):
 
     # test filtering by URL
     resp = client.get('/api/v1/districts/ak/upper/')
-    assert len(resp.json()) == 2
+    assert len(resp.json()) == 3
     resp = client.get('/api/v1/districts/ak/lower/')
     assert len(resp.json()) == 5

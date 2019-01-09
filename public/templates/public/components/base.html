@@ -4,29 +4,46 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Open States{% endblock %}</title>
+        <meta name="description" property="og:description" content="{% block description %}{% endblock %}">
+        <meta name="twitter:card" content="summary">
+        {#<meta name="twitter:card" content="summary_large_image">#}
+        <meta name="twitter:site" content="@openstates">
+        <meta property="og:url" content="{{ request.build_absolute_uri }}">
+        <meta property="og:title" content="{% block og_title %}Open States{% endblock %}">
+        <meta property="og:image" content="{% block og_image %}https://{{ request.get_host }}{% static "public/images/openstates_icon_transparent.png" %}{% endblock %}">
+        
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'public/images/favicon/apple-touch-icon.png?v=20190106' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'public/images/favicon/favicon-32x32.png?v=20190106' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'public/images/favicon/favicon-16x16.png?v=20190106' %}">
+        <link rel="manifest" href="{% static 'public/images/favicon/site.webmanifest?v=20190106' %}">
+        <link rel="mask-icon" href="{% static 'public/images/favicon/safari-pinned-tab.svg?v=20190106' %}" color="#233240">
+        <link rel="shortcut icon" href="{% static 'public/images/favicon/favicon.ico?v=20190106' %}">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-config" content="{% static 'public/images/favicon/browserconfig.xml?v=20190106' %}">
+        <meta name="theme-color" content="#ffffff">
 
-		<title>{% block title %}{% endblock %}</title>
-		{% render_bundle 'main' 'css' %}
+        {% render_bundle 'main' 'css' %}
+    </head>
 
-		<!-- CSS required by utilized libraries; could alternatively be copied and saved to the local styles directory -->
-		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
-		<link rel="stylesheet" href="https://unpkg.com/react-table@6.8.0/react-table.css" />
-	</head>
+    <body>
+        {% header %}
 
-	<body>
-		{% header state %}
+        <div class="grid-container">
+            <div class="grid-x grid-padding-x">
+                <div class="cell medium-12 mt1">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
 
-		<div class="grid-container">
-			<div class="grid-x grid-padding-x">
-				<div class="cell medium-12">
-					{% block content %}{% endblock %}
-				</div>
-			</div>
-		</div>
-
-		{% include "./footer.html" %}
-		{% render_bundle 'main' 'js' %}
-	</body>
+        {% include "./footer.html" %}
+        {% render_bundle 'main' 'js' %}
+        {% block scripts %}
+        {% endblock %}
+    </body>
 </html>

@@ -143,7 +143,7 @@ class BillNode(OCDBaseNode):
         if 'versions' not in getattr(self, '_prefetched_objects_cache', []):
             return optimize(self.versions.all(), info, ['.links'])
         else:
-            return self.documents.all()
+            return self.versions.all()
 
     def resolve_sources(self, info):
         return self.sources.all()

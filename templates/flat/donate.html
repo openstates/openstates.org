@@ -1,0 +1,213 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Help Support Open States{% endblock %}
+{% block og_title %}Help Support Open States{% endblock %}
+{% block description %}Donate to Open States, support our work to make state legislative information widely available.{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Support Open States</h1>
+
+<div id="donate-success" style="display: none;">
+  Thank you for your donation!  You should receive an email receipt shortly, if you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
+</div>
+<div id="donate-failure" style="display: none;">
+  Something went wrong!  This has been logged, If you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
+</div>
+
+
+<section class="mt1">
+    <p>
+        Open States serves millions of API calls and sees thousands of visitors daily without charging a dollar, we depend upon the generosity of donors to fund our work and expenses. 
+        Donations to Open States will help us pay our server costs and allow the all-volunteer core team to continue to dedicate their time to maintaining and improving the project.
+    </p>
+    <p><strong>If you find Open States a valuable resource please consider donating today.</strong></p>
+</section>
+
+<section>
+    <div class="donor-form">
+    <div>
+        <label for="donor-name">Name:</label> <input id="donor-name" type="text" />
+        <p>
+        </p>
+    </div>
+
+    <p>
+        <br>
+        <strong>Give a one time donation to support our work:</strong>
+    </p>
+
+    <input type="radio" id="reg-2500" value="reg-2500" name="donation">
+    <label for="reg-2500">$25</label>
+    <input type="radio" id="reg-5000" value="reg-5000" name="donation">
+    <label for="reg-5000">$50</label>
+    <input type="radio" id="reg-7500" value="reg-7500" name="donation">
+    <label for="reg-7500">$75</label>
+    <input type="radio" id="reg-10000" value="reg-10000" name="donation">
+    <label for="reg-10000">$100</label>
+    <input type="radio" id="reg-other" value="reg-other" name="donation">
+    <label for="reg-other">
+        <input id="other-amount" type="text" placeholder="custom">
+    </label>
+    <button data-amount="custom" class="btn-stripe button button--primary">Donate!</button>
+
+    <p>
+        <br>
+        <strong>You can also sign up to give a recurring donation, allowing us to plan bigger &amp; better things:</strong>
+    </p>
+
+    <input type="radio" id="mo-500" value="mo-500" name="donation">
+    <label for="mo-500">$5/mo.</label>
+    <input type="radio" id="mo-1000" value="mo-1000" name="donation">
+    <label for="mo-1000">$10/mo.</label>
+    <input type="radio" id="mo-2000" value="mo-2000" name="donation">
+    <label for="mo-2000">$20/mo.</label>
+    <input type="radio" id="mo-5000" value="mo-5000" name="donation">
+    <label for="mo-5000">$50/mo.</label>
+    <input type="radio" id="mo-10000" value="mo-10000" name="donation">
+    <label for="mo-10000">$100/mo.</label>
+    <br>
+    <br>
+    <input type="radio" id="yr-5000" value="yr-5000" name="donation">
+    <label for="yr-5000">$50/yr.</label>
+    <input type="radio" id="yr-10000" value="yr-10000" name="donation">
+    <label for="yr-10000">$100/yr.</label>
+    <input type="radio" id="yr-20000" value="yr-20000" name="donation">
+    <label for="yr-20000">$200/yr.</label>
+    <input type="radio" id="yr-50000" value="yr-50000" name="donation">
+    <label for="yr-50000">$500/yr.</label>
+    <br>
+    <br>
+
+    <button data-amount="custom" class="btn-stripe button button--primary">Donate!</button>
+
+    {% csrf_token %}
+</div>
+</section>
+
+<section>
+    <p>Open States is under the <a href="http://openmediafoundation.org/open-states">Open Media Foundation</a> umbrella via their <a href="https://en.wikipedia.org/wiki/Fiscal_sponsorship">fiscal sponsorship</a> program.  As such, contributions are tax-deductible.</p>
+
+
+    <p>If you'd like to discuss funding specific work or make a larger donation please get in touch at <a href="mailto:funding@openstates.org">funding@openstates.org</a>.</p>
+
+    <p>
+        <a href="https://stripe.com"><img class="stripe-logo" src="{% static "public/images/powered_by_stripe.svg" %}" alt="powered by Stripe" /></a>
+    </p>
+    <p>
+        Donation processing is powered by Stripe,
+        none of your credit card information touches our servers.
+    </p>
+</section>
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script>
+var amount = null;
+
+var handler = StripeCheckout.configure({
+    key: "{{ STRIPE_PUBLIC_KEY }}",
+    image: "{% static 'public/images/openstates_icon_white.png' %}",
+    name: "Open States",
+    locale: 'auto',
+    zipCode: true,
+    token: function(token, a) {
+        var name = document.querySelector('#donor-name').value;
+        var donation = document.querySelector('input[name=donation]:checked').id;
+        const subscriptions = {
+            'mo-500': 'monthly5',
+            'mo-1000': 'monthly10',
+            'mo-2000': 'monthly20',
+            'mo-5000': 'monthly50',
+            'mo-10000': 'monthly100',
+            'yr-5000': 'yearly50',
+            'yr-10000': 'yearly100',
+            'yr-20000': 'yearly200',
+            'yr-50000': 'yearly500',
+        };
+
+        var data = new URLSearchParams()
+        data.append("stripeToken", token.id);
+        data.append("email", token.email);
+        data.append("csrfmiddlewaretoken", document.querySelector('[name="csrfmiddlewaretoken"]').value);
+        if (subscriptions[donation]) {
+            data.append("plan", subscriptions[donation]);
+        } else {
+            data.append("amount", amount);
+        }
+        data.append("source", "funding-page");
+        data.append("donor_name", name);
+
+        fetch("/donate/", {
+            method: "POST",
+            cache: "no-cache",
+            body: data
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            document.querySelector("#donate-success").style.display = "block";
+            window.scrollTo(0, 0);
+        })
+        .catch(function(e) {
+            document.querySelector("#donate-failure").style.display = "block";
+            window.scrollTo(0, 0);
+            console.error(e);
+        })
+    }
+});
+
+function submitStripe() {
+    var donation = document.querySelector('input[name=donation]:checked').id;
+    donation = donation.split('-');
+    type = donation[0];
+    amount = donation[1];
+
+    if (amount === 'other') {
+        amount = document.querySelector('#other-amount').value;
+        amount = amount.replace(/\$/g, '').replace(/\,/g, '')
+        amount = parseFloat(amount);
+
+        if (isNaN(amount)) {
+            return;
+        }
+        else if (amount < 5.0) {
+            alert("Due to merchant charges, we're currently not able to process donations smaller than $5.");
+            return;
+        } else {
+            amount = amount * 100;
+        }
+    } else {
+        amount = parseInt(amount);
+    }
+
+    var printamount = amount / 100;
+    var description;
+    var label;
+    if (type == 'mo') {
+        description = 'Recurring Donation of $' + printamount + '/mo.';
+        label = 'Recurring @';
+    } else if (type == 'yr') {
+        description = 'Recurring Donation of $' + printamount + '/yr.';
+        label = 'Recurring @';
+    } else {
+        description = 'Donate $' + printamount;
+        label = 'Donate';
+    }
+    handler.open({
+        description: description,
+        panelLabel: label,
+        amount: amount,
+    });
+    return false;
+}
+
+for(var btn of document.querySelectorAll(".btn-stripe")) {
+    btn.addEventListener("click", submitStripe);
+}
+
+// close checkout on page navigation:
+window.addEventListener('popstate', function() {
+  handler.close();
+});
+</script>
+{% endblock %}
