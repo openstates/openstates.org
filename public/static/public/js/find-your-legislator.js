@@ -148,7 +148,8 @@ export default class FindYourLegislator extends React.Component {
       var error = null;
 
       if (this.state.legislators.length) {
-          table = (<table id="results">
+        // have to wrap this in a div or the grid sizing will explode the table
+        table = (<div><table id="results">
               <thead>
                 <tr>
                   <th></th>
@@ -161,7 +162,7 @@ export default class FindYourLegislator extends React.Component {
               <tbody>
                   {rows}
               </tbody>
-          </table>)
+          </table></div>)
       }
 
       if (this.state.showMap) {

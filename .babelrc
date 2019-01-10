@@ -1,6 +1,9 @@
 {
   "presets": [
-    ["env", {"modules": false}],
+    ["env", {
+        "modules": false,
+        "targets": {"browsers": [">1% in US", "IE 11"]}
+    }],
     "react"
   ],
   "plugins": ["transform-object-rest-spread"]

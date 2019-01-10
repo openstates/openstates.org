@@ -124,7 +124,7 @@ var handler = StripeCheckout.configure({
             'yr-50000': 'yearly500',
         };
 
-        var data = new URLSearchParams()
+        var data = new URLSearchParams();
         data.append("stripeToken", token.id);
         data.append("email", token.email);
         data.append("csrfmiddlewaretoken", document.querySelector('[name="csrfmiddlewaretoken"]').value);
@@ -201,8 +201,9 @@ function submitStripe() {
     return false;
 }
 
-for(var btn of document.querySelectorAll(".btn-stripe")) {
-    btn.addEventListener("click", submitStripe);
+var btnSelector = document.querySelectorAll(".btn-stripe");
+for(var i=0; i < btnSelector.length; i++) {
+    btnSelector[i].addEventListener("click", submitStripe);
 }
 
 // close checkout on page navigation:

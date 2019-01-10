@@ -10,10 +10,13 @@
     "lodash": "^4.17.11",
     "mapbox-gl": "^0.44.2",
     "npm": "^6.4.1",
+    "promise-polyfill": "8.1.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-google-maps": "^9.4.5",
-    "react-mapbox-gl": "^3.8.0"
+    "react-mapbox-gl": "^3.8.0",
+    "url-search-params-polyfill": "^5.0.0",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "babel": "^6.23.0",
@@ -46,5 +49,9 @@
   "scripts": {
     "start": "webpack --watch --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
-  }
+  },
+  "browserslist": [
+    "> 1% in US",
+    "IE 11"
+  ]
 }
