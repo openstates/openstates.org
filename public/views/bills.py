@@ -1,7 +1,7 @@
 from collections import defaultdict
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Func, Prefetch
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
@@ -114,7 +114,10 @@ class BillList(View):
         # pagination
         page_num = int(request.GET.get("page", 1))
         paginator = Paginator(bills, 20)
-        bills = paginator.page(page_num)
+        try:
+            bills = paginator.page(page_num)
+        except EmptyPage:
+            raise Http404()
 
         context = {
             "state": state,
