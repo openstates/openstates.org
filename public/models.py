@@ -61,7 +61,7 @@ class OrganizationProxy(Organization):
 
 
 class BillStatus(models.Model):
-    bill = models.OneToOneField(Bill, on_delete=models.CASCADE, primary_key=True)
+    bill = models.OneToOneField(Bill, on_delete=models.DO_NOTHING, primary_key=True)
     first_action_date = models.CharField(max_length=25)
     latest_action_date = models.CharField(max_length=25)
     latest_action_description = models.TextField()
