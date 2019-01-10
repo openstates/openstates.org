@@ -22,7 +22,7 @@
       - python3-certbot-dns-route53
 
 - name: add localhost alias
-  lineinfile: dest=/etc/hosts line='127.0.0.1 beta.openstates.org'
+  lineinfile: dest=/etc/hosts line='127.0.0.1 openstates.org'
 - name: add pgpass file
   template: src=pgpass.j2 dest=/home/ubuntu/.pgpass mode=600
 
@@ -54,7 +54,7 @@
 # letsencrypt
 
 - name: add letsencrypt cert
-  command: certbot certonly --dns-route53 -d beta.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/beta.openstates.org/fullchain.pem
+  command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org -d beta.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
 - name: add update_materialized_views cron
@@ -66,7 +66,7 @@
 
 # virtualenv
 - name: checkout project directories
-  git: repo=https://github.com/openstates/new-openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=develop
+  git: repo=https://github.com/openstates/openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=master
   become_user: "openstates"
   notify:
     - restart django-application
@@ -124,7 +124,7 @@
 - name: generate new relic config
   command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
 - name: rename new relic app
-  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='beta.openstates.org'
+  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='openstates.org'
 
 # django commands
 - name: collectstatic
