@@ -1,7 +1,0 @@
----
-- name: Install new openstates
-  hosts: beta.openstates.org
-  user: ubuntu
-  become: yes
-  roles:
-    - role: new-openstates
