@@ -1,7 +1,7 @@
 version: "3"
 services:
   website:
-    image: openstates/new-openstates.org
+    image: openstates/openstates.org
     volumes:
       - .:/opt/openstates/openstates.org/
     entrypoint: ['/bin/bash']

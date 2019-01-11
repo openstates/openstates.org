@@ -1,6 +1,6 @@
-# new-openstates.org
+# openstates.org
 
-[![Build Status](https://travis-ci.com/openstates/new-openstates.org.svg?branch=develop)](https://travis-ci.com/openstates/new-openstates.org)
+[![Build Status](https://travis-ci.com/openstates/openstates.org.svg?branch=develop)](https://travis-ci.com/openstates/openstates.org)
 
 This project powers the 2019 OpenStates.org, including the API.
 
