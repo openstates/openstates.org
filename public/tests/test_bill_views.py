@@ -148,3 +148,9 @@ def test_vote_view(client, django_assert_num_queries):
     assert resp.context["party_votes"][1][1]["yes"] == 1
     assert resp.context["party_votes"][2][0] == "Unknown"
     assert resp.context["party_votes"][2][1]["no"] == 1
+
+
+@pytest.mark.django_db
+def test_bills_feed(client):
+    resp = client.get(f"/ak/bills/feed/")
+    assert resp.status_code == 200

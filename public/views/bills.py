@@ -157,13 +157,18 @@ class BillListFeed(BillList):
         )
         for item in bills[:100]:
             link = "https://{}{}".format(host, pretty_url(item))
+            try:
+                description = f"""{item.title}<br />
+                          Latest Action: {item.billstatus.latest_action_description}
+                          <i>{item.billstatus.latest_action_date}</i>"""
+            except Bill.billstatus.RelatedObjectDoesNotExist:
+                description = item.title
+
             feed.add_item(
                 title=item.identifier,
                 link=link,
                 unique_id=link,
-                description=f"""{item.title}<br />
-                          Latest Action: {item.billstatus.latest_action_description}
-                          <i>{item.billstatus.latest_action_date}</i>""",
+                description=description,
             )
         return HttpResponse(feed.writeString("utf-8"), content_type="application/xml")
 
@@ -352,8 +357,8 @@ def vote(request, vote_id):
     # attach party to people & calculate party-option crosstab
     for pv in person_votes:
         # combine other options
-        if pv.option not in ('yes', 'no'):
-            option = 'other'
+        if pv.option not in ("yes", "no"):
+            option = "other"
         else:
             option = pv.option
 
@@ -361,7 +366,7 @@ def vote(request, vote_id):
             pv.party = voter_parties[pv.voter_id][0]
             party_votes[pv.party][option] += 1
         else:
-            party_votes['Unknown'][option] += 1
+            party_votes["Unknown"][option] += 1
 
     # only show party breakdown if most people are matched
     if not person_votes or (len(voter_parties) / len(person_votes) < 0.8):
