@@ -41,7 +41,7 @@
             </table>
 
             <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
-            {% pagination bills %}</p>
+            {% pagination bills request.GET %}</p>
         </div>
         <div class="cell medium-3">
             <div class="sidebar">

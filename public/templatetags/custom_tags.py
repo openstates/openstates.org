@@ -37,8 +37,10 @@ def sources(state, sources=None):
 
 
 @register.inclusion_tag("public/components/pagination.html")
-def pagination(page):
-    return {"page": page}
+def pagination(page, request_get):
+    request_get = request_get.copy()
+    request_get.pop("page", None)
+    return {"page": page, "base_querystring": request_get.urlencode()}
 
 
 @register.inclusion_tag("public/components/bill-card.html")

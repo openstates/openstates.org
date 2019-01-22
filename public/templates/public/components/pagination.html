@@ -2,15 +2,15 @@
     <div class="button-group">
 
         {% if page.number > 2 %}
-            <a href="?page=1" class="button">First</a>
+            <a href="?{{ base_querystring }}&page=1" class="button">First</a>
         {% endif %}
         
         {% if page.has_previous %}
-            <a href="?page={{ page.previous_page_number }}" class="button">&laquo; Previous</a>
+            <a href="?{{ base_querystring }}&page={{ page.previous_page_number }}" class="button">&laquo; Previous</a>
         {% endif %}
         
         {% if page.has_next %}
-            <a href="?page={{ page.next_page_number }}" class="button">Next &raquo;</a>
+            <a href="?{{ base_querystring }}&page={{ page.next_page_number }}" class="button">Next &raquo;</a>
         {% endif %}
     </div>
 </section>
