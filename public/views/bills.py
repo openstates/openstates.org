@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Func, Prefetch
@@ -68,7 +69,10 @@ class BillList(View):
         }
 
         if query:
-            bills = bills.filter(title__icontains=query)
+            if re.match(r"\w{1,3}\s*\d{1,5}", query):
+                bills = bills.filter(identifier=fix_bill_id(query))
+            else:
+                bills = bills.filter(title__icontains=query)
         if chamber:
             bills = bills.filter(from_organization__classification=chamber)
         if session:
