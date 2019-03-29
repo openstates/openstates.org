@@ -88,23 +88,22 @@ export default class FindYourLegislator extends React.Component {
     }
 
     geocode() {
-        const body = {
-            address: this.state.address,
-            region: 'us',
-        };
-        const component = this;
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode(body, function(results, status) {
-            if (status === 'OK') {
-                component.setState({
-                    lat: results[0].geometry.location.lat(),
-                    lon: results[0].geometry.location.lng(),
-                });
-                component.updateLegislators();
-            } else {
-                component.setError("Unable to geolocate your address, try adding more information.");
-            }
-        });
+      const component = this;
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURI(this.state.address)}.json?country=US&limit=1&access_token=${config.MAPBOX_ACCESS_TOKEN}`;
+      
+      fetch(url)
+          .then(response => response.json())
+        .then(function(json) {
+          console.log(json);
+            component.setState({
+              lat: json.features[0].center[1],
+              lon: json.features[0].center[0],
+            });
+            component.updateLegislators();
+          }).catch(function(error) {
+            console.error(error);
+            component.setError("Unable to geolocate your address, try adding more information.");
+          });
     }
 
     updateLegislators() {
