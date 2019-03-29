@@ -50,7 +50,7 @@ class ResultMap extends React.Component {
               <Source id="sld" tileJsonSource={{type: "vector", url: config.MAP_SLD_SOURCE}} />
               { shapes }
               <Marker coordinates={[this.props.lon, this.props.lat]} anchor="bottom">
-                <img src="https://i.imgur.com/MK4NUzI.png" />
+                <img src="/static/public/images/pin.png" />
               </Marker>
         </Map>
         </div>);
