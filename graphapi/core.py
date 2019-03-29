@@ -313,7 +313,9 @@ class CoreQuery:
                         Point(float(longitude), float(latitude))
                     )),
                     Q(memberships__post__division__geometries__boundary__set__end_date=None) |
-                    Q(memberships__post__division__geometries__boundary__set__end_date__gt=today)
+                    Q(memberships__post__division__geometries__boundary__set__end_date__gt=today),
+                    Q(memberships__end_date="") |
+                    Q(memberships__end_date__gt=today)
                 )
             except ValueError:
                 raise ValueError('invalid lat or lon')
