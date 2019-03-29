@@ -35,5 +35,5 @@ pytest = "*"
 pytest-django = "*"
 Django = "<2.1"
 
-[requires]
-python_version = "3.6"
+# [requires]
+# python_version = "3.6"
