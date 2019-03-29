@@ -1,5 +1,6 @@
 import React from 'react';
-import { withGoogleMap, GoogleMap, Marker, Polygon } from "react-google-maps";
+import ReactMapboxGl, {Source, Layer, Marker} from "react-mapbox-gl";
+import stateBounds from './state-bounds'
 import LegislatorImage from './legislator-image';
 import config from "./config";
 
@@ -16,27 +17,70 @@ function chamberColor(leg) {
   return (leg.chamber === "lower" ?  config.LOWER_CHAMBER_COLOR : config.UPPER_CHAMBER_COLOR);
 }
 
-const Map = withGoogleMap(function(props) {
-  var shapes = [];
-  for(var leg of props.legislators) {
-    if(leg.shape) {
-      const color = chamberColor(leg);
-      shapes.push(<Polygon key={leg.division_id}
-        defaultPaths={multipolyToPath(leg.shape.coordinates)}
-        options={{fillColor: color, strokeColor: color, strokeWeight: 2}}
-      />);
-    }
-  }
 
-    return <GoogleMap defaultZoom={props.zoom}
-      center={{ lat: props.lat, lng: props.lon }}
-      options={{styles: GOOGLE_MAP_STYLES, disableDefaultUI: true}}
-    >
-        <Marker position={{ lat: props.lat, lng: props.lon }} />
-        {shapes}
-    </GoogleMap>
+const Map = ReactMapboxGl({
+    accessToken: config.MAPBOX_ACCESS_TOKEN,
 });
 
+class ResultMap extends React.Component {
+    constructor (props) {
+        super(props)
+    }
+
+  render () {
+    var filter = ["any",];
+
+    for(var leg of this.props.legislators) {
+      if(leg.shape) {
+        filter.push(["==", "ocdid", leg.division_id]);
+        // const color = chamberColor(leg);
+        // shapes.push(<Polygon key={leg.division_id}
+        //   defaultPaths={multipolyToPath(leg.shape.coordinates)}
+        //   options={{fillColor: color, strokeColor: color, strokeWeight: 2}}
+        // />);
+      }
+    }
+        return (
+            <div id="fyl-map-container">
+            <Map
+                style={config.MAP_BASE_STYLE}
+                minZoom={2}
+                maxZoom={13}
+                interactive={true}
+                center={[this.props.lon, this.props.lat]}
+            >
+            <Source id="sld" tileJsonSource={{type: "vector", url: config.MAP_SLD_SOURCE}} />
+            <Layer
+                id={config.MAP_DISTRICTS_FILL.id}
+                type={config.MAP_DISTRICTS_FILL.type}
+                sourceId="sld"
+                sourceLayer="sld"
+                paint={config.MAP_DISTRICTS_FILL.paint}
+                filter={filter}
+            />
+            <Layer
+                id={config.MAP_DISTRICTS_STROKE.id}
+                type={config.MAP_DISTRICTS_STROKE.type}
+                sourceId="sld"
+                sourceLayer="sld"
+                paint={config.MAP_DISTRICTS_STROKE.paint}
+                filter={filter}
+              />
+            <Marker coordinates={[this.props.lon, this.props.lat]} anchor="bottom"></Marker>
+        </Map>
+        </div>);
+    }
+}
+
+//   for(var leg of props.legislators) {
+//     if(leg.shape) {
+//       const color = chamberColor(leg);
+//       shapes.push(<Polygon key={leg.division_id}
+//         defaultPaths={multipolyToPath(leg.shape.coordinates)}
+//         options={{fillColor: color, strokeColor: color, strokeWeight: 2}}
+//       />);
+//     }
+//   }
 
 export default class FindYourLegislator extends React.Component {
     constructor (props) {
@@ -165,13 +209,11 @@ export default class FindYourLegislator extends React.Component {
       }
 
       if (this.state.showMap) {
-          map = (<Map
+          map = (<ResultMap
             zoom={11}
             lat={this.state.lat}
             lon={this.state.lon}
             legislators={this.state.legislators}
-            containerElement={<div style={{ height: `400px` }} />}
-            mapElement={<div style={{ height: `100%` }} />}
         />)
       }
 
@@ -203,233 +245,3 @@ export default class FindYourLegislator extends React.Component {
     }
 
 }
-
-// exported from https://mapstyle.withgoogle.com/
-const GOOGLE_MAP_STYLES = [
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#bdbdbd"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.neighborhood",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#eeeeee"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.business",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e5e5e5"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#ffffff"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dadada"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e5e5e5"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#eeeeee"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#c9c9c9"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  }
-]

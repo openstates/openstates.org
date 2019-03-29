@@ -28,6 +28,13 @@
         grid-row: 2;
     }
 }
+#fyl-map-container {
+    height: 100%;
+}
+#fyl-map-container .mapboxgl-map {
+    width: 100%;
+    height: 400px;
+}
 
 // find your legislator
 .find-your-legislator {
