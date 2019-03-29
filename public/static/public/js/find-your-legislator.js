@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactMapboxGl, {Source, Layer, Marker} from "react-mapbox-gl";
+import ReactMapboxGl, {Source, GeoJSONLayer, Layer, Marker} from "react-mapbox-gl";
 import stateBounds from './state-bounds'
 import LegislatorImage from './legislator-image';
 import config from "./config";
@@ -28,16 +28,14 @@ class ResultMap extends React.Component {
     }
 
   render () {
-    var filter = ["any",];
-
+    var shapes = [];
     for(var leg of this.props.legislators) {
       if(leg.shape) {
-        filter.push(["==", "ocdid", leg.division_id]);
-        // const color = chamberColor(leg);
-        // shapes.push(<Polygon key={leg.division_id}
-        //   defaultPaths={multipolyToPath(leg.shape.coordinates)}
-        //   options={{fillColor: color, strokeColor: color, strokeWeight: 2}}
-        // />);
+        const color = chamberColor(leg);
+        shapes.push(<GeoJSONLayer key={leg.division_id} data={leg.shape}
+          linePaint={config.MAP_DISTRICTS_STROKE.paint}
+          fillPaint={{'fill-color': color, 'fill-opacity': 0.2}} />
+        );
       }
     }
         return (
@@ -49,24 +47,11 @@ class ResultMap extends React.Component {
                 interactive={true}
                 center={[this.props.lon, this.props.lat]}
             >
-            <Source id="sld" tileJsonSource={{type: "vector", url: config.MAP_SLD_SOURCE}} />
-            <Layer
-                id={config.MAP_DISTRICTS_FILL.id}
-                type={config.MAP_DISTRICTS_FILL.type}
-                sourceId="sld"
-                sourceLayer="sld"
-                paint={config.MAP_DISTRICTS_FILL.paint}
-                filter={filter}
-            />
-            <Layer
-                id={config.MAP_DISTRICTS_STROKE.id}
-                type={config.MAP_DISTRICTS_STROKE.type}
-                sourceId="sld"
-                sourceLayer="sld"
-                paint={config.MAP_DISTRICTS_STROKE.paint}
-                filter={filter}
-              />
-            <Marker coordinates={[this.props.lon, this.props.lat]} anchor="bottom"></Marker>
+              <Source id="sld" tileJsonSource={{type: "vector", url: config.MAP_SLD_SOURCE}} />
+              { shapes }
+              <Marker coordinates={[this.props.lon, this.props.lat]} anchor="bottom">
+                <img src="https://i.imgur.com/MK4NUzI.png" />
+              </Marker>
         </Map>
         </div>);
     }
