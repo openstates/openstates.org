@@ -57,15 +57,6 @@ class ResultMap extends React.Component {
     }
 }
 
-//   for(var leg of props.legislators) {
-//     if(leg.shape) {
-//       const color = chamberColor(leg);
-//       shapes.push(<Polygon key={leg.division_id}
-//         defaultPaths={multipolyToPath(leg.shape.coordinates)}
-//         options={{fillColor: color, strokeColor: color, strokeWeight: 2}}
-//       />);
-//     }
-//   }
 
 export default class FindYourLegislator extends React.Component {
     constructor (props) {
