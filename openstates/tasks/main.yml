@@ -54,7 +54,7 @@
 # letsencrypt
 
 - name: add letsencrypt cert
-  command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org -d beta.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
+  command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
 - name: add update_materialized_views cron
