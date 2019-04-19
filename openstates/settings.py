@@ -222,6 +222,11 @@ BOUNDARIES_SHAPEFILES_DIR = 'shapefiles'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/(graphql|api/v1)/.*$'
 CORS_ALLOW_METHODS = ['GET', 'POST', 'OPTIONS']
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = default_headers + (
+    "x-api-key",
+)
 
 
 GRAPHENE = {
