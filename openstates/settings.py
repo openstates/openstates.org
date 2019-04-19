@@ -1,5 +1,6 @@
 import os
 import dj_database_url
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -222,8 +223,6 @@ BOUNDARIES_SHAPEFILES_DIR = 'shapefiles'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/(graphql|api/v1)/.*$'
 CORS_ALLOW_METHODS = ['GET', 'POST', 'OPTIONS']
-from corsheaders.defaults import default_headers
-
 CORS_ALLOW_HEADERS = default_headers + (
     "x-api-key",
 )
