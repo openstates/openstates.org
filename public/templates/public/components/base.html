@@ -19,6 +19,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Open States{% endblock %}</title>
         <meta name="description" property="og:description" content="{% block description %}{% endblock %}">
+        {% if bill %}<meta name="bill:id" content="{{bill.id}}">{% endif %}
         <meta name="twitter:card" content="summary">
         <meta name="twitter:site" content="@openstates">
         <meta property="og:url" content="{{ request.build_absolute_uri }}">
