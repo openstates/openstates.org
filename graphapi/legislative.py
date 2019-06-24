@@ -1,10 +1,14 @@
 import graphene
+import re
 from django.db.models import Prefetch, Max
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
 from .optimization import optimize
+from urllib.parse import urlparse
+from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
+from utils.bills import fix_bill_id
 
 
 def jurisdiction_query(jurisdiction):
@@ -246,6 +250,7 @@ class LegislativeQuery:
                           jurisdiction=graphene.String(),
                           session=graphene.String(),
                           identifier=graphene.String(),
+                          openstatesUrl=graphene.String(),
                           )
     bills = DjangoConnectionField(BillConnection,
                                   jurisdiction=graphene.String(),
@@ -320,7 +325,10 @@ class LegislativeQuery:
 
     def resolve_bill(self, info,
                      id=None,
-                     jurisdiction=None, session=None, identifier=None,
+                     jurisdiction=None,
+                     session=None,
+                     identifier=None,
+                     openstatesUrl=None,
                      ):
         bill = None
 
@@ -331,9 +339,25 @@ class LegislativeQuery:
             bill = Bill.objects.get(**query)
         if id:
             bill = Bill.objects.get(id=id)
+        if openstatesUrl:
+            path = urlparse(openstatesUrl).path.strip("/")
+            m = re.match(r"(?P<abbr>\w+)/bills/(?P<session>.+)/(?P<bill_id>.+)", path)
+            if m:
+              jid = abbr_to_jid( m['abbr'] )
+              identifier = fix_bill_id( m['bill_id'] )
+              session = m['session']
+              bill = Bill.objects.select_related(
+                  "legislative_session",
+                  "legislative_session__jurisdiction",
+                  "from_organization",
+              ).get(
+                  legislative_session__jurisdiction_id=jid,
+                  legislative_session__identifier=session,
+                  identifier=identifier,
+              )
 
         if not bill:
-            raise ValueError("must either pass 'id' or 'jurisdiction', 'session', "
+            raise ValueError("must either pass 'id', 'openstatesUrl', or 'jurisdiction', 'session', "
                              "and 'identifier' together")
 
         return bill
