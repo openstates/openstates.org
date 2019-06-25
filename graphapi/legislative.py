@@ -7,7 +7,7 @@ from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
                    PersonNode, LinkNode)
 from .optimization import optimize
 from urllib.parse import urlparse
-from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
+from utils.common import abbr_to_jid
 from utils.bills import fix_bill_id
 
 
@@ -340,12 +340,19 @@ class LegislativeQuery:
         if id:
             bill = Bill.objects.get(id=id)
         if openstatesUrl:
+            # remove domain, start and end slashes
             path = urlparse(openstatesUrl).path.strip("/")
+
+            # parse openstatesUrl into components
             m = re.match(r"(?P<abbr>\w+)/bills/(?P<session>.+)/(?P<bill_id>.+)", path)
+
             if m:
               jid = abbr_to_jid( m['abbr'] )
               identifier = fix_bill_id( m['bill_id'] )
               session = m['session']
+
+              # query Bill with components
+              # (this bit taken from def bill in views/bills.py)
               bill = Bill.objects.select_related(
                   "legislative_session",
                   "legislative_session__jurisdiction",
@@ -355,6 +362,8 @@ class LegislativeQuery:
                   legislative_session__identifier=session,
                   identifier=identifier,
               )
+            else:
+              raise ValueError("Unable to parse openstatesUrl. openstatesUrl may be malformed.")
 
         if not bill:
             raise ValueError("must either pass 'id', 'openstatesUrl', or 'jurisdiction', 'session', "
