@@ -343,30 +343,30 @@ class LegislativeQuery:
             # remove domain, start and end slashes
             path = urlparse(openstatesUrl).path.strip("/")
 
-            # parse openstatesUrl into components
+            # parse openstatesUrl into state abbr, session, and bill_id
             m = re.match(r"(?P<abbr>\w+)/bills/(?P<session>.+)/(?P<bill_id>.+)", path)
 
             if m:
-              jid = abbr_to_jid( m['abbr'] )
-              identifier = fix_bill_id( m['bill_id'] )
-              session = m['session']
+                jid = abbr_to_jid(m['abbr'])
+                identifier = fix_bill_id(m['bill_id'])
+                session = m['session']
 
-              # query Bill with components
-              # (this bit taken from def bill in views/bills.py)
-              bill = Bill.objects.select_related(
-                  "legislative_session",
-                  "legislative_session__jurisdiction",
-                  "from_organization",
-              ).get(
-                  legislative_session__jurisdiction_id=jid,
-                  legislative_session__identifier=session,
-                  identifier=identifier,
-              )
+                # query Bill with components
+                # (this bit taken from def bill in views/bills.py)
+                bill = Bill.objects.select_related(
+                    "legislative_session",
+                    "legislative_session__jurisdiction",
+                    "from_organization",
+                ).get(
+                    legislative_session__jurisdiction_id=jid,
+                    legislative_session__identifier=session,
+                    identifier=identifier,
+                )
             else:
-              raise ValueError("Unable to parse openstatesUrl. openstatesUrl may be malformed.")
+                raise ValueError("Unable to parse openstatesUrl. openstatesUrl may be malformed.")
 
         if not bill:
-            raise ValueError("must either pass 'id', 'openstatesUrl', or 'jurisdiction', 'session', "
-                             "and 'identifier' together")
+            raise ValueError("must either pass 'id', 'openstatesUrl', or 'jurisdiction', "
+                             "'session', and 'identifier' together")
 
         return bill
