@@ -1,0 +1,23 @@
+---
+django_environment:
+    DEBUG: false
+    ADMINS: James Turk james@openstates.org
+    SECRET_KEY: "{{ lookup('aws_ssm', '/site/SECRET_KEY') }}"
+    EMAIL_HOST: email-smtp.us-east-1.amazonaws.com
+    EMAIL_HOST_USER: "{{ lookup('aws_ssm', '/site/EMAIL_HOST_USER') }}"
+    EMAIL_HOST_PASSWORD: "{{ lookup('aws_ssm', '/site/EMAIL_HOST_PASSWORD') }}"
+    DATABASE_URL: "{{ lookup('aws_ssm', '/site/DATABASE_URL') }}"
+    GRAPHQL_DEMO_KEY: "{{ lookup('aws_ssm', '/site/GRAPHQL_DEMO_KEY') }}"
+    STRIPE_PUBLIC_KEY: "{{ lookup('aws_ssm', '/site/STRIPE_PUBLIC_KEY') }}"
+    STRIPE_SECRET_KEY: "{{ lookup('aws_ssm', '/site/STRIPE_SECRET_KEY') }}"
+    RAVEN_DSN: "{{ lookup('aws_ssm', '/site/RAVEN_DSN') }}"
+
+# postgres
+pg_password: "{{ lookup('aws_ssm', '/bobsled/backups/PGPASSWORD') }}" 
+pg_host: "{{ lookup('aws_ssm', '/bobsled/backups/PGHOST') }}" 
+pg_user: "{{ lookup('aws_ssm', '/bobsled/backups/PGUSER') }}" 
+pg_port: 5432
+pg_database: openstatesorg
+
+# server config
+newrelic_key: "{{ lookup('aws_ssm', '/site/NEWRELIC_INI_KEY') }}" 
