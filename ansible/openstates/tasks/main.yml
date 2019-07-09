@@ -1,0 +1,153 @@
+---
+- name: install system packages
+  apt:
+    update_cache: yes
+    pkg:
+      - build-essential
+      - git
+      - mercurial
+      - python-pycurl
+      - python-boto
+      - libpq-dev
+      - unzip
+      - gdal-bin
+      - python
+      - python-dev
+      - virtualenv
+      - uwsgi
+      - nginx
+      - uwsgi-plugin-python3
+      - libxslt-dev
+      - certbot
+      - python3-certbot-dns-route53
+
+- name: add localhost alias
+  lineinfile: dest=/etc/hosts line='127.0.0.1 openstates.org'
+- name: add pgpass file
+  template: src=pgpass.j2 dest=/home/ubuntu/.pgpass mode=600
+
+# user home directory
+- name: make project dir
+  file: path=/home/openstates state=directory
+- name: add project user
+  user: name=openstates home=/home/openstates shell=/bin/bash state=present
+- name: chown user directory
+  file: path=/home/openstates owner=openstates
+- name: add env_vars for project user
+  template: src=env_vars.j2 dest=/home/openstates/env_vars mode=640
+  become_user: "openstates"
+- name: copy robots.txt
+  copy: src=files/robots.txt dest=/home/openstates/robots.txt mode=644
+
+# node
+- name: download nodesource script
+  get_url:
+    url: https://deb.nodesource.com/setup_10.x
+    dest: /tmp/nodesource-setup.sh
+    mode: 0770
+- name: run nodesource script
+  command: /tmp/nodesource-setup.sh
+- name: install nodejs
+  apt:
+    pkg: nodejs
+
+# letsencrypt
+
+- name: add letsencrypt cert
+  command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
+- name: add letsencrypt renewal crontab
+  cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
+- name: add update_materialized_views cron
+  cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="hourly" name="update materialized views"
+- name: restart nginx weekly
+  cron: job="systemctl restart nginx" special_time="weekly" name="restart nginx"
+- name: archive letsencrypt stuff
+  cron: job='bash -c "tar cvf /tmp/newle$(date +\%Y\%m\%d).gz /etc/letsencrypt/ && aws s3 cp /tmp/newle$(date +\%Y\%m\%d).gz s3://openstates-backups/letsencrypt/ && rm /tmp/newle$(date +\%Y\%m\%d).gz"' special_time="monthly" name="backup letsencrypt"
+
+# virtualenv
+- name: checkout project directories
+  git: repo=https://github.com/openstates/openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=master
+  become_user: "openstates"
+  notify:
+    - restart django-application
+  register: gitresult
+- name: create virtualenv
+  command: virtualenv -p python3.6 /home/openstates/virt{{ gitresult.after }}
+  become_user: "openstates"
+  notify:
+    - restart django-application
+- name: add checkouts to python path
+  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.6/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
+  become_user: "openstates"
+- name: install pipenv
+  pip: name=pipenv virtualenv=/home/openstates/virt{{ gitresult.after }}
+  become_user: "openstates"
+- name: install Pipfile.lock
+  command: /home/openstates/virt{{ gitresult.after }}/bin/pipenv install # --deploy
+  args:
+    chdir: /home/openstates/src/openstates.org
+  environment:
+    VIRTUAL_ENV: /home/openstates/virt{{ gitresult.after }}
+  become_user: "openstates"
+- name: link virtualenv
+  file: src=/home/openstates/virt{{ gitresult.after }} dest=/home/openstates/virt state=link
+  notify:
+    - restart django-application
+
+# npm installation & build
+- name: npm install
+  command: npm ci   # use this to ensure we only build from package-lock
+  become_user: "openstates"
+  args:
+    chdir: /home/openstates/src/openstates.org
+- name: npm run build
+  command: npm run build
+  become_user: "openstates"
+  args:
+    chdir: /home/openstates/src/openstates.org
+
+# nginx
+- name: make certs dir
+  file: path=/etc/nginx/certs/ state=directory
+- name: generate dh params
+  command: openssl dhparam -out /etc/nginx/certs/dhparams.pem 2048 creates=/etc/nginx/certs/dhparams.pem
+- name: remove nginx default config
+  file: path=/etc/nginx/sites-enabled/default state=absent
+- name: write nginx template
+  template: src=nginx.j2 dest=/etc/nginx/sites-enabled/openstates
+  notify:
+    - restart nginx
+- name: ensure nginx is running and starts on boot
+  service: name=nginx state=restarted enabled=yes
+
+# new relic
+- name: generate new relic config
+  command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
+- name: rename new relic app
+  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='openstates.org'
+
+# django commands
+- name: collectstatic
+  command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
+  environment: '{{django_environment}}'
+- name: migrate
+  command: /home/openstates/virt/bin/python manage.py migrate --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org
+  environment: '{{django_environment}}'
+- name: create Site
+  command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=openstates.settings chdir=/home/openstates/src/openstates.org
+  environment: '{{django_environment}}'
+# TODO: add run of shapefiles/download.py
+# - name: loadshapefiles
+#   command: /home/openstates/virt/bin/python manage.py loadshapefiles --settings=openstates.settings chdir=/home/openstates/src/openstates.org
+#   environment: '{{django_environment}}'
+# - name: loadmappings
+#   command: /home/openstates/virt/bin/python manage.py loadmappings --settings=openstates.settings chdir=/home/openstates/src/openstates.org
+#   environment: '{{django_environment}}'
+
+# uwsgi
+- name: write uwsgi template
+  template: src=uwsgi.j2 dest=/etc/uwsgi/apps-enabled/openstates.ini
+  notify:
+    - restart django-application
+- name: start uwsgi
+  service: name=uwsgi state=started
