@@ -19,8 +19,15 @@
     position: relative;
     background: $color-gray-light;
     height: 12px;
-    min-width: 135px;
+    min-width: 25%;
+    margin-top: 1rem;
+    @include breakpoint(medium) {
+        min-width: 135px;
+        margin-top: 0;
+    }
     font-size: 0.75rem;
+
+
 
     & + & {
         margin-left: 3px;
@@ -54,8 +61,8 @@
                 position: relative;
                 left: calc(50% - 2px);
                 top: 2px;
-                width: 0; 
-                height: 0; 
+                width: 0;
+                height: 0;
                 border-left: 4px solid transparent;
                 border-right: 4px solid transparent;
                 border-top: 4px solid $color-primary;
@@ -83,7 +90,10 @@
 
 .meter-bar__title {
     color: $color-primary;
-    top: -2rem;
+    top: -2.5rem;
+    @include breakpoint(medium) {
+        top: -2rem;
+    }
 }
 
 .meter-bar__detail {
