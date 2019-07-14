@@ -9,7 +9,7 @@ class QueryCostException(Exception):
 log = logging.getLogger('graphapi')
 
 
-def _get_counts(info, fragments):
+def _get_counts(info, fragments, args={}):
     multiplier = 1
     inner_multiplier = 0
 
@@ -18,9 +18,7 @@ def _get_counts(info, fragments):
             inner_multiplier += _get_counts(selection, fragments)
     else:
         # the multiplier is either 1 or the number of elements returned
-        for argument in info.arguments:
-            if argument.name.value in ('first', 'last'):
-                multiplier = int(argument.value.value)
+        multiplier = args.get('first', args.get('last', 1))
 
         # count up how many multi-nodes inside
         if info.selection_set:
@@ -40,7 +38,7 @@ class QueryProtectionMiddleware(object):
 
     def resolve(self, next, root, info, **args):
         if root is None:
-            count = _get_counts(info.field_asts[0], info.fragments)
+            count = _get_counts(info.field_asts[0], info.fragments, args)
             log.debug(f'graphql query name={info.field_name} asts={info.field_asts} cost={count}')
             if count > self.max_cost:
                 raise QueryCostException(
