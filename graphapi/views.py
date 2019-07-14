@@ -8,10 +8,11 @@ class KeyedGraphQLView(GraphQLView):
 
     def get_response(self, request, data, show_graphiql=False):
         # check key only if we're not handling a graphiql request
-        if not show_graphiql:
-            error = verify_request(request, 'graphapi')
-            if error:
-                return error, error.status_code
+        # if not show_graphiql:
+        #     error = verify_request(request, 'graphapi')
+        #     if error:
+        #         print('graphapi/views: get_response bailed ')
+        #         return error, error.status_code
 
         return super().get_response(request, data, show_graphiql)
 
