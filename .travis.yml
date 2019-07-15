@@ -12,9 +12,9 @@ python:
 env:
   - DATABASE_URL="postgis://test:test@localhost/test"
 install: 
-    - python3 -m venv .venv
-    - .venv/bin/pip install poetry
-    - .venv/bin/poetry install
+    - python3 -m venv venv
+    - ./venv/bin/pip install poetry
+    - ./venv/bin/poetry install
     - npm ci
     - npm run build
 before_script:
@@ -22,8 +22,8 @@ before_script:
     - psql -c "CREATE DATABASE test;" -U postgres
     - psql -c "CREATE EXTENSION postgis;" -U postgres -d test
 script: 
-    - poetry run pytest --ds=openstates.test_settings --reuse-db -v geo graphapi public v1 utils
-    - poetry run flake8
+    - ./venv/poetry run pytest --ds=openstates.test_settings --reuse-db -v geo graphapi public v1 utils
+    - ./venv/poetry run flake8
 notifications:
     email:
         - james@openstates.org
