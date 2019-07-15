@@ -12,11 +12,12 @@ python:
 env:
   - DATABASE_URL="postgis://test:test@localhost/test"
 install: 
-    - pip install pipenv
-    - pipenv install --dev --skip-lock
+    - python3 -m venv .venv
+    - source .venv/bin/activate
+    - pip install poetry
+    - poetry install
     - npm ci
     - npm run build
-    - pipenv graph
 before_script:
     - psql -c "CREATE USER test with PASSWORD 'test' CREATEDB SUPERUSER;" -U postgres
     - psql -c "CREATE DATABASE test;" -U postgres

@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "openstates.org"
+version = "3.4"
+description = ""
+authors = ["James Turk <james@openstates.org>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+django-webpack-loader = "^0.6.0"
+django = "^2.2"
+pybase62 = "^0.4.0"
+python-dateutil = "^2.8"
+django-simplekeys = "^0.5.3"
+feedparser = "^5.2"
+stripe = "^2.32"
+boto3 = "^1.9"
+whitenoise = "^4.1"
+graphene-django = "^2.4"
+newrelic = "^4.20"
+raven = "^6.10"
+us = "^1.0"
+bleach = "^3.1"
+django-cors-headers = "^3.0"
+name-tools = "^0.1.3"
+opencivicdata = "^2.4"
+pupa = "^0.9.1"
+dj-database-url = "^0.5.0"
+represent-boundaries = "^0.9.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.0"
+pytest-django = "^3.5"
+flake8 = "^3.7"
+ipython = "^7.6"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
