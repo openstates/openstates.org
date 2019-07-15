@@ -37,3 +37,6 @@ geo/shapefiles/sldu*
 
 # django build
 collected_static
+
+# ansible
+*.retry

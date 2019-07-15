@@ -6,19 +6,20 @@
 <html>
     <head>
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-84709685-1"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-143711479-1"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
 
-          gtag('config', 'UA-84709685-1');
+          gtag('config', 'UA-143711479-1');
         </script>
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Open States{% endblock %}</title>
         <meta name="description" property="og:description" content="{% block description %}{% endblock %}">
+        {% if bill %}<meta name="bill:id" content="{{bill.id}}">{% endif %}
         <meta name="twitter:card" content="summary">
         <meta name="twitter:site" content="@openstates">
         <meta property="og:url" content="{{ request.build_absolute_uri }}">

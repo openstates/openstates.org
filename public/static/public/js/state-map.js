@@ -11,7 +11,7 @@ export default class StateMap extends React.Component {
     constructor (props) {
         super(props)
         this.state = {
-            chamberType: (props.state === 'dc' ? 'sldu' : 'sldl')
+            chamberType: (['dc', 'ne'].includes(props.state) ? 'sldu' : 'sldl')
         };
     }
 

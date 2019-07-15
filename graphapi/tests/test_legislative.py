@@ -134,6 +134,18 @@ def test_bill_openstates_url(django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_bill_by_openstates_url(django_assert_num_queries):
+    with django_assert_num_queries(1):
+        result = schema.execute(''' {
+            bill(openstatesUrl:"https://openstates.org/ak/bills/2018/HB1") {
+            id
+            }
+        }''')
+        assert result.errors is None
+        assert result.data['bill']['id'] == 'ocd-bill/1'
+
+
+@pytest.mark.django_db
 def test_bill_by_jurisdiction_name_session_identifier(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(''' {
