@@ -13,7 +13,7 @@ env:
   - DATABASE_URL="postgis://test:test@localhost/test"
 install: 
     - pip install pipenv
-    - pipenv install --dev
+    - pipenv install --dev --skip-lock
     - npm ci
     - npm run build
     - pipenv graph
