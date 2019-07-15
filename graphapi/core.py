@@ -231,7 +231,7 @@ class JurisdictionNode(graphene.ObjectType):
 
     def resolve_legislative_sessions(self, info,
                                      first=None, last=None, before=None, after=None):
-        return self.legislative_sessions.all()
+        return self.legislative_sessions.order_by('-start_date')
 
     def resolve_organizations(self, info,
                               first=None, last=None, before=None, after=None,
