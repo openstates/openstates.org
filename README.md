@@ -59,7 +59,7 @@ npm run build
 
 Start up the Django webserver.
 ```
-./manage.py runserver
+poetry run ./manage.py runserver
 ```
 
 Start up webpack to watch and build any changes to static files.
