@@ -38,8 +38,8 @@ Without a `pgdump` file to restore from, you can instantiate an Open Civic Data 
 
 ```
 psql openstates -c "CREATE EXTENSION postgis;"
-DATABASE_URL=postgis://localhost/openstates ./manage.py migrate
-DATABASE_URL=postgis://localhost/openstates ./manage.py loaddivisions us
+DATABASE_URL=postgis://openstates:<password>@localhost/openstatesorg poetry run ./manage.py migrate
+DATABASE_URL=postgis://openstates:<password>@localhost/openstatesorg poetry run ./manage.py loaddivisions us
 ```
 
 #### Frontend
