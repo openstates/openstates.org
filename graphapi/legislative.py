@@ -1,6 +1,7 @@
 import graphene
 import re
 from django.db.models import Prefetch, Max
+from django.contrib.postgres.search import SearchQuery
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
 from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
@@ -261,6 +262,7 @@ class LegislativeQuery:
                                   sponsor=SponsorInput(),
                                   classification=graphene.String(),
                                   action_since=graphene.String(),
+                                  search_query=graphene.String(),
                                   )
 
     def resolve_bills(self, info,
@@ -268,6 +270,7 @@ class LegislativeQuery:
                       jurisdiction=None, chamber=None, session=None,
                       updated_since=None, classification=None,
                       subject=None, sponsor=None, action_since=None,
+                      search_query=None,
                       ):
         # q (full text)
         bills = Bill.objects.all()
@@ -296,6 +299,10 @@ class LegislativeQuery:
             elif sponsor.get('name'):
                 sponsor_args['sponsorships__name'] = sponsor['name']
             bills = bills.filter(**sponsor_args)
+        if search_query:
+            bills = bills.filter(
+                searchable__search_vector=SearchQuery(search_query, search_type='raw')
+            )
 
         bills = optimize(bills, info, [
             '.abstracts',
