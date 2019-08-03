@@ -7,9 +7,9 @@ This project powers the 2019 OpenStates.org, including the API.
 ## Developing
 
 ### Dependencies
-* [Python 3.6](https://www.python.org/) (with [pipenv](https://docs.pipenv.org/))
-* PostgreSQL 9.4
-* PostGIS 2.3
+* [Python 3.6](https://www.python.org/) (with [poetry](https://poetry.eustace.io/))
+* PostgreSQL 10
+* PostGIS 2.4
 * recent version of npm
 
 ### Installing
@@ -18,7 +18,7 @@ This project powers the 2019 OpenStates.org, including the API.
 
 Install dependencies
 ```
-pipenv install
+poetry install
 ```
 
 Create the database and user
