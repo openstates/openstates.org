@@ -558,3 +558,17 @@ def test_votes_via_person():
     assert len(people) == 1
     assert people[0]['votes'][0]['option'] == 'yes'
     assert people[0]['votes'][0]['voteEvent']['bill']['identifier'] == 'HB 1'
+
+
+@pytest.mark.django_db
+def test_bill_fts():
+    result = schema.execute('''{
+        bills(searchQuery: "moose", first:5) {
+            edges {node {
+                title
+            }}
+          }
+        }''')
+    assert result.errors is None
+    bills = [n['node'] for n in result.data['bills']['edges']]
+    assert len(bills) == 1

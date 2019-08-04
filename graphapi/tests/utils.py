@@ -133,7 +133,7 @@ def populate_db():
     b1.sources.create(url='https://example.com/s2')
     b1.sources.create(url='https://example.com/s3')
 
-    sb = SearchableBill.objects.create(
+    SearchableBill.objects.create(
         bill=b1,
         version_link=dlink,
         all_titles=b1.title,
@@ -142,7 +142,7 @@ def populate_db():
         search_vector="",
     )
     SearchableBill.objects.update(
-        search_vector = (
+        search_vector=(
             SearchVector("all_titles", weight='A', config='english') +
             SearchVector("raw_text", weight='B', config='english')
         ),
