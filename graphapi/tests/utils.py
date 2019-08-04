@@ -1,7 +1,8 @@
 import uuid
 import random
+from django.contrib.postgres.search import SearchVector
 from opencivicdata.core.models import Division, Jurisdiction, Organization, Person
-from opencivicdata.legislative.models import Bill, VoteEvent
+from opencivicdata.legislative.models import Bill, VoteEvent, SearchableBill
 
 
 def make_random_bill(name):
@@ -123,7 +124,7 @@ def populate_db():
     d = b1.documents.create(note='Legal Justification')
     d.links.create(url='https://example.com/lj')
     d = b1.versions.create(note='First Draft', date="2017-01-01")
-    d.links.create(url='https://example.com/1.txt', media_type='text/plain')
+    dlink = d.links.create(url='https://example.com/1.txt', media_type='text/plain')
     d.links.create(url='https://example.com/1.pdf', media_type='application/pdf')
     d = b1.versions.create(note='Final Draft', date="2017-06-01")
     d.links.create(url='https://example.com/f.txt', media_type='text/plain')
@@ -131,6 +132,21 @@ def populate_db():
     b1.sources.create(url='https://example.com/s1')
     b1.sources.create(url='https://example.com/s2')
     b1.sources.create(url='https://example.com/s3')
+
+    sb = SearchableBill.objects.create(
+        bill=b1,
+        version_link=dlink,
+        all_titles=b1.title,
+        raw_text="shove some text in here",
+        is_error=False,
+        search_vector="",
+    )
+    SearchableBill.objects.update(
+        search_vector = (
+            SearchVector("all_titles", weight='A', config='english') +
+            SearchVector("raw_text", weight='B', config='english')
+        ),
+    )
 
     ve = VoteEvent.objects.create(bill=b1, legislative_session=session,
                                   motion_text='Vote on House Passage',
