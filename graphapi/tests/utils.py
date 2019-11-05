@@ -204,6 +204,9 @@ def populate_db():
         legislative_session="2018",
         relation_type="companion",
     )
+    rb.sponsorships.create(
+        primary=False, classification="cosponsor", name="Beth Two", person=amanda
+    )
 
     for x in range(10):
         make_random_bill("Alaska")
