@@ -1,34 +1,33 @@
 ACTION_MAPPING = {
-    'introduction': 'bill:introduced',
-    'passage': 'bill:passed',
-    'failure': 'bill:failed',
-    'withdrawal': 'bill:withdrawn',
-    'substitution': 'bill:substituted',
-    'filing': 'bill:filed',
-    'veto-override-passage': 'bill:veto_override:passed',
-    'veto-override-failure': 'bill:veto_override:failed',
-    'executive-receipt': 'governor:received',
-    'executive-signature': 'governor:signed',
-    'became-law': 'governor:signed',
-    'executive-veto': 'governor:vetoed',
-    'executive-veto-line-item': 'governor:vetoed:line-item',
-    'amendment-introduction': 'amendment:introduced',
-    'amendment-passage': 'amendment:passed',
-    'amendment-failure': 'amendment:failed',
-    'amendment-deferral': 'amendment:tabled',
-    'amendment-amendment': 'amendment:amended',
-    'amendment-withdrawal': 'amendment:withdrawn',
-    'referral-committee': 'committee:referred',
-    'committee-failure': 'committee:failed',
-    'committee-passage': 'committee:passed',
-    'committee-passage-favorable': 'committee:passed:favorable',
-    'committee-passage-unfavorable': 'committee:passed:unfavorable',
-    'reading-1': 'bill:reading:1',
-    'reading-2': 'bill:reading:2',
-    'reading-3': 'bill:reading:3',
-
+    "introduction": "bill:introduced",
+    "passage": "bill:passed",
+    "failure": "bill:failed",
+    "withdrawal": "bill:withdrawn",
+    "substitution": "bill:substituted",
+    "filing": "bill:filed",
+    "veto-override-passage": "bill:veto_override:passed",
+    "veto-override-failure": "bill:veto_override:failed",
+    "executive-receipt": "governor:received",
+    "executive-signature": "governor:signed",
+    "became-law": "governor:signed",
+    "executive-veto": "governor:vetoed",
+    "executive-veto-line-item": "governor:vetoed:line-item",
+    "amendment-introduction": "amendment:introduced",
+    "amendment-passage": "amendment:passed",
+    "amendment-failure": "amendment:failed",
+    "amendment-deferral": "amendment:tabled",
+    "amendment-amendment": "amendment:amended",
+    "amendment-withdrawal": "amendment:withdrawn",
+    "referral-committee": "committee:referred",
+    "committee-failure": "committee:failed",
+    "committee-passage": "committee:passed",
+    "committee-passage-favorable": "committee:passed:favorable",
+    "committee-passage-unfavorable": "committee:passed:unfavorable",
+    "reading-1": "bill:reading:1",
+    "reading-2": "bill:reading:2",
+    "reading-3": "bill:reading:3",
     # obsolete
-    'committee-referral': 'committee:referred',
+    "committee-referral": "committee:referred",
 }
 
 TIMEZONES = {
@@ -89,42 +88,16 @@ TIMEZONES = {
 
 TERMS = {
     "ak": [
-        {
-            "end_year": 2012,
-            "name": "27",
-            "sessions": ["27"],
-            "start_year": 2011,
-        },
-        {
-            "end_year": 2014,
-            "name": "28",
-            "sessions": ["28"],
-            "start_year": 2013,
-        },
-        {
-            "end_year": 2016,
-            "name": "29",
-            "sessions": ["29"],
-            "start_year": 2015,
-        },
-        {
-            "end_year": 2018,
-            "name": "30",
-            "sessions": ["30"],
-            "start_year": 2017,
-        },
+        {"end_year": 2012, "name": "27", "sessions": ["27"], "start_year": 2011},
+        {"end_year": 2014, "name": "28", "sessions": ["28"], "start_year": 2013},
+        {"end_year": 2016, "name": "29", "sessions": ["29"], "start_year": 2015},
+        {"end_year": 2018, "name": "30", "sessions": ["30"], "start_year": 2017},
     ],
     "al": [
         {
             "end_year": 2014,
             "name": "2011-2014",
-            "sessions": [
-                "2011rs",
-                "2012rs",
-                "2012fs",
-                "2013rs",
-                "2014rs",
-            ],
+            "sessions": ["2011rs", "2012rs", "2012fs", "2013rs", "2014rs"],
             "start_year": 2011,
         },
         {
@@ -153,36 +126,19 @@ TERMS = {
         {
             "end_year": 2014,
             "name": "2013-2014",
-            "sessions": [
-                "2013",
-                "2013S1",
-                "2014",
-                "2014F",
-                "2014S2",
-            ],
+            "sessions": ["2013", "2013S1", "2014", "2014F", "2014S2"],
             "start_year": 2013,
         },
         {
             "end_year": 2016,
             "name": "2015-2016",
-            "sessions": [
-                "2015",
-                "2015S1",
-                "2016S2",
-                "2016F",
-                "2016S3",
-            ],
+            "sessions": ["2015", "2015S1", "2016S2", "2016F", "2016S3"],
             "start_year": 2015,
         },
         {
             "end_year": 2018,
             "name": "2017-2018",
-            "sessions": [
-                "2017",
-                "2017S1",
-                "2018F",
-                "2018S2",
-            ],
+            "sessions": ["2017", "2017S1", "2018F", "2018S2"],
             "start_year": 2017,
         },
     ],
@@ -232,21 +188,13 @@ TERMS = {
         {
             "end_year": 2016,
             "name": "52",
-            "sessions": [
-                "52nd-1st-regular",
-                "52nd-1st-special",
-                "52nd-2nd-regular",
-            ],
+            "sessions": ["52nd-1st-regular", "52nd-1st-special", "52nd-2nd-regular"],
             "start_year": 2015,
         },
         {
             "end_year": 2018,
             "name": "53",
-            "sessions": [
-                "53rd-1st-regular",
-                "53rd-1st-special",
-                "53rd-2nd-regular",
-            ],
+            "sessions": ["53rd-1st-regular", "53rd-1st-special", "53rd-2nd-regular"],
             "start_year": 2017,
         },
     ],
@@ -271,10 +219,7 @@ TERMS = {
         {
             "end_year": 2012,
             "name": "20112012",
-            "sessions": [
-                "20112012 Special Session 1",
-                "20112012",
-            ],
+            "sessions": ["20112012 Special Session 1", "20112012"],
             "start_date": "2010-12-06 00:00:00",
             "start_year": 2011,
         },
@@ -358,30 +303,10 @@ TERMS = {
         },
     ],
     "dc": [
-        {
-            "end_year": 2012,
-            "name": "2011-2012",
-            "sessions": ["19"],
-            "start_year": 2011,
-        },
-        {
-            "end_year": 2014,
-            "name": "2013-2014",
-            "sessions": ["20"],
-            "start_year": 2013,
-        },
-        {
-            "end_year": 2016,
-            "name": "2015-2016",
-            "sessions": ["21"],
-            "start_year": 2015,
-        },
-        {
-            "end_year": 2018,
-            "name": "2017-2018",
-            "sessions": ["22"],
-            "start_year": 2017,
-        },
+        {"end_year": 2012, "name": "2011-2012", "sessions": ["19"], "start_year": 2011},
+        {"end_year": 2014, "name": "2013-2014", "sessions": ["20"], "start_year": 2013},
+        {"end_year": 2016, "name": "2015-2016", "sessions": ["21"], "start_year": 2015},
+        {"end_year": 2018, "name": "2017-2018", "sessions": ["22"], "start_year": 2017},
     ],
     "de": [
         {
@@ -461,13 +386,7 @@ TERMS = {
         {
             "end_year": 2016,
             "name": "2015-2016",
-            "sessions": [
-                "2015",
-                "2015A",
-                "2015B",
-                "2015C",
-                "2016",
-            ],
+            "sessions": ["2015", "2015A", "2015B", "2015C", "2016"],
             "start_year": 2015,
         },
         {
@@ -513,28 +432,19 @@ TERMS = {
         {
             "end_year": 2014,
             "name": "2013-2014",
-            "sessions": [
-                "2013 Regular Session",
-                "2014 Regular Session",
-            ],
+            "sessions": ["2013 Regular Session", "2014 Regular Session"],
             "start_year": 2013,
         },
         {
             "end_year": 2016,
             "name": "2015-2016",
-            "sessions": [
-                "2015 Regular Session",
-                "2016 Regular Session",
-            ],
+            "sessions": ["2015 Regular Session", "2016 Regular Session"],
             "start_year": 2015,
         },
         {
             "end_year": 2018,
             "name": "2017-2018",
-            "sessions": [
-                "2017 Regular Session",
-                "2018 Regular Session",
-            ],
+            "sessions": ["2017 Regular Session", "2018 Regular Session"],
             "start_year": 2017,
         },
     ],
@@ -597,12 +507,7 @@ TERMS = {
             "sessions": ["93rd", "Special_93rd"],
             "start_year": 2003,
         },
-        {
-            "end_year": 2006,
-            "name": "94th",
-            "sessions": ["94th"],
-            "start_year": 2005,
-        },
+        {"end_year": 2006, "name": "94th", "sessions": ["94th"], "start_year": 2005},
         {
             "end_year": 2008,
             "name": "95th",
@@ -615,24 +520,9 @@ TERMS = {
             "sessions": ["96th", "Special_96th"],
             "start_year": 2009,
         },
-        {
-            "end_year": 2012,
-            "name": "97th",
-            "sessions": ["97th"],
-            "start_year": 2011,
-        },
-        {
-            "end_year": 2014,
-            "name": "98th",
-            "sessions": ["98th"],
-            "start_year": 2013,
-        },
-        {
-            "end_year": 2016,
-            "name": "99th",
-            "sessions": ["99th"],
-            "start_year": 2015,
-        },
+        {"end_year": 2012, "name": "97th", "sessions": ["97th"], "start_year": 2011},
+        {"end_year": 2014, "name": "98th", "sessions": ["98th"], "start_year": 2013},
+        {"end_year": 2016, "name": "99th", "sessions": ["99th"], "start_year": 2015},
         {
             "end_year": 2018,
             "name": "100th",
@@ -702,12 +592,7 @@ TERMS = {
         {
             "end_year": 2012,
             "name": "2011-2012",
-            "sessions": [
-                "2011 Regular Session",
-                "2011SS",
-                "2012RS",
-                "2012SS",
-            ],
+            "sessions": ["2011 Regular Session", "2011SS", "2012RS", "2012SS"],
             "start_year": 2011,
         },
         {
@@ -733,12 +618,7 @@ TERMS = {
         {
             "end_year": 2011,
             "name": "2008-2011",
-            "sessions": [
-                "2009",
-                "2010",
-                "2011 1st Extraordinary Session",
-                "2011",
-            ],
+            "sessions": ["2009", "2010", "2011 1st Extraordinary Session", "2011"],
             "start_year": 2008,
         },
         {
@@ -766,62 +646,23 @@ TERMS = {
         },
     ],
     "ma": [
-        {
-            "end_year": 2010,
-            "name": "186",
-            "sessions": ["186th"],
-            "start_year": 2009,
-        },
-        {
-            "end_year": 2012,
-            "name": "187",
-            "sessions": ["187th"],
-            "start_year": 2011,
-        },
-        {
-            "end_year": 2013,
-            "name": "188",
-            "sessions": ["188th"],
-            "start_year": 2014,
-        },
-        {
-            "end_year": 2015,
-            "name": "189",
-            "sessions": ["189th"],
-            "start_year": 2016,
-        },
-        {
-            "end_year": 2017,
-            "name": "190",
-            "sessions": ["190th"],
-            "start_year": 2018,
-        },
+        {"end_year": 2010, "name": "186", "sessions": ["186th"], "start_year": 2009},
+        {"end_year": 2012, "name": "187", "sessions": ["187th"], "start_year": 2011},
+        {"end_year": 2013, "name": "188", "sessions": ["188th"], "start_year": 2014},
+        {"end_year": 2015, "name": "189", "sessions": ["189th"], "start_year": 2016},
+        {"end_year": 2017, "name": "190", "sessions": ["190th"], "start_year": 2018},
     ],
     "md": [
         {
             "end_year": 2010,
             "name": "2007-2010",
-            "sessions": [
-                "2007",
-                "2007s1",
-                "2008",
-                "2009",
-                "2010",
-            ],
+            "sessions": ["2007", "2007s1", "2008", "2009", "2010"],
             "start_year": 2007,
         },
         {
             "end_year": 2014,
             "name": "2011-2014",
-            "sessions": [
-                "2011",
-                "2011s1",
-                "2012",
-                "2012s1",
-                "2012s2",
-                "2013",
-                "2014",
-            ],
+            "sessions": ["2011", "2011s1", "2012", "2012s1", "2012s2", "2013", "2014"],
             "start_year": 2011,
         },
         {
@@ -970,14 +811,7 @@ TERMS = {
         {
             "end_year": 2018,
             "name": "2017-2018",
-            "sessions": [
-                "2017",
-                "2017S1",
-                "2017S2",
-                "2018",
-                "2018S1",
-                "2018S2",
-            ],
+            "sessions": ["2017", "2017S1", "2017S2", "2018", "2018S1", "2018S2"],
             "start_year": 2017,
         },
     ],
@@ -1081,53 +915,21 @@ TERMS = {
         {
             "end_year": 2016,
             "name": "2015-2016",
-            "sessions": [
-                "2015",
-                "2015E1",
-                "2015E2",
-                "2015E3",
-                "2015E4",
-                "2015E5",
-            ],
+            "sessions": ["2015", "2015E1", "2015E2", "2015E3", "2015E4", "2015E5"],
             "start_year": 2015,
         },
         {
             "end_year": 2018,
             "name": "2017-2018",
-            "sessions": [
-                "2017",
-                "2017E1",
-                "2017E2",
-                "2017E3",
-            ],
+            "sessions": ["2017", "2017E1", "2017E2", "2017E3"],
             "start_year": 2017,
         },
     ],
     "nd": [
-        {
-            "end_year": 2012,
-            "name": "62",
-            "sessions": ["62"],
-            "start_year": 2011,
-        },
-        {
-            "end_year": 2014,
-            "name": "63",
-            "sessions": ["63"],
-            "start_year": 2013,
-        },
-        {
-            "end_year": 2016,
-            "name": "64",
-            "sessions": ["64"],
-            "start_year": 2015,
-        },
-        {
-            "end_year": 2018,
-            "name": "65",
-            "sessions": ["65"],
-            "start_year": 2017,
-        },
+        {"end_year": 2012, "name": "62", "sessions": ["62"], "start_year": 2011},
+        {"end_year": 2014, "name": "63", "sessions": ["63"], "start_year": 2013},
+        {"end_year": 2016, "name": "64", "sessions": ["64"], "start_year": 2015},
+        {"end_year": 2018, "name": "65", "sessions": ["65"], "start_year": 2017},
     ],
     "ne": [
         {
@@ -1252,38 +1054,20 @@ TERMS = {
             "sessions": ["2010Special26", "75"],
             "start_year": 2009,
         },
-        {
-            "end_year": 2012,
-            "name": "2011-2012",
-            "sessions": ["76"],
-            "start_year": 2011,
-        },
+        {"end_year": 2012, "name": "2011-2012", "sessions": ["76"], "start_year": 2011},
         {
             "end_year": 2014,
             "name": "2013-2014",
-            "sessions": [
-                "77",
-                "2013Special27",
-                "2014Special28",
-            ],
+            "sessions": ["77", "2013Special27", "2014Special28"],
             "start_year": 2013,
         },
         {
             "end_year": 2016,
             "name": "2015-2016",
-            "sessions": [
-                "78",
-                "2015Special29",
-                "2016Special30",
-            ],
+            "sessions": ["78", "2015Special29", "2016Special30"],
             "start_year": 2015,
         },
-        {
-            "end_year": 2018,
-            "name": "2017-2018",
-            "sessions": ["79"],
-            "start_year": 2017,
-        },
+        {"end_year": 2018, "name": "2017-2018", "sessions": ["79"], "start_year": 2017},
     ],
     "ny": [
         {
@@ -1379,19 +1163,13 @@ TERMS = {
         {
             "end_year": 2008,
             "name": "2007-2008",
-            "sessions": [
-                "2007 Regular Session",
-                "2008 Special Session",
-            ],
+            "sessions": ["2007 Regular Session", "2008 Special Session"],
             "start_year": 2007,
         },
         {
             "end_year": 2010,
             "name": "2009-2010",
-            "sessions": [
-                "2009 Regular Session",
-                "2010 Special Session",
-            ],
+            "sessions": ["2009 Regular Session", "2010 Special Session"],
             "start_year": 2009,
         },
         {
@@ -1417,10 +1195,7 @@ TERMS = {
         {
             "end_year": 2016,
             "name": "2015-2016",
-            "sessions": [
-                "2015 Regular Session",
-                "2016 Regular Session",
-            ],
+            "sessions": ["2015 Regular Session", "2016 Regular Session"],
             "start_year": 2015,
         },
         {
@@ -1438,10 +1213,7 @@ TERMS = {
         {
             "end_year": 2010,
             "name": "2009-2010",
-            "sessions": [
-                "2009-2010",
-                "2009-2010 Special Session #1 (Transportation)",
-            ],
+            "sessions": ["2009-2010", "2009-2010 Special Session #1 (Transportation)"],
             "start_year": 2009,
         },
         {
@@ -1490,36 +1262,11 @@ TERMS = {
         },
     ],
     "ri": [
-        {
-            "end_year": 2012,
-            "name": "2012",
-            "sessions": ["2012"],
-            "start_year": 2012,
-        },
-        {
-            "end_year": 2013,
-            "name": "2013",
-            "sessions": ["2013"],
-            "start_year": 2013,
-        },
-        {
-            "end_year": 2014,
-            "name": "2014",
-            "sessions": ["2014"],
-            "start_year": 2014,
-        },
-        {
-            "end_year": 2015,
-            "name": "2015",
-            "sessions": ["2015"],
-            "start_year": 2015,
-        },
-        {
-            "end_year": 2017,
-            "name": "2016",
-            "sessions": ["2016"],
-            "start_year": 2016,
-        },
+        {"end_year": 2012, "name": "2012", "sessions": ["2012"], "start_year": 2012},
+        {"end_year": 2013, "name": "2013", "sessions": ["2013"], "start_year": 2013},
+        {"end_year": 2014, "name": "2014", "sessions": ["2014"], "start_year": 2014},
+        {"end_year": 2015, "name": "2015", "sessions": ["2015"], "start_year": 2015},
+        {"end_year": 2017, "name": "2016", "sessions": ["2016"], "start_year": 2016},
         {
             "end_year": 2018,
             "name": "2017",
@@ -1528,12 +1275,7 @@ TERMS = {
         },
     ],
     "sc": [
-        {
-            "end_year": 2012,
-            "name": "119",
-            "sessions": ["119"],
-            "start_year": 2011,
-        },
+        {"end_year": 2012, "name": "119", "sessions": ["119"], "start_year": 2011},
         {
             "end_year": 2014,
             "name": "2013-2014",
@@ -1586,111 +1328,51 @@ TERMS = {
         },
     ],
     "tn": [
-        {
-            "end_year": 2012,
-            "name": "107",
-            "sessions": ["107"],
-            "start_year": 2011,
-        },
-        {
-            "end_year": 2014,
-            "name": "108",
-            "sessions": ["108"],
-            "start_year": 2013,
-        },
+        {"end_year": 2012, "name": "107", "sessions": ["107"], "start_year": 2011},
+        {"end_year": 2014, "name": "108", "sessions": ["108"], "start_year": 2013},
         {
             "end_year": 2016,
             "name": "109",
             "sessions": ["109", "109s1", "109s2"],
             "start_year": 2015,
         },
-        {
-            "end_year": 2018,
-            "name": "110",
-            "sessions": ["110"],
-            "start_year": 2017,
-        },
+        {"end_year": 2018, "name": "110", "sessions": ["110"], "start_year": 2017},
     ],
     "tx": [
-        {
-            "end_year": 2010,
-            "name": "81",
-            "sessions": ["81", "811"],
-            "start_year": 2009,
-        },
-        {
-            "end_year": 2012,
-            "name": "82",
-            "sessions": ["82", "821"],
-            "start_year": 2011,
-        },
+        {"end_year": 2010, "name": "81", "sessions": ["81", "811"], "start_year": 2009},
+        {"end_year": 2012, "name": "82", "sessions": ["82", "821"], "start_year": 2011},
         {
             "end_year": 2014,
             "name": "83",
             "sessions": ["83", "831", "832", "833"],
             "start_year": 2013,
         },
-        {
-            "end_year": 2016,
-            "name": "84",
-            "sessions": ["84"],
-            "start_year": 2015,
-        },
-        {
-            "end_year": 2018,
-            "name": "85",
-            "sessions": ["85", "851"],
-            "start_year": 2017,
-        },
+        {"end_year": 2016, "name": "84", "sessions": ["84"], "start_year": 2015},
+        {"end_year": 2018, "name": "85", "sessions": ["85", "851"], "start_year": 2017},
     ],
     "ut": [
         {
             "end_year": 2012,
             "name": "2011-2012",
-            "sessions": [
-                "2011",
-                "2011S1",
-                "2011S2",
-                "2011S3",
-                "2012",
-                "2012S4",
-            ],
+            "sessions": ["2011", "2011S1", "2011S2", "2011S3", "2012", "2012S4"],
             "start_year": 2011,
         },
         {
             "end_year": 2014,
             "name": "2013-2014",
-            "sessions": [
-                "2013",
-                "2013h1",
-                "2013s1",
-                "2013s2",
-                "2014",
-            ],
+            "sessions": ["2013", "2013h1", "2013s1", "2013s2", "2014"],
             "start_year": 2013,
         },
         {
             "end_year": 2016,
             "name": "2015-2016",
-            "sessions": [
-                "2015",
-                "2015s1",
-                "2016",
-                "2016S2",
-                "2016S3",
-                "2016S4",
-            ],
+            "sessions": ["2015", "2015s1", "2016", "2016S2", "2016S3", "2016S4"],
             "start_year": 2015,
         },
         {
             "end_year": 2018,
             "name": "2017-2018",
-            "sessions": [
-                "2017",
-                "2017S1",
-                "2018",
-                "2018S2",
-            ],
+            "sessions": ["2017", "2017S1", "2018", "2018S2"],
             "start_year": 2017,
         },
     ],
@@ -1704,23 +1386,13 @@ TERMS = {
         {
             "end_year": 2013,
             "name": "2012-2013",
-            "sessions": [
-                "2012",
-                "2012specialI",
-                "2013",
-                "2013specialI",
-            ],
+            "sessions": ["2012", "2012specialI", "2013", "2013specialI"],
             "start_year": 2012,
         },
         {
             "end_year": 2015,
             "name": "2014-2015",
-            "sessions": [
-                "2014",
-                "2014specialI",
-                "2015",
-                "2015specialI",
-            ],
+            "sessions": ["2014", "2014specialI", "2015", "2015specialI"],
             "start_year": 2014,
         },
         {
@@ -1732,12 +1404,7 @@ TERMS = {
         {
             "end_year": 2019,
             "name": "2018-2019",
-            "sessions": [
-                "2018",
-                "2018specialI",
-                "2018specialII",
-                "2019",
-            ],
+            "sessions": ["2018", "2018specialI", "2018specialII", "2019"],
             "start_year": 2018,
         },
     ],
@@ -1878,14 +1545,7 @@ TERMS = {
         {
             "end_year": 2018,
             "name": "2017-2018",
-            "sessions": [
-                "2017",
-                "20171S",
-                "20172S",
-                "2018",
-                "20181S",
-                "20182S",
-            ],
+            "sessions": ["2017", "20171S", "20172S", "2018", "20181S", "20182S"],
             "start_year": 2017,
         },
     ],

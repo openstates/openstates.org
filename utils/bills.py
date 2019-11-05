@@ -1,9 +1,6 @@
 import re
 from django.db.models import Min, Max, OuterRef, Subquery
-from opencivicdata.legislative.models import (
-    Bill,
-    BillAction,
-)
+from opencivicdata.legislative.models import Bill, BillAction
 
 # This function has to match openstates.transformers
 _bill_id_re = re.compile(r"([A-Z]*)\s*0*([-\d]+)")

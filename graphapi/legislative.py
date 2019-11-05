@@ -4,8 +4,13 @@ from django.db.models import Prefetch, Max
 from django.contrib.postgres.search import SearchQuery
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
-from .core import (LegislativeSessionNode, OrganizationNode, IdentifierNode,
-                   PersonNode, LinkNode)
+from .core import (
+    LegislativeSessionNode,
+    OrganizationNode,
+    IdentifierNode,
+    PersonNode,
+    LinkNode,
+)
 from .optimization import optimize
 from urllib.parse import urlparse
 from utils.common import abbr_to_jid
@@ -14,10 +19,10 @@ from utils.bills import fix_bill_id
 
 def jurisdiction_query(jurisdiction):
     query = {}
-    if jurisdiction.startswith('ocd-jurisdiction'):
-        query['legislative_session__jurisdiction_id'] = jurisdiction
+    if jurisdiction.startswith("ocd-jurisdiction"):
+        query["legislative_session__jurisdiction_id"] = jurisdiction
     else:
-        query['legislative_session__jurisdiction__name'] = jurisdiction
+        query["legislative_session__jurisdiction__name"] = jurisdiction
     return query
 
 
@@ -53,7 +58,7 @@ class RelatedBillNode(graphene.ObjectType):
     legislative_session = graphene.String()
     relation_type = graphene.String()
 
-    related_bill = graphene.Field('graphapi.legislative.BillNode')
+    related_bill = graphene.Field("graphapi.legislative.BillNode")
 
 
 class BillActionNode(graphene.ObjectType):
@@ -63,13 +68,15 @@ class BillActionNode(graphene.ObjectType):
     classification = graphene.List(graphene.String)
     order = graphene.Int()
     extras = graphene.String()
-    vote = graphene.Field('graphapi.legislative.VoteEventNode')
+    vote = graphene.Field("graphapi.legislative.VoteEventNode")
 
     related_entities = graphene.List(RelatedEntityNode)
 
     def resolve_related_entities(self, info):
-        if 'related_entities' not in getattr(self, '_prefetched_objects_cache', []):
-            return optimize(self.related_entities.all(), info, None, ['organization', 'person'])
+        if "related_entities" not in getattr(self, "_prefetched_objects_cache", []):
+            return optimize(
+                self.related_entities.all(), info, None, ["organization", "person"]
+            )
         else:
             return self.related_entities.all()
 
@@ -107,7 +114,7 @@ class BillNode(OCDBaseNode):
     documents = graphene.List(BillDocumentNode)
     versions = graphene.List(BillDocumentNode)
     sources = graphene.List(LinkNode)
-    votes = DjangoConnectionField('graphapi.legislative.VoteConnection')
+    votes = DjangoConnectionField("graphapi.legislative.VoteConnection")
 
     # extra fields
     openstates_url = graphene.String()
@@ -122,16 +129,23 @@ class BillNode(OCDBaseNode):
         return self.other_identifiers.all()
 
     def resolve_actions(self, info):
-        if 'actions' not in getattr(self, '_prefetched_objects_cache', []):
+        if "actions" not in getattr(self, "_prefetched_objects_cache", []):
             return optimize(
-                self.actions.all(), info,
-                [('.relatedEntities',
-                  Prefetch('related_entities',
-                           BillActionRelatedEntity.objects.all().select_related(
-                               'organization', 'person')
-                           )
-                  )],
-                ['.organization'])
+                self.actions.all(),
+                info,
+                [
+                    (
+                        ".relatedEntities",
+                        Prefetch(
+                            "related_entities",
+                            BillActionRelatedEntity.objects.all().select_related(
+                                "organization", "person"
+                            ),
+                        ),
+                    )
+                ],
+                [".organization"],
+            )
         else:
             return self.actions.all()
 
@@ -139,42 +153,49 @@ class BillNode(OCDBaseNode):
         return self.sponsorships.all()
 
     def resolve_documents(self, info):
-        if 'documents' not in getattr(self, '_prefetched_objects_cache', []):
-            return optimize(self.documents.all(), info, ['.links'])
+        if "documents" not in getattr(self, "_prefetched_objects_cache", []):
+            return optimize(self.documents.all(), info, [".links"])
         else:
             return self.documents.all()
 
     def resolve_versions(self, info):
-        if 'versions' not in getattr(self, '_prefetched_objects_cache', []):
-            return optimize(self.versions.all(), info, ['.links'])
+        if "versions" not in getattr(self, "_prefetched_objects_cache", []):
+            return optimize(self.versions.all(), info, [".links"])
         else:
             return self.versions.all()
 
     def resolve_sources(self, info):
         return self.sources.all()
 
-    def resolve_votes(self, info,
-                      first=None, last=None, before=None, after=None,
-                      ):
-        if 'votes' not in getattr(self, '_prefetched_objects_cache', []):
-            return optimize(self.votes.all(), info, [
-                '.counts',
-                ('.votes', Prefetch('votes', PersonVote.objects.all().select_related('voter'))),
-             ])
+    def resolve_votes(self, info, first=None, last=None, before=None, after=None):
+        if "votes" not in getattr(self, "_prefetched_objects_cache", []):
+            return optimize(
+                self.votes.all(),
+                info,
+                [
+                    ".counts",
+                    (
+                        ".votes",
+                        Prefetch(
+                            "votes", PersonVote.objects.all().select_related("voter")
+                        ),
+                    ),
+                ],
+            )
         else:
             return self.votes.all()
 
     def resolve_related_bills(self, info):
-        if 'related_bills' not in getattr(self, '_prefetched_objects_cache', []):
-            return optimize(self.related_bills.all(), info, None, ['.relatedBill'])
+        if "related_bills" not in getattr(self, "_prefetched_objects_cache", []):
+            return optimize(self.related_bills.all(), info, None, [".relatedBill"])
         else:
             return self.related_bills.all()
 
     def resolve_openstates_url(self, info):
         session = self.legislative_session
-        abbr = session.jurisdiction_id.split('/')[-2].split(':')[1]
-        identifier = self.identifier.replace(' ', '')
-        return f'https://openstates.org/{abbr}/bills/{session.identifier}/{identifier}'
+        abbr = session.jurisdiction_id.split("/")[-2].split(":")[1]
+        identifier = self.identifier.replace(" ", "")
+        return f"https://openstates.org/{abbr}/bills/{session.identifier}/{identifier}"
 
 
 class BillConnection(CountableConnectionBase):
@@ -202,7 +223,7 @@ class PersonVoteNode(graphene.ObjectType):
 class BillVoteNode(graphene.ObjectType):
     option = graphene.String()
     note = graphene.String()
-    vote_event = graphene.Field('graphapi.legislative.VoteEventNode')
+    vote_event = graphene.Field("graphapi.legislative.VoteEventNode")
 
 
 class VoteEventNode(OCDBaseNode):
@@ -246,32 +267,44 @@ class SponsorInput(graphene.InputObjectType):
 
 
 class LegislativeQuery:
-    bill = graphene.Field(BillNode,
-                          id=graphene.String(),
-                          jurisdiction=graphene.String(),
-                          session=graphene.String(),
-                          identifier=graphene.String(),
-                          openstatesUrl=graphene.String(),
-                          )
-    bills = DjangoConnectionField(BillConnection,
-                                  jurisdiction=graphene.String(),
-                                  session=graphene.String(),
-                                  chamber=graphene.String(),
-                                  updated_since=graphene.String(),
-                                  subject=graphene.String(),
-                                  sponsor=SponsorInput(),
-                                  classification=graphene.String(),
-                                  action_since=graphene.String(),
-                                  search_query=graphene.String(),
-                                  )
+    bill = graphene.Field(
+        BillNode,
+        id=graphene.String(),
+        jurisdiction=graphene.String(),
+        session=graphene.String(),
+        identifier=graphene.String(),
+        openstatesUrl=graphene.String(),
+    )
+    bills = DjangoConnectionField(
+        BillConnection,
+        jurisdiction=graphene.String(),
+        session=graphene.String(),
+        chamber=graphene.String(),
+        updated_since=graphene.String(),
+        subject=graphene.String(),
+        sponsor=SponsorInput(),
+        classification=graphene.String(),
+        action_since=graphene.String(),
+        search_query=graphene.String(),
+    )
 
-    def resolve_bills(self, info,
-                      before=None, after=None, first=None, last=None,
-                      jurisdiction=None, chamber=None, session=None,
-                      updated_since=None, classification=None,
-                      subject=None, sponsor=None, action_since=None,
-                      search_query=None,
-                      ):
+    def resolve_bills(
+        self,
+        info,
+        before=None,
+        after=None,
+        first=None,
+        last=None,
+        jurisdiction=None,
+        chamber=None,
+        session=None,
+        updated_since=None,
+        classification=None,
+        subject=None,
+        sponsor=None,
+        action_since=None,
+        search_query=None,
+    ):
         # q (full text)
         bills = Bill.objects.all()
 
@@ -288,60 +321,68 @@ class LegislativeQuery:
         if subject:
             bills = bills.filter(subject__contains=[subject])
         if action_since:
-            bills = bills.annotate(latest_action_date=Max('actions__date'))
+            bills = bills.annotate(latest_action_date=Max("actions__date"))
             bills = bills.filter(latest_action_date__gte=action_since)
         if sponsor:
             sponsor_args = {}
-            if 'primary' in sponsor:
-                sponsor_args['sponsorships__primary'] = sponsor['primary']
-            if sponsor.get('person'):
-                sponsor_args['sponsorships__person_id'] = sponsor['person']
-            elif sponsor.get('name'):
-                sponsor_args['sponsorships__name'] = sponsor['name']
+            if "primary" in sponsor:
+                sponsor_args["sponsorships__primary"] = sponsor["primary"]
+            if sponsor.get("person"):
+                sponsor_args["sponsorships__person_id"] = sponsor["person"]
+            elif sponsor.get("name"):
+                sponsor_args["sponsorships__name"] = sponsor["name"]
             bills = bills.filter(**sponsor_args)
         if search_query:
             bills = bills.filter(
-                searchable__search_vector=SearchQuery(search_query, search_type='raw')
+                searchable__search_vector=SearchQuery(search_query, search_type="raw")
             )
 
-        bills = optimize(bills, info, [
-            '.abstracts',
-            '.otherTitles',
-            '.otherIdentifiers',
-            '.actions',
-            '.actions.organization',
-            '.actions.relatedEntities',
-            '.actions.relatedEntities.organization',
-            '.actions.relatedEntities.person',
-            '.sponsorships',
-            '.documents',
-            '.versions',
-            '.documents.links',
-            '.versions.links',
-            '.sources',
-            '.relatedBills',
-            '.votes',
-            '.votes.counts',
-            ('.votes.votes', Prefetch('votes__votes',
-                                      PersonVote.objects.all().select_related('voter'))),
-        ],
-            ['.legislativeSession' '.legislativeSession.jurisdiction'],
+        bills = optimize(
+            bills,
+            info,
+            [
+                ".abstracts",
+                ".otherTitles",
+                ".otherIdentifiers",
+                ".actions",
+                ".actions.organization",
+                ".actions.relatedEntities",
+                ".actions.relatedEntities.organization",
+                ".actions.relatedEntities.person",
+                ".sponsorships",
+                ".documents",
+                ".versions",
+                ".documents.links",
+                ".versions.links",
+                ".sources",
+                ".relatedBills",
+                ".votes",
+                ".votes.counts",
+                (
+                    ".votes.votes",
+                    Prefetch(
+                        "votes__votes", PersonVote.objects.all().select_related("voter")
+                    ),
+                ),
+            ],
+            [".legislativeSession" ".legislativeSession.jurisdiction"],
         )
 
         return bills
 
-    def resolve_bill(self, info,
-                     id=None,
-                     jurisdiction=None,
-                     session=None,
-                     identifier=None,
-                     openstatesUrl=None,
-                     ):
+    def resolve_bill(
+        self,
+        info,
+        id=None,
+        jurisdiction=None,
+        session=None,
+        identifier=None,
+        openstatesUrl=None,
+    ):
         bill = None
 
         if jurisdiction and session and identifier:
-            query = dict(legislative_session__identifier=session,
-                         identifier=identifier)
+            query = dict(legislative_session__identifier=session, identifier=identifier)
             query.update(jurisdiction_query(jurisdiction))
             bill = Bill.objects.get(**query)
         if id:
@@ -354,9 +395,9 @@ class LegislativeQuery:
             m = re.match(r"(?P<abbr>\w+)/bills/(?P<session>.+)/(?P<bill_id>.+)", path)
 
             if m:
-                jid = abbr_to_jid(m['abbr'])
-                identifier = fix_bill_id(m['bill_id'])
-                session = m['session']
+                jid = abbr_to_jid(m["abbr"])
+                identifier = fix_bill_id(m["bill_id"])
+                session = m["session"]
 
                 # query Bill with components
                 # (this bit taken from def bill in views/bills.py)
@@ -370,10 +411,14 @@ class LegislativeQuery:
                     identifier=identifier,
                 )
             else:
-                raise ValueError("Unable to parse openstatesUrl. openstatesUrl may be malformed.")
+                raise ValueError(
+                    "Unable to parse openstatesUrl. openstatesUrl may be malformed."
+                )
 
         if not bill:
-            raise ValueError("must either pass 'id', 'openstatesUrl', or 'jurisdiction', "
-                             "'session', and 'identifier' together")
+            raise ValueError(
+                "must either pass 'id', 'openstatesUrl', or 'jurisdiction', "
+                "'session', and 'identifier' together"
+            )
 
         return bill

@@ -284,7 +284,7 @@ def bill(request, state, session, bill_id):
     # get other chamber name
     chambers = {c.classification: c.name for c in get_chambers_from_abbr(state)}
     second_chamber = None
-    if len(chambers) > 1 and bill.from_organization.classification != 'legislature':
+    if len(chambers) > 1 and bill.from_organization.classification != "legislature":
         second_chamber = {"upper": chambers["lower"], "lower": chambers["upper"]}[
             bill.from_organization.classification
         ]
