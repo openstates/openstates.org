@@ -11,7 +11,10 @@ def setup():
 
 @pytest.mark.django_db
 def test_state_view(client, django_assert_num_queries):
-    with django_assert_num_queries(13):
+    # expected: organization, person, membership, organization, post,
+    #   bill, billsponsorship, bill, billsponsorship, person,
+    #   legislativesession, organization
+    with django_assert_num_queries(10):
         resp = client.get("/ak/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
