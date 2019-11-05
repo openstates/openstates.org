@@ -19,7 +19,7 @@ def _get_latest_updates():
 
     feed = feedparser.parse(RSS_FEED)
     return [
-        {"title": entry.title, "link": entry.link, "date": entry.date}
+        {"title": entry.title, "link": entry.link, "date": entry.published}
         for entry in feed.entries
     ][:3]
 
