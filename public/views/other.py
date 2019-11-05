@@ -15,7 +15,7 @@ def styleguide(request):
 
 
 def _get_latest_updates():
-    RSS_FEED = "https://blog.openstates.org/feed"
+    RSS_FEED = "https://blog.openstates.org/index.xml"
 
     feed = feedparser.parse(RSS_FEED)
     return [
