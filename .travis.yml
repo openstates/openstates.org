@@ -9,6 +9,7 @@ sudo: false
 python:
     - "3.6"
     - "3.7"
+    - "3.8"
 env:
   - DATABASE_URL="postgis://test:test@localhost/test"
 install: 
