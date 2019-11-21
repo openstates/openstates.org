@@ -576,7 +576,7 @@ def test_bills_by_sponsorships():
         % person.id
     )
     bills = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
-    assert len(bills) == 1
+    assert len(bills) == 2
 
 
 @pytest.mark.django_db
