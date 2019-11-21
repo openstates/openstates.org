@@ -37,7 +37,7 @@ def test_person_view(client, django_assert_num_queries):
         "role": "",
         "party": "Republican",
     }
-    assert len(person.sponsored_bills) == 1
+    assert len(person.sponsored_bills) == 2
     assert len(person.vote_events) == 1
     assert resp.context["retired"] is False
 

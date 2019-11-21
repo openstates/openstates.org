@@ -67,7 +67,7 @@ def test_bills_view_session(client, django_assert_num_queries):
 def test_bills_view_sponsor(client, django_assert_num_queries):
     amanda = Person.objects.get(name="Amanda Adams")
     with django_assert_num_queries(BILLS_QUERY_COUNT):
-        assert len(client.get(f"/ak/bills/?sponsor={amanda.id}").context["bills"]) == 1
+        assert len(client.get(f"/ak/bills/?sponsor={amanda.id}").context["bills"]) == 2
 
 
 @pytest.mark.django_db
