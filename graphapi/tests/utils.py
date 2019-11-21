@@ -163,7 +163,7 @@ def populate_db():
         bill=b1,
         version_link=dlink,
         all_titles=b1.title,
-        raw_text="shove some text in here",
+        raw_text="shove some text in here and include a weird word like gorgonzola",
         is_error=False,
         search_vector="",
     )

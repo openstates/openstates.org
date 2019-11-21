@@ -633,7 +633,7 @@ def test_votes_via_person():
 def test_bill_fts():
     result = schema.execute(
         """{
-        bills(searchQuery: "moose", first:5) {
+        bills(searchQuery: "gorgonzola", first:5) {
             edges {node {
                 title
             }}

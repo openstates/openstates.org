@@ -31,8 +31,15 @@ def test_bills_view_basics(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bills_view_query(client, django_assert_num_queries):
+    # title search works
     with django_assert_num_queries(BILLS_QUERY_COUNT):
-        resp = client.get("/ak/bills/?query=Moose")
+        resp = client.get("/ak/bills/?query=moose")
+    assert resp.status_code == 200
+    assert len(resp.context["bills"]) == 1
+
+    # search in body works
+    with django_assert_num_queries(BILLS_QUERY_COUNT):
+        resp = client.get("/ak/bills/?query=gorgonzola")
     assert resp.status_code == 200
     assert len(resp.context["bills"]) == 1
 
