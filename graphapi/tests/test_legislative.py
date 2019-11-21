@@ -631,9 +631,8 @@ def test_votes_via_person():
 
 @pytest.mark.django_db
 def test_bill_fts():
-    result = schema.execute(
-        """{
-        bills(searchQuery: "moose", first:5) {
+    result = schema.execute('''{
+        bills(searchQuery: "gorgonzola", first:5) {
             edges {node {
                 title
             }}

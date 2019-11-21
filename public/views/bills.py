@@ -1,6 +1,7 @@
 import re
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
+from django.contrib.postgres.search import SearchQuery
 from django.db.models import Func, Prefetch
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
@@ -72,7 +73,9 @@ class BillList(View):
             if re.match(r"\w{1,3}\s*\d{1,5}", query):
                 bills = bills.filter(identifier=fix_bill_id(query))
             else:
-                bills = bills.filter(title__icontains=query)
+                bills = bills.filter(
+                    searchable__search_vector=SearchQuery(query, search_type='raw')
+                )
         if chamber:
             bills = bills.filter(from_organization__classification=chamber)
         if session:
