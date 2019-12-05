@@ -55,3 +55,10 @@ jobs:
       - run:
           name: flake8
           command: poetry run flake8
+
+      # store results
+      - store_test_results:
+          path: test_results
+      - store_artifact:
+          path: test_results
+          destination: tr
