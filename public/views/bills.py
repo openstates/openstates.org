@@ -1,7 +1,6 @@
 import re
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
-from django.contrib.postgres.search import SearchQuery
 from django.db.models import Func, Prefetch
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
@@ -12,6 +11,7 @@ from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, Vote
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id
+from utils.websearchquery import WebSearchQuery as SearchQuery
 from .fallback import fallback
 from ..models import PersonProxy
 

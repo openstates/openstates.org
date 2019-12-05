@@ -1,7 +1,6 @@
 import graphene
 import re
 from django.db.models import Prefetch, Max
-from django.contrib.postgres.search import SearchQuery
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
 from .core import (
@@ -15,6 +14,7 @@ from .optimization import optimize
 from urllib.parse import urlparse
 from utils.common import abbr_to_jid
 from utils.bills import fix_bill_id
+from utils.websearchquery import WebSearchQuery as SearchQuery
 
 
 def jurisdiction_query(jurisdiction):
