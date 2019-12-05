@@ -1,0 +1,77 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7
+      - image: circleci/postgres:11-postgis-ram
+    steps:
+      - checkout
+      - run:
+          name: install prereqs
+          command: |
+            curl -sL https://deb.nodesource.com/setup_13.x | sudo bash -
+            sudo apt-get install -y nodejs postgresql-client libgdal-dev libpq-dev libgeos-dev
+            pip install poetry
+
+      # python packages
+      - restore_cache:
+          keys:
+            - poetry-cache-v1-{{ checksum "poetry.lock" }}
+      - run:
+          name: install python packages
+          command: poetry install
+      - save_cache:
+          key: poetry-cache-v1-{{ checksum "poetry.lock" }}
+          paths:
+            - /home/circleci/.cache/pypoetry/virtualenvs
+
+      # node modules
+      - restore_cache:
+          keys:
+            - node-cache-v1-{{ checksum "package-lock.json" }}
+      - run:
+          name: install node packages
+          command: |
+            npm ci
+            npm run build
+      - save_cache:
+          key: node-cache-v1-{{ checksum "package-lock.json" }}
+          paths:
+            - /home/circleci/project/node_modules
+            - /home/circleci/project/public/static/public/bundles
+
+      - run:
+          name: set up database
+          command: |
+            psql -h localhost -c "CREATE USER test with PASSWORD 'test' CREATEDB SUPERUSER;" -U postgres
+            psql -h localhost -c "CREATE DATABASE test;" -U postgres
+            psql -h localhost -c "CREATE EXTENSION postgis;" -U postgres -d test
+  test:
+    docker:
+      - image: circleci/python:3.7
+      - image: circleci/postgres:11-postgis-ram
+    steps:
+      - run:
+          name: test
+          command: poetry run pytest --ds=openstates.test_settings --reuse-db -v geo graphapi public v1 utils
+          environment:
+            DATABASE_URL: postgis://test:test@localhost/test
+  lint:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - run:
+          name: flake8
+          command: poetry run flake8
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - lint:
+          requires:
+            - build
