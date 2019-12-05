@@ -10,7 +10,7 @@ def test_get_chambers():
     populate_db()
     chambers = get_chambers_from_abbr("ak")
     assert len(chambers) == 2
-    assert {'upper', 'lower'} == {c.classification for c in chambers}
+    assert {"upper", "lower"} == {c.classification for c in chambers}
 
 
 @pytest.mark.django_db
@@ -30,5 +30,5 @@ def test_get_current_role():
         "district": "1",
         "division_id": "ocd-division/country:us/state:Alaska/district:1",
         "role": "",
-        "state": "ak"
+        "state": "ak",
     }

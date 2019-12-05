@@ -8,16 +8,24 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('legislative', '0006_billversion_extras'),
-    ]
+    dependencies = [("legislative", "0006_billversion_extras")]
 
     operations = [
         migrations.CreateModel(
-            name='LegacyBillMapping',
+            name="LegacyBillMapping",
             fields=[
-                ('legacy_id', models.CharField(max_length=20, primary_key=True, serialize=False)),
-                ('bill', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='legacy_mapping', to='legislative.Bill')),
+                (
+                    "legacy_id",
+                    models.CharField(max_length=20, primary_key=True, serialize=False),
+                ),
+                (
+                    "bill",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="legacy_mapping",
+                        to="legislative.Bill",
+                    ),
+                ),
             ],
-        ),
+        )
     ]

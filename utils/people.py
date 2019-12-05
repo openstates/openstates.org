@@ -37,5 +37,7 @@ def get_current_role(person):
 
 def current_role_filters():
     today = datetime.date.today().isoformat()
-    return [Q(memberships__start_date='') | Q(memberships__start_date__lte=today),
-            Q(memberships__end_date='') | Q(memberships__end_date__gte=today)]
+    return [
+        Q(memberships__start_date="") | Q(memberships__start_date__lte=today),
+        Q(memberships__end_date="") | Q(memberships__end_date__gte=today),
+    ]

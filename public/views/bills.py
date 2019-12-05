@@ -11,6 +11,7 @@ from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, Vote
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id
+from utils.websearchquery import WebSearchQuery as SearchQuery
 from .fallback import fallback
 from ..models import PersonProxy
 
@@ -72,7 +73,9 @@ class BillList(View):
             if re.match(r"\w{1,3}\s*\d{1,5}", query):
                 bills = bills.filter(identifier=fix_bill_id(query))
             else:
-                bills = bills.filter(title__icontains=query)
+                bills = bills.filter(
+                    searchable__search_vector=SearchQuery(query, search_type="web")
+                )
         if chamber:
             bills = bills.filter(from_organization__classification=chamber)
         if session:
@@ -284,7 +287,7 @@ def bill(request, state, session, bill_id):
     # get other chamber name
     chambers = {c.classification: c.name for c in get_chambers_from_abbr(state)}
     second_chamber = None
-    if len(chambers) > 1 and bill.from_organization.classification != 'legislature':
+    if len(chambers) > 1 and bill.from_organization.classification != "legislature":
         second_chamber = {"upper": chambers["lower"], "lower": chambers["upper"]}[
             bill.from_organization.classification
         ]
