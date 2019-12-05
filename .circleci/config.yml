@@ -59,6 +59,6 @@ jobs:
       # store results
       - store_test_results:
           path: test_results
-      - store_artifact:
+      - store_artifacts:
           path: test_results
           destination: tr
