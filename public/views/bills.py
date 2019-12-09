@@ -74,7 +74,9 @@ class BillList(View):
                 bills = bills.filter(identifier=fix_bill_id(query))
             else:
                 bills = bills.filter(
-                    searchable__search_vector=SearchQuery(query, search_type="web")
+                    searchable__search_vector=SearchQuery(
+                        query, search_type="web", config="english"
+                    )
                 )
         if chamber:
             bills = bills.filter(from_organization__classification=chamber)

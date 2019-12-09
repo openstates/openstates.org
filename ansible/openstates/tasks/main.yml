@@ -1,25 +1,31 @@
 ---
+- name: add deadsnakes repo for Py 3.7
+  apt_repository:
+    repo: ppa:deadsnakes/ppa
 - name: install system packages
   apt:
     update_cache: yes
     pkg:
       - build-essential
       - git
-      - mercurial
-      - python-pycurl
-      - python-boto
       - libpq-dev
-      - unzip
       - gdal-bin
-      - python
-      - python-dev
       - virtualenv
       - uwsgi
+      - uwsgi-src
       - nginx
-      - uwsgi-plugin-python3
-      - libxslt-dev
+      - libgdal-dev
       - certbot
       - python3-certbot-dns-route53
+      - python3.7
+      - python3.7-dev
+- name: build python37 plugin
+  command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python37"
+  environment:
+    PYTHON: python3.7
+  args:
+    creates: /usr/lib/uwsgi/plugins/python37_plugin.so
+    chdir: /usr/lib/uwsgi/plugins/
 
 - name: add localhost alias
   lineinfile: dest=/etc/hosts line='127.0.0.1 openstates.org'
@@ -72,12 +78,12 @@
     - restart django-application
   register: gitresult
 - name: create virtualenv
-  command: virtualenv -p python3.6 /home/openstates/virt{{ gitresult.after }}
+  command: virtualenv -p python3.7 /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
   notify:
     - restart django-application
 - name: add checkouts to python path
-  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.6/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
+  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.7/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
   become_user: "openstates"
 - name: install poetry
   pip: name=poetry virtualenv=/home/openstates/virt{{ gitresult.after }}

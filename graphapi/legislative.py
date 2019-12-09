@@ -334,7 +334,9 @@ class LegislativeQuery:
             bills = bills.filter(**sponsor_args)
         if search_query:
             bills = bills.filter(
-                searchable__search_vector=SearchQuery(search_query, search_type="web")
+                searchable__search_vector=SearchQuery(
+                    search_query, search_type="web", config="english"
+                )
             )
 
         bills = optimize(

@@ -224,7 +224,9 @@ def bill_list(request):
         bills = bills.filter(from_organization__classification=chamber)
     if query:
         bills = bills.filter(
-            searchable__search_vector=SearchQuery(query, search_type="web")
+            searchable__search_vector=SearchQuery(
+                query, search_type="web", config="english"
+            )
         )
         too_big = False
     if updated_since:
