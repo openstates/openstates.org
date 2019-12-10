@@ -2,7 +2,6 @@ FROM python:3.7-slim
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE=1
-# based on https://www.caktusgroup.com/blog/2017/03/14/production-ready-dockerfile-your-python-django-app/
 
 RUN mkdir /code/
 WORKDIR /code/
@@ -16,6 +15,7 @@ RUN BUILD_DEPS=" \
       libgeos-dev \
       libgdal-dev \
       wget \
+      postgresql-client \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS
 
