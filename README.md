@@ -21,7 +21,7 @@ Ensure you have Docker installed, everything else will be managed there.
 On first run, you'll need to populate your database with real data.
 
 1) Start the database instance via `docker-compose up -d db`
-2) Run `docker-compose run --entrypoint ./download-db.sh django`, this takes a while but downloads a copy of the database and restores it.
+2) Run `docker-compose run --rm --entrypoint ./download-db.sh django`, this takes a while but downloads a copy of the database and restores it.
 
 #### Running locally
 
