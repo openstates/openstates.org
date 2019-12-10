@@ -67,7 +67,7 @@ else:
     GRAPHQL_DEMO_KEY = "graphiql-demo-key"
 
 DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgis://openstates@localhost/openstatesorg"
+    "DATABASE_URL", "postgis://openstates:openstates@db:5432/openstatesorg"
 )
 DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
