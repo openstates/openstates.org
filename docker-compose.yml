@@ -1,18 +1,32 @@
-version: "3"
-services:
-  website:
-    image: openstates/openstates.org
-    volumes:
-      - .:/opt/openstates/openstates.org/
-    entrypoint: ['/bin/bash']
+version: "3.1"
 
-  database:
-    # With this service up, your host can use a database URL of
-    # `postgres://openstates@localhost:5433/openstates`
-    image: mdillon/postgis:9.6
+volumes:
+  openstates-postgres:
+
+services:
+  db:
+    image: "mdillon/postgis:11-alpine"
+    hostname: "db"
     ports:
-      # Avoid conflict with the host's Postgres port
-      - "5433:5432"
+      - "5405:5432"
     environment:
-      - POSTGRES_DB=openstates
-      - POSTGRES_USER=openstates
+      POSTGRES_PASSWORD: openstates
+      POSTGRES_USER: openstates
+      POSTGRES_DB: openstatesorg
+    volumes:
+      - openstates-postgres:/var/lib/postgresql/data
+  # webpack:
+  #   build: .
+  #   command: ./docker/webpack-start.sh
+  #   volumes:
+  #     - .:/code
+
+  django:
+    build: .
+    # entrypoint: /venv/bin/poetry run ./manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL
