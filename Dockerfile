@@ -6,9 +6,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONIOENCODING 'utf-8'
 ENV LANG 'C.UTF-8'
 
-
-EXPOSE 8000
-
 RUN BUILD_DEPS=" \
       python3-dev \
       git \
@@ -21,8 +18,7 @@ RUN BUILD_DEPS=" \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS
 
 ADD . /code/
-
-ENV PYTHONDONTWRITEBYTECODE=1
+WORKDIR /code/
 
 RUN wget https://deb.nodesource.com/setup_10.x -O nodesource.sh \
     && bash nodesource.sh \
@@ -35,7 +31,6 @@ RUN set -ex \
     && /venv/bin/pip install -U pip poetry \
     && /venv/bin/poetry install
 
-WORKDIR /code/
 EXPOSE 8000
 STOPSIGNAL SIGINT
 ENTRYPOINT ["/venv/bin/poetry", "run", "./manage.py"]
