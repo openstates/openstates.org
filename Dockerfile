@@ -1,10 +1,11 @@
 FROM python:3.7-slim
+LABEL maintainer="James Turk <james@openstates.org>"
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONIOENCODING 'utf-8'
+ENV LANG 'C.UTF-8'
 
-RUN mkdir /code/
-WORKDIR /code/
 
 EXPOSE 8000
 
@@ -34,6 +35,7 @@ RUN set -ex \
     && /venv/bin/pip install -U pip poetry \
     && /venv/bin/poetry install
 
+WORKDIR /code/
 EXPOSE 8000
 STOPSIGNAL SIGINT
 ENTRYPOINT ["/venv/bin/poetry", "run", "./manage.py"]
