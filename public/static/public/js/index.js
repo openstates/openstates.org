@@ -8,8 +8,6 @@ import "whatwg-fetch";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import DistrictMap from "./legislator-map";
-import StateMap from "./state-map";
 import LegislatorList from "./legislator-list";
 import CommitteeList from "./committee-list";
 import LegislatorImage from "./legislator-image";
@@ -33,28 +31,6 @@ function checkIE() {
 }
 
 window.addEventListener("load", () => {
-  const dm = document.querySelector('[data-hook="legislator-map"]');
-  if (dm) {
-    ReactDOM.render(
-      React.createElement(DistrictMap, {
-        districtId: dm.getAttribute("data-division-id"),
-        state: dm.getAttribute("data-state"),
-      }),
-      dm
-    );
-  }
-
-  const sm = document.querySelector('[data-hook="state-map"]');
-  if (sm) {
-    ReactDOM.render(
-      React.createElement(StateMap, {
-        state: sm.getAttribute("data-state"),
-        chambers: window.chambers,
-      }),
-      sm
-    );
-  }
-
   const ll = document.querySelector('[data-hook="legislator-list"]');
   if (ll) {
     ReactDOM.render(

@@ -8,7 +8,9 @@ const output_dir = 'public/static/public/bundles'
 module.exports = {
   entry: {
     main: ['babel-polyfill', './public/static/public/js/index'],
-    fyl: ['babel-polyfill', './public/static/public/js/find-your-legislator'],
+    fyl: ['./public/static/public/js/find-your-legislator'],
+    state_map: ['./public/static/public/js/state-map'],
+    district_map: ['./public/static/public/js/legislator-map.js'],
   },
   output: {
     path: path.resolve(output_dir),
@@ -40,9 +42,9 @@ module.exports = {
     new BundleTracker({filename: './webpack-stats.json'}),
     new CleanWebpackPlugin([output_dir], {watch: true})
   ],
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    }
-  }
+  // optimization: {
+  //   splitChunks: {
+  //     chunks: 'all',
+  //   }
+  // }
 }

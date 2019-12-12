@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import ReactMapboxGl, { Source, Layer } from "react-mapbox-gl";
 import config from "./config";
 import stateBounds from "./state-bounds.js";
@@ -91,3 +92,15 @@ export default class DistrictMap extends React.Component {
     );
   }
 }
+
+
+window.addEventListener("load", () => {
+  const dm = document.querySelector('[data-hook="legislator-map"]');
+  ReactDOM.render(
+    React.createElement(DistrictMap, {
+      districtId: dm.getAttribute("data-division-id"),
+      state: dm.getAttribute("data-state"),
+    }),
+    dm
+  );
+});
