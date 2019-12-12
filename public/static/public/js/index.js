@@ -11,7 +11,6 @@ import ReactDOM from "react-dom";
 import DistrictMap from "./legislator-map";
 import StateMap from "./state-map";
 import LegislatorList from "./legislator-list";
-import FindYourLegislator from "./find-your-legislator";
 import CommitteeList from "./committee-list";
 import LegislatorImage from "./legislator-image";
 
@@ -76,11 +75,6 @@ window.addEventListener("load", () => {
       }),
       cl
     );
-  }
-
-  const fyl = document.querySelector('[data-hook="find-your-legislator"]');
-  if (fyl) {
-    ReactDOM.render(React.createElement(FindYourLegislator, {}), fyl);
   }
 
   const images = document.querySelectorAll('[data-hook="legislator-image"]');
