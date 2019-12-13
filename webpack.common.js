@@ -11,6 +11,8 @@ module.exports = {
     fyl: ['./public/static/public/js/find-your-legislator'],
     state_map: ['./public/static/public/js/state-map'],
     district_map: ['./public/static/public/js/legislator-map.js'],
+    legislator_list: ['./public/static/public/js/legislator-list.js'],
+    legislator_image: ['./public/static/public/js/legislator-image.js'],
   },
   output: {
     path: path.resolve(output_dir),

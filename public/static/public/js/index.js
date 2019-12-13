@@ -8,10 +8,6 @@ import "whatwg-fetch";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import LegislatorList from "./legislator-list";
-import CommitteeList from "./committee-list";
-import LegislatorImage from "./legislator-image";
-
 function addBanner(content) {
   var div = document.createElement("div");
   div.className = "notification-banner";
@@ -30,40 +26,4 @@ function checkIE() {
   }
 }
 
-window.addEventListener("load", () => {
-  const ll = document.querySelector('[data-hook="legislator-list"]');
-  if (ll) {
-    ReactDOM.render(
-      React.createElement(LegislatorList, {
-        legislators: window.legislators,
-        chambers: window.chambers,
-      }),
-      ll
-    );
-  }
-
-  const cl = document.querySelector('[data-hook="committee-list"]');
-  if (cl) {
-    ReactDOM.render(
-      React.createElement(CommitteeList, {
-        committees: window.committees,
-        chambers: window.chambers,
-      }),
-      cl
-    );
-  }
-
-  const images = document.querySelectorAll('[data-hook="legislator-image"]');
-  for (var img of images) {
-    ReactDOM.render(
-      React.createElement(LegislatorImage, {
-        image: img.getAttribute("data-image"),
-        id: img.getAttribute("data-person-id"),
-        size: img.getAttribute("data-size"),
-      }),
-      img
-    );
-  }
-
-  checkIE();
-});
+window.addEventListener("load", checkIE);

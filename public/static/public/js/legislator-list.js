@@ -1,5 +1,6 @@
 import _ from "lodash";
 import React from "react";
+import ReactDOM from "react-dom";
 import LegislatorImage from "./legislator-image";
 
 export function ChamberButtons(props) {
@@ -136,3 +137,15 @@ export default class LegislatorList extends React.Component {
     );
   }
 }
+
+
+window.addEventListener("load", () => {
+  const ll = document.querySelector('[data-hook="legislator-list"]');
+  ReactDOM.render(
+    React.createElement(LegislatorList, {
+      legislators: window.legislators,
+      chambers: window.chambers,
+    }),
+    ll
+  );
+});

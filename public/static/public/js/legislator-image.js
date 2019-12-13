@@ -34,3 +34,17 @@ export default class LegislatorImage extends React.Component {
     }
   }
 }
+
+window.addEventListener("load", () => {
+  const images = document.querySelectorAll('[data-hook="legislator-image"]');
+  for (var img of images) {
+    ReactDOM.render(
+      React.createElement(LegislatorImage, {
+        image: img.getAttribute("data-image"),
+        id: img.getAttribute("data-person-id"),
+        size: img.getAttribute("data-size"),
+      }),
+      img
+    );
+  }
+});
