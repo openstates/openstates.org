@@ -7,7 +7,10 @@
 {% block description %}Learn more about who represents you in {{state|state_name}}.{% endblock %}
 
 {% block scripts %}
-    {% render_bundle 'legislator_list' 'js' %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
 {% endblock %}
 
 {% block content %}

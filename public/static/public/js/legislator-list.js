@@ -137,15 +137,3 @@ export default class LegislatorList extends React.Component {
     );
   }
 }
-
-
-window.addEventListener("load", () => {
-  const ll = document.querySelector('[data-hook="legislator-list"]');
-  ReactDOM.render(
-    React.createElement(LegislatorList, {
-      legislators: window.legislators,
-      chambers: window.chambers,
-    }),
-    ll
-  );
-});

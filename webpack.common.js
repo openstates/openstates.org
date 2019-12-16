@@ -10,9 +10,8 @@ module.exports = {
     main: ['babel-polyfill', './public/static/public/js/index'],
     fyl: ['./public/static/public/js/find-your-legislator'],
     state_map: ['./public/static/public/js/state-map'],
-    district_map: ['./public/static/public/js/legislator-map.js'],
-    legislator_list: ['./public/static/public/js/legislator-list.js'],
-    legislator_image: ['./public/static/public/js/legislator-image.js'],
+    district_map: ['./public/static/public/js/legislator-map'],
+    common_components: ['./public/static/public/js/common-components'],
   },
   output: {
     path: path.resolve(output_dir),
@@ -44,9 +43,4 @@ module.exports = {
     new BundleTracker({filename: './webpack-stats.json'}),
     new CleanWebpackPlugin([output_dir], {watch: true})
   ],
-  // optimization: {
-  //   splitChunks: {
-  //     chunks: 'all',
-  //   }
-  // }
 }

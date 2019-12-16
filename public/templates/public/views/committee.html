@@ -7,7 +7,10 @@
 {% block description %}Members of {{committee.name}} ({{ state|state_name }}  {{committee.parent}} Committee).{% endblock %}
 
 {% block scripts %}
-    {% render_bundle 'legislator-image' 'js' %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
 {% endblock %}
 
 {% block content %}

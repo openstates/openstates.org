@@ -10,7 +10,11 @@
 
 {% block scripts %}
     {% render_bundle 'district_map' 'js' %}
-    {% render_bundle 'legislator-image' 'js' %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'district_map' 'css' %}
+    {% render_bundle 'common_components' 'css' %}
 {% endblock %}
 
 {% block content %}

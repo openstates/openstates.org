@@ -9,6 +9,9 @@
 {% block scripts %}
     {% render_bundle 'state_map' 'js' %}
 {% endblock %}
+{% block styles %}
+    {% render_bundle 'state_map' 'css' %}
+{% endblock %}
 
 {% block content %}
     <script> window.chambers = {{ chambers_json|jsonify }}; </script>

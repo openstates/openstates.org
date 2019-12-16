@@ -8,7 +8,10 @@
 {% block description %}Details on {{ state|state_name }} {{ bill.identifier}} ({{ bill.legislative_session }}) - {{ bill.title|titlecase_caps }}{% endblock %}
 
 {% block scripts %}
-    {% render_bundle 'legislator-image' 'js' %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
 {% endblock %}
 
 {% block content %}
