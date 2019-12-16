@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import ReactMapboxGl, {
   Source,
   GeoJSONLayer,
@@ -280,3 +281,8 @@ export default class FindYourLegislator extends React.Component {
     );
   }
 }
+
+window.addEventListener("load", () => {
+  const fyl = document.querySelector('[data-hook="find-your-legislator"]');
+  ReactDOM.render(React.createElement(FindYourLegislator, {}), fyl);
+});

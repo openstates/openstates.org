@@ -1,9 +1,17 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
+{% load render_bundle from webpack_loader %}
 
 {% block title %}{{ state|state_name }} Legislators - Open States{% endblock %}
 {% block og_title %}{{ state|state_name }} Legislators - Open States{% endblock %}
 {% block description %}Learn more about who represents you in {{state|state_name}}.{% endblock %}
+
+{% block scripts %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
+{% endblock %}
 
 {% block content %}
     <h1 class="heading--large">{{ state|state_name }} Legislators</h1>

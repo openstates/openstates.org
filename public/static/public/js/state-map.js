@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import ReactMapboxGl, { Source, Layer } from "react-mapbox-gl";
 import stateBounds from "./state-bounds";
 import config from "./config";
@@ -86,3 +87,16 @@ export default class StateMap extends React.Component {
     );
   }
 }
+
+window.addEventListener("load", () => {
+  const sm = document.querySelector('[data-hook="state-map"]');
+  if (sm) {
+    ReactDOM.render(
+      React.createElement(StateMap, {
+        state: sm.getAttribute("data-state"),
+        chambers: window.chambers,
+      }),
+      sm
+    );
+  }
+});

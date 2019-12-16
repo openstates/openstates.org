@@ -1,9 +1,17 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
+{% load render_bundle from webpack_loader %}
 
 {% block title %}{{committee.name}} - {{ state|state_name }} - Open States{% endblock %}
 {% block og_title %}{{committee.name}} - {{ state|state_name }} - Open States{% endblock %}
 {% block description %}Members of {{committee.name}} ({{ state|state_name }}  {{committee.parent}} Committee).{% endblock %}
+
+{% block scripts %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
+{% endblock %}
 
 {% block content %}
     <h1 class="heading--large">{{ committee.name }}</h1>

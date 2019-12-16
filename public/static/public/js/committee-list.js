@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import LegislatorList, { ChamberButtons } from "./legislator-list";
 
 export default class CommitteeList extends LegislatorList {
@@ -44,3 +45,16 @@ export default class CommitteeList extends LegislatorList {
     );
   }
 }
+
+window.addEventListener("load", () => {
+  const cl = document.querySelector('[data-hook="committee-list"]');
+  if (cl) {
+    ReactDOM.render(
+      React.createElement(CommitteeList, {
+        committees: window.committees,
+        chambers: window.chambers,
+      }),
+      cl
+    );
+  }
+});
