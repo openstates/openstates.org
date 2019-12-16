@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import LegislatorImage from "./legislator-image";
-
+import LegislatorList from "./legislator-list";
 
 window.addEventListener("load", () => {
   const ll = document.querySelector('[data-hook="legislator-list"]');
-  if(ll) {
+  if (ll) {
     ReactDOM.render(
       React.createElement(LegislatorList, {
         legislators: window.legislators,

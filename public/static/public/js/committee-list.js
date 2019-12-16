@@ -46,7 +46,6 @@ export default class CommitteeList extends LegislatorList {
   }
 }
 
-
 window.addEventListener("load", () => {
   const cl = document.querySelector('[data-hook="committee-list"]');
   if (cl) {

@@ -35,5 +35,4 @@ export default class LegislatorImage extends React.Component {
   }
 }
 
-window.addEventListener("load", () => {
-});
+window.addEventListener("load", () => {});

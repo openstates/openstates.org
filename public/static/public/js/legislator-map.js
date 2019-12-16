@@ -93,7 +93,6 @@ export default class DistrictMap extends React.Component {
   }
 }
 
-
 window.addEventListener("load", () => {
   const dm = document.querySelector('[data-hook="legislator-map"]');
   ReactDOM.render(
