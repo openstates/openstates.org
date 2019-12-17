@@ -74,3 +74,17 @@ def test_homepage(client, django_assert_num_queries):
         resp = client.get("/")
     assert len(resp.context["recent_bills"])
     assert len(resp.context["blog_updates"])
+
+
+@pytest.mark.django_db
+def test_search(client, django_assert_num_queries):
+    with django_assert_num_queries(3):
+        resp = client.get("/search/?query=moose")
+    assert resp.status_code == 200
+    assert len(resp.context["bills"]) == 1
+    assert len(resp.context["people"]) == 0
+
+    with django_assert_num_queries(5):
+        resp = client.get("/search/?query=amanda")
+    assert len(resp.context["bills"]) == 0
+    assert len(resp.context["people"]) == 1
