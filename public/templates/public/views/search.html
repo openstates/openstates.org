@@ -1,0 +1,48 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+
+{% block title %}"{{ query }}" - Open States{% endblock %}
+{% block og_title %}{{ query }} - Open States{% endblock %}
+{% block description %}Search bills and people for {{ query }}.{% endblock %}
+
+{% block content %}
+<section class="section">
+    <h1 class="heading--large">Search</h1>
+
+    <div class="grid-x grid-margin-x">
+        <div class="cell medium-9">
+
+            <table class="hover">
+                <thead>
+                    <tr>
+                        <th>Bill Title</th>
+                        <th width="100">Introduced</th>
+                        <th width="250">Latest Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                        <tr class="row--align-top">
+                            <td>
+                                <strong><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></strong>
+                                <span class="u-color--gray">(<strong>{{ bill.legislative_session.jurisdiction }}</strong> - {{ bill.legislative_session.name }})</span>
+                                <br>
+                                <span>{{ bill.title|titlecase_caps }}</span>
+                            </td>
+                            <td>{{ bill.billstatus.first_action_date|fdate:"%b %d %Y" }}</td>
+                            <td>
+                                <span>{{ bill.billstatus.latest_action_description|title }}</span>
+                                <br>
+                                <span class="u-color--gray">{{ bill.billstatus.latest_action_date|fdate:"%b %d %Y" }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
+            {% pagination bills request.GET %}</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

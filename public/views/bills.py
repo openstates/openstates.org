@@ -16,6 +16,18 @@ from .fallback import fallback
 from ..models import PersonProxy
 
 
+def _filter_by_query(bills, query):
+    if re.match(r"\w{1,3}\s*\d{1,5}", query):
+        bills = bills.filter(identifier=fix_bill_id(query))
+    else:
+        bills = bills.filter(
+            searchable__search_vector=SearchQuery(
+                query, search_type="web", config="english"
+            )
+        )
+    return bills
+
+
 class Unnest(Func):
     function = "UNNEST"
 
@@ -70,14 +82,7 @@ class BillList(View):
         }
 
         if query:
-            if re.match(r"\w{1,3}\s*\d{1,5}", query):
-                bills = bills.filter(identifier=fix_bill_id(query))
-            else:
-                bills = bills.filter(
-                    searchable__search_vector=SearchQuery(
-                        query, search_type="web", config="english"
-                    )
-                )
+            bills = _filter_by_query(bills, query)
         if chamber:
             bills = bills.filter(from_organization__classification=chamber)
         if session:

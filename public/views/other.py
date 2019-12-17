@@ -1,13 +1,16 @@
 from collections import Counter
 import datetime
 import feedparser
-from django.db.models import Sum
-from django.shortcuts import render
 from django.core.cache import cache
+from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Sum
+from django.http import Http404
+from django.shortcuts import render
 from opencivicdata.legislative.models import Bill
-from opencivicdata.core.models import Organization
+from opencivicdata.core.models import Organization, Person
 from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
 from ..models import PersonProxy
+from .bills import _filter_by_query
 
 
 def styleguide(request):
@@ -37,6 +40,18 @@ def _get_random_bills():
     for bill in bills:
         bill.state = jid_to_abbr(bill.legislative_session.jurisdiction_id)
     return bills
+
+
+def _preprocess_sponsors(bills):
+    FIRST_SPONSORS_COUNT = 3
+
+    for bill in bills:
+        bill.first_sponsors = []
+        sponsorships = list(bill.sponsorships.all())
+        bill.first_sponsors = sorted(
+            sponsorships, key=lambda s: (s.primary, s.person_id or "zzz", s.id)
+        )[:FIRST_SPONSORS_COUNT]
+        bill.extra_sponsors = len(sponsorships) - len(bill.first_sponsors)
 
 
 def home(request):
@@ -139,13 +154,28 @@ def state(request, state):
     )
 
 
-def _preprocess_sponsors(bills):
-    FIRST_SPONSORS_COUNT = 3
+def site_search(request):
+    query = request.GET.get("query", "")
+    bills = []
+    people = []
+    if query:
+        bills = Bill.objects.all().select_related(
+            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+        )
+        bills = _filter_by_query(bills, query)
+        bills = bills.order_by("-billstatus__latest_action_date")
 
-    for bill in bills:
-        bill.first_sponsors = []
-        sponsorships = list(bill.sponsorships.all())
-        bill.first_sponsors = sorted(
-            sponsorships, key=lambda s: (s.primary, s.person_id or "zzz", s.id)
-        )[:FIRST_SPONSORS_COUNT]
-        bill.extra_sponsors = len(sponsorships) - len(bill.first_sponsors)
+        # pagination
+        page_num = int(request.GET.get("page", 1))
+        bills_paginator = Paginator(bills, 20)
+        try:
+            bills = bills_paginator.page(page_num)
+        except EmptyPage:
+            raise Http404()
+        people = Person.objects.filter(name__icontains=query)
+
+    return render(
+        request,
+        "public/views/search.html",
+        {"query": query, "bills": bills, "people": people},
+    )
