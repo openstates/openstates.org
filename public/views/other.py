@@ -155,13 +155,17 @@ def state(request, state):
 
 
 def site_search(request):
-    query = request.GET.get("query", "")
+    query = request.GET.get("query")
+    state = request.GET.get("state")
+
     bills = []
     people = []
     if query:
         bills = Bill.objects.all().select_related(
             "legislative_session", "legislative_session__jurisdiction", "billstatus"
         )
+        jid = abbr_to_jid(state)
+        bills = bills.filter(legislative_session__jurisdiction_id=jid)
         bills = _filter_by_query(bills, query)
         bills = bills.order_by("-billstatus__latest_action_date")
 
@@ -172,10 +176,12 @@ def site_search(request):
             bills = bills_paginator.page(page_num)
         except EmptyPage:
             raise Http404()
-        people = [p.as_dict() for p in PersonProxy.search_people(query)]
+
+        # people search
+        people = [p.as_dict() for p in PersonProxy.search_people(query, state=state)]
 
     return render(
         request,
         "public/views/search.html",
-        {"query": query, "bills": bills, "people": people},
+        {"query": query, "state": state, "bills": bills, "people": people},
     )

@@ -6,12 +6,15 @@
             <img class="header__logo" width="250" src="{% static 'public/images/openstates_logo.svg' %}" alt="OpenStates Logo">
         </a>
 
-    <form action="/find_your_legislator/" id="header__search">
+    <form action="/search/" id="header__search">
     <div class="input-group">
         <input class="input-group-field" type="search" placeholder="Search bills and legislators..." name="query">
+        {% if state %}
+        <input type="hidden" name="state" value="{{ state }}">
+        {% endif %}
         <div class="input-group-button">
             <button type="submit" class="button button--primary">
-              <i class="fas fa-search"></i>Search
+              Search
             </button>
         </div>
     </div>

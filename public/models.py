@@ -2,7 +2,7 @@ from django.db import models
 from opencivicdata.core.models import Person, Organization
 from opencivicdata.legislative.models import Bill
 from utils.people import get_current_role, current_role_filters
-from utils.common import pretty_url
+from utils.common import pretty_url, abbr_to_jid
 
 
 class PersonProxy(Person):
@@ -10,10 +10,11 @@ class PersonProxy(Person):
         proxy = True
 
     @staticmethod
-    def search_people(query, current=True):
+    def search_people(query, *, state=None, current=True):
         if current:
             people = PersonProxy.objects.filter(
                 *current_role_filters(),
+                memberships__organization__jurisdiction_id=abbr_to_jid(state),
                 memberships__organization__classification__in=[
                     "upper",
                     "lower",
