@@ -7,7 +7,7 @@ from django.db.models import Sum
 from django.http import Http404
 from django.shortcuts import render
 from opencivicdata.legislative.models import Bill
-from opencivicdata.core.models import Organization, Person
+from opencivicdata.core.models import Organization
 from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
 from ..models import PersonProxy
 from .bills import _filter_by_query
@@ -172,7 +172,7 @@ def site_search(request):
             bills = bills_paginator.page(page_num)
         except EmptyPage:
             raise Http404()
-        people = Person.objects.filter(name__icontains=query)
+        people = [p.as_dict() for p in PersonProxy.search_people(query)]
 
     return render(
         request,

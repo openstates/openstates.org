@@ -1,9 +1,17 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
+{% load render_bundle from webpack_loader %}
 
 {% block title %}"{{ query }}" - Open States{% endblock %}
 {% block og_title %}{{ query }} - Open States{% endblock %}
 {% block description %}Search bills and people for {{ query }}.{% endblock %}
+
+{% block scripts %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
+{% endblock %}
 
 {% block content %}
 <section class="section">
@@ -11,6 +19,11 @@
 
     <div class="grid-x grid-margin-x">
         <div class="cell medium-9">
+
+<section>    
+<h2 class="heading--medium">Bills</h2>
+      <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
+      {% pagination bills request.GET %}</p>
 
             <table class="hover">
                 <thead>
@@ -42,6 +55,26 @@
 
             <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
             {% pagination bills request.GET %}</p>
+</section>
+
+
+<section>
+  <h2 class="heading--medium">Legislators</h2>
+    <div id="legislator-list" data-hook="legislator-list"></div>
+
+    <script>
+        window.legislators = {{ people|jsonify }};
+        window.chambers = [ {"upper": "Upper"} ];
+    </script>
+    <noscript>
+        <ul>
+        {% for p in people %}
+        <li><a href="{{ p.pretty_url }}">{{ p.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </noscript>
+</section>
+
         </div>
     </div>
 </section>

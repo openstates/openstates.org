@@ -10,6 +10,12 @@ class PersonProxy(Person):
         proxy = True
 
     @staticmethod
+    def search_people(query):
+        return PersonProxy.objects.filter(name__icontains=query).prefetch_related(
+            "memberships", "memberships__organization", "memberships__post"
+        )
+
+    @staticmethod
     def get_current_legislators_with_roles(chambers):
         return PersonProxy.objects.filter(
             *current_role_filters(), memberships__organization__in=chambers
