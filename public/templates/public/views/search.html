@@ -17,7 +17,7 @@
 <section class="section">
     <h1 class="heading--large">Search Results for "{{query}}"</h1>
 
-    <h2 class="heading--small">Found {{bills.paginator.count }} bills and {{ people|length }} people.</h2>
+    <h2 class="heading--small">Found {{ bills.paginator.count }} bill{{ bills.paginator.count|pluralize }} and {{ people|length }} {% if people|length == 1 %}person{% else %}people {% endif %}.</h2>
 
 
     <div class="grid-x grid-margin-x">
@@ -80,7 +80,7 @@
         <td><div data-hook="legislator-image" data-image="{{ p.image }}" data-person-id="{{ p.id }}" data-size="small"> </div></td>
         <td>{{ p.name }}</td>
         <td>{{ p.current_role.party }}</td>
-        <td>{{ p.current_role.organization }}</td>
+        <td>{{ p.current_role.state|upper }}</td>
         <td>{{ p.current_role.district }}</td>
       </tr>
       {% endfor p %}
