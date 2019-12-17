@@ -17,16 +17,16 @@
 <section class="section">
     <h1 class="heading--large">Search Results for "{{query}}"</h1>
 
-    <h2 class="heading--small">Found {{ bills.paginator.count }} bill{{ bills.paginator.count|pluralize }} and {{ people|length }} {% if people|length == 1 %}person{% else %}people {% endif %}.</h2>
+    <h2 class="heading--small">Found {{ bills.paginator.count }} bill{{ bills.paginator.count|pluralize }} and {{ people|length }} {% if people|length == 1 %}person{% else %}people{% endif %}.</h2>
 
 
     <div class="grid-x grid-margin-x">
         <div class="cell medium-9">
 
+{% if bills.paginator.count %}
 <section>    
 <h2 class="heading--medium">Bills</h2>
       <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
-      {% pagination bills request.GET %}</p>
 
             <table class="hover">
                 <thead>
@@ -59,10 +59,11 @@
             <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
             {% pagination bills request.GET %}</p>
 </section>
+{% endif %}
 
-
+{% if legislators %}
 <section>
-  <h2 class="heading--medium">Legislators</h2>
+  <h2 class="heading--medium">Active Legislators</h2>
 
   <table class="hover">
     <thead>
@@ -87,6 +88,7 @@
     </tbody>
   </table>
 </section>
+{% endif %}
 
         </div>
     </div>
