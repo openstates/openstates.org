@@ -9,7 +9,6 @@ def get_current_role(person):
     post = None
     state = None
     chamber = None
-    organization = None
 
     # assume that this person object was fetched with appropriate
     # related data, if not this can get expensive
@@ -23,7 +22,6 @@ def get_current_role(person):
                 "legislature",
             ):
                 chamber = membership.organization.classification
-                organization = membership.organization
                 state = jid_to_abbr(membership.organization.jurisdiction_id)
                 post = membership.post
 
@@ -31,7 +29,6 @@ def get_current_role(person):
         "party": party,
         "chamber": chamber,
         "state": state,
-        "organization": organization.name,
         "district": post.label if post else "",
         "division_id": post.division_id if post else "",
         "role": post.role if post else "",
