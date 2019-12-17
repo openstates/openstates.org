@@ -10,10 +10,24 @@ class PersonProxy(Person):
         proxy = True
 
     @staticmethod
-    def search_people(query):
-        return PersonProxy.objects.filter(name__icontains=query).prefetch_related(
+    def search_people(query, current=True):
+        if current:
+            people = PersonProxy.objects.filter(
+                *current_role_filters(),
+                memberships__organization__classification__in=[
+                    "upper",
+                    "lower",
+                    "legislature",
+                ],
+                name__icontains=query
+            )
+        else:
+            people = PersonProxy.objects.filter(name__icontains=query)
+
+        people = people.prefetch_related(
             "memberships", "memberships__organization", "memberships__post"
         )
+        return people
 
     @staticmethod
     def get_current_legislators_with_roles(chambers):

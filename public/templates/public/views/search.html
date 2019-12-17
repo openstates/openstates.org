@@ -15,7 +15,10 @@
 
 {% block content %}
 <section class="section">
-    <h1 class="heading--large">Search</h1>
+    <h1 class="heading--large">Search Results for "{{query}}"</h1>
+
+    <h2 class="heading--small">Found {{bills.paginator.count }} bills and {{ people|length }} people.</h2>
+
 
     <div class="grid-x grid-margin-x">
         <div class="cell medium-9">
@@ -60,19 +63,29 @@
 
 <section>
   <h2 class="heading--medium">Legislators</h2>
-    <div id="legislator-list" data-hook="legislator-list"></div>
 
-    <script>
-        window.legislators = {{ people|jsonify }};
-        window.chambers = [ {"upper": "Upper"} ];
-    </script>
-    <noscript>
-        <ul>
-        {% for p in people %}
-        <li><a href="{{ p.pretty_url }}">{{ p.name }}</a></li>
-        {% endfor %}
-        </ul>
-    </noscript>
+  <table class="hover">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Party</th>
+        <th>State</th>
+        <th>District</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in people %}
+      <tr>
+        <td><div data-hook="legislator-image" data-image="{{ p.image }}" data-person-id="{{ p.id }}" data-size="small"> </div></td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.current_role.party }}</td>
+        <td>{{ p.current_role.organization }}</td>
+        <td>{{ p.current_role.district }}</td>
+      </tr>
+      {% endfor p %}
+    </tbody>
+  </table>
 </section>
 
         </div>
