@@ -164,8 +164,9 @@ def site_search(request):
         bills = Bill.objects.all().select_related(
             "legislative_session", "legislative_session__jurisdiction", "billstatus"
         )
-        jid = abbr_to_jid(state)
-        bills = bills.filter(legislative_session__jurisdiction_id=jid)
+        if state:
+            jid = abbr_to_jid(state)
+            bills = bills.filter(legislative_session__jurisdiction_id=jid)
         bills = _filter_by_query(bills, query)
         bills = bills.order_by("-billstatus__latest_action_date")
 
