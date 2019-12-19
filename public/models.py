@@ -14,7 +14,6 @@ class PersonProxy(Person):
         if current:
             people = PersonProxy.objects.filter(
                 *current_role_filters(),
-                memberships__organization__jurisdiction_id=abbr_to_jid(state),
                 memberships__organization__classification__in=[
                     "upper",
                     "lower",
@@ -24,6 +23,11 @@ class PersonProxy(Person):
             )
         else:
             people = PersonProxy.objects.filter(name__icontains=query)
+
+        if state:
+            people = people.filter(
+                memberships__organization__jurisdiction_id=abbr_to_jid(state)
+            )
 
         people = people.prefetch_related(
             "memberships", "memberships__organization", "memberships__post"
