@@ -89,6 +89,11 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "raven.contrib.django.raven_compat",
     "webpack_loader",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.twitter",
     "opencivicdata.core.apps.BaseConfig",
     "opencivicdata.legislative.apps.BaseConfig",
     "boundaries",
@@ -183,6 +188,12 @@ LOGGING = {
         "graphapi": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
     },
 }
+
+# allauth backends
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
 
 
 # Django Webpack Loader Settings
