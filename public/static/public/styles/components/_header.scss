@@ -2,6 +2,26 @@
 
 .header {}
 
+#header__top {
+  display: grid;
+  grid-template-columns: auto;
+
+  @include breakpoint(medium) {
+    grid-template-columns: auto 300px;
+  }
+}
+#header__search {
+  align-self: center;
+
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  
+  @include breakpoint(medium) {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+  }
+}
+
 .header__logo {
     width: 200px;
     padding-top: 1rem;

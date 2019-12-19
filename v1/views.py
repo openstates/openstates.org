@@ -7,9 +7,9 @@ from django.contrib.gis.geos import Point
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
-from utils.websearchquery import WebSearchQuery as SearchQuery
 from utils.common import jid_to_abbr, abbr_to_jid
 from utils.people import current_role_filters
+from utils.bills import search_bills
 
 
 def jsonp(view_func):
@@ -223,11 +223,7 @@ def bill_list(request):
             chamber = "legislature"
         bills = bills.filter(from_organization__classification=chamber)
     if query:
-        bills = bills.filter(
-            searchable__search_vector=SearchQuery(
-                query, search_type="web", config="english"
-            )
-        )
+        bills = search_bills(bills, query)
         too_big = False
     if updated_since:
         bills = bills.filter(updated_at__gt=updated_since)

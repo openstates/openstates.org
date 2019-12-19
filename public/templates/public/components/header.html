@@ -1,10 +1,25 @@
 {% load static %}
 
 <header class="header">
-    <div class="grid-container">
+    <div class="grid-container" id="header__top">
         <a href="{% url 'home' %}">
             <img class="header__logo" width="250" src="{% static 'public/images/openstates_logo.svg' %}" alt="OpenStates Logo">
         </a>
+
+    <form action="/search/" id="header__search">
+    <div class="input-group">
+        <input class="input-group-field" type="search" placeholder="Search bills and legislators..." name="query">
+        {% if state %}
+        <input type="hidden" name="state" value="{{ state }}">
+        {% endif %}
+        <div class="input-group-button">
+            <button type="submit" class="button button--primary">
+              Search
+            </button>
+        </div>
+    </div>
+    </form>
+
     </div>
 
     {% if state_nav != "disabled" %}

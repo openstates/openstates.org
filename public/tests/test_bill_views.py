@@ -38,8 +38,7 @@ def test_bills_view_query(client, django_assert_num_queries):
     assert len(resp.context["bills"]) == 1
 
     # search in body works
-    with django_assert_num_queries(BILLS_QUERY_COUNT):
-        resp = client.get("/ak/bills/?query=gorgonzola")
+    resp = client.get("/ak/bills/?query=gorgonzola")
     assert resp.status_code == 200
     assert len(resp.context["bills"]) == 1
 
@@ -50,6 +49,20 @@ def test_bills_view_query(client, django_assert_num_queries):
     assert len(resp.context["subjects"]) > 10
     assert len(resp.context["sponsors"]) == 7
     assert len(resp.context["classifications"]) == 3
+
+
+@pytest.mark.django_db
+def test_bills_view_query_bill_id(client, django_assert_num_queries):
+    # query by bill id
+    with django_assert_num_queries(BILLS_QUERY_COUNT):
+        resp = client.get("/ak/bills/?query=HB 1")
+    assert resp.status_code == 200
+    assert len(resp.context["bills"]) == 1
+
+    # case insensitive
+    resp = client.get("/ak/bills/?query=hb 1")
+    assert resp.status_code == 200
+    assert len(resp.context["bills"]) == 1
 
 
 @pytest.mark.django_db

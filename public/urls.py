@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from django.views.generic import TemplateView
-from .views.other import styleguide, home, state
+from .views.other import styleguide, home, state, site_search
 from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
 from .views.committees import committees, committee
@@ -24,6 +24,7 @@ urlpatterns = [
     # top level views
     path("", home, name="home"),
     path("find_your_legislator/", find_your_legislator, name="find_your_legislator"),
+    path("search/", site_search, name="search"),
     re_path(r"^(?P<state>{})/$".format(state_abbr_pattern), state, name="state"),
     # people
     re_path(

@@ -13,8 +13,7 @@ from .core import (
 from .optimization import optimize
 from urllib.parse import urlparse
 from utils.common import abbr_to_jid
-from utils.bills import fix_bill_id
-from utils.websearchquery import WebSearchQuery as SearchQuery
+from utils.bills import fix_bill_id, search_bills
 
 
 def jurisdiction_query(jurisdiction):
@@ -333,11 +332,7 @@ class LegislativeQuery:
                 sponsor_args["sponsorships__name"] = sponsor["name"]
             bills = bills.filter(**sponsor_args)
         if search_query:
-            bills = bills.filter(
-                searchable__search_vector=SearchQuery(
-                    search_query, search_type="web", config="english"
-                )
-            )
+            bills = search_bills(bills, search_query)
 
         bills = optimize(
             bills,

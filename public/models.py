@@ -2,12 +2,37 @@ from django.db import models
 from opencivicdata.core.models import Person, Organization
 from opencivicdata.legislative.models import Bill
 from utils.people import get_current_role, current_role_filters
-from utils.common import pretty_url
+from utils.common import pretty_url, abbr_to_jid
 
 
 class PersonProxy(Person):
     class Meta:
         proxy = True
+
+    @staticmethod
+    def search_people(query, *, state=None, current=True):
+        if current:
+            people = PersonProxy.objects.filter(
+                *current_role_filters(),
+                memberships__organization__classification__in=[
+                    "upper",
+                    "lower",
+                    "legislature",
+                ],
+                name__icontains=query
+            )
+        else:
+            people = PersonProxy.objects.filter(name__icontains=query)
+
+        if state:
+            people = people.filter(
+                memberships__organization__jurisdiction_id=abbr_to_jid(state)
+            )
+
+        people = people.prefetch_related(
+            "memberships", "memberships__organization", "memberships__post"
+        )
+        return people
 
     @staticmethod
     def get_current_legislators_with_roles(chambers):
