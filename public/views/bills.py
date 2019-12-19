@@ -18,7 +18,7 @@ from ..models import PersonProxy
 
 def _filter_by_query(bills, query):
     if re.match(r"\w{1,3}\s*\d{1,5}", query):
-        bills = bills.filter(identifier=fix_bill_id(query))
+        bills = bills.filter(identifier__iexact=fix_bill_id(query))
     else:
         bills = bills.filter(
             searchable__search_vector=SearchQuery(
