@@ -20,6 +20,7 @@ def canonical_url(obj):
 @register.inclusion_tag("public/components/header.html", takes_context=True)
 def header(context):
     return {
+        "user": context.get("user"),
         "state": context.get("state"),
         "state_nav": context.get("state_nav"),
         "states": states,

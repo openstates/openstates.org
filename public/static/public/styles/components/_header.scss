@@ -7,18 +7,32 @@
   grid-template-columns: auto;
 
   @include breakpoint(medium) {
-    grid-template-columns: auto 300px;
+    grid-template-columns: auto 200px;
   }
 }
-#header__search {
+
+#header__login {
   align-self: center;
 
+  font-size: 120%;
   padding-top: 1rem;
   padding-bottom: 1rem;
   
   @include breakpoint(medium) {
       padding-top: 2rem;
       padding-bottom: 2rem;
+  }
+}
+
+#header__search {
+  align-self: center;
+}
+
+#header__search .input-group {
+  margin-bottom: 0;
+  width: 100%;
+  @include breakpoint(medium) {
+    width: 320px;
   }
 }
 
