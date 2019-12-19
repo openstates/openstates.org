@@ -1,6 +1,7 @@
 import re
 from django.db.models import Min, Max, OuterRef, Subquery
 from opencivicdata.legislative.models import Bill, BillAction
+from .websearchquery import WebSearchQuery as SearchQuery
 
 # This function has to match openstates.transformers
 _bill_id_re = re.compile(r"([A-Z]*)\s*0*([-\d]+)")
@@ -36,3 +37,15 @@ def get_bills_with_action_annotation():
         .select_related("legislative_session", "legislative_session__jurisdiction")
         .prefetch_related("actions")
     )
+
+
+def search_bills(bills, query):
+    if re.match(r"\w{1,3}\s*\d{1,5}", query):
+        bills = bills.filter(identifier__iexact=fix_bill_id(query))
+    else:
+        bills = bills.filter(
+            searchable__search_vector=SearchQuery(
+                query, search_type="web", config="english"
+            )
+        )
+    return bills

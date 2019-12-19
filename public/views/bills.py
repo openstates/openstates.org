@@ -1,4 +1,3 @@
-import re
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Func, Prefetch
@@ -10,22 +9,9 @@ from opencivicdata.core.models import Membership
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, VoteEvent
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import fix_bill_id
-from utils.websearchquery import WebSearchQuery as SearchQuery
+from utils.bills import fix_bill_id, search_bills
 from .fallback import fallback
 from ..models import PersonProxy
-
-
-def _filter_by_query(bills, query):
-    if re.match(r"\w{1,3}\s*\d{1,5}", query):
-        bills = bills.filter(identifier__iexact=fix_bill_id(query))
-    else:
-        bills = bills.filter(
-            searchable__search_vector=SearchQuery(
-                query, search_type="web", config="english"
-            )
-        )
-    return bills
 
 
 class Unnest(Func):
@@ -82,7 +68,7 @@ class BillList(View):
         }
 
         if query:
-            bills = _filter_by_query(bills, query)
+            bills = search_bills(bills, query)
         if chamber:
             bills = bills.filter(from_organization__classification=chamber)
         if session:

@@ -9,8 +9,8 @@ from django.shortcuts import render
 from opencivicdata.legislative.models import Bill
 from opencivicdata.core.models import Organization
 from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
+from utils.bills import search_bills
 from ..models import PersonProxy
-from .bills import _filter_by_query
 
 
 def styleguide(request):
@@ -167,7 +167,7 @@ def site_search(request):
         if state:
             jid = abbr_to_jid(state)
             bills = bills.filter(legislative_session__jurisdiction_id=jid)
-        bills = _filter_by_query(bills, query)
+        bills = search_bills(bills, query)
         bills = bills.order_by("-billstatus__latest_action_date")
 
         # pagination
