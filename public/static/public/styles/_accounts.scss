@@ -18,16 +18,20 @@
   text-align: center;
 }
 .login-or::after, .login-or::before {
-  content: "";
-  display: inline-block;
-  min-width: 10rem;
-  margin: 0.6rem 1rem;
-  border-bottom: 1px solid $color-black;
+  @include breakpoint(medium) {
+    content: "";
+    display: inline-block;
+    min-width: 10rem;
+    margin: 0.6rem 1rem;
+    border-bottom: 1px solid $color-black;
+  }
 }
 
 .socialaccount_provider {
   &:before {
-    content: "Sign in with ";
+    @include breakpoint(large) {
+      content: "Sign in with ";
+    }
   }
   &.facebook {
     @include button(false, #4267b2, #4267b2, $white, solid);
