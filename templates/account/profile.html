@@ -16,8 +16,20 @@
     {% if primary_email.verified %}
     <span class="email-verified">verified</span>.
     {% else %}
-    not verified.  Click the email you received when you signed up, or <a href="/accounts/email/">request a new verification email</a>.
+    <span class="email-not-verified">not verified</span>.  
+    <p>Click the email you received when you signed up, or <a href="/accounts/email/">request a new verification email</a>.
+    </p>
     {% endif %}
+  </p>
+
+<section>
+  <h2 class="heading">Account Management</h2>
+  <p>
+    <ul>
+      <li><a href="/accounts/email/">Manage Email Addresses</a></li>
+      <li><a href="/accounts/password/change/">Change Your Password</a></li>
+      <li><a href="/accounts/social/connections/">Manage Social Auth Connections</a></li>
+    </ul>
   </p>
 </section>
 {% endblock %}

@@ -57,6 +57,13 @@ $social-brand-github: #000000;
   }
 }
 
+.email-verified {
+  font-weight: bold;
+}
+.email-not-verified {
+  font-weight: bold;
+}
+
 form.login, form#signup_form { 
   display: grid;
   align-items: center;
@@ -69,6 +76,7 @@ form.login label {
 }
 
 form#signup_form button,
+form.password_change button,
 button.primaryAction,
 input.primaryAction,
 button[name="action_add"],
@@ -78,7 +86,6 @@ form[action^='/accounts/confirm-email/'] button
   @extend .button;
   @extend .button--primary;
 }
-
 
 button.secondaryAction {
   @extend .button;
