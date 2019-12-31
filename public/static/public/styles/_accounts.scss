@@ -27,7 +27,6 @@
 // Source: https://designpieces.com/2012/12/social-media-colours-hex-and-rgb/
 $social-brand-facebook: #3b5998;
 $social-brand-twitter: #55acee;
-$social-brand-google-plus: #dd4b39;
 $social-brand-github: #000000;
 
 .socialaccount_provider {
@@ -46,7 +45,14 @@ $social-brand-github: #000000;
     @include button-style($social-brand-twitter, auto, $white);
   }
   &.google {
-    @include button-style($social-brand-google-plus, auto, $white);
+    color: #ffffff00;
+    background-image: url("/static//public/images/social/btn_google_signin_light_normal_web@2x.png");
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: 100% 100%;
+    height: 46px;
+    width: 191px;
+    border: none;
   }
   &.github {
     @include button-style($social-brand-github, auto, $white);
