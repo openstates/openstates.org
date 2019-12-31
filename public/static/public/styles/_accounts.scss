@@ -1,0 +1,73 @@
+
+.socialaccount_providers {
+  display: grid;
+  grid-template-columns: auto;
+  justify-items: center;
+
+  @include breakpoint(medium) {
+    grid-template-columns: auto auto auto auto;
+  }
+}
+.socialaccount_providers li {
+  list-style: none;
+}
+
+.login-or {
+  font-size: 200%;
+  width: 100%;
+  text-align: center;
+}
+.login-or::after, .login-or::before {
+  content: "";
+  display: inline-block;
+  min-width: 10rem;
+  margin: 0.6rem 1rem;
+  border-bottom: 1px solid $color-black;
+}
+
+// Source: https://designpieces.com/2012/12/social-media-colours-hex-and-rgb/
+$social-brand-facebook: #3b5998;
+$social-brand-twitter: #55acee;
+$social-brand-google-plus: #dd4b39;
+$social-brand-github: #000000;
+
+.socialaccount_provider {
+  margin-right: .25rem;
+  @include button(false, $white, $color-gray-light, $color-primary, solid);
+  font-weight: $global-weight-bold;
+  // width: 100%;
+  // border: $global-border-width solid $color-primary;
+
+  &.facebook {
+    @include button-style($social-brand-facebook, auto, $white);
+  }
+  &.twitter {
+    @include button-style($social-brand-twitter, auto, $white);
+  }
+  &.google {
+    @include button-style($social-brand-google-plus, auto, $white);
+  }
+  &.github {
+    @include button-style($social-brand-github, auto, $white);
+  }
+  > .fa {
+    color: $white;
+    margin-right: .25rem;
+  }
+}
+
+form.login, form#signup_form { 
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+form.login label {
+  display: inline;
+  padding-right: 1rem;
+}
+
+form#signup_form button, button.primaryAction, form[action='/accounts/logout/'] button {
+  @extend .button;
+  @extend .button--primary;
+}

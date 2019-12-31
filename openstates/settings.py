@@ -92,8 +92,10 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.twitter",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.github",
     "opencivicdata.core.apps.BaseConfig",
     "opencivicdata.legislative.apps.BaseConfig",
     "boundaries",
@@ -207,6 +209,10 @@ WEBPACK_LOADER = {
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     }
 }
+
+# allauth
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
 
 # Boundaries
 BOUNDARIES_SHAPEFILES_DIR = "shapefiles"
