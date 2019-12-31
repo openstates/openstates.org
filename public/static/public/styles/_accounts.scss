@@ -70,9 +70,16 @@ form.login label {
 
 form#signup_form button,
 button.primaryAction,
+input.primaryAction,
+button[name="action_add"],
 form[action='/accounts/logout/'] button,
 form[action^='/accounts/confirm-email/'] button
 {
   @extend .button;
   @extend .button--primary;
+}
+
+
+button.secondaryAction {
+  @extend .button;
 }

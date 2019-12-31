@@ -1,0 +1,23 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States Account Profile{% endblock %}
+{% block og_title %}Open States Account Profile{% endblock %}
+{% block description %}Open States Account Profile{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Account Profile</h1>
+
+<section>
+  <p>You are current logged in as {{ primary_email }}.
+
+    Your email address is
+
+    {% if primary_email.verified %}
+    <span class="email-verified">verified</span>.
+    {% else %}
+    not verified.  Click the email you received when you signed up, or <a href="/accounts/email/">request a new verification email</a>.
+    {% endif %}
+  </p>
+</section>
+{% endblock %}
