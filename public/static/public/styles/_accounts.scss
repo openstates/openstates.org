@@ -1,4 +1,3 @@
-
 .socialaccount_providers {
   display: grid;
   grid-template-columns: auto;
@@ -41,6 +40,8 @@ $social-brand-github: #000000;
   &.facebook {
     @include button-style($social-brand-facebook, auto, $white);
   }
+  &.facebook::before {
+  }
   &.twitter {
     @include button-style($social-brand-twitter, auto, $white);
   }
@@ -67,7 +68,11 @@ form.login label {
   padding-right: 1rem;
 }
 
-form#signup_form button, button.primaryAction, form[action='/accounts/logout/'] button {
+form#signup_form button,
+button.primaryAction,
+form[action='/accounts/logout/'] button,
+form[action^='/accounts/confirm-email/'] button
+{
   @extend .button;
   @extend .button--primary;
 }
