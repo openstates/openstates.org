@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: auto;
   justify-items: center;
+  align-items: center;
 
   @include breakpoint(medium) {
     grid-template-columns: auto auto auto auto;
@@ -24,43 +25,34 @@
   border-bottom: 1px solid $color-black;
 }
 
-// Source: https://designpieces.com/2012/12/social-media-colours-hex-and-rgb/
-$social-brand-facebook: #3b5998;
-$social-brand-twitter: #55acee;
-$social-brand-github: #000000;
-
 .socialaccount_provider {
-  margin-right: .25rem;
-  @include button(false, $white, $color-gray-light, $color-primary, solid);
-  font-weight: $global-weight-bold;
-  // width: 100%;
-  // border: $global-border-width solid $color-primary;
-
-  &.facebook {
-    @include button-style($social-brand-facebook, auto, $white);
+  &:before {
+    content: "Sign in with ";
   }
-  &.facebook::before {
+  &.facebook {
+    @include button(false, #4267b2, #4267b2, $white, solid);
+    background-image: url("/static/public/images/social/f_logo_RGB-White_100.png");
   }
   &.twitter {
-    @include button-style($social-brand-twitter, auto, $white);
+    @include button(false, #1da1f2, #1da1f2, $white, solid);
+    background-image: url("/static/public/images/social/Twitter_Logo_WhiteOnBlue.png");
   }
   &.google {
-    color: #ffffff00;
-    background-image: url("/static//public/images/social/btn_google_signin_light_normal_web@2x.png");
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    background-size: 100% 100%;
-    height: 46px;
-    width: 191px;
-    border: none;
+    @include button(false, #000, #000, #666, hollow);
+    background-image: url("/static/public/images/social/g-logo.png");
   }
   &.github {
-    @include button-style($social-brand-github, auto, $white);
+    @include button(false, #000, #000, $white, solid);
+    background-image: url("/static/public/images/social/GitHub-Mark-Light-64px.png");
   }
-  > .fa {
-    color: $white;
-    margin-right: .25rem;
-  }
+
+  margin-right: .25rem;
+  background-repeat: no-repeat;
+  border: none;
+  font-weight: bold;
+  background-position: 5% 50%;
+  background-size: 32px 32px;
+  padding-left: 48px !important;
 }
 
 .email-verified {
