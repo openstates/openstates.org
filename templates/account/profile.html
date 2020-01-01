@@ -9,16 +9,15 @@
 <h1 class="heading--large">Account Profile</h1>
 
 <section>
-  <p>You are current logged in as {{ primary_email }}.
+  <p>You are logged in as {{ primary_email }}.
 
     Your email address is
-
     {% if primary_email.verified %}
-    <span class="email-verified">verified</span>.
+      <span class="email-verified">verified</span>.
     {% else %}
-    <span class="email-not-verified">not verified</span>.  
-    <p>Click the email you received when you signed up, or <a href="/accounts/email/">request a new verification email</a>.
-    </p>
+      <span class="email-not-verified">not verified</span>.  
+      <p>Click the email you received when you signed up, or <a href="/accounts/email/">request a new verification email</a>.
+      </p>
     {% endif %}
   </p>
 
