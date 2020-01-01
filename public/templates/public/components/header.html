@@ -1,5 +1,11 @@
 {% load static %}
 
+{% comment %}
+If adding any variables to this template, make sure they're also passed through in the 
+appropriate template tag.  This template isn't rendered with direct inclusion, so it gets
+context ~a little differently~.
+{% endcomment %}
+
 <header class="header">
     <div class="grid-container" id="header__top">
         <a href="{% url 'home' %}">
@@ -57,6 +63,16 @@
             </div>
         </div>
 
+    </div>
+    {% endif %}
+
+    {% if messages %}
+    <div class="notification-banner">
+      <ul>
+      {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+      </ul>
     </div>
     {% endif %}
 </header>

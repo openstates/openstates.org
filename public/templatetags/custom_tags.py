@@ -23,6 +23,7 @@ def header(context):
         "user": context.get("user"),
         "state": context.get("state"),
         "state_nav": context.get("state_nav"),
+        "messages": context.get("messages"),
         "states": states,
     }
 
