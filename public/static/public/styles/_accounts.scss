@@ -5,7 +5,7 @@
   align-items: center;
 
   @include breakpoint(medium) {
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: auto auto auto;
   }
 }
 .socialaccount_providers li {
