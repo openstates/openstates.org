@@ -1,25 +1,25 @@
 {% load static %}
 
+{% comment %}
+If adding any variables to this template, make sure they're also passed through in the 
+appropriate template tag.  This template isn't rendered with direct inclusion, so it gets
+context ~a little differently~.
+{% endcomment %}
+
 <header class="header">
     <div class="grid-container" id="header__top">
         <a href="{% url 'home' %}">
             <img class="header__logo" width="250" src="{% static 'public/images/openstates_logo.svg' %}" alt="OpenStates Logo">
         </a>
 
-    <form action="/search/" id="header__search">
-    <div class="input-group">
-        <input class="input-group-field" type="search" placeholder="Search bills and legislators..." name="query">
-        {% if state %}
-        <input type="hidden" name="state" value="{{ state }}">
-        {% endif %}
-        <div class="input-group-button">
-            <button type="submit" class="button button--primary">
-              Search
-            </button>
-        </div>
-    </div>
-    </form>
-
+       <div id="header__login">
+         {% if user.is_authenticated %}
+         <a href="/accounts/profile/">{{ user.username|default:"Profile" }}</a> |
+         <a href="/accounts/logout/">Sign Out</a>
+         {% else %}
+         <a href="/accounts/login/">Log In / Sign Up</a>
+         {% endif %}
+       </div>
     </div>
 
     {% if state_nav != "disabled" %}
@@ -47,8 +47,32 @@
                 {% endif %}
                 </ul>
 
+                <form action="/search/" id="header__search">
+                <div class="input-group">
+                    <input class="input-group-field" type="search" placeholder="Search bills and legislators..." name="query">
+                    {% if state %}
+                    <input type="hidden" name="state" value="{{ state }}">
+                    {% endif %}
+                    <div class="input-group-button">
+                        <button type="submit" class="button button--secondary">
+                          Search
+                        </button>
+                    </div>
+                </div>
+                </form>
             </div>
         </div>
+
+    </div>
+    {% endif %}
+
+    {% if messages %}
+    <div class="notification-banner">
+      <ul>
+      {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+      </ul>
     </div>
     {% endif %}
 </header>

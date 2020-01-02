@@ -34,7 +34,6 @@ def donate(request):
             )
         return JsonResponse({"success": "OK"})
 
-    print(request.method, success)
     return render(
         request,
         "flat/donate.html",

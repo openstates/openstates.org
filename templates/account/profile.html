@@ -1,0 +1,61 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States Account Profile{% endblock %}
+{% block og_title %}Open States Account Profile{% endblock %}
+{% block description %}Open States Account Profile{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Account Profile</h1>
+
+<section>
+  <p>You are logged in as {{ primary_email }}.
+
+    Your email address is
+    {% if primary_email.verified %}
+      <span class="email-verified">verified</span>.
+    {% else %}
+      <span class="email-not-verified">not verified</span>.  
+      <p>Click the email you received when you signed up, or <a href="/accounts/email/">request a new verification email</a>.
+      </p>
+    {% endif %}
+  </p>
+
+{% if key %}
+<section>
+  <h2 class="heading">API Key</h2>
+  {% if key %}
+  <dl class="apikey_details">
+    <dt>API Key</dt>
+    <dd><pre class="apikey">{{ key.key }}</dd>
+    <dt>Status</dt>
+    <dd>{{ key.get_status_display }} </dd>
+    <dt>Tier</dt>
+    <dd>{{ key.tier }}</dd>
+  </dl>
+  <p>
+   To use the API check out the <a href="https://docs.openstates.org/en/latest/api/v2/">API Documentation</a>, and ask questions over at our <a href="https://discourse.openstates.org/">Discourse</a>.
+  </p>
+
+  <p>
+    If you'd like to request a change to your key's status, please <a href="mailto:contact@openstates.org">contact us</a>.
+  </p>
+  {% else %}
+  <p>
+    An error has occurred, please <a href="mailto:contact@openstates.org">contact us</a>.
+  </p>
+  {% endif %}
+</section>
+{% endif %}
+
+<section>
+  <h2 class="heading">Account Management</h2>
+  <p>
+    <ul>
+      <li><a href="/accounts/email/">Manage Email Addresses</a></li>
+      <li><a href="/accounts/password/change/">Change Your Password</a></li>
+      <li><a href="/accounts/social/connections/">Manage Social Auth Connections</a></li>
+    </ul>
+  </p>
+</section>
+{% endblock %}

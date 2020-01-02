@@ -89,6 +89,13 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "raven.contrib.django.raven_compat",
     "webpack_loader",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    # "allauth.socialaccount.providers.twitter",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.github",
     "opencivicdata.core.apps.BaseConfig",
     "opencivicdata.legislative.apps.BaseConfig",
     "boundaries",
@@ -184,6 +191,12 @@ LOGGING = {
     },
 }
 
+# allauth backends
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
 
 # Django Webpack Loader Settings
 WEBPACK_LOADER = {
@@ -196,6 +209,12 @@ WEBPACK_LOADER = {
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     }
 }
+
+# allauth
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SESSION_REMEMBER = True
 
 # Boundaries
 BOUNDARIES_SHAPEFILES_DIR = "shapefiles"
