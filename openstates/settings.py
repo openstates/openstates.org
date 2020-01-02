@@ -231,6 +231,6 @@ GRAPHENE = {"SCHEMA": "graphapi.schema.schema", "MIDDLEWARE": []}
 
 SIMPLEKEYS_ZONE_PATHS = [("/api/v1/legislators/geo/", "geo"), ("/api/v1/", "default")]
 SIMPLEKEYS_ERROR_NOTE = (
-    "https://openstates.org/api/register/ for API key. "
+    "Login and visit https://openstates.org/account/profile/ for your API key. "
     "contact@openstates.org to raise limits"
 )

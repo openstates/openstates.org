@@ -2,6 +2,7 @@ from django.urls import path
 from django.views.generic.base import RedirectView
 
 redirects = [
+    ("api/register/", "/accounts/login/"),
     ("api/", "https://docs.openstates.org/en/latest/api/index.html"),
     ("api/metadata/", "https://docs.openstates.org/en/latest/api/metadata.html"),
     ("api/bills/", "https://docs.openstates.org/en/latest/api/bills.html"),
