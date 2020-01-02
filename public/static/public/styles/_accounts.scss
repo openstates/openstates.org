@@ -65,6 +65,9 @@
 .email-not-verified {
   font-weight: bold;
 }
+.apikey_details dd {
+  margin-left: 2rem;
+}
 
 form.login, form#signup_form, form.password_change { 
   display: grid;

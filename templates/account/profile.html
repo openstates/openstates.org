@@ -21,6 +21,33 @@
     {% endif %}
   </p>
 
+{% if key %}
+<section>
+  <h2 class="heading">API Key</h2>
+  {% if key %}
+  <dl class="apikey_details">
+    <dt>API Key</dt>
+    <dd><pre class="apikey">{{ key.key }}</dd>
+    <dt>Status</dt>
+    <dd>{{ key.get_status_display }} </dd>
+    <dt>Tier</dt>
+    <dd>{{ key.tier }}</dd>
+  </dl>
+  <p>
+   To use the API check out the <a href="https://docs.openstates.org/en/latest/api/v2/">API Documentation</a>, and ask questions over at our <a href="https://discourse.openstates.org/">Discourse</a>.
+  </p>
+
+  <p>
+    If you'd like to request a change to your key's status, please <a href="mailto:contact@openstates.org">contact us</a>.
+  </p>
+  {% else %}
+  <p>
+    An error has occurred, please <a href="mailto:contact@openstates.org">contact us</a>.
+  </p>
+  {% endif %}
+</section>
+{% endif %}
+
 <section>
   <h2 class="heading">Account Management</h2>
   <p>
