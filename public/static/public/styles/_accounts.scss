@@ -27,7 +27,7 @@
   }
 }
 
-.socialaccount_provider {
+a.socialaccount_provider {
   &:before {
     @include breakpoint(large) {
       content: "Sign in with ";
@@ -86,6 +86,7 @@ button.primaryAction,
 input.primaryAction,
 button[name="action_add"],
 form[action='/accounts/logout/'] button,
+form[action='/accounts/social/connections/'] button,
 form[action^='/accounts/confirm-email/'] button
 {
   @extend .button;
