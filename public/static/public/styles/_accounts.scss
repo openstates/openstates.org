@@ -35,19 +35,19 @@ a.socialaccount_provider {
   }
   &.facebook {
     @include button(false, #4267b2, #4267b2, $white, solid);
-    background-image: url("/static/public/images/social/f_logo_RGB-White_100.png");
+    background-image: url("/static/public/images/logos/f_logo_RGB-White_100.png");
   }
   &.twitter {
     @include button(false, #1da1f2, #1da1f2, $white, solid);
-    background-image: url("/static/public/images/social/Twitter_Logo_WhiteOnBlue.png");
+    background-image: url("/static/public/images/logos/Twitter_Logo_WhiteOnBlue.png");
   }
   &.google {
     @include button(false, #000, #000, #666, hollow);
-    background-image: url("/static/public/images/social/g-logo.png");
+    background-image: url("/static/public/images/logos/g-logo.png");
   }
   &.github {
     @include button(false, #000, #000, $white, solid);
-    background-image: url("/static/public/images/social/GitHub-Mark-Light-64px.png");
+    background-image: url("/static/public/images/logos/GitHub-Mark-Light-64px.png");
   }
 
   margin-right: .25rem;
