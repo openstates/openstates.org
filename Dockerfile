@@ -27,11 +27,10 @@ RUN wget https://deb.nodesource.com/setup_10.x -O nodesource.sh \
     && npm run build
 
 RUN set -ex \
-    && python3.7 -m venv /venv \
-    && /venv/bin/pip install -U pip poetry \
-    && /venv/bin/poetry install
+    && pip install poetry \
+    && poetry install
 
 EXPOSE 8000
 STOPSIGNAL SIGINT
-ENTRYPOINT ["/venv/bin/poetry", "run", "./manage.py"]
+ENTRYPOINT ["poetry", "run", "./manage.py"]
 CMD ["runserver", "0.0.0.0:8000"]
