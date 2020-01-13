@@ -1,5 +1,7 @@
-import os
 import csv
+import datetime
+import tempfile
+import zipfile
 from django.core.management.base import BaseCommand
 from django.db.models import F
 from opencivicdata.legislative.models import (
@@ -24,17 +26,33 @@ from opencivicdata.legislative.models import (
 from utils.common import abbr_to_jid
 
 
-def export_csv(filename, data):
+def export_csv(filename, data, zf):
     if not data:
         return
     headers = data[0].keys()
-    with open(filename, "w") as f:
+
+    with tempfile.NamedTemporaryFile("w") as f:
+        print("writing", filename, len(data), "records")
         of = csv.DictWriter(f, headers)
         of.writeheader()
         of.writerows(data)
+        f.flush()
+        zf.write(f.name, filename)
 
 
 def export_session(state, session):
+    zf = zipfile.ZipFile(f"{state}_{session}.zip", "w")
+    ts = datetime.datetime.utcnow()
+    zf.writestr(
+        "README",
+        f"""Open States Data Export
+
+State: {state}
+Session: {session}
+Generated At: {ts}
+CSV Format Version: 2.0
+""",
+    )
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
@@ -48,8 +66,7 @@ def export_session(state, session):
         jurisdiction=F("legislative_session__jurisdiction__name"),
         organization_classification=F("from_organization__classification"),
     )
-    os.makedirs(f"{state}/{session}")
-    export_csv(f"{state}/{session}/{state}_{session}_bills.csv", bills)
+    export_csv(f"{state}/{session}/{state}_{session}_bills.csv", bills, zf)
 
     for Model, fname in (
         (BillAbstract, "bill_abstracts"),
@@ -63,16 +80,20 @@ def export_session(state, session):
         (BillVersion, "bill_versions"),
     ):
         subobjs = Model.objects.filter(bill__legislative_session=sobj).values()
-        export_csv(f"{state}/{session}/{state}_{session}_{fname}.csv", subobjs)
+        export_csv(f"{state}/{session}/{state}_{session}_{fname}.csv", subobjs, zf)
 
     subobjs = BillDocumentLink.objects.filter(
         document__bill__legislative_session=sobj
     ).values()
-    export_csv(f"{state}/{session}/{state}_{session}_bill_document_links.csv", subobjs)
+    export_csv(
+        f"{state}/{session}/{state}_{session}_bill_document_links.csv", subobjs, zf
+    )
     subobjs = BillVersionLink.objects.filter(
         version__bill__legislative_session=sobj
     ).values()
-    export_csv(f"{state}/{session}/{state}_{session}_bill_version_links.csv", subobjs)
+    export_csv(
+        f"{state}/{session}/{state}_{session}_bill_version_links.csv", subobjs, zf
+    )
 
     # TODO: BillActionRelatedEntity
 
@@ -90,14 +111,14 @@ def export_session(state, session):
         jurisdiction=F("legislative_session__jurisdiction__name"),
         session_identifier=F("legislative_session__identifier"),
     )
-    export_csv(f"{state}/{session}/{state}_{session}_votes.csv", votes)
+    export_csv(f"{state}/{session}/{state}_{session}_votes.csv", votes, zf)
     for Model, fname in (
         (PersonVote, "vote_people"),
         (VoteCount, "vote_counts"),
         (VoteSource, "vote_sources"),
     ):
         subobjs = Model.objects.filter(vote_event__legislative_session=sobj).values()
-        export_csv(f"{state}/{session}/{state}_{session}_{fname}.csv", subobjs)
+        export_csv(f"{state}/{session}/{state}_{session}_{fname}.csv", subobjs, zf)
 
 
 class Command(BaseCommand):
