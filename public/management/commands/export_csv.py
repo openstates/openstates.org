@@ -27,32 +27,22 @@ from utils.common import abbr_to_jid
 
 
 def export_csv(filename, data, zf):
-    if not data:
+    num = len(data)
+    if not num:
         return
     headers = data[0].keys()
 
     with tempfile.NamedTemporaryFile("w") as f:
-        print("writing", filename, len(data), "records")
+        print("writing", filename, num, "records")
         of = csv.DictWriter(f, headers)
         of.writeheader()
         of.writerows(data)
         f.flush()
         zf.write(f.name, filename)
+    return num
 
 
 def export_session(state, session):
-    zf = zipfile.ZipFile(f"{state}_{session}.zip", "w")
-    ts = datetime.datetime.utcnow()
-    zf.writestr(
-        "README",
-        f"""Open States Data Export
-
-State: {state}
-Session: {session}
-Generated At: {ts}
-CSV Format Version: 2.0
-""",
-    )
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
@@ -66,6 +56,23 @@ CSV Format Version: 2.0
         jurisdiction=F("legislative_session__jurisdiction__name"),
         organization_classification=F("from_organization__classification"),
     )
+
+    if not bills.count():
+        print(f"no bills for {state} {session}")
+        return
+    zf = zipfile.ZipFile(f"{state}_{session}.zip", "w")
+    ts = datetime.datetime.utcnow()
+    zf.writestr(
+        "README",
+        f"""Open States Data Export
+
+State: {state}
+Session: {session}
+Generated At: {ts}
+CSV Format Version: 2.0
+""",
+    )
+
     export_csv(f"{state}/{session}/{state}_{session}_bills.csv", bills, zf)
 
     for Model, fname in (
