@@ -181,4 +181,5 @@ class Command(BaseCommand):
             for session in options["sessions"]:
                 if session in sessions:
                     filename = export_session(state, session)
-                    upload_and_publish(state, session, filename)
+                    if filename:
+                        upload_and_publish(state, session, filename)
