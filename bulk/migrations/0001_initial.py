@@ -8,9 +8,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ("legislative", "0009_searchablebill"),
-    ]
+    dependencies = [("legislative", "0009_searchablebill")]
 
     operations = [
         migrations.CreateModel(
@@ -36,5 +34,5 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-        ),
+        )
     ]
