@@ -2,6 +2,7 @@ import csv
 import datetime
 import tempfile
 import zipfile
+import boto3
 from django.core.management.base import BaseCommand
 from django.db.models import F
 from opencivicdata.legislative.models import (
@@ -23,6 +24,7 @@ from opencivicdata.legislative.models import (
     VoteCount,
     VoteSource,
 )
+from ..models import DataExport
 from utils.common import abbr_to_jid
 
 
@@ -60,7 +62,8 @@ def export_session(state, session):
     if not bills.count():
         print(f"no bills for {state} {session}")
         return
-    zf = zipfile.ZipFile(f"{state}_{session}.zip", "w")
+    filename = f"{state}_{session}.zip"
+    zf = zipfile.ZipFile(filename, "w")
     ts = datetime.datetime.utcnow()
     zf.writestr(
         "README",
@@ -127,6 +130,22 @@ CSV Format Version: 2.0
         subobjs = Model.objects.filter(vote_event__legislative_session=sobj).values()
         export_csv(f"{state}/{session}/{state}_{session}_{fname}.csv", subobjs, zf)
 
+    return filename
+
+
+def upload_and_publish(state, session, filename):
+    sobj = LegislativeSession.objects.get(
+        jurisdiction_id=abbr_to_jid(state), identifier=session
+    )
+    s3 = boto3.client("s3")
+
+    BULK_S3_BUCKET = "data.openstates.org"
+    BULK_S3_PATH = "/csv/latest/"
+    s3_url = f"https://{BULK_S3_BUCKET}{BULK_S3_PATH}{filename}"
+
+    s3.upload_file(filename, BULK_S3_BUCKET, BULK_S3_PATH + filename)
+    DataExport.objects.create(session=sobj, url=s3_url)
+
 
 class Command(BaseCommand):
     help = "export data as CSV"
@@ -153,4 +172,5 @@ class Command(BaseCommand):
         else:
             for session in options["sessions"]:
                 if session in sessions:
-                    export_session(state, session)
+                    filename = export_session(state, session)
+                    upload_and_publish(state, session, filename)
