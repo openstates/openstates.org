@@ -24,7 +24,7 @@ from opencivicdata.legislative.models import (
     VoteCount,
     VoteSource,
 )
-from ..models import DataExport
+from ...models import DataExport
 from utils.common import abbr_to_jid
 
 
@@ -140,11 +140,17 @@ def upload_and_publish(state, session, filename):
     s3 = boto3.client("s3")
 
     BULK_S3_BUCKET = "data.openstates.org"
-    BULK_S3_PATH = "/csv/latest/"
-    s3_url = f"https://{BULK_S3_BUCKET}{BULK_S3_PATH}{filename}"
+    BULK_S3_PATH = "csv/latest/"
+    s3_url = f"https://{BULK_S3_BUCKET}/{BULK_S3_PATH}{filename}"
 
-    s3.upload_file(filename, BULK_S3_BUCKET, BULK_S3_PATH + filename)
-    DataExport.objects.create(session=sobj, url=s3_url)
+    s3.upload_file(
+        filename,
+        BULK_S3_BUCKET,
+        BULK_S3_PATH + filename,
+        ExtraArgs={"ACL": "public-read"},
+    )
+    print("uploaded", s3_url)
+    DataExport.objects.update_or_create(session=sobj, defaults=dict(url=s3_url))
 
 
 class Command(BaseCommand):

@@ -105,6 +105,7 @@ INSTALLED_APPS = [
     "public.apps.PublicConfig",
     "graphapi",
     "v1",
+    "bulk",
     "simplekeys",
 ]
 
