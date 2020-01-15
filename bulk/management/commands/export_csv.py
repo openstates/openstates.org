@@ -150,7 +150,9 @@ def upload_and_publish(state, session, filename):
         ExtraArgs={"ACL": "public-read"},
     )
     print("uploaded", s3_url)
-    DataExport.objects.update_or_create(session=sobj, defaults=dict(url=s3_url))
+    obj, created = DataExport.objects.update_or_create(
+        session=sobj, defaults=dict(url=s3_url)
+    )
 
 
 class Command(BaseCommand):
