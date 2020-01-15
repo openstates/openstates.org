@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from simplekeys.views import ConfirmationView
 from graphapi.views import KeyedGraphQLView
 from graphapi.middleware import QueryProtectionMiddleware
+from bulk.views import bulk_csv_list
 
 urlpatterns = [
     path("djadmin/", admin.site.urls),
@@ -23,6 +24,7 @@ urlpatterns = [
     ),
     url("", include("public.urls")),
     url("", include("openstates.redirects")),
+    path("bulk/csv/", bulk_csv_list),
 ]
 
 

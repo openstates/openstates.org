@@ -1,0 +1,29 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States CSV Downloads{% endblock %}
+{% block og_title %}Open States CSV Downloads{% endblock %}
+{% block description %}Download bulk data from Open States{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Open States Bulk Data</h1>
+
+<section class="mt1">
+  <p>These archives provide bulk data in and experimental CSV format.
+    Please consider providing feedback by <a href="mailto:contact@openstates.org">emailing us</a>.
+  </p>
+
+  <ul> {# need this so first close tag works #}
+  {% for export in exports %}
+  {% ifchanged %}
+  </ul>
+  <h2 class="heading">{{ export.session.jurisdiction.name }}</h2>
+  <ul>
+  {% endifchanged %}
+
+  <li><a href="{{ export.url }}">{{ export.session }}</a> (updated {{ export.updated_at|date:"Y-m-d" }})</li>
+  {% endfor %}
+
+  </ul> {# close final ul #}
+</section>
+{% endblock %}
