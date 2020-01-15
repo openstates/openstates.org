@@ -2,6 +2,8 @@
 
 This repository contains the code responsible for openstates.org, the website and APIs.
 
+[![CircleCI](https://circleci.com/gh/openstates/openstates.org.svg?style=svg)](https://circleci.com/gh/openstates/openstates.org)
+
 ## Links
 
 * [Contributor's Guide](https://docs.openstates.org/en/latest/contributing/getting-started.html)
