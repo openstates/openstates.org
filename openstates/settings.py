@@ -106,6 +106,7 @@ INSTALLED_APPS = [
     "graphapi",
     "v1",
     "bulk",
+    "profiles",
     "simplekeys",
 ]
 
