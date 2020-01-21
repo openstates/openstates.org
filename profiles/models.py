@@ -2,6 +2,7 @@ import urllib.parse
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from utils.common import pretty_url
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
 
@@ -50,11 +51,11 @@ class Subscription(models.Model):
 
     @property
     def subscription_type(self):
-        if self.bill:
+        if self.bill_id:
             return "bill"
         elif self.query:
             return "query"
-        elif self.sponsor:
+        elif self.sponsor_id:
             return "sponsor"
         raise ValueError("invalid subscription")
 
@@ -66,7 +67,7 @@ class Subscription(models.Model):
             return f"Bills sponsored by {self.sponsor}"
         elif self.subscription_type == "query":
             state = self.state.upper() if self.state else "all states"
-            return f"Bills matching {self.query} from {state}"
+            return f"Bills matching '{self.query}' from {state}"
 
     @property
     def site_url(self):
@@ -76,12 +77,16 @@ class Subscription(models.Model):
                 "session": self.session,
                 "chamber": self.chamber,
                 "classification": self.classification,
-                "subjects": self.subjects,
-                "status": self.status,
-                "sponsor_id": self.sponsor_id,
+                "subjects": self.subjects or [],
+                "status": self.status or [],
+                "sponsor_id": self.sponsor_id or "",
             }
             querystr = urllib.parse.urlencode(queryobj, doseq=True)
             return f"/{self.state}/bills/?{querystr}"
+        elif self.subscription_type == "bill":
+            return pretty_url(self.bill)
+        elif self.subscription_type == "sponsor":
+            return pretty_url(self.sponsor)
 
     def __str__(self):
         return f"{self.user}: {self.pretty}"
