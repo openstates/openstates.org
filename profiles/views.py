@@ -3,7 +3,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from simplekeys.models import Key
-from .models import Subscription
+from .models import Subscription, Profile
 
 
 class PermissionException(Exception):
@@ -11,8 +11,11 @@ class PermissionException(Exception):
 
 
 def _ensure_feature_flag(user, perm="feature_subscriptions"):
-    if user.profile and getattr(user.profile, perm):
-        return True
+    try:
+        if getattr(user.profile, perm):
+            return True
+    except Profile.DoesNotExist:
+        pass
     raise PermissionException(f"{user} does not have {perm}")
 
 
@@ -42,8 +45,11 @@ def profile(request):
 @login_required
 @require_POST
 def delete_subscription(request):
+    print(request.POST)
     try:
-        sub = Subscription.objects.get(pk=request.POST["subscription_id"])
+        sub = Subscription.objects.get(
+            user=request.user, pk=request.POST["subscription_id"]
+        )
         sub.delete()
         messages.info(request, f"Deleted subscription: {sub.pretty}")
     except Subscription.DoesNotExist:
@@ -75,7 +81,11 @@ def add_search_subscription(request):
 def add_sponsor_subscription(request):
     _ensure_feature_flag(request.user)
     sub, created = Subscription.objects.get_or_create(
-        user=request.user, query="", sponsor_id=request.POST["sponsor_id"]
+        user=request.user,
+        sponsor_id=request.POST["sponsor_id"],
+        query="",
+        subjects=[],
+        status=[],
     )
     if created:
         messages.info(request, f"Created new subscription: {sub.pretty}")
@@ -87,7 +97,11 @@ def add_sponsor_subscription(request):
 def add_bill_subscription(request):
     _ensure_feature_flag(request.user)
     sub, created = Subscription.objects.get_or_create(
-        user=request.user, query="", bill_id=request.POST["bill_id"]
+        user=request.user,
+        bill_id=request.POST["bill_id"],
+        query="",
+        subjects=[],
+        status=[],
     )
     if created:
         messages.info(request, f"Created new subscription: {sub.pretty}")
