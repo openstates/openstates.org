@@ -23,6 +23,7 @@ urlpatterns = [
         ),
     ),
     url("", include("public.urls")),
+    url("profile/", include("profiles.urls")),
     url("", include("openstates.redirects")),
     path("bulk/csv/", bulk_csv_list),
 ]
