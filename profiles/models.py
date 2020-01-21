@@ -1,3 +1,4 @@
+import urllib.parse
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
@@ -57,10 +58,30 @@ class Subscription(models.Model):
             return "sponsor"
         raise ValueError("invalid subscription")
 
-    def __str__(self):
+    @property
+    def pretty(self):
         if self.subscription_type == "bill":
-            return f"{self.user} subscription to {self.bill}"
-        elif self.subscription_type == "query":
-            return f"{self.user} subscription to '{self.query}'"
+            return f"Updates on {self.bill}"
         elif self.subscription_type == "sponsor":
-            return f"{self.user} subscription to '{self.sponsor}'"
+            return f"Bills sponsored by {self.sponsor}"
+        elif self.subscription_type == "query":
+            state = self.state.upper() if self.state else "all states"
+            return f"Bills matching {self.query} from {state}"
+
+    @property
+    def site_url(self):
+        if self.subscription_type == "query":
+            queryobj = {
+                "query": self.query,
+                "session": self.session,
+                "chamber": self.chamber,
+                "classification": self.classification,
+                "subjects": self.subjects,
+                "status": self.status,
+                "sponsor_id": self.sponsor_id,
+            }
+            querystr = urllib.parse.urlencode(queryobj, doseq=True)
+            return f"/{self.state}/bills/?{querystr}"
+
+    def __str__(self):
+        return f"{self.user}: {self.pretty}"

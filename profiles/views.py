@@ -27,12 +27,14 @@ def profile(request):
         except Key.DoesNotExist:
             pass
 
-    messages.info(
-        request,
-        "Accounts are currently a beta feature, more functionality is coming soon!",
+    subscriptions = request.user.subscriptions.filter(active=True).order_by(
+        "-created_at"
     )
+
     return render(
-        request, "account/profile.html", {"primary_email": primary, "key": key}
+        request,
+        "account/profile.html",
+        {"primary_email": primary, "key": key, "subscriptions": subscriptions},
     )
 
 
@@ -50,7 +52,7 @@ def add_search_subscription(request):
         sponsor_id=request.POST.get("sponsor_id"),
     )
     if created:
-        messages.info(request, f"Created new subscription for '{sub.query}'")
+        messages.info(request, f"Created new subscription: {sub.pretty}")
     return redirect("/accounts/profile/")
 
 
@@ -61,7 +63,7 @@ def add_sponsor_subscription(request):
         user=request.user, query="", sponsor_id=request.POST["sponsor_id"]
     )
     if created:
-        messages.info(request, f"Created new subscription for sponsor '{sub.sponsor}'")
+        messages.info(request, f"Created new subscription: {sub.pretty}")
     return redirect("/accounts/profile/")
 
 
@@ -72,5 +74,5 @@ def add_bill_subscription(request):
         user=request.user, query="", bill_id=request.POST["bill_id"]
     )
     if created:
-        messages.info(request, f"Created new subscription for bill '{sub.bill}'")
+        messages.info(request, f"Created new subscription: {sub.pretty}")
     return redirect("/accounts/profile/")

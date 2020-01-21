@@ -49,6 +49,32 @@
 </section>
 {% endif %}
 
+{% if request.user.profile.feature_subscriptions %}
+<section>
+  <h2 class="heading">Subscriptions</h2>
+
+  <table class="hover">
+    <thead>
+    <tr>
+      <th>Subscription</th>
+      <th>Created</th>
+      <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for sub in subscriptions %}
+    <tr>
+      <td><a href="{{ sub.site_url }}">{{ sub.pretty }}</a></td>
+      <td>{{ sub.created_at|date:"Y-m-d" }}</td>
+      <td><button class="button">Delete</button></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</section>
+{% endif %}
+
 <section>
   <h2 class="heading">Account Management</h2>
   <p>
