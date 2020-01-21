@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from simplekeys.models import Key
@@ -39,6 +40,19 @@ def profile(request):
 
 
 @login_required
+@require_POST
+def delete_subscription(request):
+    try:
+        sub = Subscription.objects.get(pk=request.POST["subscription_id"])
+        sub.delete()
+        messages.info(request, f"Deleted subscription: {sub.pretty}")
+    except Subscription.DoesNotExist:
+        pass
+    return redirect("/accounts/profile/")
+
+
+@login_required
+@require_POST
 def add_search_subscription(request):
     _ensure_feature_flag(request.user)
     sub, created = Subscription.objects.get_or_create(
@@ -57,6 +71,7 @@ def add_search_subscription(request):
 
 
 @login_required
+@require_POST
 def add_sponsor_subscription(request):
     _ensure_feature_flag(request.user)
     sub, created = Subscription.objects.get_or_create(
@@ -68,6 +83,7 @@ def add_sponsor_subscription(request):
 
 
 @login_required
+@require_POST
 def add_bill_subscription(request):
     _ensure_feature_flag(request.user)
     sub, created = Subscription.objects.get_or_create(

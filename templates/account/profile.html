@@ -53,6 +53,12 @@
 <section>
   <h2 class="heading">Subscriptions</h2>
 
+  {% if not subscriptions %}
+  <p>
+  You haven't yet created any subscriptions.
+  </p>
+
+  {% else %}
   <table class="hover">
     <thead>
     <tr>
@@ -66,11 +72,18 @@
     <tr>
       <td><a href="{{ sub.site_url }}">{{ sub.pretty }}</a></td>
       <td>{{ sub.created_at|date:"Y-m-d" }}</td>
-      <td><button class="button">Delete</button></td>
+      <td>
+        <form method="POST" action="/accounts/profile/delete_sub/">
+          {% csrf_token %}
+          <input type="hidden" name="subscription_id" value="{{ sub.id }}" />
+          <button class="button">Delete</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
-    </tbody>
-</table>
+      </tbody>
+  </table>
+  {% endif %}
 
 </section>
 {% endif %}
