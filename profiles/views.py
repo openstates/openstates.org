@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
+from simplekeys.models import Key
 from .models import Subscription
 
 
@@ -12,6 +13,27 @@ def _ensure_feature_flag(user, perm="feature_subscriptions"):
     if user.profile and getattr(user.profile, perm):
         return True
     raise PermissionException(f"{user} does not have {perm}")
+
+
+@login_required
+def profile(request):
+    primary = request.user.emailaddress_set.get(primary=True)
+
+    # only get their key if the email is verified
+    key = None
+    if primary.verified:
+        try:
+            key = Key.objects.get(email=primary.email)
+        except Key.DoesNotExist:
+            pass
+
+    messages.info(
+        request,
+        "Accounts are currently a beta feature, more functionality is coming soon!",
+    )
+    return render(
+        request, "account/profile.html", {"primary_email": primary, "key": key}
+    )
 
 
 @login_required
