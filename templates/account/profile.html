@@ -49,10 +49,13 @@
 </section>
 {% endif %}
 
-{% if request.user.profile.feature_subscriptions %}
 <section>
   <h2 class="heading">Subscriptions</h2>
-
+  {% if not request.user.profile.feature_subscriptions %}
+  <p>
+  Subscriptions are currently in beta, <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvEOfgIT_LFUy8hqnKIBudOzfN0v_S9249BjDRDmydyqey1g/viewform">request access today</a>!
+  </p>
+  {% else %}
   {% if not subscriptions %}
   <p>
   You haven't yet created any subscriptions.
@@ -84,9 +87,8 @@
       </tbody>
   </table>
   {% endif %}
-
+  {% endif %}
 </section>
-{% endif %}
 
 <section>
   <h2 class="heading">Account Management</h2>
