@@ -5,7 +5,6 @@ from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
 from .views.committees import committees, committee
 from .views.donations import donate
-from .views.account import profile
 from .views.fallback import fallback, legislator_fallback
 from utils.common import states
 
@@ -23,7 +22,6 @@ urlpatterns = [
     path("api/registered/", TemplateView.as_view(template_name="flat/registered.html")),
     path("donate/", donate),
     # top level views
-    path("accounts/profile/", profile),
     path("", home, name="home"),
     path("find_your_legislator/", find_your_legislator, name="find_your_legislator"),
     path("search/", site_search, name="search"),

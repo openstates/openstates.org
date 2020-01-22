@@ -143,6 +143,12 @@
                     {% endif %}
 
                     <button type="submit" class="button button--primary">Search</button>
+
+                    {% if request.user.profile.feature_subscriptions %}
+                    {% csrf_token %}
+                    <input type="hidden" name="state" value="{{ state }}" />
+                    <button type="submit" class="button button--primary" formaction="/accounts/profile/add_search_sub/" formmethod="POST">Add Subscription</button>
+                    {% endif %}
                 </form>
             </div>
         </div>

@@ -102,10 +102,11 @@ INSTALLED_APPS = [
     "geo",
     "pupa",
     "graphene_django",
-    "public.apps.PublicConfig",
+    "public",
     "graphapi",
     "v1",
     "bulk",
+    "profiles.apps.ProfilesConfig",
     "simplekeys",
 ]
 

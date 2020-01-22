@@ -61,6 +61,13 @@
                         <a class="button" href="{{ read_link }}">View Latest Bill Text</a>
                     </div>
                 </div>
+                <div class="grid-x grid-margin-x align-justify">
+                  <div class="cell small-12 medium-9">
+                      {% if request.user.profile.feature_subscriptions %}
+                      <div data-hook="follow-button" data-bill-id="{{ bill.id }}"></div>
+                      {% endif %}
+                  </div>
+                </div>
             </div>
         </div>
         
