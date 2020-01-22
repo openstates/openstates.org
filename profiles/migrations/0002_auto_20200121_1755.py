@@ -5,13 +5,11 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("profiles", "0001_initial"),
-    ]
+    dependencies = [("profiles", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name="profile", name="about", field=models.TextField(blank=True),
+            model_name="profile", name="about", field=models.TextField(blank=True)
         ),
         migrations.AlterField(
             model_name="profile",

@@ -7,9 +7,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("profiles", "0003_subscription"),
-    ]
+    dependencies = [("profiles", "0003_subscription")]
 
     operations = [
         migrations.AlterField(
