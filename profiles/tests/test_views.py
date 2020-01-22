@@ -86,19 +86,6 @@ def test_add_sponsor_subscription(client, user):
 
 
 @pytest.mark.django_db
-def test_add_bill_subscription(client, user):
-    client.force_login(user)
-    resp = client.post("/accounts/profile/add_bill_sub/", {"bill_id": "ocd-bill/1"})
-    assert resp.status_code == 302
-    assert Subscription.objects.count() == 1
-    assert Subscription.objects.get().pretty == "Updates on HB 1 in Alaska 2018"
-
-    # ensure no duplication
-    resp = client.post("/accounts/profile/add_bill_sub/", {"bill_id": "ocd-bill/1"})
-    assert Subscription.objects.count() == 1
-
-
-@pytest.mark.django_db
 def test_deactivate_sub(client, user):
     sub = Subscription.objects.create(
         user=user, query="topic", state="ak", subjects=[], status=[]
@@ -139,3 +126,69 @@ def test_reactivate_sub(client, user):
     client.post("/accounts/profile/add_search_sub/", {"query": "topic", "state": "ak"})
     assert Subscription.objects.filter(active=True).count() == 1
     assert Subscription.objects.get().pretty == "Bills matching 'topic' from AK"
+
+
+@pytest.mark.django_db
+def test_bill_subscription_add(client, user):
+    client.force_login(user)
+    resp = client.post(
+        "/accounts/profile/bill_sub/",
+        {"bill_id": "ocd-bill/1"},
+        content_type="application/json",
+    )
+    assert resp.status_code == 200
+    assert resp.json() == {"error": "", "bill_id": "ocd-bill/1", "active": True}
+    assert Subscription.objects.count() == 1
+    assert Subscription.objects.get().pretty == "Updates on HB 1 in Alaska 2018"
+
+    # ensure no duplication
+    resp = client.post(
+        "/accounts/profile/bill_sub/",
+        {"bill_id": "ocd-bill/1"},
+        content_type="application/json",
+    )
+    assert resp.json() == {"error": "", "bill_id": "ocd-bill/1", "active": True}
+    assert Subscription.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_bill_subscription_get(client, user):
+    client.force_login(user)
+
+    # doesn't exist
+    resp = client.get("/accounts/profile/bill_sub/", {"bill_id": "ocd-bill/1"})
+    assert resp.status_code == 200
+    assert resp.json() == {"error": "", "bill_id": "ocd-bill/1", "active": False}
+
+    Subscription.objects.create(user=user, bill_id="ocd-bill/1", subjects=[], status=[])
+    resp = client.get("/accounts/profile/bill_sub/", {"bill_id": "ocd-bill/1"})
+    assert resp.status_code == 200
+    assert resp.json() == {"error": "", "bill_id": "ocd-bill/1", "active": True}
+
+
+@pytest.mark.django_db
+def test_bill_subscription_delete(client, user):
+    client.force_login(user)
+
+    # doesn't exist
+    resp = client.delete(
+        "/accounts/profile/bill_sub/",
+        {"bill_id": "ocd-bill/1"},
+        content_type="application/json",
+    )
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "error": "no such subscription",
+        "bill_id": "ocd-bill/1",
+        "active": False,
+    }
+
+    Subscription.objects.create(user=user, bill_id="ocd-bill/1", subjects=[], status=[])
+    resp = client.delete(
+        "/accounts/profile/bill_sub/",
+        {"bill_id": "ocd-bill/1"},
+        content_type="application/json",
+    )
+    assert resp.status_code == 200
+    assert resp.json() == {"error": "", "bill_id": "ocd-bill/1", "active": False}
+    assert Subscription.objects.filter(active=False).count() == 1

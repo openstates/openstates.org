@@ -1,7 +1,9 @@
+import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
+from django.http import JsonResponse
 from simplekeys.models import Key
 from .models import Subscription, Profile
 
@@ -104,16 +106,32 @@ def add_sponsor_subscription(request):
 
 
 @login_required
-@require_POST
-def add_bill_subscription(request):
+def bill_subscription(request):
     _ensure_feature_flag(request.user)
-    sub, created = activate_subscription(
-        user=request.user,
-        bill_id=request.POST["bill_id"],
-        query="",
-        subjects=[],
-        status=[],
-    )
-    if created:
-        messages.info(request, f"Created new subscription: {sub.pretty}")
-    return redirect("/accounts/profile/")
+
+    error = ""
+    active = False
+
+    if request.method == "POST":
+        bill_id = json.loads(request.body)["bill_id"]
+        sub, created = activate_subscription(
+            user=request.user, bill_id=bill_id, query="", subjects=[], status=[],
+        )
+        active = True
+    elif request.method == "GET":
+        bill_id = request.GET["bill_id"]
+        active = Subscription.objects.filter(
+            user=request.user, active=True, bill_id=bill_id
+        ).exists()
+    elif request.method == "DELETE":
+        bill_id = json.loads(request.body)["bill_id"]
+        try:
+            sub = Subscription.objects.get(
+                user=request.user, bill_id=bill_id, active=True
+            )
+            sub.active = False
+            sub.save()
+        except Subscription.DoesNotExist:
+            error = "no such subscription"
+
+    return JsonResponse({"active": active, "bill_id": bill_id, "error": error})
