@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from graphapi.tests.utils import populate_db
-from profiles.models import Subscription, Profile
+from profiles.models import Subscription
 from profiles.views import PermissionException
 from opencivicdata.core.models import Person
 from .test_models import COMPLEX_STR
@@ -15,7 +15,8 @@ def setup():
 @pytest.fixture
 def user():
     u = User.objects.create(username="testuser")
-    Profile.objects.create(user=u, feature_subscriptions=True)
+    u.profile.feature_subscriptions = True
+    u.profile.save()
     return u
 
 
