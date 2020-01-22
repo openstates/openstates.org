@@ -44,24 +44,35 @@ def profile(request):
 
 @login_required
 @require_POST
-def delete_subscription(request):
-    print(request.POST)
+def deactivate_subscription(request):
     try:
         sub = Subscription.objects.get(
-            user=request.user, pk=request.POST["subscription_id"]
+            user=request.user, pk=request.POST["subscription_id"], active=True
         )
-        sub.delete()
-        messages.info(request, f"Deleted subscription: {sub.pretty}")
+        sub.active = False
+        sub.save()
+        messages.info(request, f"Deactivated subscription: {sub.pretty}")
     except Subscription.DoesNotExist:
         pass
     return redirect("/accounts/profile/")
+
+
+def activate_subscription(**kwargs):
+    """ returns True iff a subscription was created or activated """
+    sub, created = Subscription.objects.get_or_create(**kwargs)
+    # check if it already existed and was deactivated
+    if not created and not sub.active:
+        sub.active = True
+        sub.save()
+        created = True
+    return sub, created
 
 
 @login_required
 @require_POST
 def add_search_subscription(request):
     _ensure_feature_flag(request.user)
-    sub, created = Subscription.objects.get_or_create(
+    sub, created = activate_subscription(
         user=request.user,
         query=request.POST["query"],
         state=request.POST["state"],
@@ -80,7 +91,7 @@ def add_search_subscription(request):
 @require_POST
 def add_sponsor_subscription(request):
     _ensure_feature_flag(request.user)
-    sub, created = Subscription.objects.get_or_create(
+    sub, created = activate_subscription(
         user=request.user,
         sponsor_id=request.POST["sponsor_id"],
         query="",
@@ -96,7 +107,7 @@ def add_sponsor_subscription(request):
 @require_POST
 def add_bill_subscription(request):
     _ensure_feature_flag(request.user)
-    sub, created = Subscription.objects.get_or_create(
+    sub, created = activate_subscription(
         user=request.user,
         bill_id=request.POST["bill_id"],
         query="",

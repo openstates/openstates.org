@@ -98,7 +98,7 @@ def test_add_bill_subscription(client, user):
 
 
 @pytest.mark.django_db
-def test_delete_subscription(client, user):
+def test_deactivate_sub(client, user):
     sub = Subscription.objects.create(
         user=user, query="topic", state="ak", subjects=[], status=[]
     )
@@ -106,11 +106,13 @@ def test_delete_subscription(client, user):
     client.force_login(user)
     resp = client.post("/accounts/profile/delete_sub/", {"subscription_id": sub.id})
     assert resp.status_code == 302
-    assert Subscription.objects.count() == 0
+    # test that it is deactivated, not deleted
+    assert Subscription.objects.count() == 1
+    assert Subscription.objects.filter(active=True).count() == 0
 
 
 @pytest.mark.django_db
-def test_delete_subscription_other_user(client, user):
+def test_deactivate_subscription_other_user(client, user):
     other = User.objects.create(username="other")
 
     # isn't associated with the logged in user
@@ -118,8 +120,21 @@ def test_delete_subscription_other_user(client, user):
         user=other, query="topic", state="ak", subjects=[], status=[]
     )
 
-    # delete fails
+    # deactivate fails
     client.force_login(user)
     resp = client.post("/accounts/profile/delete_sub/", {"subscription_id": sub.id})
     assert resp.status_code == 302
-    assert Subscription.objects.count() == 1
+    assert Subscription.objects.filter(active=True).count() == 1
+
+
+@pytest.mark.django_db
+def test_reactivate_sub(client, user):
+    Subscription.objects.create(
+        user=user, query="topic", state="ak", subjects=[], status=[], active=False
+    )
+
+    # now use any of the add_*_sub methods
+    client.force_login(user)
+    client.post("/accounts/profile/add_search_sub/", {"query": "topic", "state": "ak"})
+    assert Subscription.objects.filter(active=True).count() == 1
+    assert Subscription.objects.get().pretty == "Bills matching 'topic' from AK"

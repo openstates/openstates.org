@@ -9,5 +9,6 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "user", "subscription_type")
+    list_display = ("__str__", "user", "subscription_type", "active")
+    list_filter = ("active",)
     autocomplete_fields = ("sponsor", "bill")
