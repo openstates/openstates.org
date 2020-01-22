@@ -4,6 +4,7 @@ from graphapi.tests.utils import populate_db
 from profiles.models import Subscription, Profile
 from profiles.views import PermissionException
 from opencivicdata.core.models import Person
+from .test_models import COMPLEX_STR
 
 
 @pytest.mark.django_db
@@ -45,13 +46,23 @@ def test_add_search_subscription_basic(client, user):
     assert Subscription.objects.count() == 1
 
 
-# @pytest.mark.django_db
-# def test_add_search_subscription_complex():
-# client.force_login(user)
-# resp = client.post("/accounts/profile/add_search_sub/", {"query": "topic", "state": "ak"})
-# assert resp.status_code == 302
-# assert Subscription.objects.count() == 1
-# assert Subscription.objects.get().pretty == "Bills matching 'topic' from AK"
+@pytest.mark.django_db
+def test_add_search_subscription_complex(client, user):
+    client.force_login(user)
+    search_dict = {
+        "query": "topic",
+        "state": "ak",
+        "chamber": "upper",
+        "session": "2018",
+        "classification": "bill",
+        "subjects": ["MOOSE", "WILDLIFE"],
+        "status": ["passed_lower"],
+        "sponsor_id": Person.objects.get(name="Amanda Adams").id,
+    }
+    resp = client.post("/accounts/profile/add_search_sub/", search_dict)
+    assert resp.status_code == 302
+    assert Subscription.objects.count() == 1
+    assert Subscription.objects.get().pretty == COMPLEX_STR
 
 
 @pytest.mark.django_db

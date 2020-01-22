@@ -67,7 +67,20 @@ class Subscription(models.Model):
             return f"Bills sponsored by {self.sponsor}"
         elif self.subscription_type == "query":
             state = self.state.upper() if self.state else "all states"
-            return f"Bills matching '{self.query}' from {state}"
+            pretty_str = f"Bills matching '{self.query}' from {state}"
+            if self.chamber in ("upper", "lower"):
+                pretty_str += f", {self.chamber} chamber"
+            if self.session:
+                pretty_str += f", {self.session}"
+            if self.classification:
+                pretty_str += f", classified as {self.classification}"
+            if self.subjects:
+                pretty_str += f", including subjects '{', '.join(self.subjects)}'"
+            if self.status:
+                pretty_str += f", status includes '{', '.join(self.status)}'"
+            if self.sponsor:
+                pretty_str += f", sponsored by {self.sponsor}"
+            return pretty_str
 
     @property
     def site_url(self):

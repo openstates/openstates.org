@@ -4,6 +4,12 @@ from graphapi.tests.utils import populate_db
 from opencivicdata.core.models import Person
 from profiles.models import Subscription
 
+COMPLEX_STR = (
+    "Bills matching 'topic' from AK, upper chamber, "
+    "classified as bill, including subjects 'MOOSE, WILDLIFE', "
+    "status includes 'passed_lower', sponsored by Amanda Adams"
+)
+
 
 @pytest.mark.django_db
 def setup():
@@ -32,6 +38,20 @@ def test_subscription_pretty():
     assert bs.pretty == "Updates on HB 1 in Alaska 2018"
     assert qs.pretty == "Bills matching 'topic' from AK"
     assert ss.pretty == "Bills sponsored by Amanda Adams"
+
+
+@pytest.mark.django_db
+def test_complex_pretty():
+    cs = Subscription(
+        query="topic",
+        state="ak",
+        chamber="upper",
+        classification="bill",
+        subjects=["MOOSE", "WILDLIFE"],
+        status=["passed_lower"],
+        sponsor=Person.objects.get(name="Amanda Adams"),
+    )
+    assert cs.pretty == COMPLEX_STR
 
 
 @pytest.mark.django_db
