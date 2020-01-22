@@ -104,7 +104,7 @@ def test_deactivate_sub(client, user):
     )
 
     client.force_login(user)
-    resp = client.post("/accounts/profile/delete_sub/", {"subscription_id": sub.id})
+    resp = client.post("/accounts/profile/deactivate_sub/", {"subscription_id": sub.id})
     assert resp.status_code == 302
     # test that it is deactivated, not deleted
     assert Subscription.objects.count() == 1
@@ -122,7 +122,7 @@ def test_deactivate_subscription_other_user(client, user):
 
     # deactivate fails
     client.force_login(user)
-    resp = client.post("/accounts/profile/delete_sub/", {"subscription_id": sub.id})
+    resp = client.post("/accounts/profile/deactivate_sub/", {"subscription_id": sub.id})
     assert resp.status_code == 302
     assert Subscription.objects.filter(active=True).count() == 1
 

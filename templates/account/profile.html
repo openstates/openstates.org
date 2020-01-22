@@ -76,7 +76,7 @@
       <td><a href="{{ sub.site_url }}">{{ sub.pretty }}</a></td>
       <td>{{ sub.created_at|date:"Y-m-d" }}</td>
       <td>
-        <form method="POST" action="/accounts/profile/delete_sub/">
+        <form method="POST" action="/accounts/profile/deactivate_sub/">
           {% csrf_token %}
           <input type="hidden" name="subscription_id" value="{{ sub.id }}" />
           <button class="button">Delete</button>
