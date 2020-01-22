@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import LegislatorImage from "./legislator-image";
 import LegislatorList from "./legislator-list";
+import FollowButton from "./follow-button";
 
 window.addEventListener("load", () => {
   const ll = document.querySelector('[data-hook="legislator-list"]');
@@ -24,6 +25,16 @@ window.addEventListener("load", () => {
         size: img.getAttribute("data-size"),
       }),
       img
+    );
+  }
+
+  const fb = document.querySelector('[data-hook="follow-button"]');
+  if (fb) {
+    ReactDOM.render(
+      React.createElement(FollowButton, {
+        billId: fb.getAttribute("data-bill-id"),
+      }),
+      fb
     );
   }
 });
