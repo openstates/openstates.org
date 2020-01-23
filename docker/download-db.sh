@@ -17,3 +17,5 @@ if [ ! -f "$FILE" ]; then
 fi
 PGPASSWORD=openstates pg_restore --host db --user openstates -d openstatesorg $FILE;
 # rm $FILE;
+
+poetry run ./manage.py update_materialized_views --initial

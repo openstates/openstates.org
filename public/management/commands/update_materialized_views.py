@@ -17,6 +17,6 @@ class Command(BaseCommand):
 
         with transaction.atomic():
             with connection.cursor() as cursor:
-                cursor.execute(
-                    f"REFRESH MATERIALIZED VIEW {concurrent} public_billstatus"
-                )
+                query = f"REFRESH MATERIALIZED VIEW {concurrent} public_billstatus"
+                print(query)
+                cursor.execute(query)
