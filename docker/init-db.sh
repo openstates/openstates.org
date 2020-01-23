@@ -19,3 +19,5 @@ PGPASSWORD=openstates pg_restore --host db --user openstates -d openstatesorg $F
 # rm $FILE;
 
 poetry run ./manage.py update_materialized_views --initial
+
+PYTHONPATH=docker/ poetry run ./manage.py shell -c "import testdata"
