@@ -49,7 +49,7 @@ jobs:
             psql -h localhost -c "CREATE EXTENSION postgis;" -U postgres -d test
       - run:
           name: test
-          command: poetry run pytest --junitxml=test_results.xml --ds=openstates.test_settings --reuse-db -v geo graphapi public v1 utils
+          command: poetry run pytest --junitxml=test_results.xml --ds=openstates.test_settings --reuse-db -v geo graphapi public v1 utils profiles
           environment:
             DATABASE_URL: postgis://test:test@localhost/test
       - run:

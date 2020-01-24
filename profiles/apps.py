@@ -16,10 +16,19 @@ def create_key_for_verified_user(sender, **kwargs):
         )
 
 
-class PublicConfig(AppConfig):
-    name = "public"
+def create_profile(sender, instance, **kwargs):
+    from profiles.models import Profile
+
+    Profile.objects.get_or_create(user=instance)
+
+
+class ProfilesConfig(AppConfig):
+    name = "profiles"
 
     def ready(self):
         from allauth.account.signals import email_confirmed
+        from django.db.models.signals import post_save
+        from django.contrib.auth.models import User
 
         email_confirmed.connect(create_key_for_verified_user)
+        post_save.connect(create_profile, sender=User)
