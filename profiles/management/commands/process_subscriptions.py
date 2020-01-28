@@ -1,8 +1,10 @@
 import datetime
+import pytz
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from ...models import DAILY, WEEKLY
 
 
 def process_query_sub(sub, since):
@@ -17,25 +19,28 @@ def process_bill_sub(sub, since):
 
 
 def process_subs_for_user(user):
-    if user.profile.alert_frequency == "daily":
+    # these are just a little bit shorter than you'd expect because
+    # if it has been 23ish hours since the last check or 6.5 days it still makes sense
+    # to consider that time to update (given variability in when the cron runs, etc.)
+    if user.profile.subscription_frequency == DAILY:
         frequency = datetime.timedelta(hours=23)
-    elif user.profile.alert_frequency == "weekly":
+    elif user.profile.subscription_frequency == WEEKLY:
         frequency = datetime.timedelta(days=6)
     else:
-        raise ValueError(user.profile.alert_frequency)
-    last_checked = user.profile.last_checked
+        raise ValueError(user.profile.subscription_frequency)
+    last_checked = user.profile.subscription_last_checked
     subscriptions = list(user.subscriptions.filter(active=True))
 
-    now = datetime.datetime.utcnow()
+    now = pytz.utc.localize(datetime.datetime.utcnow())
 
     print(
         f"processing {len(subscriptions)} for {user.email} "
-        "({frequency}, last checked {last_checked})"
+        f"({user.profile.get_subscription_frequency_display()}, last checked {last_checked})"
     )
 
     # not enough time passed
     if now - last_checked < frequency:
-        return
+        return None, None
 
     query_updates = []
     bill_updates = []
@@ -58,11 +63,13 @@ def process_subs_for_user(user):
 def send_subscription_email(user, query_updates, bill_updates):
     if not bill_updates and not query_updates:
         raise ValueError("must have something to send")
-    if not user.verified_email:
-        return
+
+    verified_email = user.emailaddress_set.filter(primary=True, verified=True)
+    if not verified_email:
+        raise ValueError("user does not have a verified email")
 
     readable_when = (
-        "this week" if user.profile.alert_frequency == "this week" else "today"
+        "this week" if user.profile.subscription_frequency == WEEKLY else "today"
     )
 
     text_body = render_to_string(
@@ -74,13 +81,16 @@ def send_subscription_email(user, query_updates, bill_updates):
             "readable_when": readable_when,
         },
     )
-    subject = f"Open States Alerts: {len(query_updates)+len(bill_updates)} updates"
+
+    update_count = len(query_updates) + len(bill_updates)
+    updates = "update" if update_count == 1 else "updates"
+    subject = f"Open States Alerts: {update_count} {updates}"
 
     send_mail(
         subject,
         text_body,
         from_email="alerts@openstates.org",
-        recipient_list=[user.verified_email],
+        recipient_list=[verified_email[0].email],
     )
 
 
