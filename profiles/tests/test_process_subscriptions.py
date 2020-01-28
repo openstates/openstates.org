@@ -9,6 +9,7 @@ from ..management.commands.process_subscriptions import (
     process_bill_sub,
     process_subs_for_user,
     send_subscription_email,
+    DAILY,
 )
 
 
@@ -66,23 +67,67 @@ def test_process_subs_for_user_simple(user):
 
 
 @pytest.mark.django_db
-def test_send_email_simple(user, mailoutbox):
+def test_send_email_simple_bill_weekly(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription.objects.create(
         user=user, bill=hb1, subjects=[], status=[], query=""
     )
-
-    query_updates = []
     bill_updates = [(sub, hb1)]
-    send_subscription_email(user, query_updates, bill_updates)
+    send_subscription_email(user, [], bill_updates)
 
     assert len(mailoutbox) == 1
     msg = mailoutbox[0]
+    assert "Weekly Alert" in msg.subject
     assert msg.subject.endswith("1 update")
-    assert "This is your automated alert from OpenStates.org for this week." in msg.body
-    assert "had activity this week" in msg.body
+    assert "This is your weekly automated alert from OpenStates.org." in msg.body
+    assert "1 of your tracked bills had new activity" in msg.body
     assert (
         "HB 1 - Moose Freedom Act (Alaska 2018) - https://openstates.org/ak/bills/2018/HB1/"
         in msg.body
     )
     assert "https://openstates.org/accounts/unsubscribe/" in msg.body
+
+
+@pytest.mark.django_db
+def test_send_email_simple_bill_daily(user, mailoutbox):
+    hb1 = Bill.objects.get(identifier="HB 1")
+    sub = Subscription.objects.create(
+        user=user, bill=hb1, subjects=[], status=[], query=""
+    )
+
+    user.profile.subscription_frequency = DAILY
+    user.profile.save()
+
+    bill_updates = [(sub, hb1)]
+    send_subscription_email(user, [], bill_updates)
+
+    assert len(mailoutbox) == 1
+    msg = mailoutbox[0]
+    assert "Daily Alert" in msg.subject
+    assert msg.subject.endswith("1 update")
+    assert "This is your daily automated alert from OpenStates.org." in msg.body
+
+
+@pytest.mark.django_db
+def test_send_email_simple_bill_no_updates(user, mailoutbox):
+    with pytest.raises(ValueError):
+        send_subscription_email(user, [], [])
+
+
+@pytest.mark.django_db
+def test_send_email_simple_bill_no_email(user, mailoutbox):
+    hb1 = Bill.objects.get(identifier="HB 1")
+    sub = Subscription.objects.create(
+        user=user, bill=hb1, subjects=[], status=[], query=""
+    )
+    bill_updates = [(sub, hb1)]
+
+    # can't send without a verified email
+    user.emailaddress_set.update(verified=False)
+    with pytest.raises(ValueError):
+        send_subscription_email(user, [], bill_updates)
+
+
+# test process query
+# test user sub query
+# test alert with query

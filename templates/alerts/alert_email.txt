@@ -1,10 +1,10 @@
 {% load custom_tags %}
-This is your automated alert from OpenStates.org for {{ readable_when }}.
+This is your {{ user.profile.get_subscription_frequency_display }} automated alert from OpenStates.org.
 
 {% if bill_updates %}
 Tracked Legislation
 -------------------
-{{ bill_updates|length }} of your tracked bills had activity {{ readable_when }}:
+{{ bill_updates|length }} of your tracked bills had new activity:
 {% for sub, bill in bill_updates %}
 - {{ bill.identifier }} - {{ bill.title }} ({{ bill.legislative_session}}) - https://openstates.org{% canonical_url bill %}
     (last updated: {{ bill.updated_at|date:"M d Y h:i a" }})

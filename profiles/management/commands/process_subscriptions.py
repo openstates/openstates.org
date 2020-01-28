@@ -68,23 +68,18 @@ def send_subscription_email(user, query_updates, bill_updates):
     if not verified_email:
         raise ValueError("user does not have a verified email")
 
-    readable_when = (
-        "this week" if user.profile.subscription_frequency == WEEKLY else "today"
-    )
-
     text_body = render_to_string(
         "alerts/alert_email.txt",
-        {
-            "user": user,
-            "query_updates": query_updates,
-            "bill_updates": bill_updates,
-            "readable_when": readable_when,
-        },
+        {"user": user, "query_updates": query_updates, "bill_updates": bill_updates},
     )
 
     update_count = len(query_updates) + len(bill_updates)
     updates = "update" if update_count == 1 else "updates"
-    subject = f"Open States Alerts: {update_count} {updates}"
+    today = datetime.datetime.utcnow().strftime("%d %b %Y")
+    if user.profile.subscription_frequency == DAILY:
+        subject = f"Open States Daily Alert - {today}: {update_count} {updates}"
+    else:
+        subject = f"Open States Weekly Alert - {today}: {update_count} {updates}"
 
     send_mail(
         subject,
