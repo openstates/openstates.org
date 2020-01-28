@@ -1,3 +1,4 @@
+import datetime
 import urllib.parse
 from django.db import models
 from django.contrib.auth.models import User
@@ -5,6 +6,10 @@ from django.contrib.postgres.fields import ArrayField
 from utils.common import pretty_url
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
+
+
+DAILY = "d"
+WEEKLY = "w"
 
 
 class Profile(models.Model):
@@ -15,6 +20,11 @@ class Profile(models.Model):
 
     # feature flags
     feature_subscriptions = models.BooleanField(default=False)
+
+    subscription_frequency = models.CharField(
+        max_length=1, choices=((DAILY, "daily"), (WEEKLY, "weekly")), default=WEEKLY
+    )
+    subscription_last_checked = models.DateTimeField(default=datetime.datetime.utcnow)
 
     def __str__(self):
         return f"Profile for {self.user}"
