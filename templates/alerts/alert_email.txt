@@ -1,0 +1,28 @@
+This is your automated alert from OpenStates.org for {{ readable_date }}.
+
+{% if bill_updates %}
+Tracked Legislation
+-------------------
+{{ bill_updates|length }} of your tracked bills had activity {{ readable_when }}.
+
+{% for sub, bill in bill_updates %}
+- {{ bill }} - https://openstates.org{{ sub.pretty_url }}
+    (last updated: {{ bill.updated_at|date:"Y m d H:M" }})
+{% endfor %}
+{% endif %}
+
+{% if query_updates %}
+Tracked Searches
+----------------
+{{ query_updates|length}} of your tracked queries had new legislation introduced.
+
+{% for sub, bills in query_updates %}
+- {{ sub }} - {{ bills|length }} new bills - https://openstates.org{{ sub.pretty_url }}
+    ({% for bill in bills %}{{ bill }} {% endfor %})
+{% endfor %}
+{% endif %}
+
+
+Visit https://openstates.org/accounts/profile/ to manage your subscriptions.
+
+Visit https://openstates.org/accounts/unsubscribe/ to disable all email notifications.
