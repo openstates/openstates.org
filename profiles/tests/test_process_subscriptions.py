@@ -7,6 +7,7 @@ from profiles.models import Subscription
 from opencivicdata.legislative.models import Bill
 from ..management.commands.process_subscriptions import (
     process_bill_sub,
+    process_query_sub,
     process_subs_for_user,
     send_subscription_email,
     DAILY,
@@ -44,6 +45,22 @@ def test_process_bill_sub(user):
 
     # bill changed in last day
     assert process_bill_sub(sub, yesterday) == (sub, hb1)
+
+
+@pytest.mark.django_db
+def test_process_query_sub_simple(user):
+    hb1 = Bill.objects.get(identifier="HB 1")
+    sub = Subscription(user=user, query="moose")
+
+    now = datetime.datetime.now()
+    now = pytz.utc.localize(now)
+    yesterday = now - datetime.timedelta(days=1)
+
+    # no changes since now
+    assert process_query_sub(sub, now) is None
+
+    # bill changed in last day
+    assert process_query_sub(sub, yesterday) == (sub, [hb1])
 
 
 @pytest.mark.django_db

@@ -5,11 +5,26 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from ...models import DAILY, WEEKLY
+from utils.bills import search_bills
 
 
 def process_query_sub(sub, since):
     """ given a query subscription, return a list of bills updated since then """
-    pass
+    bills = list(
+        search_bills(
+            query=sub.query,
+            state=sub.state,
+            chamber=sub.chamber,
+            session=sub.session,
+            sponsor=sub.sponsor,
+            classification=sub.classification,
+            status=sub.status,
+        )
+        .filter(updated_at__gte=since)
+        .order_by("-updated_at")
+    )
+    if bills:
+        return sub, bills
 
 
 def process_bill_sub(sub, since):
