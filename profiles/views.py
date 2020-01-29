@@ -23,6 +23,19 @@ def _ensure_feature_flag(user, perm="feature_subscriptions"):
 
 @login_required
 def profile(request):
+    if request.method == "POST":
+        # not using forms due to variability of included fields
+        request.user.profile.organization_name = request.POST["organization"]
+        request.user.profile.about = request.POST["about"]
+        request.user.profile.subscription_frequency = request.POST[
+            "subscription_frequency"
+        ]
+        request.user.profile.subscription_emails_html = (
+            "subscriptions_emails_html" in request.POST
+        )
+        request.user.profile.save()
+        messages.info(request, "Updated profile settings.")
+
     primary = request.user.emailaddress_set.get(primary=True)
 
     # only get their key if the email is verified
