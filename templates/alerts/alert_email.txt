@@ -11,15 +11,18 @@ Tracked Legislation
 {% endfor %}
 {% endif %}
 {% if query_updates %}
-
 Tracked Searches
 ----------------
 {{ query_updates|length}} of your tracked queries had new legislation introduced.
 {% for sub, bills in query_updates %}
-- {{ sub }} - {{ bills|length }} new bills - https://openstates.org{{ sub.pretty_url }}
-    ({% for bill in bills %}{{ bill }} {% endfor %})
+- {{ sub.pretty|safe }} - {{ bills|length }} new bills - https://openstates.org{{ sub.site_url|safe }}
+{% for bill in bills %}
+    - {{ bill.identifier }} - {{ bill.title }} ({{ bill.legislative_session}}) - https://openstates.org{% canonical_url bill %}
+{% endfor %}
 {% endfor %}
 {% endif %}
+
+--------------
 Visit https://openstates.org/accounts/profile/ to manage your subscriptions.
 
 Visit https://openstates.org/accounts/unsubscribe/ to disable all email notifications.

@@ -84,6 +84,24 @@ def test_process_subs_for_user_simple(user):
 
 
 @pytest.mark.django_db
+def test_process_subs_for_user_query(user):
+    hb1 = Bill.objects.get(identifier="HB 1")
+    sub = Subscription.objects.create(user=user, subjects=[], status=[], query="moose")
+
+    # last check is more than a day ago
+    query_updates, bill_updates = process_subs_for_user(user)
+    assert bill_updates == []
+    assert query_updates == [(sub, [hb1])]
+
+    # we're within a week now
+    user.profile.subscription_last_checked = pytz.utc.localize(datetime.datetime.now())
+    user.profile.save()
+    query_updates, bill_updates = process_subs_for_user(user)
+    assert query_updates is None
+    assert bill_updates is None
+
+
+@pytest.mark.django_db
 def test_send_email_simple_bill_weekly(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription.objects.create(
@@ -126,6 +144,31 @@ def test_send_email_simple_bill_daily(user, mailoutbox):
 
 
 @pytest.mark.django_db
+def test_send_email_from_query(user, mailoutbox):
+    hb1 = Bill.objects.get(identifier="HB 1")
+    sub = Subscription.objects.create(user=user, subjects=[], status=[], query="moose")
+    query_updates = [(sub, [hb1])]
+    send_subscription_email(user, query_updates, [])
+
+    assert len(mailoutbox) == 1
+    msg = mailoutbox[0]
+    assert "Weekly Alert" in msg.subject
+    assert msg.subject.endswith("1 update")
+    assert "This is your weekly automated alert from OpenStates.org." in msg.body
+    assert "1 of your tracked queries had new legislation" in msg.body
+    print(msg.body)
+    assert (
+        "Bills matching 'moose' from all states - 1 new bills - https://openstates.org/search/?query=moose"
+        in msg.body
+    )
+    assert (
+        "HB 1 - Moose Freedom Act (Alaska 2018) - https://openstates.org/ak/bills/2018/HB1/"
+        in msg.body
+    )
+    assert "https://openstates.org/accounts/unsubscribe/" in msg.body
+
+
+@pytest.mark.django_db
 def test_send_email_simple_bill_no_updates(user, mailoutbox):
     with pytest.raises(ValueError):
         send_subscription_email(user, [], [])
@@ -143,8 +186,3 @@ def test_send_email_simple_bill_no_email(user, mailoutbox):
     user.emailaddress_set.update(verified=False)
     with pytest.raises(ValueError):
         send_subscription_email(user, [], bill_updates)
-
-
-# test process query
-# test user sub query
-# test alert with query
