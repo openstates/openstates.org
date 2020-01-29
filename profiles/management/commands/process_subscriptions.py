@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from django.db import transaction
 from ...utils import utcnow
 from ...models import DAILY, WEEKLY
 from utils.bills import search_bills
@@ -114,3 +115,6 @@ class Command(BaseCommand):
             query_updates, bill_updates = process_subs_for_user(user)
             if query_updates or bill_updates:
                 send_subscription_email(user, query_updates, bill_updates)
+            with transaction.atomic():
+                user.profile.subscription_last_checked = utcnow()
+                user.profile.save()
