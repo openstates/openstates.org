@@ -6,14 +6,12 @@ import profiles.utils
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("profiles", "0005_auto_20200128_2138"),
-    ]
+    dependencies = [("profiles", "0005_auto_20200128_2138")]
 
     operations = [
         migrations.AlterField(
             model_name="profile",
             name="subscription_last_checked",
             field=models.DateTimeField(default=profiles.utils.utcnow),
-        ),
+        )
     ]

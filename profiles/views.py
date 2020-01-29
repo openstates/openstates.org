@@ -143,7 +143,7 @@ def bill_subscription(request):
     if request.method == "POST":
         bill_id = json.loads(request.body)["bill_id"]
         sub, created = activate_subscription(
-            user=request.user, bill_id=bill_id, query="", subjects=[], status=[],
+            user=request.user, bill_id=bill_id, query="", subjects=[], status=[]
         )
         active = True
     elif request.method == "GET":

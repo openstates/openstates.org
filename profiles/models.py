@@ -1,4 +1,6 @@
+import uuid
 import urllib.parse
+import base62
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
@@ -121,3 +123,18 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.pretty}"
+
+
+def _str_uuid():
+    return base62.encode(uuid.uuid4().int)
+
+
+class Notification(models.Model):
+    id = models.CharField(
+        primary_key=True, default=_str_uuid, max_length=22, editable=False
+    )
+    # store email instead of link to user, since emails can change and users can be deleted
+    email = models.EmailField(editable=False)
+    sent = models.DateTimeField(editable=False)
+    num_query_updates = models.PositiveIntegerField()
+    num_bill_updates = models.PositiveIntegerField()
