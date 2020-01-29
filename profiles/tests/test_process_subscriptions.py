@@ -114,7 +114,7 @@ def test_send_email_simple_bill_weekly(user, mailoutbox):
         "HB 1 - Moose Freedom Act (Alaska 2018) - https://openstates.org/ak/bills/2018/HB1/"
         in msg.body
     )
-    assert "https://openstates.org/accounts/unsubscribe/" in msg.body
+    assert "https://openstates.org/accounts/profile/unsubscribe/" in msg.body
 
 
 @pytest.mark.django_db
@@ -156,7 +156,7 @@ def test_send_email_from_query(user, mailoutbox):
         "HB 1 - Moose Freedom Act (Alaska 2018) - https://openstates.org/ak/bills/2018/HB1/"
         in msg.body
     )
-    assert "https://openstates.org/accounts/unsubscribe/" in msg.body
+    assert "https://openstates.org/accounts/profile/unsubscribe/" in msg.body
 
 
 @pytest.mark.django_db

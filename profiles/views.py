@@ -45,6 +45,21 @@ def profile(request):
 
 
 @login_required
+def unsubscribe(request):
+    subscriptions = request.user.subscriptions.filter(active=True).order_by(
+        "-created_at"
+    )
+    if request.method == "POST":
+        count = subscriptions.update(active=False)
+        messages.info(request, f"Successfully deactivated {count} subscriptions.")
+        return redirect("/accounts/profile/")
+    else:
+        return render(
+            request, "account/unsubscribe.html", {"subscriptions": subscriptions}
+        )
+
+
+@login_required
 @require_POST
 def deactivate_subscription(request):
     try:

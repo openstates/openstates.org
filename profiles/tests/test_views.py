@@ -192,3 +192,19 @@ def test_bill_subscription_delete(client, user):
     assert resp.status_code == 200
     assert resp.json() == {"error": "", "bill_id": "ocd-bill/1", "active": False}
     assert Subscription.objects.filter(active=False).count() == 1
+
+
+@pytest.mark.django_db
+def test_unsubscribe(client, user):
+    client.force_login(user)
+
+    Subscription.objects.create(user=user, bill_id="ocd-bill/1", subjects=[], status=[])
+    resp = client.get("/accounts/profile/unsubscribe/")
+    assert resp.status_code == 200
+    assert len(resp.context["subscriptions"]) == 1
+    assert Subscription.objects.filter(active=True).count() == 1
+
+    resp = client.post("/accounts/profile/unsubscribe/")
+    assert resp.status_code == 302
+    assert Subscription.objects.filter(active=True).count() == 0
+    assert Subscription.objects.filter(active=False).count() == 1
