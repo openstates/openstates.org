@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from graphapi.tests.utils import populate_db
 from profiles.models import Subscription
 from opencivicdata.legislative.models import Bill
+from ..models import Notification
 from ..utils import utcnow
 from ..management.commands.process_subscriptions import (
     process_bill_sub,
@@ -115,13 +116,26 @@ def test_send_email_simple_bill_weekly(user, mailoutbox):
         "HB 1 - Moose Freedom Act (Alaska 2018) - https://openstates.org/ak/bills/2018/HB1/"
         in msg.body
     )
-    assert "https://openstates.org/accounts/profile/unsubscribe/" in msg.body
     assert len(msg.alternatives) == 1
     html, media_type = msg.alternatives[0]
     assert media_type == "text/html"
     assert (
         '<a href="https://openstates.org/ak/bills/2018/HB1/">HB 1 - Moose Freedom Act (Alaska 2018)</a>'
         in html
+    )
+
+    # check that record was created
+    nobj = Notification.objects.get()
+    assert nobj.num_query_updates == 0
+    assert nobj.num_bill_updates == 1
+    assert nobj.email == "valid@example.com"
+
+    assert (
+        f"https://openstates.org/accounts/profile/unsubscribe/?email={nobj.id}"
+        in msg.body
+    )
+    assert (
+        f"https://openstates.org/accounts/profile/unsubscribe/?email={nobj.id}" in html
     )
 
 
@@ -157,7 +171,6 @@ def test_send_email_from_query(user, mailoutbox):
     assert msg.subject.endswith("1 update")
     assert "This is your weekly automated alert from OpenStates.org." in msg.body
     assert "1 of your tracked queries had new legislation" in msg.body
-    print(msg.body)
     assert (
         "Bills matching 'moose' from all states - 1 new bills - https://openstates.org/search/?query=moose"
         in msg.body
@@ -166,13 +179,18 @@ def test_send_email_from_query(user, mailoutbox):
         "HB 1 - Moose Freedom Act (Alaska 2018) - https://openstates.org/ak/bills/2018/HB1/"
         in msg.body
     )
-    assert "https://openstates.org/accounts/profile/unsubscribe/" in msg.body
+
+    nobj = Notification.objects.get()
+    assert nobj.num_query_updates == 1
+    assert nobj.num_bill_updates == 0
+    assert nobj.email == "valid@example.com"
 
 
 @pytest.mark.django_db
 def test_send_email_simple_bill_no_updates(user, mailoutbox):
     with pytest.raises(ValueError):
         send_subscription_email(user, [], [])
+    assert Notification.objects.count() == 0
 
 
 @pytest.mark.django_db
@@ -187,3 +205,4 @@ def test_send_email_simple_bill_no_email(user, mailoutbox):
     user.emailaddress_set.update(verified=False)
     with pytest.raises(ValueError):
         send_subscription_email(user, [], bill_updates)
+    assert Notification.objects.count() == 0

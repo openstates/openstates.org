@@ -25,4 +25,4 @@ Tracked Searches
 --------------
 Visit https://openstates.org/accounts/profile/ to manage your subscriptions.
 
-Visit https://openstates.org/accounts/profile/unsubscribe/ to disable all email notifications.
+Visit https://openstates.org/accounts/profile/unsubscribe/?email={{ notification_id }} to disable all email notifications.

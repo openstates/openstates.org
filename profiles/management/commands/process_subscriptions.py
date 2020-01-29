@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.db import transaction
 from ...utils import utcnow
-from ...models import DAILY, WEEKLY
+from ...models import DAILY, WEEKLY, Notification
 from utils.bills import search_bills
 
 
@@ -82,8 +82,17 @@ def send_subscription_email(user, query_updates, bill_updates):
     verified_email = user.emailaddress_set.filter(primary=True, verified=True)
     if not verified_email:
         raise ValueError("user does not have a verified email")
+    verified_email = verified_email[0].email
+
+    nobj = Notification.objects.create(
+        email=verified_email,
+        sent=utcnow(),
+        num_query_updates=len(query_updates),
+        num_bill_updates=len(bill_updates),
+    )
 
     context = {
+        "notification_id": nobj.id,
         "user": user,
         "query_updates": query_updates,
         "bill_updates": bill_updates,
@@ -105,7 +114,7 @@ def send_subscription_email(user, query_updates, bill_updates):
         subject,
         text_body,
         from_email="alerts@openstates.org",
-        recipient_list=[verified_email[0].email],
+        recipient_list=[verified_email],
         html_message=html_message,
     )
 
@@ -119,8 +128,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for user in User.objects.all():
             query_updates, bill_updates = process_subs_for_user(user)
-            if query_updates or bill_updates:
-                send_subscription_email(user, query_updates, bill_updates)
             with transaction.atomic():
+                if query_updates or bill_updates:
+                    send_subscription_email(user, query_updates, bill_updates)
                 user.profile.subscription_last_checked = utcnow()
                 user.profile.save()
