@@ -23,8 +23,7 @@ def process_query_sub(sub, since):
         .filter(updated_at__gte=since)
         .order_by("-updated_at")
     )
-    if bills:
-        return sub, bills
+    return bills
 
 
 def process_bill_sub(sub, since):
@@ -62,13 +61,13 @@ def process_subs_for_user(user):
 
     for sub in subscriptions:
         if sub.subscription_type == "query":
-            b = process_query_sub(sub, last_checked)
-            if b:
-                query_updates.append(b)
-        elif sub.subscription_type == "bill":
-            bills = process_bill_sub(sub, last_checked)
+            bills = process_query_sub(sub, last_checked)
             if bills:
-                bill_updates.append((sub, bills))
+                query_updates.append((sub, bills))
+        elif sub.subscription_type == "bill":
+            bill = process_bill_sub(sub, last_checked)
+            if bill:
+                bill_updates.append(bill)
         else:
             raise ValueError(sub.subscription_type)
 

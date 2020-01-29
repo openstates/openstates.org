@@ -57,7 +57,7 @@ def test_process_query_sub_simple(user):
     yesterday = now - datetime.timedelta(days=1)
 
     # no changes since now
-    assert process_query_sub(sub, now) is None
+    assert process_query_sub(sub, now) == []
 
     # bill changed in last day
     assert process_query_sub(sub, yesterday) == [hb1]
@@ -66,6 +66,7 @@ def test_process_query_sub_simple(user):
 @pytest.mark.django_db
 def test_process_subs_for_user_simple(user):
     hb1 = Bill.objects.get(identifier="HB 1")
+    Subscription.objects.create(user=user, subjects=[], status=[], bill=hb1)
 
     # last check is more than a day ago
     query_updates, bill_updates = process_subs_for_user(user)
