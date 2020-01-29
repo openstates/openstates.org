@@ -41,9 +41,9 @@ def get_bills_with_action_annotation():
 
 
 def search_bills(
-    bills,
     *,
-    query,
+    bills=None,
+    query=None,
     state=None,
     chamber=None,
     session=None,
@@ -52,6 +52,10 @@ def search_bills(
     subjects=None,
     status=None
 ):
+    if not bills:
+        bills = Bill.objects.all().select_related(
+            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+        )
     if state:
         jid = abbr_to_jid(state.lower())
         bills = bills.filter(legislative_session__jurisdiction_id=jid)

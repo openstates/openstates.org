@@ -42,10 +42,6 @@ class BillList(View):
         return options
 
     def get_bills(self, request, state):
-        bills = Bill.objects.all().select_related(
-            "legislative_session", "legislative_session__jurisdiction", "billstatus"
-        )
-
         # query parameter filtering
         query = request.GET.get("query", "")
         chamber = request.GET.get("chamber")
@@ -66,7 +62,6 @@ class BillList(View):
         }
 
         bills = search_bills(
-            bills,
             state=state,
             query=query,
             chamber=chamber,
@@ -76,7 +71,6 @@ class BillList(View):
             subjects=q_subjects,
             status=status,
         )
-
         bills = bills.order_by("-billstatus__latest_action_date")
 
         return bills, form

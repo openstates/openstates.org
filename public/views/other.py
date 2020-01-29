@@ -161,10 +161,7 @@ def site_search(request):
     bills = []
     people = []
     if query:
-        bills = Bill.objects.all().select_related(
-            "legislative_session", "legislative_session__jurisdiction", "billstatus"
-        )
-        bills = search_bills(bills, state=state, query=query)
+        bills = search_bills(state=state, query=query)
         bills = bills.order_by("-billstatus__latest_action_date")
 
         # pagination
