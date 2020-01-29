@@ -1,9 +1,9 @@
 import datetime
-import pytz
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from ...utils import utcnow
 from ...models import DAILY, WEEKLY
 from utils.bills import search_bills
 
@@ -45,7 +45,7 @@ def process_subs_for_user(user):
     last_checked = user.profile.subscription_last_checked
     subscriptions = list(user.subscriptions.filter(active=True))
 
-    now = pytz.utc.localize(datetime.datetime.utcnow())
+    now = utcnow()
 
     print(
         f"processing {len(subscriptions)} for {user.email} "

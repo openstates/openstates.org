@@ -1,10 +1,11 @@
-import datetime
 import pytz
+import datetime
 import pytest
 from django.contrib.auth.models import User
 from graphapi.tests.utils import populate_db
 from profiles.models import Subscription
 from opencivicdata.legislative.models import Bill
+from ..utils import utcnow
 from ..management.commands.process_subscriptions import (
     process_bill_sub,
     process_query_sub,
@@ -36,8 +37,7 @@ def test_process_bill_sub(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription(user=user, bill=hb1)
 
-    now = datetime.datetime.now()
-    now = pytz.utc.localize(now)
+    now = utcnow()
     yesterday = now - datetime.timedelta(days=1)
 
     # no changes since now
@@ -52,8 +52,7 @@ def test_process_query_sub_simple(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription(user=user, query="moose")
 
-    now = datetime.datetime.now()
-    now = pytz.utc.localize(now)
+    now = utcnow()
     yesterday = now - datetime.timedelta(days=1)
 
     # no changes since now
@@ -74,7 +73,7 @@ def test_process_subs_for_user_simple(user):
     assert bill_updates == [hb1]
 
     # we're within a week now
-    user.profile.subscription_last_checked = pytz.utc.localize(datetime.datetime.now())
+    user.profile.subscription_last_checked = utcnow()
     user.profile.save()
     query_updates, bill_updates = process_subs_for_user(user)
     assert query_updates is None
@@ -92,7 +91,7 @@ def test_process_subs_for_user_query(user):
     assert query_updates == [(sub, [hb1])]
 
     # we're within a week now
-    user.profile.subscription_last_checked = pytz.utc.localize(datetime.datetime.now())
+    user.profile.subscription_last_checked = utcnow()
     user.profile.save()
     query_updates, bill_updates = process_subs_for_user(user)
     assert query_updates is None
