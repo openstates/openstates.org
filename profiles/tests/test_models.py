@@ -58,8 +58,7 @@ def test_complex_pretty():
 def test_subscription_site_url():
     bs, qs, ss = _one_of_each()
     assert bs.site_url == "/ak/bills/2018/HB1/"
-    assert (
-        qs.site_url
-        == "/ak/bills/?query=topic&session=&chamber=&classification=&sponsor_id="
-    )
+    assert qs.site_url == "/ak/bills/?query=topic"
     assert ss.site_url.startswith("/person/amanda-adams")
+    qs.state = None
+    assert qs.site_url == "/search/?query=topic"

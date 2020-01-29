@@ -97,15 +97,22 @@ class Subscription(models.Model):
         if self.subscription_type == "query":
             queryobj = {
                 "query": self.query,
-                "session": self.session,
-                "chamber": self.chamber,
-                "classification": self.classification,
                 "subjects": self.subjects or [],
                 "status": self.status or [],
-                "sponsor_id": self.sponsor_id or "",
             }
+            if self.classification:
+                queryobj["classification"] = self.classification
+            if self.session:
+                queryobj["session"] = self.session
+            if self.chamber:
+                queryobj["chamber"] = self.chamber
+            if self.sponsor_id:
+                queryobj["sponsor_id"] = self.sponsor_id
             querystr = urllib.parse.urlencode(queryobj, doseq=True)
-            return f"/{self.state}/bills/?{querystr}"
+            if self.state:
+                return f"/{self.state}/bills/?{querystr}"
+            else:
+                return f"/search/?{querystr}"
         elif self.subscription_type == "bill":
             return pretty_url(self.bill)
         elif self.subscription_type == "sponsor":
