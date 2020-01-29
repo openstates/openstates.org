@@ -52,7 +52,7 @@ def search_bills(
     subjects=None,
     status=None
 ):
-    if not bills:
+    if bills is None:
         bills = Bill.objects.all().select_related(
             "legislative_session", "legislative_session__jurisdiction", "billstatus"
         )

@@ -30,7 +30,7 @@ def process_query_sub(sub, since):
 def process_bill_sub(sub, since):
     """ given a bill subscription, return bill if it was updated since then """
     if sub.bill.updated_at > since:
-        return sub, sub.bill
+        return sub.bill
 
 
 def process_subs_for_user(user):
@@ -62,13 +62,13 @@ def process_subs_for_user(user):
 
     for sub in subscriptions:
         if sub.subscription_type == "query":
-            qu = process_query_sub(sub, last_checked)
-            if qu:
-                query_updates.append(qu)
+            b = process_query_sub(sub, last_checked)
+            if b:
+                query_updates.append(b)
         elif sub.subscription_type == "bill":
-            bu = process_bill_sub(sub, last_checked)
-            if bu:
-                bill_updates.append(bu)
+            bills = process_bill_sub(sub, last_checked)
+            if bills:
+                bill_updates.append((sub, bills))
         else:
             raise ValueError(sub.subscription_type)
 

@@ -44,7 +44,7 @@ def test_process_bill_sub(user):
     assert process_bill_sub(sub, now) is None
 
     # bill changed in last day
-    assert process_bill_sub(sub, yesterday) == (sub, hb1)
+    assert process_bill_sub(sub, yesterday) == hb1
 
 
 @pytest.mark.django_db
@@ -60,20 +60,17 @@ def test_process_query_sub_simple(user):
     assert process_query_sub(sub, now) is None
 
     # bill changed in last day
-    assert process_query_sub(sub, yesterday) == (sub, [hb1])
+    assert process_query_sub(sub, yesterday) == [hb1]
 
 
 @pytest.mark.django_db
 def test_process_subs_for_user_simple(user):
     hb1 = Bill.objects.get(identifier="HB 1")
-    sub = Subscription.objects.create(
-        user=user, bill=hb1, subjects=[], status=[], query=""
-    )
 
     # last check is more than a day ago
     query_updates, bill_updates = process_subs_for_user(user)
     assert query_updates == []
-    assert bill_updates == [(sub, hb1)]
+    assert bill_updates == [hb1]
 
     # we're within a week now
     user.profile.subscription_last_checked = pytz.utc.localize(datetime.datetime.now())
@@ -104,10 +101,7 @@ def test_process_subs_for_user_query(user):
 @pytest.mark.django_db
 def test_send_email_simple_bill_weekly(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
-    sub = Subscription.objects.create(
-        user=user, bill=hb1, subjects=[], status=[], query=""
-    )
-    bill_updates = [(sub, hb1)]
+    bill_updates = [hb1]
     send_subscription_email(user, [], bill_updates)
 
     assert len(mailoutbox) == 1
@@ -126,14 +120,11 @@ def test_send_email_simple_bill_weekly(user, mailoutbox):
 @pytest.mark.django_db
 def test_send_email_simple_bill_daily(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
-    sub = Subscription.objects.create(
-        user=user, bill=hb1, subjects=[], status=[], query=""
-    )
 
     user.profile.subscription_frequency = DAILY
     user.profile.save()
 
-    bill_updates = [(sub, hb1)]
+    bill_updates = [hb1]
     send_subscription_email(user, [], bill_updates)
 
     assert len(mailoutbox) == 1

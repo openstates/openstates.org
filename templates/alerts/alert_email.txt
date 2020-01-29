@@ -5,7 +5,7 @@ This is your {{ user.profile.get_subscription_frequency_display }} automated ale
 Tracked Legislation
 -------------------
 {{ bill_updates|length }} of your tracked bills had new activity:
-{% for sub, bill in bill_updates %}
+{% for bill in bill_updates %}
 - {{ bill.identifier }} - {{ bill.title }} ({{ bill.legislative_session}}) - https://openstates.org{% canonical_url bill %}
     (last updated: {{ bill.updated_at|date:"M d Y h:i a" }})
 {% endfor %}
