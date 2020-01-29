@@ -102,6 +102,7 @@ def test_process_subs_for_user_query(user):
 def test_send_email_simple_bill_weekly(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
     bill_updates = [hb1]
+
     send_subscription_email(user, [], bill_updates)
 
     assert len(mailoutbox) == 1
@@ -115,13 +116,22 @@ def test_send_email_simple_bill_weekly(user, mailoutbox):
         in msg.body
     )
     assert "https://openstates.org/accounts/profile/unsubscribe/" in msg.body
+    assert len(msg.alternatives) == 1
+    html, media_type = msg.alternatives[0]
+    assert media_type == "text/html"
+    assert (
+        '<a href="https://openstates.org/ak/bills/2018/HB1/">HB 1 - Moose Freedom Act (Alaska 2018)</a>'
+        in html
+    )
 
 
 @pytest.mark.django_db
-def test_send_email_simple_bill_daily(user, mailoutbox):
+def test_send_email_simple_bill_daily_no_html(user, mailoutbox):
+    # test some profile variation
     hb1 = Bill.objects.get(identifier="HB 1")
 
     user.profile.subscription_frequency = DAILY
+    user.profile.subscription_emails_html = False
     user.profile.save()
 
     bill_updates = [hb1]

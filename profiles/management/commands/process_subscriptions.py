@@ -83,10 +83,15 @@ def send_subscription_email(user, query_updates, bill_updates):
     if not verified_email:
         raise ValueError("user does not have a verified email")
 
-    text_body = render_to_string(
-        "alerts/alert_email.txt",
-        {"user": user, "query_updates": query_updates, "bill_updates": bill_updates},
-    )
+    context = {
+        "user": user,
+        "query_updates": query_updates,
+        "bill_updates": bill_updates,
+    }
+    text_body = render_to_string("alerts/alert_email.txt", context)
+    html_message = None
+    if user.profile.subscription_emails_html:
+        html_message = render_to_string("alerts/alert_email.html", context)
 
     update_count = len(query_updates) + len(bill_updates)
     updates = "update" if update_count == 1 else "updates"
@@ -101,6 +106,7 @@ def send_subscription_email(user, query_updates, bill_updates):
         text_body,
         from_email="alerts@openstates.org",
         recipient_list=[verified_email[0].email],
+        html_message=html_message,
     )
 
 
