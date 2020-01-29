@@ -21,6 +21,7 @@ class Profile(models.Model):
     # feature flags
     feature_subscriptions = models.BooleanField(default=False)
 
+    subscription_emails_html = models.BooleanField(default=True)
     subscription_frequency = models.CharField(
         max_length=1, choices=((DAILY, "daily"), (WEEKLY, "weekly")), default=WEEKLY
     )
