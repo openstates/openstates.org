@@ -216,7 +216,7 @@ def bill_list(request):
     bills = bill_qs(include_votes=False)
     if state in ("ne", "dc") and chamber == "upper":
         chamber = "legislature"
-    bills = search_bills(bills, state=state, chamber=chamber, query=query)
+    bills = search_bills(bills=bills, state=state, chamber=chamber, query=query)
     if query:
         too_big = False
     if updated_since:

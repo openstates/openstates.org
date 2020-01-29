@@ -311,7 +311,7 @@ class LegislativeQuery:
             bills = bills.filter(**jurisdiction_query(jurisdiction))
         subjects = [subject] if subject else []
         bills = search_bills(
-            bills,
+            bills=bills,
             query=search_query,
             chamber=chamber,
             session=session,
