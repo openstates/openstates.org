@@ -42,11 +42,9 @@ class BillList(View):
         return options
 
     def get_bills(self, request, state):
-        jid = abbr_to_jid(state)
         bills = Bill.objects.all().select_related(
             "legislative_session", "legislative_session__jurisdiction", "billstatus"
         )
-        bills = bills.filter(legislative_session__jurisdiction_id=jid)
 
         # query parameter filtering
         query = request.GET.get("query", "")
@@ -67,32 +65,17 @@ class BillList(View):
             "status": status,
         }
 
-        if query:
-            bills = search_bills(bills, query)
-        if chamber:
-            bills = bills.filter(from_organization__classification=chamber)
-        if session:
-            bills = bills.filter(legislative_session__identifier=session)
-        if sponsor:
-            bills = bills.filter(sponsorships__person_id=sponsor)
-        if classification:
-            bills = bills.filter(classification__contains=[classification])
-        if q_subjects:
-            bills = bills.filter(subject__overlap=q_subjects)
-        if "passed-lower-chamber" in status:
-            bills = bills.filter(
-                actions__classification__contains=["passage"],
-                actions__organization__classification="lower",
-            )
-        elif "passed-upper-chamber" in status:
-            bills = bills.filter(
-                actions__classification__contains=["passage"],
-                actions__organization__classification="upper",
-            )
-        elif "signed" in status:
-            bills = bills.filter(
-                actions__classification__contains=["executive-signature"]
-            )
+        bills = search_bills(
+            bills,
+            state=state,
+            query=query,
+            chamber=chamber,
+            session=session,
+            sponsor=sponsor,
+            classification=classification,
+            subjects=q_subjects,
+            status=status,
+        )
 
         bills = bills.order_by("-billstatus__latest_action_date")
 

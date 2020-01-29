@@ -214,16 +214,10 @@ def bill_list(request):
 
     too_big = True
     bills = bill_qs(include_votes=False)
-    if state:
-        state = state.lower()
-        jid = abbr_to_jid(state)
-        bills = bills.filter(legislative_session__jurisdiction_id=jid)
-    if chamber:
-        if state in ("ne", "dc") and chamber == "upper":
-            chamber = "legislature"
-        bills = bills.filter(from_organization__classification=chamber)
+    if state in ("ne", "dc") and chamber == "upper":
+        chamber = "legislature"
+    bills = search_bills(bills, state=state, chamber=chamber, query=query)
     if query:
-        bills = search_bills(bills, query)
         too_big = False
     if updated_since:
         bills = bills.filter(updated_at__gt=updated_since)
@@ -237,7 +231,9 @@ def bill_list(request):
     if state:
         if search_window == "session" or search_window == "term":
             latest_session = (
-                LegislativeSession.objects.filter(jurisdiction_id=jid)
+                LegislativeSession.objects.filter(
+                    jurisdiction_id=abbr_to_jid(state.lower())
+                )
                 .order_by("-start_date")
                 .values_list("identifier", flat=True)[0]
             )
