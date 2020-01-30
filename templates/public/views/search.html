@@ -15,6 +15,8 @@
 
 {% block content %}
 <section class="section">
+
+  {% if query %} 
     <h1 class="heading--large">
       Search Results for "{{query}}"
       {% if state %}
@@ -22,7 +24,23 @@
       {% endif %}
     </h1>
 
-    <h2 class="heading--small">Found {{ bills.paginator.count }} bill{{ bills.paginator.count|pluralize }} and {{ people|length }} {% if people|length == 1 %}person{% else %}people{% endif %}.</h2>
+    <h2 class="heading--small">Found {{ bills.paginator.count|default:0 }} bill{{ bills.paginator.count|default:0|pluralize }} and {{ people|length }} {% if people|length == 1 %}person{% else %}people{% endif %}.</h2>
+
+  {% else %}
+    <h2 class="heading--small">
+      Try searching for something:
+    </h2>
+    <form>
+      <div class="input-group">
+          <input class="input-group-field" type="search" placeholder="HB 21, Cannabis, Maria" name="query">
+          <div class="input-group-button">
+              <button type="submit" class="button button--secondary">
+                Search
+              </button>
+          </div>
+      </div>
+    </form>
+  {% endif %}
 
 
     <div class="grid-x grid-margin-x">
