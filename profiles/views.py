@@ -1,11 +1,12 @@
 import json
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from simplekeys.models import Key
-from .models import Subscription, Profile
+from .models import Subscription, Profile, Notification
 
 
 class PermissionException(Exception):
@@ -57,11 +58,25 @@ def profile(request):
     )
 
 
-@login_required
 def unsubscribe(request):
-    subscriptions = request.user.subscriptions.filter(active=True).order_by(
-        "-created_at"
-    )
+    """
+    Will used logged in user if there is one, otherwise will try to figure out user
+    from email parameter to make unsubscribing easier on people.
+    """
+    user = None
+    if request.user.is_authenticated:
+        user = request.user
+    elif "email" in request.GET:
+        try:
+            notification = Notification.objects.get(pk=request.GET["email"])
+            user = User.objects.get(email=notification.email)
+        except (Notification.DoesNotExist, User.DoesNotExist):
+            pass
+
+    if not user:
+        return redirect("/accounts/login/?next=/accounts/profile/unsubscribe/")
+
+    subscriptions = user.subscriptions.filter(active=True).order_by("-created_at")
     if request.method == "POST":
         count = subscriptions.update(active=False)
         messages.info(request, f"Successfully deactivated {count} subscriptions.")

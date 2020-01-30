@@ -1,9 +1,10 @@
 import pytest
 from django.contrib.auth.models import User
 from graphapi.tests.utils import populate_db
-from profiles.models import Subscription
-from profiles.views import PermissionException
 from opencivicdata.core.models import Person
+from profiles.models import Subscription, Notification
+from profiles.views import PermissionException
+from profiles.utils import utcnow
 from .test_models import COMPLEX_STR
 
 
@@ -14,7 +15,7 @@ def setup():
 
 @pytest.fixture
 def user():
-    u = User.objects.create(username="testuser")
+    u = User.objects.create(username="testuser", email="valid@example.com")
     u.profile.feature_subscriptions = True
     u.profile.save()
     return u
@@ -195,7 +196,7 @@ def test_bill_subscription_delete(client, user):
 
 
 @pytest.mark.django_db
-def test_unsubscribe(client, user):
+def test_unsubscribe_logged_in(client, user):
     client.force_login(user)
 
     Subscription.objects.create(user=user, bill_id="ocd-bill/1", subjects=[], status=[])
@@ -208,3 +209,27 @@ def test_unsubscribe(client, user):
     assert resp.status_code == 302
     assert Subscription.objects.filter(active=True).count() == 0
     assert Subscription.objects.filter(active=False).count() == 1
+
+
+@pytest.mark.django_db
+def test_unsubscribe_email_param(client, user):
+    Subscription.objects.create(user=user, bill_id="ocd-bill/1", subjects=[], status=[])
+    nobj = Notification.objects.create(
+        email=user.email, sent=utcnow(), num_query_updates=0, num_bill_updates=0,
+    )
+
+    resp = client.get(f"/accounts/profile/unsubscribe/?email={nobj.id}")
+    assert resp.status_code == 200
+    assert len(resp.context["subscriptions"]) == 1
+    assert Subscription.objects.filter(active=True).count() == 1
+
+    resp = client.post(f"/accounts/profile/unsubscribe/?email={nobj.id}")
+    assert resp.status_code == 302
+    assert Subscription.objects.filter(active=True).count() == 0
+    assert Subscription.objects.filter(active=False).count() == 1
+
+
+@pytest.mark.django_db
+def test_unsubscribe_403(client, user):
+    resp = client.get("/accounts/profile/unsubscribe/")
+    assert resp.status_code == 302
