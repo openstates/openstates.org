@@ -128,8 +128,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for user in User.objects.all():
             query_updates, bill_updates = process_subs_for_user(user)
+            print(
+                f"processing {user.email}: {len(query_updates)} query updates, "
+                f"{len(bill_updates)} bill updates"
+            )
             with transaction.atomic():
                 if query_updates or bill_updates:
                     send_subscription_email(user, query_updates, bill_updates)
+                # always update the last checked time
                 user.profile.subscription_last_checked = utcnow()
                 user.profile.save()

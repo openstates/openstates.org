@@ -136,5 +136,5 @@ class Notification(models.Model):
     # store email instead of link to user, since emails can change and users can be deleted
     email = models.EmailField(editable=False)
     sent = models.DateTimeField(editable=False)
-    num_query_updates = models.PositiveIntegerField()
-    num_bill_updates = models.PositiveIntegerField()
+    num_query_updates = models.PositiveIntegerField(editable=False)
+    num_bill_updates = models.PositiveIntegerField(editable=False)
