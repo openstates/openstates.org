@@ -66,9 +66,12 @@ context ~a little differently~.
     </div>
     {% endif %}
 
-    {% if messages %}
+    {% if messages or 1 %}
     <div class="notification-banner">
       <ul>
+        <li class="info">
+          Email notifications are coming soon!  If you'd like to help us try them out please <a href="https://docs.google.com/forms/d/17Sg3wO5rV2--8PBojS8AnbBVWFsoKKyoKYiYO3gTRV8/viewform">take our short survey</a>, and <a href="https://openstates.org/accounts/login/">sign up today</a>!
+        </li>
       {% for message in messages %}
         <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
       {% endfor %}
