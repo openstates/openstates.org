@@ -2,6 +2,10 @@ from django.shortcuts import render
 from .models import DataExport
 
 
+def overview(request):
+    return render(request, "bulk/overview.html", {})
+
+
 def bulk_csv_list(request):
     exports = (
         DataExport.objects.all()

@@ -1,0 +1,43 @@
+{% load custom_tags %}
+
+<p>
+  This is your {{ user.profile.get_subscription_frequency_display }} automated alert from <a href="https://OpenStates.org">Open States</a>.
+</p>
+
+{% if bill_updates %}
+  <h2>Tracked Legislation</h2>
+  <p><b>{{ bill_updates|length }}</b> of your tracked bills had new activity:</p>
+  <ul>
+  {% for bill in bill_updates %}
+  <li>
+    <a href="https://openstates.org{% canonical_url bill %}">{{ bill.identifier }} - {{ bill.title }} ({{ bill.legislative_session}})</a> <em>(last updated: {{ bill.updated_at|date:"M d Y h:i a" }})</em>
+  </li>
+  {% endfor %}
+  </ul>
+{% endif %}
+
+<hr />
+
+{% if query_updates %}
+  <h2>Tracked Searches</h2>
+  <p><b>{{ query_updates|length }}</b> of your tracked queries had new legislation introduced.</p>
+  <ul>
+  {% for sub, bills in query_updates %}
+  <li>
+    <a href="https://openstates.org{{ sub.site_url|safe }}">{{ sub.pretty|safe }}</a> - {{ bills|length }} new bills
+    <ul>
+    {% for bill in bills %}
+      <li>
+        <a href="https://openstates.org{% canonical_url bill %}">{{ bill.identifier }} - {{ bill.title }} ({{ bill.legislative_session}})</a> <em>(last updated: {{ bill.updated_at|date:"M d Y h:i a" }})</em>
+      </li>
+    {% endfor %}
+    </ul>
+  {% endfor %}
+  </ul>
+{% endif %}
+
+<hr>
+
+<a href="https://openstates.org/accounts/profile/">Manage your subscriptions.</a>
+
+<a href="https://openstates.org/accounts/profile/unsubscribe/?email={{ notification_id }}">Disable all email notifications.</a>

@@ -62,13 +62,24 @@ input#donor-name {
 
 
 .notification-banner {
-    text-align: center;
-    border: $color-red 2px solid;
-    border-radius: 3px;
-    margin: 1em;
-    padding: 1em;
-    font-weight: 600;
+  text-align: center;
+  border-radius: 3px;
+  margin: 1em;
+  padding: 1em;
+  font-weight: 600;
+
+  li {
+    list-style: none;
+    padding: 0.3rem 0 0.3rem 0;
+  }
+  li.info { background-color: $color-gray; }
+  li.success { background-color: $color-green; }
+  li.warning { background-color: $color-yellow; }
+  li.error { background-color: $color-red; color: white; }
 }
-.notification-banner li {
-  list-style: none;
+
+
+dd { 
+  padding-left: 1rem;
+  padding-bottom: 0.5rem;
 }

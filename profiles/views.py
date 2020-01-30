@@ -1,11 +1,12 @@
 import json
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from simplekeys.models import Key
-from .models import Subscription, Profile
+from .models import Subscription, Profile, Notification
 
 
 class PermissionException(Exception):
@@ -23,6 +24,19 @@ def _ensure_feature_flag(user, perm="feature_subscriptions"):
 
 @login_required
 def profile(request):
+    if request.method == "POST":
+        # not using forms due to variability of included fields
+        request.user.profile.organization_name = request.POST["organization"]
+        request.user.profile.about = request.POST["about"]
+        request.user.profile.subscription_frequency = request.POST[
+            "subscription_frequency"
+        ]
+        request.user.profile.subscription_emails_html = (
+            "subscriptions_emails_html" in request.POST
+        )
+        request.user.profile.save()
+        messages.success(request, "Updated profile settings.")
+
     primary = request.user.emailaddress_set.get(primary=True)
 
     # only get their key if the email is verified
@@ -44,6 +58,35 @@ def profile(request):
     )
 
 
+def unsubscribe(request):
+    """
+    Will used logged in user if there is one, otherwise will try to figure out user
+    from email parameter to make unsubscribing easier on people.
+    """
+    user = None
+    if request.user.is_authenticated:
+        user = request.user
+    elif "email" in request.GET:
+        try:
+            notification = Notification.objects.get(pk=request.GET["email"])
+            user = User.objects.get(email=notification.email)
+        except (Notification.DoesNotExist, User.DoesNotExist):
+            pass
+
+    if not user:
+        return redirect("/accounts/login/?next=/accounts/profile/unsubscribe/")
+
+    subscriptions = user.subscriptions.filter(active=True).order_by("-created_at")
+    if request.method == "POST":
+        count = subscriptions.update(active=False)
+        messages.success(request, f"Successfully deactivated {count} subscriptions.")
+        return redirect("/accounts/profile/")
+    else:
+        return render(
+            request, "account/unsubscribe.html", {"subscriptions": subscriptions}
+        )
+
+
 @login_required
 @require_POST
 def deactivate_subscription(request):
@@ -53,7 +96,7 @@ def deactivate_subscription(request):
         )
         sub.active = False
         sub.save()
-        messages.info(request, f"Deactivated subscription: {sub.pretty}")
+        messages.success(request, f"Deactivated subscription: {sub.pretty}")
     except Subscription.DoesNotExist:
         pass
     return redirect("/accounts/profile/")
@@ -85,7 +128,7 @@ def add_search_subscription(request):
         sponsor_id=request.POST.get("sponsor_id"),
     )
     if created:
-        messages.info(request, f"Created new subscription: {sub.pretty}")
+        messages.success(request, f"Created new subscription: {sub.pretty}")
     return redirect("/accounts/profile/")
 
 
@@ -101,7 +144,7 @@ def add_sponsor_subscription(request):
         status=[],
     )
     if created:
-        messages.info(request, f"Created new subscription: {sub.pretty}")
+        messages.success(request, f"Created new subscription: {sub.pretty}")
     return redirect("/accounts/profile/")
 
 
@@ -115,7 +158,7 @@ def bill_subscription(request):
     if request.method == "POST":
         bill_id = json.loads(request.body)["bill_id"]
         sub, created = activate_subscription(
-            user=request.user, bill_id=bill_id, query="", subjects=[], status=[],
+            user=request.user, bill_id=bill_id, query="", subjects=[], status=[]
         )
         active = True
     elif request.method == "GET":

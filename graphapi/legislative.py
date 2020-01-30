@@ -309,16 +309,17 @@ class LegislativeQuery:
 
         if jurisdiction:
             bills = bills.filter(**jurisdiction_query(jurisdiction))
-        if chamber:
-            bills = bills.filter(from_organization__classification=chamber)
-        if session:
-            bills = bills.filter(legislative_session__identifier=session)
+        subjects = [subject] if subject else []
+        bills = search_bills(
+            bills=bills,
+            query=search_query,
+            chamber=chamber,
+            session=session,
+            classification=classification,
+            subjects=subjects,
+        )
         if updated_since:
             bills = bills.filter(updated_at__gte=updated_since)
-        if classification:
-            bills = bills.filter(classification__contains=[classification])
-        if subject:
-            bills = bills.filter(subject__contains=[subject])
         if action_since:
             bills = bills.annotate(latest_action_date=Max("actions__date"))
             bills = bills.filter(latest_action_date__gte=action_since)
@@ -331,8 +332,6 @@ class LegislativeQuery:
             elif sponsor.get("name"):
                 sponsor_args["sponsorships__name"] = sponsor["name"]
             bills = bills.filter(**sponsor_args)
-        if search_query:
-            bills = search_bills(bills, search_query)
 
         bills = optimize(
             bills,

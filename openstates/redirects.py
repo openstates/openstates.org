@@ -21,6 +21,7 @@ redirects = [
     # old flatpages
     ("funding/", "/donate/"),
     ("contact/", "/about/"),
+    ("bulk/csv/", "/data/session-csv/"),
 ]
 
 urlpatterns = [
