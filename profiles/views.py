@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from simplekeys.models import Key
-from .models import Subscription, Profile, Notification
+from .models import Subscription, Profile, Notification, WEEKLY
 
 
 class PermissionException(Exception):
@@ -28,9 +28,9 @@ def profile(request):
         # not using forms due to variability of included fields
         request.user.profile.organization_name = request.POST["organization"]
         request.user.profile.about = request.POST["about"]
-        request.user.profile.subscription_frequency = request.POST[
-            "subscription_frequency"
-        ]
+        request.user.profile.subscription_frequency = request.POST.get(
+            "subscription_frequency", WEEKLY
+        )
         request.user.profile.subscription_emails_html = (
             "subscriptions_emails_html" in request.POST
         )
