@@ -35,7 +35,7 @@ def profile(request):
             "subscriptions_emails_html" in request.POST
         )
         request.user.profile.save()
-        messages.info(request, "Updated profile settings.")
+        messages.success(request, "Updated profile settings.")
 
     primary = request.user.emailaddress_set.get(primary=True)
 
@@ -79,7 +79,7 @@ def unsubscribe(request):
     subscriptions = user.subscriptions.filter(active=True).order_by("-created_at")
     if request.method == "POST":
         count = subscriptions.update(active=False)
-        messages.info(request, f"Successfully deactivated {count} subscriptions.")
+        messages.success(request, f"Successfully deactivated {count} subscriptions.")
         return redirect("/accounts/profile/")
     else:
         return render(
@@ -96,7 +96,7 @@ def deactivate_subscription(request):
         )
         sub.active = False
         sub.save()
-        messages.info(request, f"Deactivated subscription: {sub.pretty}")
+        messages.success(request, f"Deactivated subscription: {sub.pretty}")
     except Subscription.DoesNotExist:
         pass
     return redirect("/accounts/profile/")
@@ -128,7 +128,7 @@ def add_search_subscription(request):
         sponsor_id=request.POST.get("sponsor_id"),
     )
     if created:
-        messages.info(request, f"Created new subscription: {sub.pretty}")
+        messages.success(request, f"Created new subscription: {sub.pretty}")
     return redirect("/accounts/profile/")
 
 
@@ -144,7 +144,7 @@ def add_sponsor_subscription(request):
         status=[],
     )
     if created:
-        messages.info(request, f"Created new subscription: {sub.pretty}")
+        messages.success(request, f"Created new subscription: {sub.pretty}")
     return redirect("/accounts/profile/")
 
 
