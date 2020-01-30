@@ -96,3 +96,15 @@ form[action^='/accounts/confirm-email/'] button
 button.secondaryAction {
   @extend .button;
 }
+
+div.profile-settings {
+    display: grid;
+    grid-template-columns: auto;
+    grid-column-gap: 5em;
+
+    @include breakpoint(medium) {
+        grid-template-columns: auto auto;
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+}

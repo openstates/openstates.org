@@ -431,12 +431,11 @@ description = "python opencivicdata library"
 name = "opencivicdata"
 optional = false
 python-versions = "*"
-version = "2.4.0"
+version = "3.1.0"
 
 [package.dependencies]
-Django = ">=1.11"
+Django = ">=2.2"
 psycopg2-binary = "*"
-six = "*"
 
 [[package]]
 category = "dev"
@@ -848,7 +847,7 @@ python-versions = ">=2.7"
 version = "0.5.2"
 
 [metadata]
-content-hash = "96cd40611c653b4838cd81097d517fad652091e32063d8025a307b0357063ec3"
+content-hash = "e044d5f339a3d81218b3c2fbe6fb2f8fabc733a510fc2a006cbaf0367addf0aa"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -893,7 +892,7 @@ more-itertools = ["3ad685ff8512bf6dc5a8b82ebf73543999b657eded8c11803d9ba6b648986
 name-tools = ["030dd7218e482f8b203c1485d0ed2b8abb650ec08357b7555285e7d363cc8a36"]
 newrelic = ["708ac6a75c76a59e3d6c0d714e2fbb1e4ec7d540f7d34bddd81e61bdb636e895"]
 oauthlib = ["bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889", "df884cd6cbe20e32633f1db1072e9356f53638e4361bef4e8b03c9127c9328ea"]
-opencivicdata = ["547f1798886cc497894d8fddaf88bd413c51aac9187ffee7adc7f0054b6eec53", "cbb909b369530a26f64b5181cdc223dd379e9fb0c57a6021bfd8490398842c01"]
+opencivicdata = ["cbd8693a53ddac867f642963209ae98c21fd565db4df20769c727395eaedafd8"]
 packaging = ["0c98a5d0be38ed775798ece1b9727178c4469d9c3b4ada66e8e6b7849f8732af", "9e1cbf8c12b1f1ce0bb5344b8d7ecf66a6f8a6e91bcb0c84593ed6d3ab5c4ab3"]
 parso = ["63854233e1fadb5da97f2744b6b24346d2750b85965e7e399bec1620232797dc", "666b0ee4a7a1220f65d367617f2cd3ffddff3e205f3f16a0284df30e774c2a9c"]
 pexpect = ["2094eefdfcf37a1fdbfb9aa090862c1a4878e5c7e0e7e7088bdb511c558e5cd1", "9e2c1fd0e6ee3a49b28f95d4b33bc389c89b20af6a1255906e90ff1262ce62eb"]

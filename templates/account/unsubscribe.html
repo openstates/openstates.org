@@ -1,0 +1,29 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States Unsubscribe All{% endblock %}
+{% block og_title %}Open States Unsubscribe All{% endblock %}
+{% block description %}Open States Unsubscribe All{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Unsubscribe?</h1>
+
+{% if subscriptions %}
+<p>
+  Do you wish to unsubscribe from all alerts?  You may also visit <a href="/accounts/profile/">your profile</a>
+  to alter what emails you receive and how often.
+</p>
+
+<form method="POST">
+  {% csrf_token %}
+  <button class="button">Deactivate All {{ subscriptions|length }} Subscriptions</button>
+</form>
+{% else %}
+<p>
+  You do not currently have any subscriptions!
+</p>
+{% endif %}
+
+{% include "account/_subscriptions.html" %}
+
+{% endblock %}

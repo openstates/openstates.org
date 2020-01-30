@@ -54,7 +54,7 @@ jobs:
             DATABASE_URL: postgis://test:test@localhost/test
       - run:
           name: flake8
-          command: poetry run flake8
+          command: poetry run flake8 --ignore=E203,E501,W503
 
       # store results
       - store_test_results:

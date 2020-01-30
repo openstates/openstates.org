@@ -1,0 +1,43 @@
+
+<hr>
+<a name="subscriptions"></a>
+<section>
+  <h2 class="heading">Subscriptions</h2>
+  {% if not request.user.profile.feature_subscriptions %}
+  <p>
+  Subscriptions are currently in beta, <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvEOfgIT_LFUy8hqnKIBudOzfN0v_S9249BjDRDmydyqey1g/viewform">request access today</a>!
+  </p>
+  {% else %}
+  {% if not subscriptions %}
+  <p>
+  You haven't yet created any subscriptions.
+  </p>
+
+  {% else %}
+  <table class="hover">
+    <thead>
+    <tr>
+      <th>Subscription</th>
+      <th>Created</th>
+      <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for sub in subscriptions %}
+    <tr>
+      <td><a href="{{ sub.site_url }}">{{ sub.pretty }}</a></td>
+      <td>{{ sub.created_at|date:"Y-m-d" }}</td>
+      <td>
+        <form method="POST" action="/accounts/profile/deactivate_sub/">
+          {% csrf_token %}
+          <input type="hidden" name="subscription_id" value="{{ sub.id }}" />
+          <button class="button">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+      </tbody>
+  </table>
+  {% endif %}
+  {% endif %}
+</section>
