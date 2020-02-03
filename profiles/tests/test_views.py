@@ -68,6 +68,16 @@ def test_add_search_subscription_complex(client, user):
 
 
 @pytest.mark.django_db
+def test_add_search_subscription_no_query(client, user):
+    client.force_login(user)
+    resp = client.post(
+        "/accounts/profile/add_search_sub/", {"query": "", "state": "ak"}
+    )
+    assert resp.status_code == 400
+    assert Subscription.objects.count() == 0
+
+
+@pytest.mark.django_db
 def test_add_sponsor_subscription(client, user):
     client.force_login(user)
     resp = client.post(
