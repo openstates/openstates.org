@@ -13,6 +13,7 @@ from ..management.commands.process_subscriptions import (
     process_subs_for_user,
     send_subscription_email,
     DAILY,
+    SkipCheck,
 )
 
 
@@ -76,9 +77,8 @@ def test_process_subs_for_user_simple(user):
     # we're within a week now
     user.profile.subscription_last_checked = utcnow()
     user.profile.save()
-    query_updates, bill_updates = process_subs_for_user(user)
-    assert query_updates is None
-    assert bill_updates is None
+    with pytest.raises(SkipCheck):
+        query_updates, bill_updates = process_subs_for_user(user)
 
 
 @pytest.mark.django_db
@@ -94,9 +94,8 @@ def test_process_subs_for_user_query(user):
     # we're within a week now
     user.profile.subscription_last_checked = utcnow()
     user.profile.save()
-    query_updates, bill_updates = process_subs_for_user(user)
-    assert query_updates is None
-    assert bill_updates is None
+    with pytest.raises(SkipCheck):
+        query_updates, bill_updates = process_subs_for_user(user)
 
 
 @pytest.mark.django_db

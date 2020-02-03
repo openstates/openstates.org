@@ -9,6 +9,10 @@ from ...models import DAILY, WEEKLY, Notification
 from utils.bills import search_bills
 
 
+class SkipCheck(Exception):
+    pass
+
+
 def process_query_sub(sub, since):
     """ given a query subscription, return a list of bills updated since then """
     bills = list(
@@ -48,17 +52,17 @@ def process_subs_for_user(user):
 
     now = utcnow()
 
+    # not enough time passed
+    if now - last_checked < frequency:
+        raise SkipCheck(f"next check at {last_checked} + {frequency}")
+
+    query_updates = []
+    bill_updates = []
+
     print(
         f"processing {len(subscriptions)} for {user.email} "
         f"({user.profile.get_subscription_frequency_display()}, last checked {last_checked})"
     )
-
-    # not enough time passed
-    if now - last_checked < frequency:
-        return None, None
-
-    query_updates = []
-    bill_updates = []
 
     for sub in subscriptions:
         if sub.subscription_type == "query":
@@ -127,14 +131,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for user in User.objects.all():
-            query_updates, bill_updates = process_subs_for_user(user)
-            print(
-                f"processing {user.email}: {len(query_updates)} query updates, "
-                f"{len(bill_updates)} bill updates"
-            )
-            with transaction.atomic():
-                if query_updates or bill_updates:
-                    send_subscription_email(user, query_updates, bill_updates)
-                # always update the last checked time
-                user.profile.subscription_last_checked = utcnow()
-                user.profile.save()
+            try:
+                query_updates, bill_updates = process_subs_for_user(user)
+                print(
+                    f"emailing {user.email}: {len(query_updates)} query updates, "
+                    f"{len(bill_updates)} bill updates"
+                )
+                with transaction.atomic():
+                    if query_updates or bill_updates:
+                        send_subscription_email(user, query_updates, bill_updates)
+                    # always update the last checked time
+                    user.profile.subscription_last_checked = utcnow()
+                    user.profile.save()
+            except SkipCheck as skip:
+                print(f"skipping {user.email}: {skip}")
