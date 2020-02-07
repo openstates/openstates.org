@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from simplekeys.models import Key
 from .models import Subscription, Profile, Notification, WEEKLY
 
@@ -117,6 +117,12 @@ def activate_subscription(**kwargs):
 @require_POST
 def add_search_subscription(request):
     _ensure_feature_flag(request.user)
+
+    if not request.POST.get("query"):
+        return HttpResponseBadRequest(
+            "Invalid subscription request, must include query."
+        )
+
     sub, created = activate_subscription(
         user=request.user,
         query=request.POST["query"],

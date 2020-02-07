@@ -70,7 +70,7 @@ class Subscription(models.Model):
             return "query"
         elif self.sponsor_id:
             return "sponsor"
-        raise ValueError("invalid subscription")
+        raise ValueError(f"invalid subscription: {self.__dict__}")
 
     @property
     def pretty(self):

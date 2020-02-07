@@ -9,6 +9,10 @@ from ...models import DAILY, WEEKLY, Notification
 from utils.bills import search_bills
 
 
+class SkipCheck(Exception):
+    pass
+
+
 def process_query_sub(sub, since):
     """ given a query subscription, return a list of bills updated since then """
     bills = list(
@@ -48,17 +52,17 @@ def process_subs_for_user(user):
 
     now = utcnow()
 
+    # not enough time passed
+    if now - last_checked < frequency:
+        raise SkipCheck(f"next check at {last_checked} + {frequency}")
+
+    query_updates = []
+    bill_updates = []
+
     print(
         f"processing {len(subscriptions)} for {user.email} "
         f"({user.profile.get_subscription_frequency_display()}, last checked {last_checked})"
     )
-
-    # not enough time passed
-    if now - last_checked < frequency:
-        return None, None
-
-    query_updates = []
-    bill_updates = []
 
     for sub in subscriptions:
         if sub.subscription_type == "query":
@@ -75,7 +79,7 @@ def process_subs_for_user(user):
     return query_updates, bill_updates
 
 
-def send_subscription_email(user, query_updates, bill_updates):
+def send_subscription_email(user, query_updates, bill_updates, dry_run=False):
     if not bill_updates and not query_updates:
         raise ValueError("must have something to send")
 
@@ -84,12 +88,16 @@ def send_subscription_email(user, query_updates, bill_updates):
         raise ValueError("user does not have a verified email")
     verified_email = verified_email[0].email
 
-    nobj = Notification.objects.create(
-        email=verified_email,
-        sent=utcnow(),
-        num_query_updates=len(query_updates),
-        num_bill_updates=len(bill_updates),
-    )
+    if dry_run:
+        # just need a fake id
+        nobj = Notification()
+    else:
+        nobj = Notification.objects.create(
+            email=verified_email,
+            sent=utcnow(),
+            num_query_updates=len(query_updates),
+            num_bill_updates=len(bill_updates),
+        )
 
     context = {
         "notification_id": nobj.id,
@@ -110,13 +118,26 @@ def send_subscription_email(user, query_updates, bill_updates):
     else:
         subject = f"Open States Weekly Alert - {today}: {update_count} {updates}"
 
-    send_mail(
-        subject,
-        text_body,
-        from_email="alerts@openstates.org",
-        recipient_list=[verified_email],
-        html_message=html_message,
-    )
+    if dry_run:
+        print(
+            f"""Would have sent email:
+to={verified_email}
+subject={subject}
+body=
+{text_body}
+-------
+{html_message}
+-------
+"""
+        )
+    else:
+        send_mail(
+            subject,
+            text_body,
+            from_email="alerts@openstates.org",
+            recipient_list=[verified_email],
+            html_message=html_message,
+        )
 
 
 class Command(BaseCommand):
@@ -126,15 +147,23 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", action="store_true")
 
     def handle(self, *args, **options):
+        if options["dry_run"]:
+            print("DRY RUN: will not actually send emails or update users")
         for user in User.objects.all():
-            query_updates, bill_updates = process_subs_for_user(user)
-            print(
-                f"processing {user.email}: {len(query_updates)} query updates, "
-                f"{len(bill_updates)} bill updates"
-            )
-            with transaction.atomic():
-                if query_updates or bill_updates:
-                    send_subscription_email(user, query_updates, bill_updates)
-                # always update the last checked time
-                user.profile.subscription_last_checked = utcnow()
-                user.profile.save()
+            try:
+                query_updates, bill_updates = process_subs_for_user(user)
+                print(
+                    f"emailing {user.email}: {len(query_updates)} query updates, "
+                    f"{len(bill_updates)} bill updates"
+                )
+                with transaction.atomic():
+                    if query_updates or bill_updates:
+                        send_subscription_email(
+                            user, query_updates, bill_updates, options["dry_run"]
+                        )
+                    # always update the last checked time
+                    if not options["dry_run"]:
+                        user.profile.subscription_last_checked = utcnow()
+                        user.profile.save()
+            except SkipCheck as skip:
+                print(f"skipping {user.email}: {skip}")

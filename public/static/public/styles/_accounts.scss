@@ -1,3 +1,9 @@
+.openstates_signup {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
 .socialaccount_providers {
   display: grid;
   grid-template-columns: auto;
@@ -32,6 +38,11 @@ a.socialaccount_provider {
     @include breakpoint(large) {
       content: "Sign in with ";
     }
+  }
+  &.openstates {
+    @include button(false, $color-royalblue, $color-royalblue, $color-royalblue, hollow);
+    background-image: url("/static/public/images/openstates_icon_transparent.png");
+    &:before { content: ""; }
   }
   &.facebook {
     @include button(false, #4267b2, #4267b2, $white, solid);

@@ -147,7 +147,23 @@
                     {% if request.user.profile.feature_subscriptions %}
                     {% csrf_token %}
                     <input type="hidden" name="state" value="{{ state }}" />
-                    <button type="submit" class="button button--primary" formaction="/accounts/profile/add_search_sub/" formmethod="POST">Add Subscription</button>
+                    <button id="subscribe-button" disabled=true type="submit" class="button button--primary" formaction="/accounts/profile/add_search_sub/" formmethod="POST">Add Subscription</button>
+
+                      <script>
+                        /* only allow search button to be clicked when there's a query */
+                        const query = document.getElementById("query");
+                        const button = document.getElementById("subscribe-button");
+                        query.onchange = function() {
+                          if(this.value) {
+                            button.disabled = false;
+                            button.title = "";
+                          } else {
+                            button.disabled = true;
+                            button.title = "Enter a query above to enable."
+                          }
+                        }
+                        query.onchange();
+                      </script>
                     {% endif %}
                 </form>
             </div>

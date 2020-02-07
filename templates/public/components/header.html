@@ -17,7 +17,8 @@ context ~a little differently~.
          <a href="/accounts/profile/">{{ user.username|default:"Profile" }}</a> |
          <a href="/accounts/logout/">Sign Out</a>
          {% else %}
-         <a href="/accounts/login/">Log In / Sign Up</a>
+         <a href="/accounts/login/">Log In</a> /
+         <a href="/accounts/signup/">Sign Up</a>
          {% endif %}
        </div>
     </div>

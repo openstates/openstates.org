@@ -21,6 +21,10 @@ For more on button mixins, see https://foundation.zurb.com/sites/docs/button.htm
         background-color: $button-background-hover;
         color: $color-white;
     }
+    &:disabled {
+      background-color: #bbb;
+      border-color: #bbb;
+    }
 }
 
 .button--secondary {

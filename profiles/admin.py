@@ -4,7 +4,12 @@ from profiles.models import Profile, Subscription, Notification
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user",)
+    list_display = ("user", "email", "feature_subscriptions")
+    list_editable = ("feature_subscriptions",)
+    search_fields = ("user__email",)
+
+    def email(self, p):
+        return p.user.email
 
 
 @admin.register(Subscription)
