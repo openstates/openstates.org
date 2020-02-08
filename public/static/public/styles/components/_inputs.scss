@@ -19,7 +19,7 @@ textarea,
 select {
     border-width: 1px;
     transition: border ease-in 200ms;
-    
+
     &:focus,
     &:active {
         border-color: $color-primary;
@@ -99,6 +99,14 @@ input[type='radio'] {
     font-weight: normal;
     margin-top: 0.1rem;
     margin-bottom: 0.1rem;
+}
+
+
+// Search
+[type='search'] {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 
