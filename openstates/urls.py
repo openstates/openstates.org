@@ -3,7 +3,6 @@ from django.urls import path
 from django.conf import settings
 from django.contrib import admin
 from django.views.decorators.csrf import csrf_exempt
-from simplekeys.views import ConfirmationView
 from graphapi.views import KeyedGraphQLView
 from graphapi.middleware import QueryProtectionMiddleware
 from bulk.views import overview, bulk_csv_list
@@ -14,7 +13,6 @@ urlpatterns = [
     path("accounts/profile/", include("profiles.urls")),
     url("", include("geo.urls")),
     url(r"^api/v1/", include("v1.urls")),
-    url(r"^api/confirm/$", ConfirmationView.as_view()),
     url(
         r"^graphql",
         csrf_exempt(
