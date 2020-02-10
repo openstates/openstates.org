@@ -65,16 +65,24 @@ COMMENT ON OPERATOR - (jsonb, jsonb) IS 'delete matching pairs from left operand
 """
 
 TRIGGER_SQL = """
+CREATE OR REPLACE FUNCTION get_bill_id(table_name name, r RECORD) returns varchar(100) as $$
+BEGIN
+  CASE table_name
+  WHEN 'opencivicdata_bill' THEN
+    RETURN r.id;
+  WHEN 'opencivicdata_billactionrelatedentity' THEN
+    RETURN r.id;
+  ELSE
+    RETURN r.bill_id;
+  END CASE;
+END
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION history_insert()
 RETURNS TRIGGER AS $$
 DECLARE
-  bill_id varchar(100);
+  bill_id varchar(100) := get_bill_id(TG_TABLE_NAME, NEW);
 BEGIN
-  IF TG_TABLE_NAME = 'opencivicdata_bill' THEN
-    bill_id := NEW.id;
-  ELSE
-    bill_id := NEW.bill_id;
-  END IF;
   INSERT INTO history_billhistory(event_time, table_name, bill_id, new)
      VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, row_to_json(NEW)::jsonb);
   RETURN NEW;
@@ -84,13 +92,8 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION history_delete()
 RETURNS TRIGGER AS $$
 DECLARE
-  bill_id varchar(100);
+  bill_id varchar(100) := get_bill_id(TG_TABLE_NAME, OLD);
 BEGIN
-  IF TG_TABLE_NAME = 'opencivicdata_bill' THEN
-    bill_id := OLD.id;
-  ELSE
-    bill_id := OLD.bill_id;
-  END IF;
   INSERT INTO history_billhistory(event_time, table_name, bill_id, old)
      VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, row_to_json(OLD)::jsonb);
   RETURN NEW;
@@ -102,13 +105,8 @@ RETURNS TRIGGER AS $$
 DECLARE
   js_new jsonb := row_to_json(NEW)::jsonb;
   js_old jsonb := row_to_json(OLD)::jsonb;
-  bill_id varchar(100);
+  bill_id varchar(100) := get_bill_id(TG_TABLE_NAME, OLD);
 BEGIN
-  IF TG_TABLE_NAME = 'opencivicdata_bill' THEN
-    bill_id := OLD.id;
-  ELSE
-    bill_id := OLD.bill_id;
-  END IF;
   INSERT INTO history_billhistory(event_time, table_name, bill_id, old, new)
      VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, js_old - js_new, js_new - js_old);
   RETURN NEW;
