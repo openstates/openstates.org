@@ -29,5 +29,5 @@ class Migration(migrations.Migration):
                 ("old", django.contrib.postgres.fields.jsonb.JSONField(null=True)),
                 ("new", django.contrib.postgres.fields.jsonb.JSONField(null=True)),
             ],
-        ),
+        )
     ]

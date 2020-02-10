@@ -67,18 +67,32 @@ COMMENT ON OPERATOR - (jsonb, jsonb) IS 'delete matching pairs from left operand
 TRIGGER_SQL = """
 CREATE OR REPLACE FUNCTION history_insert()
 RETURNS TRIGGER AS $$
+DECLARE
+  bill_id varchar(100);
 BEGIN
+  IF TG_TABLE_NAME = 'opencivicdata_bill' THEN
+    bill_id := NEW.id;
+  ELSE
+    bill_id := NEW.bill_id;
+  END IF;
   INSERT INTO history_billhistory(event_time, table_name, bill_id, new)
-     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, NEW.id, row_to_json(NEW)::jsonb);
+     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, row_to_json(NEW)::jsonb);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION history_delete()
 RETURNS TRIGGER AS $$
+DECLARE
+  bill_id varchar(100);
 BEGIN
+  IF TG_TABLE_NAME = 'opencivicdata_bill' THEN
+    bill_id := OLD.id;
+  ELSE
+    bill_id := OLD.bill_id;
+  END IF;
   INSERT INTO history_billhistory(event_time, table_name, bill_id, old)
-     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, OLD.id, row_to_json(OLD)::jsonb);
+     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, row_to_json(OLD)::jsonb);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -88,30 +102,36 @@ RETURNS TRIGGER AS $$
 DECLARE
   js_new jsonb := row_to_json(NEW)::jsonb;
   js_old jsonb := row_to_json(OLD)::jsonb;
+  bill_id varchar(100);
 BEGIN
+  IF TG_TABLE_NAME = 'opencivicdata_bill' THEN
+    bill_id := OLD.id;
+  ELSE
+    bill_id := OLD.bill_id;
+  END IF;
   INSERT INTO history_billhistory(event_time, table_name, bill_id, old, new)
-     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, OLD.id, js_old - js_new, js_new - js_old);
+     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, js_old - js_new, js_new - js_old);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER test_history_insert AFTER INSERT ON opencivicdata_bill
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_bill
   FOR EACH ROW EXECUTE PROCEDURE history_insert();
-
-CREATE TRIGGER test_history_delete AFTER DELETE ON opencivicdata_bill
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_bill
   FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_bill
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
 
-CREATE TRIGGER test_history_update AFTER UPDATE ON opencivicdata_bill
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billaction
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billaction
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billaction
   FOR EACH ROW EXECUTE PROCEDURE history_update();
 """
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ("history", "0001_initial"),
-    ]
+    dependencies = [("history", "0001_initial")]
 
-    operations = [
-        migrations.RunSQL(JSON_DELETE_OP),
-        migrations.RunSQL(TRIGGER_SQL),
-    ]
+    operations = [migrations.RunSQL(JSON_DELETE_OP), migrations.RunSQL(TRIGGER_SQL)]
