@@ -5,7 +5,7 @@ from allauth.socialaccount.models import SocialApp
 
 User.objects.create_superuser("local", password="password", email="local@localhost")
 
-tier, _ = Tier.objects.get_or_create(name="local", slug="local")
+tier, _ = Tier.objects.get_or_create(name="default", slug="default")
 
 for name in ("default", "geo", "graphapi"):
     zone, _ = Zone.objects.get_or_create(name=name, slug=name)
