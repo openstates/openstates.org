@@ -122,11 +122,67 @@ CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_bill
 CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_bill
   FOR EACH ROW EXECUTE PROCEDURE history_update();
 
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billabstract
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billabstract
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billabstract
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billtitle
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billtitle
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billtitle
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billidentifier
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billidentifier
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billidentifier
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
 CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billaction
   FOR EACH ROW EXECUTE PROCEDURE history_insert();
 CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billaction
   FOR EACH ROW EXECUTE PROCEDURE history_delete();
 CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billaction
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_relatedbill
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_relatedbill
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_relatedbill
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billsponsorship
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billsponsorship
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billsponsorship
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billdocument
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billdocument
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billdocument
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billversion
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billversion
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billversion
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billsource
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billsource
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billsource
   FOR EACH ROW EXECUTE PROCEDURE history_update();
 """
 
