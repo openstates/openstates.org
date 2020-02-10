@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     "bulk",
     "profiles.apps.ProfilesConfig",
     "simplekeys",
+    "history",
 ]
 
 MIDDLEWARE = [
