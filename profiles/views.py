@@ -32,7 +32,7 @@ def profile(request):
             "subscription_frequency", WEEKLY
         )
         request.user.profile.subscription_emails_html = (
-            "subscriptions_emails_html" in request.POST
+            "subscription_emails_html" in request.POST
         )
         request.user.profile.save()
         messages.success(request, "Updated profile settings.")
