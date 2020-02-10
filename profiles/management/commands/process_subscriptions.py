@@ -152,15 +152,17 @@ class Command(BaseCommand):
         for user in User.objects.all():
             try:
                 query_updates, bill_updates = process_subs_for_user(user)
-                print(
-                    f"emailing {user.email}: {len(query_updates)} query updates, "
-                    f"{len(bill_updates)} bill updates"
-                )
                 with transaction.atomic():
                     if query_updates or bill_updates:
+                        print(
+                            f"emailing {user.email}: {len(query_updates)} query updates, "
+                            f"{len(bill_updates)} bill updates"
+                        )
                         send_subscription_email(
                             user, query_updates, bill_updates, options["dry_run"]
                         )
+                    else:
+                        print(f"nothing to send for {user.email}")
                     # always update the last checked time
                     if not options["dry_run"]:
                         user.profile.subscription_last_checked = utcnow()

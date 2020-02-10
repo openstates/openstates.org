@@ -205,3 +205,12 @@ def test_send_email_simple_bill_no_email(user, mailoutbox):
     with pytest.raises(ValueError):
         send_subscription_email(user, [], bill_updates)
     assert Notification.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_send_email_simple_dry_run(user, mailoutbox):
+    hb1 = Bill.objects.get(identifier="HB 1")
+    sub = Subscription.objects.create(user=user, subjects=[], status=[], query="moose")
+    query_updates = [(sub, [hb1])]
+    send_subscription_email(user, query_updates, [], dry_run=True)
+    assert Notification.objects.count() == 0

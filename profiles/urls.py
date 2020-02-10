@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     profile,
+    request_key,
     unsubscribe,
     bill_subscription,
     add_search_subscription,
@@ -10,6 +11,7 @@ from .views import (
 
 urlpatterns = [
     path("", profile),
+    path("request_key/", request_key),
     path("unsubscribe/", unsubscribe),
     path("bill_sub/", bill_subscription),
     path("add_sponsor_sub/", add_sponsor_subscription),

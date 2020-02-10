@@ -5,7 +5,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse, HttpResponseBadRequest
-from simplekeys.models import Key
+from simplekeys.models import Key, Tier
 from .models import Subscription, Profile, Notification, WEEKLY
 
 
@@ -32,7 +32,7 @@ def profile(request):
             "subscription_frequency", WEEKLY
         )
         request.user.profile.subscription_emails_html = (
-            "subscriptions_emails_html" in request.POST
+            "subscription_emails_html" in request.POST
         )
         request.user.profile.save()
         messages.success(request, "Updated profile settings.")
@@ -184,3 +184,25 @@ def bill_subscription(request):
             error = "no such subscription"
 
     return JsonResponse({"active": active, "bill_id": bill_id, "error": error})
+
+
+@login_required
+@require_POST
+def request_key(request):
+    primary_email = request.user.emailaddress_set.filter(primary=True, verified=True)
+    if not primary_email:
+        messages.warning(request, "Must verify your email address to obtain API Key.")
+    else:
+        primary_email = primary_email[0].email
+        try:
+            Key.objects.get(email=primary_email)
+            messages.warning(request, "Key already exists.")
+        except Key.DoesNotExist:
+            messages.success(request, "Your API Key is ready to use!")
+            Key.objects.create(
+                tier=Tier.objects.get(slug="default"),
+                status="a",
+                email=primary_email,
+                name=primary_email,
+            )
+    return redirect("/accounts/profile/")

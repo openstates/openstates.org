@@ -69,7 +69,6 @@
 </div>
 
 
-{% if key %}
 <a name="apikey"></a>
 <hr>
 <section>
@@ -90,13 +89,17 @@
   <p>
     If you'd like to request a change to your key's status, please <a href="mailto:contact@openstates.org">contact us</a>.
   </p>
-  {% else %}
+  {% elif primary_email.verified %}
   <p>
-    An error has occurred, please <a href="mailto:contact@openstates.org">contact us</a>.
+    <form action="/accounts/profile/request_key/" method="POST">
+    {% csrf_token %}
+    <input type="submit" class="button button--primary" value="Enable API Key" />
+    </form>
   </p>
+  {% else %}
+  <p>Please verify your email above to request an API Key.</p>
   {% endif %}
 </section>
-{% endif %}
 
 {% include "account/_subscriptions.html" %}
 {% endblock %}
