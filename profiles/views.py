@@ -1,10 +1,11 @@
 import json
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.db.models import Count
 from simplekeys.models import Key
 from .models import Subscription, Profile, Notification, WEEKLY
 
@@ -184,3 +185,31 @@ def bill_subscription(request):
             error = "no such subscription"
 
     return JsonResponse({"active": active, "bill_id": bill_id, "error": error})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_overview(request):
+    bill_subscriptions = Subscription.objects.filter(bill_id__isnull=False).count()
+    query_subscriptions = Subscription.objects.exclude(query="").count()
+    subs_by_user = list(
+        User.objects.annotate(count=Count("subscriptions"))
+        .values(
+            "id",
+            "email",
+            "profile__subscription_emails_html",
+            "profile__subscription_frequency",
+            "profile__subscription_last_checked",
+            "count",
+        )
+        .filter(count__gt=0)
+    )
+    notifications = list(Notification.objects.all().values())
+
+    return JsonResponse(
+        {
+            "bill_subscriptions": bill_subscriptions,
+            "query_subscriptions": query_subscriptions,
+            "users": subs_by_user,
+            "notifications": notifications,
+        }
+    )
