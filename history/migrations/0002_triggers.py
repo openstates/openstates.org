@@ -71,7 +71,11 @@ BEGIN
   WHEN 'opencivicdata_bill' THEN
     RETURN r.id;
   WHEN 'opencivicdata_billactionrelatedentity' THEN
-    RETURN r.id;
+    RETURN (select a.bill_id from opencivicdata_billaction a WHERE a.id=r.action_id);
+  WHEN 'opencivicdata_billdocumentlink' THEN
+    RETURN (select x.bill_id from opencivicdata_billdocument x WHERE x.id=r.document_id);
+  WHEN 'opencivicdata_billversionlink' THEN
+    RETURN (select x.bill_id from opencivicdata_billversion x WHERE x.id=r.version_id);
   ELSE
     RETURN r.bill_id;
   END CASE;
@@ -181,6 +185,27 @@ CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billsource
 CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billsource
   FOR EACH ROW EXECUTE PROCEDURE history_delete();
 CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billsource
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billversionlink
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billversionlink
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billversionlink
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billdocumentlink
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billdocumentlink
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billdocumentlink
+  FOR EACH ROW EXECUTE PROCEDURE history_update();
+
+CREATE TRIGGER history_insert AFTER INSERT ON opencivicdata_billactionrelatedentity
+  FOR EACH ROW EXECUTE PROCEDURE history_insert();
+CREATE TRIGGER history_delete AFTER DELETE ON opencivicdata_billactionrelatedentity
+  FOR EACH ROW EXECUTE PROCEDURE history_delete();
+CREATE TRIGGER history_update AFTER UPDATE ON opencivicdata_billactionrelatedentity
   FOR EACH ROW EXECUTE PROCEDURE history_update();
 """
 

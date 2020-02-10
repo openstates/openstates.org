@@ -113,3 +113,62 @@ def test_bill_action_delete(session, org):
     assert action.new is None
     assert action.bill_id == b.id
     assert action.table_name == "opencivicdata_billaction"
+
+
+# NOTE:
+# these next tests are for objects that don't have a direct bill_id, and are special cased
+# in the pl/pgsql code, we don't need to check *all* the functionality, but lets make sure
+# they link to the right bill id
+
+
+@pytest.mark.django_db
+def test_bill_versionlink_add(session, org):
+    b = Bill.objects.create(
+        title="title", identifier="SB 1", legislative_session=session
+    )
+    v = b.versions.create(note="first printing", date="2020-01-01")
+    v.links.create(url="https://example.com")
+
+    history = BillHistory.objects.order_by("event_time")
+    assert len(history) == 3
+    # table names and bill_id are recorded correctly
+    assert history[0].bill_id == history[1].bill_id == history[2].bill_id
+    assert history[0].table_name == "opencivicdata_bill"
+    assert history[1].table_name == "opencivicdata_billversion"
+    assert history[2].table_name == "opencivicdata_billversionlink"
+
+
+@pytest.mark.django_db
+def test_bill_documentlink_add(session, org):
+    b = Bill.objects.create(
+        title="title", identifier="SB 1", legislative_session=session
+    )
+    v = b.documents.create(note="fiscal note", date="2020-01-01")
+    v.links.create(url="https://example.com")
+
+    history = BillHistory.objects.order_by("event_time")
+    assert len(history) == 3
+    # table names and bill_id are recorded correctly
+    assert history[0].bill_id == history[1].bill_id == history[2].bill_id
+    assert history[0].table_name == "opencivicdata_bill"
+    assert history[1].table_name == "opencivicdata_billdocument"
+    assert history[2].table_name == "opencivicdata_billdocumentlink"
+
+
+@pytest.mark.django_db
+def test_bill_actionrelatedentity_add(session, org):
+    b = Bill.objects.create(
+        title="title", identifier="SB 1", legislative_session=session
+    )
+    a = b.actions.create(
+        description="introduced", date="2020-01-01", order=1, organization=org
+    )
+    a.related_entities.create(name="someone", entity_type="person")
+
+    history = BillHistory.objects.order_by("event_time")
+    assert len(history) == 3
+    assert history[0].bill_id == history[1].bill_id == history[2].bill_id
+    # table names and bill_id are recorded correctly
+    assert history[0].table_name == "opencivicdata_bill"
+    assert history[1].table_name == "opencivicdata_billaction"
+    assert history[2].table_name == "opencivicdata_billactionrelatedentity"
