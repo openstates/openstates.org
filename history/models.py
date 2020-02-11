@@ -8,3 +8,15 @@ class Change(models.Model):
     object_id = models.CharField(max_length=45)
     old = JSONField(null=True)
     new = JSONField(null=True)
+
+    @property
+    def change_type(self):
+        if self.old is None:
+            return "create"
+        elif self.new is None:
+            return "delete"
+        else:
+            return "update"
+
+    class Meta:
+        ordering = ["event_time"]
