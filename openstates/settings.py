@@ -72,6 +72,8 @@ else:
         RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     if "RECAPTCHA_PRIVATE_KEY" in os.environ:
         RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
+    else:
+        SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgis://openstates:openstates@db:5432/openstatesorg"
