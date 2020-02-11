@@ -252,13 +252,17 @@ HISTORY_TABLES = [
     "opencivicdata_billversionlink",
     "opencivicdata_billdocumentlink",
     "opencivicdata_billactionrelatedentity",
+    "opencivicdata_voteevent",
+    "opencivicdata_votecount",
+    "opencivicdata_personvote",
+    "opencivicdata_votesource",
 ]
 
 HISTORY_GET_OBJECT_ID_SQL = """
 CREATE OR REPLACE FUNCTION get_object_id(table_name name, r RECORD) returns varchar(100) as $$
 BEGIN
   CASE table_name
-  WHEN 'opencivicdata_bill' THEN
+  WHEN 'opencivicdata_bill', 'opencivicdata_voteevent' THEN
     RETURN r.id;
   WHEN 'opencivicdata_billactionrelatedentity' THEN
     RETURN (select a.bill_id from opencivicdata_billaction a WHERE a.id=r.action_id);
@@ -266,6 +270,8 @@ BEGIN
     RETURN (select x.bill_id from opencivicdata_billdocument x WHERE x.id=r.document_id);
   WHEN 'opencivicdata_billversionlink' THEN
     RETURN (select x.bill_id from opencivicdata_billversion x WHERE x.id=r.version_id);
+  WHEN 'opencivicdata_votecount', 'opencivicdata_personvote', 'opencivicdata_votesource' THEN
+    RETURN r.vote_event_id;
   ELSE
     RETURN r.bill_id;
   END CASE;

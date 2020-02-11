@@ -1,7 +1,7 @@
 import pytest
 from django.core.management import call_command
 from opencivicdata.core.models import Jurisdiction, Division, Organization
-from opencivicdata.legislative.models import Bill, LegislativeSession
+from opencivicdata.legislative.models import Bill, LegislativeSession, VoteEvent
 from ..models import Change
 
 
@@ -178,3 +178,32 @@ def test_bill_actionrelatedentity_add(session, org):
     assert history[0].table_name == "opencivicdata_bill"
     assert history[1].table_name == "opencivicdata_billaction"
     assert history[2].table_name == "opencivicdata_billactionrelatedentity"
+
+
+# vote tests similarly do not need to test the actual behavior, just that they work
+
+
+@pytest.mark.django_db
+def test_vote_objects_history(session, org):
+    v = VoteEvent.objects.create(
+        identifier="test vote",
+        start_date="2020-01-01",
+        legislative_session=session,
+        organization=org,
+    )
+    v.counts.create(option="yes", value=1)
+    v.votes.create(option="yes", voter_name="someone")
+    v.sources.create(url="https://example.com")
+    history = Change.objects.order_by("event_time")
+    assert len(history) == 4
+    assert (
+        history[0].object_id
+        == history[1].object_id
+        == history[2].object_id
+        == history[3].object_id
+    )
+    # table names and object_id are recorded correctly
+    assert history[0].table_name == "opencivicdata_voteevent"
+    assert history[1].table_name == "opencivicdata_votecount"
+    assert history[2].table_name == "opencivicdata_personvote"
+    assert history[3].table_name == "opencivicdata_votesource"
