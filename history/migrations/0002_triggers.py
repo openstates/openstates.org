@@ -65,7 +65,7 @@ COMMENT ON OPERATOR - (jsonb, jsonb) IS 'delete matching pairs from left operand
 """
 
 TRIGGER_SQL = """
-CREATE OR REPLACE FUNCTION get_bill_id(table_name name, r RECORD) returns varchar(100) as $$
+CREATE OR REPLACE FUNCTION get_object_id(table_name name, r RECORD) returns varchar(100) as $$
 BEGIN
   CASE table_name
   WHEN 'opencivicdata_bill' THEN
@@ -85,10 +85,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION history_insert()
 RETURNS TRIGGER AS $$
 DECLARE
-  bill_id varchar(100) := get_bill_id(TG_TABLE_NAME, NEW);
+  object_id varchar(100) := get_object_id(TG_TABLE_NAME, NEW);
 BEGIN
-  INSERT INTO history_billhistory(event_time, table_name, bill_id, new)
-     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, row_to_json(NEW)::jsonb);
+  INSERT INTO history_change(event_time, table_name, object_id, new)
+     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, object_id, row_to_json(NEW)::jsonb);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -96,10 +96,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION history_delete()
 RETURNS TRIGGER AS $$
 DECLARE
-  bill_id varchar(100) := get_bill_id(TG_TABLE_NAME, OLD);
+  object_id varchar(100) := get_object_id(TG_TABLE_NAME, OLD);
 BEGIN
-  INSERT INTO history_billhistory(event_time, table_name, bill_id, old)
-     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, row_to_json(OLD)::jsonb);
+  INSERT INTO history_change(event_time, table_name, object_id, old)
+     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, object_id, row_to_json(OLD)::jsonb);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -109,10 +109,10 @@ RETURNS TRIGGER AS $$
 DECLARE
   js_new jsonb := row_to_json(NEW)::jsonb;
   js_old jsonb := row_to_json(OLD)::jsonb;
-  bill_id varchar(100) := get_bill_id(TG_TABLE_NAME, OLD);
+  object_id varchar(100) := get_object_id(TG_TABLE_NAME, OLD);
 BEGIN
-  INSERT INTO history_billhistory(event_time, table_name, bill_id, old, new)
-     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, bill_id, js_old - js_new, js_new - js_old);
+  INSERT INTO history_change(event_time, table_name, object_id, old, new)
+     VALUES(CURRENT_TIMESTAMP, TG_TABLE_NAME, object_id, js_old - js_new, js_new - js_old);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

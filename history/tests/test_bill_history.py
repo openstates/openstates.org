@@ -1,7 +1,7 @@
 import pytest
 from opencivicdata.core.models import Jurisdiction, Division, Organization
 from opencivicdata.legislative.models import Bill, LegislativeSession
-from ..models import BillHistory
+from ..models import Change
 
 
 @pytest.fixture
@@ -25,9 +25,9 @@ def test_bill_insert(session):
     b = Bill.objects.create(
         title="Test bill.", identifier="SB 1", legislative_session=session
     )
-    assert BillHistory.objects.count() == 1
-    bh = BillHistory.objects.get()
-    assert bh.bill_id == b.id
+    assert Change.objects.count() == 1
+    bh = Change.objects.get()
+    assert bh.object_id == b.id
     assert bh.table_name == "opencivicdata_bill"
     assert bh.old is None
     assert bh.new["title"] == "Test bill."
@@ -42,8 +42,8 @@ def test_bill_update(session):
     b.title = "corrected"
     b.save()
 
-    assert BillHistory.objects.count() == 2
-    update = BillHistory.objects.order_by("event_time")[1]
+    assert Change.objects.count() == 2
+    update = Change.objects.order_by("event_time")[1]
     assert set(update.old.keys()) == {"title", "updated_at"}
     assert update.old["title"] == "mistake"
     assert update.new["title"] == "corrected"
@@ -56,8 +56,8 @@ def test_bill_delete(session):
     )
     b.delete()
 
-    assert BillHistory.objects.count() == 2
-    delete = BillHistory.objects.order_by("event_time")[1]
+    assert Change.objects.count() == 2
+    delete = Change.objects.order_by("event_time")[1]
     assert delete.old["identifier"] == "SB 1"
     assert delete.new is None
 
@@ -70,10 +70,10 @@ def test_bill_action_insert(session, org):
     b.actions.create(
         description="introduced", date="2020-01-01", order=1, organization=org
     )
-    assert BillHistory.objects.count() == 2
-    action = BillHistory.objects.order_by("event_time")[1]
+    assert Change.objects.count() == 2
+    action = Change.objects.order_by("event_time")[1]
     assert action.old is None
-    assert action.bill_id == b.id
+    assert action.object_id == b.id
     assert action.new["description"] == "introduced"
     assert action.table_name == "opencivicdata_billaction"
 
@@ -89,11 +89,11 @@ def test_bill_action_update(session, org):
     a.classification = ["introduced"]
     a.save()
 
-    assert BillHistory.objects.count() == 3
-    action = BillHistory.objects.order_by("event_time")[2]
+    assert Change.objects.count() == 3
+    action = Change.objects.order_by("event_time")[2]
     assert action.old == {}
     assert action.new["classification"] == ["introduced"]
-    assert action.bill_id == b.id
+    assert action.object_id == b.id
     assert action.table_name == "opencivicdata_billaction"
 
 
@@ -107,16 +107,16 @@ def test_bill_action_delete(session, org):
     )
     a.delete()
 
-    assert BillHistory.objects.count() == 3
-    action = BillHistory.objects.order_by("event_time")[2]
+    assert Change.objects.count() == 3
+    action = Change.objects.order_by("event_time")[2]
     assert action.old["description"] == "introduced"
     assert action.new is None
-    assert action.bill_id == b.id
+    assert action.object_id == b.id
     assert action.table_name == "opencivicdata_billaction"
 
 
 # NOTE:
-# these next tests are for objects that don't have a direct bill_id, and are special cased
+# these next tests are for objects that don't have a direct object_id, and are special cased
 # in the pl/pgsql code, we don't need to check *all* the functionality, but lets make sure
 # they link to the right bill id
 
@@ -129,10 +129,10 @@ def test_bill_versionlink_add(session, org):
     v = b.versions.create(note="first printing", date="2020-01-01")
     v.links.create(url="https://example.com")
 
-    history = BillHistory.objects.order_by("event_time")
+    history = Change.objects.order_by("event_time")
     assert len(history) == 3
-    # table names and bill_id are recorded correctly
-    assert history[0].bill_id == history[1].bill_id == history[2].bill_id
+    # table names and object_id are recorded correctly
+    assert history[0].object_id == history[1].object_id == history[2].object_id
     assert history[0].table_name == "opencivicdata_bill"
     assert history[1].table_name == "opencivicdata_billversion"
     assert history[2].table_name == "opencivicdata_billversionlink"
@@ -146,10 +146,10 @@ def test_bill_documentlink_add(session, org):
     v = b.documents.create(note="fiscal note", date="2020-01-01")
     v.links.create(url="https://example.com")
 
-    history = BillHistory.objects.order_by("event_time")
+    history = Change.objects.order_by("event_time")
     assert len(history) == 3
-    # table names and bill_id are recorded correctly
-    assert history[0].bill_id == history[1].bill_id == history[2].bill_id
+    # table names and object_id are recorded correctly
+    assert history[0].object_id == history[1].object_id == history[2].object_id
     assert history[0].table_name == "opencivicdata_bill"
     assert history[1].table_name == "opencivicdata_billdocument"
     assert history[2].table_name == "opencivicdata_billdocumentlink"
@@ -165,10 +165,10 @@ def test_bill_actionrelatedentity_add(session, org):
     )
     a.related_entities.create(name="someone", entity_type="person")
 
-    history = BillHistory.objects.order_by("event_time")
+    history = Change.objects.order_by("event_time")
     assert len(history) == 3
-    assert history[0].bill_id == history[1].bill_id == history[2].bill_id
-    # table names and bill_id are recorded correctly
+    assert history[0].object_id == history[1].object_id == history[2].object_id
+    # table names and object_id are recorded correctly
     assert history[0].table_name == "opencivicdata_bill"
     assert history[1].table_name == "opencivicdata_billaction"
     assert history[2].table_name == "opencivicdata_billactionrelatedentity"

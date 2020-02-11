@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="BillHistory",
+            name="Change",
             fields=[
                 (
                     "id",
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ),
                 ("event_time", models.DateTimeField(editable=False)),
                 ("table_name", models.CharField(max_length=100)),
-                ("bill_id", models.CharField(max_length=45)),
+                ("object_id", models.CharField(max_length=45)),
                 ("old", django.contrib.postgres.fields.jsonb.JSONField(null=True)),
                 ("new", django.contrib.postgres.fields.jsonb.JSONField(null=True)),
             ],
