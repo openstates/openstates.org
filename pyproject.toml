@@ -27,6 +27,7 @@ pupa = "^0.9.1"
 dj-database-url = "^0.5.0"
 represent-boundaries = "^0.9.4"
 django-allauth = "^0.41.0"
+django-recaptcha = "^2.0.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"
