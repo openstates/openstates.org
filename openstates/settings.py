@@ -46,6 +46,9 @@ if os.environ.get("DEBUG", "true").lower() == "false":
         DEFAULT_FROM_EMAIL
     ) = SERVER_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "contact@openstates.org")
     GRAPHQL_DEMO_KEY = os.environ["GRAPHQL_DEMO_KEY"]
+    RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
+    RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
+    RECAPTCHA_USE_SSL = True
     # enable once SSL is ready
     # SECURE_HSTS_SECONDS = 3600
     # SECURE_SSL_REDIRECT = True
@@ -65,6 +68,10 @@ else:
         "django.template.loaders.app_directories.Loader",
     ]
     GRAPHQL_DEMO_KEY = "graphiql-demo-key"
+    if "RECAPTCHA_PUBLIC_KEY" in os.environ:
+        RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
+    if "RECAPTCHA_PRIVATE_KEY" in os.environ:
+        RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgis://openstates:openstates@db:5432/openstatesorg"
@@ -89,6 +96,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "raven.contrib.django.raven_compat",
     "webpack_loader",
+    "captcha",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -217,6 +225,7 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_SIGNUP_FORM_CLASS = "profiles.forms.AllauthSignupForm"
 
 # Boundaries
 BOUNDARIES_SHAPEFILES_DIR = "shapefiles"

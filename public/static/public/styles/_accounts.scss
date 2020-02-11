@@ -3,6 +3,9 @@
   justify-items: center;
   align-items: center;
 }
+label[for="id_captcha"] {
+  display: none;
+}
 
 .socialaccount_providers {
   display: grid;

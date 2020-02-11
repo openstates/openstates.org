@@ -31,6 +31,8 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL
+      - RECAPTCHA_PUBLIC_KEY
+      - RECAPTCHA_PRIVATE_KEY
     depends_on:
       - db
     networks:
