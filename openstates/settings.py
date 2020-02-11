@@ -237,3 +237,38 @@ SIMPLEKEYS_ERROR_NOTE = (
     "Login and visit https://openstates.org/account/profile/ for your API key. "
     "contact@openstates.org to raise limits"
 )
+
+HISTORY_TABLES = [
+    "opencivicdata_bill",
+    "opencivicdata_billabstract",
+    "opencivicdata_billtitle",
+    "opencivicdata_billidentifier",
+    "opencivicdata_billaction",
+    "opencivicdata_relatedbill",
+    "opencivicdata_billsponsorship",
+    "opencivicdata_billdocument",
+    "opencivicdata_billversion",
+    "opencivicdata_billsource",
+    "opencivicdata_billversionlink",
+    "opencivicdata_billdocumentlink",
+    "opencivicdata_billactionrelatedentity",
+]
+
+HISTORY_GET_OBJECT_ID_SQL = """
+CREATE OR REPLACE FUNCTION get_object_id(table_name name, r RECORD) returns varchar(100) as $$
+BEGIN
+  CASE table_name
+  WHEN 'opencivicdata_bill' THEN
+    RETURN r.id;
+  WHEN 'opencivicdata_billactionrelatedentity' THEN
+    RETURN (select a.bill_id from opencivicdata_billaction a WHERE a.id=r.action_id);
+  WHEN 'opencivicdata_billdocumentlink' THEN
+    RETURN (select x.bill_id from opencivicdata_billdocument x WHERE x.id=r.document_id);
+  WHEN 'opencivicdata_billversionlink' THEN
+    RETURN (select x.bill_id from opencivicdata_billversion x WHERE x.id=r.version_id);
+  ELSE
+    RETURN r.bill_id;
+  END CASE;
+END
+$$ LANGUAGE plpgsql;
+"""

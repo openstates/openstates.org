@@ -1,7 +1,13 @@
 import pytest
+from django.core.management import call_command
 from opencivicdata.core.models import Jurisdiction, Division, Organization
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from ..models import Change
+
+
+@pytest.mark.django_db
+def setup():
+    call_command("history_install")
 
 
 @pytest.fixture
