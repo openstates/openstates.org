@@ -151,7 +151,7 @@ def upload_and_publish(state, session, filename):
     )
     print("uploaded", s3_url)
     obj, created = DataExport.objects.update_or_create(
-        session=sobj, defaults=dict(url=s3_url)
+        session=sobj, defaults=dict(url=s3_url), data_type="csv",
     )
 
 
