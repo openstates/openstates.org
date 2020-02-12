@@ -1,6 +1,7 @@
-from collections import Counter
+import pytz
 import datetime
 import feedparser
+from collections import Counter
 from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Sum
@@ -30,7 +31,11 @@ def _get_latest_updates():
 def _get_random_bills():
     bills = (
         Bill.objects.all()
-        .filter(updated_at__gte=datetime.datetime.now() - datetime.timedelta(days=3))
+        .filter(
+            updated_at__gte=pytz.utc.localize(
+                datetime.datetime.utcnow() - datetime.timedelta(days=3)
+            )
+        )
         .select_related(
             "legislative_session", "legislative_session__jurisdiction", "billstatus"
         )
