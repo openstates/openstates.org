@@ -5,9 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("bulk", "0002_dataexport_updated_at"),
-    ]
+    dependencies = [("bulk", "0002_dataexport_updated_at")]
 
     operations = [
         migrations.AddField(
@@ -16,5 +14,5 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 choices=[("csv", "csv"), ("json", "json")], default="csv", max_length=4
             ),
-        ),
+        )
     ]

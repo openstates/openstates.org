@@ -1,4 +1,5 @@
 import csv
+import json
 import datetime
 import tempfile
 import zipfile
@@ -44,7 +45,20 @@ def export_csv(filename, data, zf):
     return num
 
 
-def export_session(state, session):
+def export_json(filename, data, zf):
+    num = len(data)
+    if not num:
+        return
+
+    with tempfile.NamedTemporaryFile("w") as f:
+        print("writing", filename, num, "records")
+        json.dump(data, f)
+        f.flush()
+        zf.write(f.name, filename)
+    return num
+
+
+def export_session_csv(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
@@ -62,7 +76,7 @@ def export_session(state, session):
     if not bills.count():
         print(f"no bills for {state} {session}")
         return
-    filename = f"{state}_{session}.zip"
+    filename = f"{state}_{session}_csv.zip"
     zf = zipfile.ZipFile(filename, "w")
     ts = datetime.datetime.utcnow()
     zf.writestr(
@@ -133,25 +147,57 @@ CSV Format Version: 2.0
     return filename
 
 
-def upload_and_publish(state, session, filename):
+def export_session_json(state, session):
+    sobj = LegislativeSession.objects.get(
+        jurisdiction_id=abbr_to_jid(state), identifier=session
+    )
+    bills = list(
+        Bill.objects.filter(legislative_session=sobj).values(
+            "id",
+            "identifier",
+            "title",
+            "classification",
+            "subject",
+            session_identifier=F("legislative_session__identifier"),
+            jurisdiction=F("legislative_session__jurisdiction__name"),
+            organization_classification=F("from_organization__classification"),
+            raw_text=F("searchable__raw_text"),
+            raw_text_url=F("searchable__version_link__url"),
+        )
+    )
+    filename = f"{state}_{session}_json.zip"
+    zf = zipfile.ZipFile(filename, "w")
+    ts = datetime.datetime.utcnow()
+    zf.writestr(
+        "README",
+        f"""Open States Data Export
+
+State: {state}
+Session: {session}
+Generated At: {ts}
+JSON Format Version: 0.1
+""",
+    )
+
+    export_json(f"{state}/{session}/{state}_{session}_bills.json", bills, zf)
+
+
+def upload_and_publish(state, session, filename, data_type):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
     s3 = boto3.client("s3")
 
     BULK_S3_BUCKET = "data.openstates.org"
-    BULK_S3_PATH = "csv/latest/"
-    s3_url = f"https://{BULK_S3_BUCKET}/{BULK_S3_PATH}{filename}"
+    s3_path = f"{data_type}/latest/"
+    s3_url = f"https://{BULK_S3_BUCKET}/{s3_path}{filename}"
 
     s3.upload_file(
-        filename,
-        BULK_S3_BUCKET,
-        BULK_S3_PATH + filename,
-        ExtraArgs={"ACL": "public-read"},
+        filename, BULK_S3_BUCKET, s3_path + filename, ExtraArgs={"ACL": "public-read"}
     )
     print("uploaded", s3_url)
     obj, created = DataExport.objects.update_or_create(
-        session=sobj, defaults=dict(url=s3_url), data_type="csv",
+        session=sobj, defaults=dict(url=s3_url), data_type="csv"
     )
 
 
@@ -162,8 +208,12 @@ class Command(BaseCommand):
         parser.add_argument("state")
         parser.add_argument("sessions", nargs="*")
         parser.add_argument("--all", action="store_true")
+        parser.add_argument("--format")
 
     def handle(self, *args, **options):
+        data_type = options["format"]
+        if data_type not in ("csv", "json"):
+            raise ValueError("--format must be csv or json")
         state = options["state"]
         sessions = [
             s.identifier
@@ -180,6 +230,9 @@ class Command(BaseCommand):
         else:
             for session in options["sessions"]:
                 if session in sessions:
-                    filename = export_session(state, session)
+                    if data_type == "csv":
+                        filename = export_session_csv(state, session)
+                    else:
+                        filename = export_session_json(state, session)
                     if filename:
-                        upload_and_publish(state, session, filename)
+                        upload_and_publish(state, session, filename, data_type)
