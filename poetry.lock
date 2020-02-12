@@ -475,7 +475,7 @@ description = "Library for manipulating and comparing (English) names"
 name = "name-tools"
 optional = false
 python-versions = "*"
-version = "0.1.6"
+version = "0.1.7"
 
 [[package]]
 category = "main"
@@ -1148,7 +1148,7 @@ more-itertools = [
     {file = "more_itertools-8.2.0-py3-none-any.whl", hash = "sha256:5dd8bcf33e5f9513ffa06d5ad33d78f31e1931ac9a18f33d37e77a180d393a7c"},
 ]
 name-tools = [
-    {file = "name_tools-0.1.6.tar.gz", hash = "sha256:29d87c04db1faf830977c347eb13b2e2e3e812647ab41cbf6a3d03a40acfcb9f"},
+    {file = "name_tools-0.1.7.tar.gz", hash = "sha256:4c0efd8ad9d269a266f374f20414ff8461c9b0da902d27dacf0a118573257515"},
 ]
 newrelic = [
     {file = "newrelic-4.20.1.121.tar.gz", hash = "sha256:708ac6a75c76a59e3d6c0d714e2fbb1e4ec7d540f7d34bddd81e61bdb636e895"},
