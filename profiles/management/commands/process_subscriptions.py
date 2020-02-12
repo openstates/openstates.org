@@ -14,7 +14,7 @@ class SkipCheck(Exception):
 
 
 def process_query_sub(sub, since):
-    """ given a query subscription, return a list of bills updated since then """
+    """ given a query subscription, return a list of bills created since then """
     bills = list(
         search_bills(
             query=sub.query,
@@ -25,7 +25,7 @@ def process_query_sub(sub, since):
             classification=sub.classification,
             status=sub.status,
         )
-        .filter(updated_at__gte=since)
+        .filter(created_at__gte=since)
         .order_by("-updated_at")
     )
     return bills
