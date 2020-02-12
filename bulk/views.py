@@ -8,7 +8,7 @@ def overview(request):
 
 def bulk_csv_list(request):
     exports = (
-        DataExport.objects.all()
+        DataExport.objects.filter(data_type="csv")
         .select_related("session", "session__jurisdiction")
         .order_by("session__jurisdiction__name", "session__name")
     )
