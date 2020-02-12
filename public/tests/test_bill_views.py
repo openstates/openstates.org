@@ -132,6 +132,7 @@ def test_bill_view(client, django_assert_num_queries):
     assert resp.context["bill"].identifier == "HB 1"
     assert len(resp.context["sponsorships"]) == 2
     assert len(resp.context["actions"]) == 3
+    assert resp.context["actions"][0].date > resp.context["actions"][2].date
     assert len(resp.context["votes"]) == 1
     assert len(resp.context["versions"]) == 2
     assert len(resp.context["documents"]) == 2
