@@ -9,7 +9,7 @@ def setup():
     populate_db()
 
 
-BILLS_QUERY_COUNT = 9
+BILLS_QUERY_COUNT = 7
 ALASKA_BILLS = 12
 
 
