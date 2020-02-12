@@ -59,5 +59,5 @@ def sessions_with_bills(jid):
         LegislativeSession.objects.filter(jurisdiction_id=jid)
         .annotate(bill_count=Count("bills"))
         .filter(bill_count__gt=0)
-        .order_by("-end_date", "-identifier")
+        .order_by("-start_date", "-identifier")
     )
