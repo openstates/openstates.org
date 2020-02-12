@@ -189,8 +189,15 @@ def bill_subscription(request):
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_overview(request):
+    users = User.objects.count()
     bill_subscriptions = Subscription.objects.filter(bill_id__isnull=False).count()
     query_subscriptions = Subscription.objects.exclude(query="").count()
+    users_by_day = list(
+        User.objects.extra(select={"day": "date(date_joined)"})
+        .values("day")
+        .annotate(Count("id"))
+        .order_by("day")
+    )
     subs_by_user = list(
         User.objects.annotate(count=Count("subscriptions"))
         .values(
@@ -203,13 +210,21 @@ def admin_overview(request):
         )
         .filter(count__gt=0)
     )
-    notifications = list(Notification.objects.all().values())
-
-    return JsonResponse(
-        {
-            "bill_subscriptions": bill_subscriptions,
-            "query_subscriptions": query_subscriptions,
-            "users": subs_by_user,
-            "notifications": notifications,
-        }
+    notifications_by_day = list(
+        Notification.objects.extra(select={"day": "date(sent)"})
+        .values("day")
+        .annotate(Count("id"))
+        .order_by("day")
     )
+    notifications = list(Notification.objects.all().order_by("-sent")[:50].values())
+
+    context = {
+        "users": users,
+        "bill_subscriptions": bill_subscriptions,
+        "query_subscriptions": query_subscriptions,
+        "users_by_day": users_by_day,
+        "subs_by_user": subs_by_user,
+        "notifications_by_day": notifications_by_day,
+        "recent_notifications": notifications,
+    }
+    return render(request, "account/overview.html", {"context": context})

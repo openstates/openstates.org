@@ -16,5 +16,6 @@ urlpatterns = [
     path("add_sponsor_sub/", add_sponsor_subscription),
     path("add_search_sub/", add_search_subscription),
     path("deactivate_sub/", deactivate_subscription),
+    # admin stuff
     path("overview/", admin_overview),
 ]
