@@ -123,11 +123,11 @@
 </section>
 
 <section>
-    <h2 class="heading--medium">Recent Votes</h2>
+    <h2 class="heading--medium">Votes</h2>
     <hr>
     <div class="timeline">
     {% regroup votes by start_date as votes_by_date %}
-    {% for start_date in votes_by_date reversed %}
+    {% for start_date in votes_by_date %}
         <div class="timeline-item">
             <div class="timeline-date">
                 <h3 class="heading--xsmall">{{ start_date.grouper|fdate:"%b %d, %Y" }}</h3>
@@ -151,7 +151,7 @@
     <hr>
     <div class="timeline">
         {% regroup actions by date as actions_by_date %}
-        {% for date in actions_by_date reversed %}
+        {% for date in actions_by_date %}
             <div class="timeline-item">
                 <div class="timeline-date">
                     <h3 class="heading--xsmall">{{ date.grouper|fdate:"%b %d, %Y" }}</h3>
