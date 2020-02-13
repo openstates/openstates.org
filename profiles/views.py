@@ -5,8 +5,9 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.db.models import Count
+from django.db.models import Count, F
 from simplekeys.models import Key
+from allauth.socialaccount.models import SocialAccount
 from .models import Subscription, Profile, Notification, WEEKLY
 
 
@@ -189,7 +190,6 @@ def bill_subscription(request):
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_overview(request):
-    users = User.objects.count()
     bill_subscriptions = Subscription.objects.filter(bill_id__isnull=False).count()
     query_subscriptions = Subscription.objects.exclude(query="").count()
     users_by_day = list(
@@ -198,33 +198,56 @@ def admin_overview(request):
         .annotate(Count("id"))
         .order_by("day")
     )
-    subs_by_user = list(
-        User.objects.annotate(count=Count("subscriptions"))
+
+    # get counts by each provider (ignore small % with multiple providers)
+    providers = list(
+        SocialAccount.objects.values(name=F("provider")).annotate(value=Count("id"))
+    )
+    # append the number of users that only have an OS-account
+    providers.append(
+        {
+            "name": "openstates",
+            "value": User.objects.exclude(
+                id__in=SocialAccount.objects.values("user_id")
+            ).count(),
+        }
+    )
+
+    active_users = list(
+        User.objects.annotate(sub_count=Count("subscriptions"))
         .values(
             "id",
-            "email",
             "profile__subscription_emails_html",
             "profile__subscription_frequency",
-            "profile__subscription_last_checked",
-            "count",
+            "sub_count",
         )
-        .filter(count__gt=0)
+        .filter(sub_count__gt=0)
     )
+
+    # show what users prefer
+    frequencies = {"w": 0, "d": 0}
+    for user in active_users:
+        frequencies[user["profile__subscription_frequency"]] += 1
+    frequencies = [
+        {"name": "weekly", "value": frequencies["w"]},
+        {"name": "daily", "value": frequencies["d"]},
+    ]
+
     notifications_by_day = list(
         Notification.objects.extra(select={"day": "date(sent)"})
         .values("day")
         .annotate(Count("id"))
         .order_by("day")
     )
-    notifications = list(Notification.objects.all().order_by("-sent")[:50].values())
 
     context = {
-        "users": users,
+        "user_count": User.objects.count(),
+        "subscriber_count": len(active_users),
         "bill_subscriptions": bill_subscriptions,
         "query_subscriptions": query_subscriptions,
         "users_by_day": users_by_day,
-        "subs_by_user": subs_by_user,
+        "providers": providers,
         "notifications_by_day": notifications_by_day,
-        "recent_notifications": notifications,
+        "email_frequencies": frequencies,
     }
     return render(request, "account/overview.html", {"context": context})

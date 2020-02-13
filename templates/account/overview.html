@@ -1,7 +1,18 @@
-{% extends "base.html" %}
+{% extends "public/components/base.html" %}
+{% load render_bundle from webpack_loader %}
 
-{% block body %}
+{% block scripts %}
+    {% render_bundle 'account_overview' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'account_overview' 'css' %}
+{% endblock %}
+
+{% block content %}
 
 {{ context|json_script:"context" }}
+
+<div data-hook="account-overview">
+</div>
 
 {% endblock %}
