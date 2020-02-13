@@ -5,9 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("profiles", "0008_notification"),
-    ]
+    dependencies = [("profiles", "0008_notification")]
 
     operations = [
         migrations.AlterField(
