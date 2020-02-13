@@ -124,7 +124,7 @@ def test_bill_action_delete(session, org):
 # NOTE:
 # these next tests are for objects that don't have a direct object_id, and are special cased
 # in the pl/pgsql code, we don't need to check *all* the functionality, but lets make sure
-# they link to the right bill id
+# they link to the right parent id
 
 
 @pytest.mark.django_db
@@ -138,9 +138,8 @@ def test_bill_versionlink_add(session, org):
     history = Change.objects.order_by("event_time")
     assert len(history) == 3
     # table names and object_id are recorded correctly
-    assert history[0].object_id == history[1].object_id == history[2].object_id
-    assert history[0].table_name == "opencivicdata_bill"
-    assert history[1].table_name == "opencivicdata_billversion"
+    assert history[0].object_id == history[1].object_id
+    assert history[2].object_id == str(v.id)
     assert history[2].table_name == "opencivicdata_billversionlink"
 
 
@@ -155,9 +154,8 @@ def test_bill_documentlink_add(session, org):
     history = Change.objects.order_by("event_time")
     assert len(history) == 3
     # table names and object_id are recorded correctly
-    assert history[0].object_id == history[1].object_id == history[2].object_id
-    assert history[0].table_name == "opencivicdata_bill"
-    assert history[1].table_name == "opencivicdata_billdocument"
+    assert history[0].object_id == history[1].object_id
+    assert history[2].object_id == str(v.id)
     assert history[2].table_name == "opencivicdata_billdocumentlink"
 
 
@@ -173,10 +171,9 @@ def test_bill_actionrelatedentity_add(session, org):
 
     history = Change.objects.order_by("event_time")
     assert len(history) == 3
-    assert history[0].object_id == history[1].object_id == history[2].object_id
     # table names and object_id are recorded correctly
-    assert history[0].table_name == "opencivicdata_bill"
-    assert history[1].table_name == "opencivicdata_billaction"
+    assert history[0].object_id == history[1].object_id
+    assert history[2].object_id == str(a.id)
     assert history[2].table_name == "opencivicdata_billactionrelatedentity"
 
 

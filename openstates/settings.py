@@ -265,11 +265,11 @@ BEGIN
   WHEN 'opencivicdata_bill', 'opencivicdata_voteevent' THEN
     RETURN r.id;
   WHEN 'opencivicdata_billactionrelatedentity' THEN
-    RETURN (select a.bill_id from opencivicdata_billaction a WHERE a.id=r.action_id);
+    RETURN r.action_id;
   WHEN 'opencivicdata_billdocumentlink' THEN
-    RETURN (select x.bill_id from opencivicdata_billdocument x WHERE x.id=r.document_id);
+    RETURN r.document_id;
   WHEN 'opencivicdata_billversionlink' THEN
-    RETURN (select x.bill_id from opencivicdata_billversion x WHERE x.id=r.version_id);
+    RETURN r.version_id;
   WHEN 'opencivicdata_votecount', 'opencivicdata_personvote', 'opencivicdata_votesource' THEN
     RETURN r.vote_event_id;
   ELSE
