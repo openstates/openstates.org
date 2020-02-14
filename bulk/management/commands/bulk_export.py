@@ -58,6 +58,47 @@ def export_json(filename, data, zf):
     return num
 
 
+def _docver_to_json(dv):
+    return {
+        "note": dv.note,
+        "date": dv.date,
+        "links": list(dv.links.values("url", "media_type")),
+    }
+
+
+def _bill_to_json(b):
+    return {
+        "id": b.id,
+        "legislative_session": b.legislative_session.identifier,
+        "jurisdiction_name": b.legislative_session.jurisdiction.name,
+        "identifier": b.identifier,
+        "title": b.title,
+        "chamber": b.from_organization.classification,
+        "classification": b.classification,
+        "subject": b.subject,
+        "abstracts": list(b.abstracts.values("abstract", "note", "date")),
+        "other_titles": list(b.other_titles.values("title", "note")),
+        "other_identifiers": list(
+            b.other_identifiers.values("note", "identifier", "scheme")
+        ),
+        "actions": list(
+            b.actions.values(
+                "organization__name", "description", "date", "classification", "order"
+            )
+        ),
+        # TODO: action related entities
+        "related_bills": list(b.related_bills.values("related_bill_id")),
+        "sponsors": list(b.sponsorships.values("name", "primary", "classification")),
+        "documents": [_docver_to_json(d) for d in b.documents.all()],
+        "versions": [_docver_to_json(d) for d in b.versions.all()],
+        "sources": list(b.sources.values("url")),
+        "raw_text": b.searchable.raw_text,
+        "raw_text_url": b.searchable.version_link.url
+        if b.searchable.version_link
+        else None,
+    }
+
+
 def export_session_csv(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
@@ -151,20 +192,29 @@ def export_session_json(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
-    bills = list(
-        Bill.objects.filter(legislative_session=sobj).values(
-            "id",
-            "identifier",
-            "title",
-            "classification",
-            "subject",
-            session_identifier=F("legislative_session__identifier"),
-            jurisdiction=F("legislative_session__jurisdiction__name"),
-            organization_classification=F("from_organization__classification"),
-            raw_text=F("searchable__raw_text"),
-            raw_text_url=F("searchable__version_link__url"),
+    bills = [
+        _bill_to_json(b)
+        for b in Bill.objects.filter(legislative_session=sobj)
+        .select_related(
+            "legislative_session",
+            "legislative_session__jurisdiction",
+            "from_organization",
+            "searchable",
         )
-    )
+        .prefetch_related(
+            "abstracts",
+            "other_titles",
+            "other_identifiers",
+            "actions",
+            "related_bills",
+            "sponsorships",
+            "documents",
+            "documents__links",
+            "versions",
+            "versions__links",
+            "sources",
+        )
+    ]
     filename = f"{state}_{session}_json.zip"
     zf = zipfile.ZipFile(filename, "w")
     ts = datetime.datetime.utcnow()
@@ -175,7 +225,7 @@ def export_session_json(state, session):
 State: {state}
 Session: {session}
 Generated At: {ts}
-JSON Format Version: 0.1
+JSON Format Version: 0.2
 """,
     )
 
