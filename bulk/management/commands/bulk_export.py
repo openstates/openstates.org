@@ -80,7 +80,7 @@ def _vote_to_json(v):
 
 
 def _bill_to_json(b):
-    return {
+    d = {
         "id": b.id,
         "legislative_session": b.legislative_session.identifier,
         "jurisdiction_name": b.legislative_session.jurisdiction.name,
@@ -107,12 +107,13 @@ def _bill_to_json(b):
         "sources": list(b.sources.values("url")),
         # votes
         "votes": [_vote_to_json(v) for v in b.votes.all()],
-        # raw text
-        "raw_text": b.searchable.raw_text if b.searchable else None,
-        "raw_text_url": b.searchable.version_link.url
-        if b.searchable.version_link
-        else None,
     }
+    try:
+        d["raw_text"] = b.searchable.raw_text
+        d["raw_text_url"] = b.searchable.version_link.url
+    except Exception:
+        pass
+    return d
 
 
 def export_session_csv(state, session):
