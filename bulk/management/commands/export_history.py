@@ -135,7 +135,8 @@ def make_change_object(changes):
         "item_id": item_id,
         "item_properties": get_item_properties(item_id),
         "action": change_type,
-        "changes": {"old": old_obj, "new": new_obj},
+        "old": old_obj,
+        "new": new_obj,
     }
 
 
