@@ -118,6 +118,7 @@ INSTALLED_APPS = [
     "bulk",
     "profiles.apps.ProfilesConfig",
     "simplekeys",
+    "history",
 ]
 
 MIDDLEWARE = [
@@ -247,3 +248,44 @@ SIMPLEKEYS_ERROR_NOTE = (
     "Login and visit https://openstates.org/account/profile/ for your API key. "
     "contact@openstates.org to raise limits"
 )
+
+HISTORY_TABLES = [
+    "opencivicdata_bill",
+    "opencivicdata_billabstract",
+    "opencivicdata_billtitle",
+    "opencivicdata_billidentifier",
+    "opencivicdata_billaction",
+    "opencivicdata_relatedbill",
+    "opencivicdata_billsponsorship",
+    "opencivicdata_billdocument",
+    "opencivicdata_billversion",
+    "opencivicdata_billsource",
+    "opencivicdata_billversionlink",
+    "opencivicdata_billdocumentlink",
+    "opencivicdata_billactionrelatedentity",
+    "opencivicdata_voteevent",
+    "opencivicdata_votecount",
+    "opencivicdata_personvote",
+    "opencivicdata_votesource",
+]
+
+HISTORY_GET_OBJECT_ID_SQL = """
+CREATE OR REPLACE FUNCTION get_object_id(table_name name, r RECORD) returns varchar(100) as $$
+BEGIN
+  CASE table_name
+  WHEN 'opencivicdata_bill', 'opencivicdata_voteevent' THEN
+    RETURN r.id;
+  WHEN 'opencivicdata_billactionrelatedentity' THEN
+    RETURN r.action_id;
+  WHEN 'opencivicdata_billdocumentlink' THEN
+    RETURN r.document_id;
+  WHEN 'opencivicdata_billversionlink' THEN
+    RETURN r.version_id;
+  WHEN 'opencivicdata_votecount', 'opencivicdata_personvote', 'opencivicdata_votesource' THEN
+    RETURN r.vote_event_id;
+  ELSE
+    RETURN r.bill_id;
+  END CASE;
+END
+$$ LANGUAGE plpgsql;
+"""
