@@ -66,6 +66,19 @@ def _docver_to_json(dv):
     }
 
 
+def _vote_to_json(v):
+    return {
+        "identifier": v.identifier,
+        "motion_text": v.motion_text,
+        "motion_classification": v.motion_classification,
+        "start_date": v.start_date,
+        "result": v.result,
+        "organization__classification": v.organization.classification,
+        "counts": list(v.counts.values("option", "value")),
+        "votes": list(v.votes.values("option", "voter_name")),
+    }
+
+
 def _bill_to_json(b):
     return {
         "id": b.id,
@@ -92,7 +105,10 @@ def _bill_to_json(b):
         "documents": [_docver_to_json(d) for d in b.documents.all()],
         "versions": [_docver_to_json(d) for d in b.versions.all()],
         "sources": list(b.sources.values("url")),
-        "raw_text": b.searchable.raw_text,
+        # votes
+        "votes": [_vote_to_json(v) for v in b.votes.all()],
+        # raw text
+        "raw_text": b.searchable.raw_text if b.searchable else None,
         "raw_text_url": b.searchable.version_link.url
         if b.searchable.version_link
         else None,
@@ -213,6 +229,9 @@ def export_session_json(state, session):
             "versions",
             "versions__links",
             "sources",
+            "votes",
+            "votes__counts",
+            "votes__votes",
         )
     ]
     filename = f"{state}_{session}_json.zip"
