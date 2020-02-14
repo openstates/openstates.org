@@ -1,7 +1,8 @@
+import json
 from functools import lru_cache
 from collections import defaultdict
 from django.core.management.base import BaseCommand
-from opencivicdata.legislative.models import Bill
+from opencivicdata.legislative.models import Bill, VoteEvent, LegislativeSession
 from history.models import Change
 
 
@@ -13,20 +14,24 @@ def format_time(
     event_time__minute=None,
 ):
     timestr = f"{event_time__year}-{event_time__month:02d}-{event_time__day:02d}"
-    if event_time__hour:
+    if event_time__hour is not None:
         timestr += f"T{event_time__hour:02d}"
-    if event_time__minute:
+    if event_time__minute is not None:
         timestr += f":{event_time__minute:02d}"
     return timestr
 
 
 @lru_cache()
-def get_item_properties(bill_id):
+def get_item_properties(obj_id=None, session_id=None):
+    if session_id:
+        session = LegislativeSession.objects.get(pk=session_id)
+    elif obj_id.startswith("ocd-bill"):
+        session = Bill.objects.get(pk=obj_id).legislative_session
+    elif obj_id.startswith("ocd-vote"):
+        session = VoteEvent.objects.get(pk=obj_id).legislative_session
     return {
-        "jurisdiction_id": Bill.objects.get(
-            pk=bill_id
-        ).legislative_session.jurisdiction_id,
-        "session_id": Bill.objects.get(pk=bill_id).legislative_session.identifier,
+        "jurisdiction_id": session.jurisdiction_id,
+        "session_id": session.identifier,
     }
 
 
@@ -67,6 +72,9 @@ MAPPING = {
     "opencivicdata_billsponsorship": "sponsors",
     "opencivicdata_billsource": "sources",
     "opencivicdata_billabstract": "abstracts",
+    "opencivicdata_personvote": "votes",
+    "opencivicdata_votecount": "counts",
+    "opencivicdata_votesource": "sources",
 }
 
 
@@ -80,7 +88,8 @@ def update_old(old, change):
 def clean_subobj(subobj):
     """ we don't want to show these since we're just nesting the objects """
     subobj.pop("id")
-    subobj.pop("bill_id")
+    subobj.pop("bill_id", None)
+    subobj.pop("vote_id", None)
     return subobj
 
 
@@ -92,6 +101,7 @@ def make_change_object(changes):
     """
     # start with the the parent object id
     item_id = changes[0].object_id
+    item_type = "bill" if item_id.startswith("ocd-bill") else "vote"
     # unless we see a top-level create or delete, this is an update
     change_type = "update"
     old_obj = {}
@@ -100,7 +110,7 @@ def make_change_object(changes):
     for change in changes:
         if (
             change.table_name == "opencivicdata_bill"
-            or change.table_name == "opencivicdata_vote"
+            or change.table_name == "opencivicdata_voteevent"
         ):
             if change.change_type == "update":
                 update_old(old_obj, change.old)
@@ -119,6 +129,7 @@ def make_change_object(changes):
 
             if field_name not in new_obj:
                 new_obj[field_name] = []
+            if field_name not in old_obj:
                 old_obj[field_name] = []
 
             # subfields are either deleted or created, updates don't currently happen via pupa
@@ -130,13 +141,19 @@ def make_change_object(changes):
                 print(change.object_id, change.change_type, field_name, change.new)
                 raise ValueError("update unexpected")
 
+    if change_type != "delete":
+        item_properties = get_item_properties(item_id)
+    else:
+        item_properties = get_item_properties(
+            session_id=old_obj["legislative_session_id"]
+        )
     return {
-        "item_type": "bill",
+        "item_type": item_type,
         "item_id": item_id,
-        "item_properties": get_item_properties(item_id),
+        "item_properties": item_properties,
         "action": change_type,
-        "old": old_obj,
-        "new": new_obj,
+        "old": old_obj if change_type != "create" else None,
+        "new": new_obj if change_type != "delete" else None,
     }
 
 
@@ -150,13 +167,27 @@ def handle_epoch(**kwargs):
     changes = accumulate_changes(changes)
     print(f"{len(changes['bill'])} bills, {len(changes['vote'])} votes")
 
-    # TODO: handle votes
     # TODO: handle subobjects
-    for bill_id, changes in changes["bill"].items():
-        change_obj = make_change_object(changes)
-        from pprint import pprint
+    for bill_id, obj_changes in changes["bill"].items():
+        change_obj = make_change_object(obj_changes)
+        yield change_obj
+    for vote_id, obj_changes in changes["vote"].items():
+        change_obj = make_change_object(obj_changes)
+        yield change_obj
 
-        pprint(change_obj)
+
+def output_json(epoch, data):
+    output = {
+        "version": "0.1",
+        "source": "https://openstates.org",
+        "epoch": epoch,
+        "changes": [],
+    }
+    for item in data:
+        output["changes"].append(item)
+
+    with open(f"changelog_{epoch}.json", "w") as f:
+        json.dump(output, f, indent=1)
 
 
 class Command(BaseCommand):
@@ -168,6 +199,6 @@ class Command(BaseCommand):
             "event_time__month",
             "event_time__day",
             "event_time__hour",
-            "event_time__minute",
         ).distinct():
-            handle_epoch(**time)
+            formatted = format_time(**time)
+            output_json(formatted, handle_epoch(**time))
