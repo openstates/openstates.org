@@ -250,6 +250,7 @@ JSON Format Version: 0.2
     )
 
     export_json(f"{state}/{session}/{state}_{session}_bills.json", bills, zf)
+    return filename
 
 
 def upload_and_publish(state, session, filename, data_type):
@@ -267,7 +268,7 @@ def upload_and_publish(state, session, filename, data_type):
     )
     print("uploaded", s3_url)
     obj, created = DataExport.objects.update_or_create(
-        session=sobj, defaults=dict(url=s3_url), data_type="csv"
+        session=sobj, defaults=dict(url=s3_url), data_type=data_type,
     )
 
 
