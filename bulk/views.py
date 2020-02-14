@@ -13,3 +13,12 @@ def bulk_csv_list(request):
         .order_by("session__jurisdiction__name", "session__name")
     )
     return render(request, "bulk/bulk_csv_list.html", {"exports": exports})
+
+
+def bulk_json_list(request):
+    exports = (
+        DataExport.objects.filter(data_type="json")
+        .select_related("session", "session__jurisdiction")
+        .order_by("session__jurisdiction__name", "session__name")
+    )
+    return render(request, "bulk/bulk_json_list.html", {"exports": exports})
