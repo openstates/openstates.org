@@ -205,6 +205,18 @@ django = ">1.11,<4.0"
 
 [[package]]
 category = "main"
+description = "Redis Cache Backend for Django"
+name = "django-redis-cache"
+optional = false
+python-versions = "*"
+version = "2.1.0"
+
+[package.dependencies]
+redis = "<4.0"
+six = "*"
+
+[[package]]
+category = "main"
 description = "Django API Key management & validation"
 name = "django-simplekeys"
 optional = false
@@ -765,6 +777,17 @@ tests = ["bottle", "celery (>=2.5)", "coverage (<4)", "exam (>=0.5.2)", "flake8 
 
 [[package]]
 category = "main"
+description = "Python client for Redis key-value store"
+name = "redis"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "3.4.1"
+
+[package.extras]
+hiredis = ["hiredis (>=0.1.3)"]
+
+[[package]]
+category = "main"
 description = "A web API to geographic boundaries loaded from shapefiles, packaged as a Django app."
 name = "represent-boundaries"
 optional = false
@@ -965,7 +988,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "33b5a5de02dc99d6b469264cbebe99a69e545f7df415afc4dc64dbbcf07bafca"
+content-hash = "a5b90a044b4bccbab40ef9d20a19054c27584b53777d1541e9d01b7bc7c9a90b"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1042,6 +1065,10 @@ django-cors-headers = [
 ]
 django-recaptcha = [
     {file = "django_recaptcha-2.0.6-py2.py3-none-any.whl", hash = "sha256:567784963fd5400feaf92e8951d8dbbbdb4b4c48a76e225d4baa63a2c9d2cd8c"},
+]
+django-redis-cache = [
+    {file = "django-redis-cache-2.1.0.tar.gz", hash = "sha256:5c581743de5994e6b15abfd5b3dbcb8bf00e42d97658c96b7218bcb6a63f863b"},
+    {file = "django_redis_cache-2.1.0-py3-none-any.whl", hash = "sha256:bc0eaf20d275708e0437cbea28f9965e1922c15291f6206edbef3966c029836b"},
 ]
 django-simplekeys = [
     {file = "django-simplekeys-0.5.3.tar.gz", hash = "sha256:65d1119ad43b3dc1853b1ca5be9db54c0aaeee2e4136c7c480c0a096d1ca37df"},
@@ -1253,6 +1280,10 @@ pytz = [
 raven = [
     {file = "raven-6.10.0-py2.py3-none-any.whl", hash = "sha256:44a13f87670836e153951af9a3c80405d36b43097db869a36e92809673692ce4"},
     {file = "raven-6.10.0.tar.gz", hash = "sha256:3fa6de6efa2493a7c827472e984ce9b020797d0da16f1db67197bcc23c8fae54"},
+]
+redis = [
+    {file = "redis-3.4.1-py2.py3-none-any.whl", hash = "sha256:b205cffd05ebfd0a468db74f0eedbff8df1a7bfc47521516ade4692991bb0833"},
+    {file = "redis-3.4.1.tar.gz", hash = "sha256:0dcfb335921b88a850d461dc255ff4708294943322bd55de6cfd68972490ca1f"},
 ]
 represent-boundaries = [
     {file = "represent-boundaries-0.9.4.tar.gz", hash = "sha256:dd78e6d42e15a3ba18d8ee70904f2be548b8e7dff00086450958e05214a35684"},
