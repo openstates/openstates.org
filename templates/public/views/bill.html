@@ -83,6 +83,16 @@
             {% endif %}
 
 
+            {% if bill.abstracts %}
+            <div class="mb2">
+                <h3 class="heading--xsmall">Abstract</h3>
+                {% for abstract in bill.abstracts.all %}
+                    <p style="white-space: pre-line">{{ abstract.abstract | safe }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+
             <h3 class="heading--xsmall">Bill Sponsors ({{ sponsorships|length }})</h3>
             
             <div class="grid-container full">
