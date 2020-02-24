@@ -4,6 +4,9 @@ jobs:
     docker:
       - image: circleci/python:3.7
       - image: circleci/postgres:11-postgis-ram
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
     steps:
       - checkout
       - run:
