@@ -3,7 +3,9 @@ import json
 import datetime
 import tempfile
 import zipfile
+import uuid
 import boto3
+import base62
 from django.core.management.base import BaseCommand
 from django.db.models import F
 from opencivicdata.legislative.models import (
@@ -27,6 +29,10 @@ from opencivicdata.legislative.models import (
 )
 from ...models import DataExport
 from utils.common import abbr_to_jid
+
+
+def _str_uuid():
+    return base62.encode(uuid.uuid4().int)
 
 
 def export_csv(filename, data, zf):
@@ -134,7 +140,8 @@ def export_session_csv(state, session):
     if not bills.count():
         print(f"no bills for {state} {session}")
         return
-    filename = f"{state}_{session}_csv.zip"
+    random = _str_uuid()
+    filename = f"{state}_{session}_csv_{random}.zip"
     zf = zipfile.ZipFile(filename, "w")
     ts = datetime.datetime.utcnow()
     zf.writestr(
@@ -235,7 +242,8 @@ def export_session_json(state, session):
             "votes__votes",
         )
     ]
-    filename = f"{state}_{session}_json.zip"
+    random = _str_uuid()
+    filename = f"{state}_{session}_json_{random}.zip"
     zf = zipfile.ZipFile(filename, "w")
     ts = datetime.datetime.utcnow()
     zf.writestr(
@@ -245,7 +253,7 @@ def export_session_json(state, session):
 State: {state}
 Session: {session}
 Generated At: {ts}
-JSON Format Version: 0.2
+JSON Format Version: 1.0
 """,
     )
 
@@ -268,7 +276,7 @@ def upload_and_publish(state, session, filename, data_type):
     )
     print("uploaded", s3_url)
     obj, created = DataExport.objects.update_or_create(
-        session=sobj, defaults=dict(url=s3_url), data_type=data_type
+        session=sobj, data_type=data_type, defaults=dict(url=s3_url),
     )
 
 
