@@ -1,5 +1,6 @@
 import os
 import dj_database_url
+import structlog
 from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -253,4 +254,24 @@ SIMPLEKEYS_CACHE_TIMEOUT = 60 * 60 * 24 * 8  # 8 days
 SIMPLEKEYS_ERROR_NOTE = (
     "Login and visit https://openstates.org/account/profile/ for your API key. "
     "contact@openstates.org to raise limits"
+)
+
+
+# structlog config
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.processors.JSONRenderer(),
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
 )
