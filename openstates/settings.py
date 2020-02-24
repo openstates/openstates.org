@@ -81,6 +81,14 @@ DATABASE_URL = os.environ.get(
 DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
 
+if "CACHE_URL" in os.environ:
+    CACHES = {
+        "default": {
+            "BACKEND": "redis_cache.RedisCache",
+            "LOCATION": os.environ["CACHE_URL"],
+        }
+    }
+
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 
@@ -243,6 +251,7 @@ CORS_ALLOW_HEADERS = default_headers + ("x-api-key",)
 GRAPHENE = {"SCHEMA": "graphapi.schema.schema", "MIDDLEWARE": []}
 
 SIMPLEKEYS_ZONE_PATHS = [("/api/v1/legislators/geo/", "geo"), ("/api/v1/", "default")]
+SIMPLEKEYS_CACHE_TIMEOUT = 60 * 60 * 24 * 8  # 8 days
 SIMPLEKEYS_ERROR_NOTE = (
     "Login and visit https://openstates.org/account/profile/ for your API key. "
     "contact@openstates.org to raise limits"

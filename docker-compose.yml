@@ -33,6 +33,7 @@ services:
       - DATABASE_URL
       - RECAPTCHA_PUBLIC_KEY
       - RECAPTCHA_PRIVATE_KEY
+      - CACHE_URL
     depends_on:
       - db
     networks:
