@@ -19,7 +19,7 @@ class KeyedGraphQLView(GraphQLView):
             api_key=request.META.get(
                 getattr(settings, "SIMPLEKEYS_HEADER", "HTTP_X_API_KEY")
             ),
-            data=data.get("query") or request.GET.get("query"),
+            query=data.get("query") or request.GET.get("query"),
         )
         start = time.time()
 
@@ -34,7 +34,7 @@ class KeyedGraphQLView(GraphQLView):
             newrelic.agent.add_custom_parameter("request-data", data)
             error = verify_request(request, "graphapi")
             if error:
-                log.bind(
+                log = log.bind(
                     error=error,
                     status_code=error.status_code,
                     duration=time.time() - start,
@@ -43,7 +43,7 @@ class KeyedGraphQLView(GraphQLView):
                 return error, error.status_code
 
         resp = super().get_response(request, data, show_graphiql)
-        log.bind(duration=time.time() - start)
+        log = log.bind(duration=time.time() - start)
         log.info("graphql")
         return resp
 
