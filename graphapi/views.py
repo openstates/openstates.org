@@ -6,7 +6,7 @@ import newrelic
 from structlog import get_logger
 
 
-logger = get_logger()
+logger = get_logger("graphapi")
 
 
 class KeyedGraphQLView(GraphQLView):
@@ -15,11 +15,11 @@ class KeyedGraphQLView(GraphQLView):
     def get_response(self, request, data, show_graphiql=False):
         log = logger.bind(
             user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
-            peer_ip=request.META.get("REMOTE_ADDR"),
+            remote_addr=request.META.get("REMOTE_ADDR"),
             api_key=request.META.get(
                 getattr(settings, "SIMPLEKEYS_HEADER", "HTTP_X_API_KEY")
             ),
-            data=data,
+            data=data.get("query") or request.GET.get("query"),
         )
         start = time.time()
 
