@@ -70,7 +70,11 @@ class ResultMap extends React.Component {
               "icon-size": 2,
             }}
           >
-            <Feature coordinates={[this.props.lon, this.props.lat]} />
+            <Feature
+              coordinates={[this.props.lon, this.props.lat]}
+              draggable={true}
+              onDragEnd={this.props.handleDrag}
+            />
           </Layer>
         </Map>
       </div>
@@ -90,6 +94,7 @@ export default class FindYourLegislator extends React.Component {
       error: "",
     };
     this.handleAddressChange = this.handleAddressChange.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
     this.geocode = this.geocode.bind(this);
     this.geolocate = this.geolocate.bind(this);
 
@@ -100,6 +105,15 @@ export default class FindYourLegislator extends React.Component {
 
   handleAddressChange(event) {
     this.setState({ address: event.target.value });
+  }
+
+  handleDrag(event) {
+    console.log(event.lngLat);
+    this.setState({
+      lat: event.lngLat.lat,
+      lon: event.lngLat.lng,
+    });
+    this.updateLegislators();
   }
 
   setError(message) {
@@ -238,6 +252,7 @@ export default class FindYourLegislator extends React.Component {
           lat={this.state.lat}
           lon={this.state.lon}
           legislators={this.state.legislators}
+          handleDrag={this.handleDrag}
         />
       );
     }
