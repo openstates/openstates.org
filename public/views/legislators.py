@@ -54,8 +54,9 @@ def _people_from_lat_lon(lat, lon):
 def find_your_legislator(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
+    json = request.GET.get("json")
 
-    if lat and lon:
+    if json and lat and lon:
         # got a passed lat/lon. Let's build off it.
         people = _people_from_lat_lon(lat, lon)
         return JsonResponse({"legislators": people})

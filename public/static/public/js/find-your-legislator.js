@@ -88,8 +88,8 @@ export default class FindYourLegislator extends React.Component {
     const queryParams = new URLSearchParams(window.location.search);
     this.state = {
       address: queryParams.get("address") || "",
-      lat: 0,
-      lon: 0,
+      lat: queryParams.get("lat") || 0,
+      lon: queryParams.get("lon") || 0,
       legislators: [],
       error: "",
     };
@@ -98,7 +98,10 @@ export default class FindYourLegislator extends React.Component {
     this.geocode = this.geocode.bind(this);
     this.geolocate = this.geolocate.bind(this);
 
-    if (this.state.address) {
+    if (this.state.lat && this.state.lon) {
+      this.updateLegislators();
+    } else if (this.state.address) {
+      // if we just got an address, geocode
       this.geocode();
     }
   }
@@ -108,7 +111,6 @@ export default class FindYourLegislator extends React.Component {
   }
 
   handleDrag(event) {
-    console.log(event.lngLat);
     this.setState({
       lat: event.lngLat.lat,
       lon: event.lngLat.lng,
@@ -157,7 +159,6 @@ export default class FindYourLegislator extends React.Component {
     fetch(url)
       .then(response => response.json())
       .then(function(json) {
-        console.log(json);
         component.setState({
           lat: json.features[0].center[1],
           lon: json.features[0].center[0],
@@ -177,9 +178,9 @@ export default class FindYourLegislator extends React.Component {
       this.setState({ legislators: [], showMap: false });
     } else {
       const component = this;
-      fetch(
-        `/find_your_legislator/?lat=${this.state.lat}&lon=${this.state.lon}`
-      )
+      const llUrl = `/find_your_legislator/?lat=${this.state.lat}&lon=${this.state.lon}&address=${this.state.address}`;
+      history.pushState("test", "", llUrl);
+      fetch(llUrl + "&json=json")
         .then(response => response.json())
         .then(function(json) {
           component.setState({ legislators: json.legislators });
