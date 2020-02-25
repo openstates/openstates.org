@@ -5,6 +5,7 @@ import ReactMapboxGl, {
   GeoJSONLayer,
   Layer,
   Marker,
+  Feature,
 } from "react-mapbox-gl";
 import stateBounds from "./state-bounds";
 import LegislatorImage from "./legislator-image";
@@ -60,12 +61,17 @@ class ResultMap extends React.Component {
             tileJsonSource={{ type: "vector", url: config.MAP_SLD_SOURCE }}
           />
           {shapes}
-          <Marker
-            coordinates={[this.props.lon, this.props.lat]}
-            anchor="bottom"
+          <Layer
+            type="symbol"
+            id="marker"
+            layout={{
+              "icon-image": "marker-15",
+              "icon-anchor": "bottom",
+              "icon-size": 2,
+            }}
           >
-            <img src="/static/public/images/pin.png" />
-          </Marker>
+            <Feature coordinates={[this.props.lon, this.props.lat]} />
+          </Layer>
         </Map>
       </div>
     );
