@@ -257,8 +257,8 @@ JSON Format Version: 1.0
 """,
     )
 
-    export_json(f"{state}/{session}/{state}_{session}_bills.json", bills, zf)
-    return filename
+    if export_json(f"{state}/{session}/{state}_{session}_bills.json", bills, zf):
+        return filename
 
 
 def upload_and_publish(state, session, filename, data_type):
