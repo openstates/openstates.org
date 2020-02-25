@@ -3,6 +3,7 @@
 
     border-bottom: 1px solid $color-gray;
     margin-bottom: 1rem;
+    padding-bottom: 1rem;
 
     @include breakpoint(medium) {
         margin-left: 1rem;
