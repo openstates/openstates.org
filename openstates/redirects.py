@@ -8,11 +8,8 @@ redirects = [
     ("api/bills/", "https://docs.openstates.org/en/latest/api/bills.html"),
     ("api/committees/", "https://docs.openstates.org/en/latest/api/committees.html"),
     ("api/legislators/", "https://docs.openstates.org/en/latest/api/legislators.html"),
-    ("api/events/", "https://docs.openstates.org/en/latest/api/events.html"),
     ("api/districts/", "https://docs.openstates.org/en/latest/api/districts.html"),
     ("contributing/", "https://docs.openstates.org/en/latest/contributing/index.html"),
-    ("csv_downloads/", "https://docs.openstates.org/en/latest/data/legacy-csv.html"),
-    ("downloads/", "https://docs.openstates.org/en/latest/data/index.html"),
     ("methodology/", "https://docs.openstates.org/en/latest/infrastructure/index.html"),
     (
         "categorization/",
@@ -22,6 +19,8 @@ redirects = [
     ("funding/", "/donate/"),
     ("contact/", "/about/"),
     ("bulk/csv/", "/data/session-csv/"),
+    ("csv_downloads/", "/data/session-csv/"),
+    ("downloads/", "/data/"),
 ]
 
 urlpatterns = [
