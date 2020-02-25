@@ -24,6 +24,8 @@ def user():
 @pytest.mark.django_db
 def test_add_search_subscription_no_perms(client):
     bu = User.objects.create(username="testuser")
+    bu.profile.feature_subscriptions = False
+    bu.profile.save()
     client.force_login(bu)
     with pytest.raises(PermissionException):
         client.post(
