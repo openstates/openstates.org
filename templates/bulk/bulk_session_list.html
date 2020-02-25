@@ -1,0 +1,36 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States {{ data_type|upper }} Downloads{% endblock %}
+{% block og_title %}Open States {{ data_type|upper }} Downloads{% endblock %}
+{% block description %}Download bulk data from Open States{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Open States Bulk {{ data_type|upper }} Data</h1>
+
+<section class="mt1">
+  <p>These archives provide bulk data in an experimental {{ data_type|upper }} format.
+    Please consider providing feedback by <a href="mailto:contact@openstates.org">emailing us</a>.
+  </p>
+
+  <ul> {# need this so first close tag works #}
+  {% for export in exports %}
+  {% ifchanged %}
+  </ul>
+  <h2 class="heading">{{ export.session.jurisdiction.name }}</h2>
+  <ul>
+  {% endifchanged %}
+
+  <li>
+    {% if request.user.is_anonymous %}
+    <a href="/accounts/login/?next={{ request.path }}">
+    {% else %}
+    <a href="{{ export.url }}">
+    {% endif %}
+
+  {{ export.session }}</a> (updated {{ export.updated_at|date:"Y-m-d" }})</li>
+  {% endfor %}
+
+  </ul> {# close final ul #}
+</section>
+{% endblock %}

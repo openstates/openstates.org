@@ -1,9 +1,10 @@
-from collections import Counter
+import pytz
 import datetime
 import feedparser
+from collections import Counter
 from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.http import Http404
 from django.shortcuts import render
 from opencivicdata.legislative.models import Bill
@@ -30,7 +31,11 @@ def _get_latest_updates():
 def _get_random_bills():
     bills = (
         Bill.objects.all()
-        .filter(updated_at__gte=datetime.datetime.now() - datetime.timedelta(days=3))
+        .filter(
+            updated_at__gte=pytz.utc.localize(
+                datetime.datetime.utcnow() - datetime.timedelta(days=3)
+            )
+        )
         .select_related(
             "legislative_session", "legislative_session__jurisdiction", "billstatus"
         )
@@ -162,7 +167,9 @@ def site_search(request):
     people = []
     if query:
         bills = search_bills(state=state, query=query)
-        bills = bills.order_by("-billstatus__latest_action_date")
+        bills = bills.order_by(
+            F("billstatus__latest_action_date").desc(nulls_last=True)
+        )
 
         # pagination
         page_num = int(request.GET.get("page", 1))

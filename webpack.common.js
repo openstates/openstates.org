@@ -8,10 +8,11 @@ const output_dir = 'public/static/public/bundles'
 module.exports = {
   entry: {
     main: ['babel-polyfill', './public/static/public/js/index'],
+    common_components: ['./public/static/public/js/common-components'],
     fyl: ['./public/static/public/js/find-your-legislator'],
     state_map: ['./public/static/public/js/state-map'],
     district_map: ['./public/static/public/js/legislator-map'],
-    common_components: ['./public/static/public/js/common-components'],
+    account_overview: ['./public/static/public/js/account-overview'],
   },
   output: {
     path: path.resolve(output_dir),

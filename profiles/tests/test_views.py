@@ -24,6 +24,8 @@ def user():
 @pytest.mark.django_db
 def test_add_search_subscription_no_perms(client):
     bu = User.objects.create(username="testuser")
+    bu.profile.feature_subscriptions = False
+    bu.profile.save()
     client.force_login(bu)
     with pytest.raises(PermissionException):
         client.post(
@@ -225,7 +227,7 @@ def test_unsubscribe_logged_in(client, user):
 def test_unsubscribe_email_param(client, user):
     Subscription.objects.create(user=user, bill_id="ocd-bill/1", subjects=[], status=[])
     nobj = Notification.objects.create(
-        email=user.email, sent=utcnow(), num_query_updates=0, num_bill_updates=0,
+        email=user.email, sent=utcnow(), num_query_updates=0, num_bill_updates=0
     )
 
     resp = client.get(f"/accounts/profile/unsubscribe/?email={nobj.id}")

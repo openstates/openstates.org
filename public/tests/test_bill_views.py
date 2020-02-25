@@ -9,7 +9,7 @@ def setup():
     populate_db()
 
 
-BILLS_QUERY_COUNT = 9
+BILLS_QUERY_COUNT = 7
 ALASKA_BILLS = 12
 
 
@@ -124,7 +124,7 @@ def test_bills_view_status(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_view(client, django_assert_num_queries):
-    with django_assert_num_queries(16):
+    with django_assert_num_queries(17):
         resp = client.get("/ak/bills/2018/HB1/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
@@ -132,6 +132,7 @@ def test_bill_view(client, django_assert_num_queries):
     assert resp.context["bill"].identifier == "HB 1"
     assert len(resp.context["sponsorships"]) == 2
     assert len(resp.context["actions"]) == 3
+    assert resp.context["actions"][0].date > resp.context["actions"][2].date
     assert len(resp.context["votes"]) == 1
     assert len(resp.context["versions"]) == 2
     assert len(resp.context["documents"]) == 2

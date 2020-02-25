@@ -7,9 +7,7 @@
 
 {% block content %}
 <h1 class="heading--large">Account Profile</h1>
-<p>You are logged in as {{ primary_email }}.</p>
-<p>
-  Your email address is
+<p>You are logged in as {{ primary_email }}, address is
   {% if primary_email.verified %}
     <span class="email-verified">verified</span>.
   {% else %}
@@ -56,6 +54,7 @@
   </form>
 </section>
 
+<div class="profile-settings-right-col">
 <section>
   <h2 class="heading">Manage Account</h2>
   <p>
@@ -66,8 +65,6 @@
     </ul>
   </p>
 </section>
-</div>
-
 
 <a name="apikey"></a>
 <hr>
@@ -100,6 +97,8 @@
   <p>Please verify your email above to request an API Key.</p>
   {% endif %}
 </section>
+</div>
+</div>
 
 {% include "account/_subscriptions.html" %}
 {% endblock %}

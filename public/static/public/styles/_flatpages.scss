@@ -13,6 +13,11 @@ div.about-openstates {
         margin-right: 1em;
     }
 }
+div.partner-org {
+  display: grid;
+  a { justify-self: center; }
+  img { height: 150px; padding-bottom: 0.5rem; }
+}
 
 div.registration-field input {
     @include breakpoint(medium) {

@@ -2,7 +2,7 @@
 
 set -e
 
-WHICH="2020-01"
+WHICH="2020-02"
 FILE=schema.pgdump
 if [ ! -f "$FILE" ]; then
   wget https://data.openstates.org/postgres/schema/$WHICH-schema.pgdump -O $FILE

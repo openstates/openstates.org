@@ -21,7 +21,7 @@ class Profile(models.Model):
     about = models.TextField(blank=True)
 
     # feature flags
-    feature_subscriptions = models.BooleanField(default=False)
+    feature_subscriptions = models.BooleanField(default=True)
 
     subscription_emails_html = models.BooleanField(default=True)
     subscription_frequency = models.CharField(

@@ -1,3 +1,4 @@
+import pytz
 import datetime
 import functools
 from django.http import JsonResponse
@@ -220,6 +221,9 @@ def bill_list(request):
     if query:
         too_big = False
     if updated_since:
+        updated_since = pytz.utc.localize(
+            datetime.datetime.strptime(updated_since, "%Y-%m-%d")
+        )
         bills = bills.filter(updated_at__gt=updated_since)
         too_big = False
     if bill_id:

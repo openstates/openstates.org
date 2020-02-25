@@ -59,7 +59,7 @@
                         <option value="{{ session.identifier }}"
                             {% if session.identifier == form.session %}selected{% endif %}
                             {% if not session.identifier and forloop.first %}selected{% endif %}>
-                            {{ session }}
+                            {{ session.name }}
                         </option>
                         {% endfor %}
                     </select>
