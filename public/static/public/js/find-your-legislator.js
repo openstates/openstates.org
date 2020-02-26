@@ -54,6 +54,7 @@ class ResultMap extends React.Component {
           minZoom={2}
           maxZoom={13}
           interactive={true}
+          attributionControl={true}
           center={[this.props.lon, this.props.lat]}
         >
           <Source
