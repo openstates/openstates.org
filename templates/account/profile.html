@@ -78,6 +78,10 @@
     <dd>{{ key.get_status_display }} </dd>
     <dt>Tier</dt>
     <dd>{{ key.tier }}</dd>
+    {% if graphql_limit %}
+    <dd>{{ graphql_limit.quota_requests }} {{ graphql_limit.get_quota_period_display }} requests</dd>
+    <dd>{{ graphql_limit.requests_per_second }} requests/sec</dd>
+    {% endif %}
   </dl>
   <p>
    To use the API check out the <a href="https://docs.openstates.org/en/latest/api/v2/">API Documentation</a>, and ask questions over at our <a href="https://discourse.openstates.org/">Discourse</a>.

@@ -43,9 +43,11 @@ def profile(request):
 
     # only get their key if the email is verified
     key = None
+    graphql_limit = None
     if primary.verified:
         try:
             key = Key.objects.get(email=primary.email)
+            graphql_limit = key.tier.limits.get(zone__slug="graphapi")
         except Key.DoesNotExist:
             pass
 
@@ -56,7 +58,12 @@ def profile(request):
     return render(
         request,
         "account/profile.html",
-        {"primary_email": primary, "key": key, "subscriptions": subscriptions},
+        {
+            "primary_email": primary,
+            "key": key,
+            "subscriptions": subscriptions,
+            "graphql_limit": graphql_limit,
+        },
     )
 
 
