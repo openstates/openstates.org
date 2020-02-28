@@ -209,6 +209,7 @@ LOGGING = {
             "propagate": False,
         },
         "graphapi": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "openstates": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
     },
 }
 

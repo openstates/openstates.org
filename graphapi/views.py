@@ -6,7 +6,7 @@ import newrelic
 from structlog import get_logger
 
 
-logger = get_logger("graphapi")
+logger = get_logger("openstates")
 
 
 class KeyedGraphQLView(GraphQLView):

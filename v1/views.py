@@ -1,10 +1,13 @@
 import pytz
+import time
 import datetime
 import functools
 from django.http import JsonResponse
 from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
+from django.conf import settings
+from structlog import get_logger
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
@@ -13,12 +16,27 @@ from utils.people import current_role_filters
 from utils.bills import search_bills
 
 
+logger = get_logger("openstates")
+
+
 def jsonp(view_func):
     @functools.wraps(view_func)
     def new_view(request, *args, **kwargs):
         callback = request.GET.get("callback")
+        log = logger.bind(
+            user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
+            remote_addr=request.META.get("REMOTE_ADDR"),
+            api_key=request.META.get(
+                getattr(settings, "SIMPLEKEYS_HEADER", "HTTP_X_API_KEY"),
+                request.GET.get("apikey"),
+            ),
+            url=request.path_info,
+            params=request.GET,
+        )
+        start = time.time()
         resp = view_func(request, *args, **kwargs)
-        print(callback)
+        log = log.bind(duration=time.time() - start)
+        log.info("v1")
         if callback:
             resp.content = bytes(callback, "utf8") + b"(" + resp.content + b")"
         return resp
