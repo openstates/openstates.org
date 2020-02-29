@@ -245,7 +245,7 @@ BOUNDARIES_SHAPEFILES_DIR = "shapefiles"
 
 # API
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r"^/(graphql|api/v1)/.*$"
+CORS_URLS_REGEX = r"^/(graphql|api/v1).*$"
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
 CORS_ALLOW_HEADERS = default_headers + ("x-api-key",)
 
