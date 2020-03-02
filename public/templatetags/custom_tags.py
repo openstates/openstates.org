@@ -30,12 +30,13 @@ def header(context):
 
 @register.inclusion_tag("public/components/sources.html")
 def sources(state, sources=None):
-    legislature = get_legislature_from_abbr(state)
-    return {
-        "legislature_name": legislature.name,
-        "legislature_url": legislature.jurisdiction.url,
-        "sources": sources,
-    }
+    if state:
+        legislature = get_legislature_from_abbr(state)
+        return {
+            "legislature_name": legislature.name,
+            "legislature_url": legislature.jurisdiction.url,
+            "sources": sources,
+        }
 
 
 @register.inclusion_tag("public/components/pagination.html")
@@ -69,7 +70,9 @@ def document_card(document):
 
 @register.filter()
 def state_name(state_abbr):
-    return us.states.lookup(state_abbr).name
+    if state_abbr:
+        return us.states.lookup(state_abbr).name
+    return ""
 
 
 @register.filter()
