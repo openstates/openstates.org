@@ -57,6 +57,15 @@ def test_person_view_retired(client, django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_person_view_invalid_uuid(client, django_assert_num_queries):
+    p = PersonProxy.objects.get(name="Rhonda Retired")
+    resp = client.get(
+        p.pretty_url()[:-1] + "abcdefghij/"
+    )  # this won't be a valid pretty UUID
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
 def test_canonicalize_person(client):
     p = PersonProxy.objects.get(name="Amanda Adams")
     url = p.pretty_url().replace("amanda", "xyz")

@@ -89,7 +89,12 @@ def person(request, person_id):
     SPONSORED_BILLS_TO_SHOW = 4
     RECENT_VOTES_TO_SHOW = 3
 
-    ocd_person_id = decode_uuid(person_id)
+    try:
+        ocd_person_id = decode_uuid(person_id)
+    except ValueError:
+        ocd_person_id = (
+            person_id  # will be invalid and raise 404, but useful in logging later
+        )
     person = get_object_or_404(
         PersonProxy.objects.prefetch_related("memberships__organization"),
         pk=ocd_person_id,
