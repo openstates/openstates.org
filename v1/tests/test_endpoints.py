@@ -336,3 +336,16 @@ def test_districts_list(client, django_assert_num_queries):
     assert len(resp.json()) == 3
     resp = client.get("/api/v1/districts/ak/lower/")
     assert len(resp.json()) == 5
+
+
+@pytest.mark.django_db
+def test_since_truncation(client):
+    resp = client.get("/api/v1/bills/?updated_since=2020-01-01 11:21:12")
+    assert resp.status_code == 200
+
+
+@pytest.mark.django_db
+def test_search_window_message(client):
+    resp = client.get("/api/v1/bills/?search_window=term:2020&state=ca")
+    assert resp.status_code == 400
+    assert b"invalid search_window" in resp.content

@@ -240,7 +240,7 @@ def bill_list(request):
         too_big = False
     if updated_since:
         updated_since = pytz.utc.localize(
-            datetime.datetime.strptime(updated_since, "%Y-%m-%d")
+            datetime.datetime.strptime(updated_since[:10], "%Y-%m-%d")
         )
         bills = bills.filter(updated_at__gt=updated_since)
         too_big = False
@@ -267,8 +267,10 @@ def bill_list(request):
             )
             too_big = False
         elif search_window != "all":
-            raise ValueError(
-                'invalid search_window. valid choices are "term", "session", "all"'
+            return JsonResponse(
+                'invalid search_window. valid choices are "term", "session", "all"',
+                status=400,
+                safe=False,
             )
 
     # first, last, created
