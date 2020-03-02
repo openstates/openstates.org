@@ -57,6 +57,15 @@
   apt:
     pkg: nodejs
 
+- name: get poetry installer
+  get_url:
+    url: https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+    dest: /tmp/get-poetry.py
+    mode: 0755
+- name: install poetry
+  command: python /tmp/get-poetry.py -y
+  become_user: "openstates"
+
 # letsencrypt
 
 - name: add letsencrypt cert
@@ -87,11 +96,8 @@
 - name: add checkouts to python path
   lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.7/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
   become_user: "openstates"
-- name: install poetry
-  pip: name=poetry virtualenv=/home/openstates/virt{{ gitresult.after }}
-  become_user: "openstates"
 - name: install packages via poetry
-  command: /home/openstates/virt{{ gitresult.after }}/bin/poetry install # --deploy
+  command: ~/.poetry/bin/poetry install # --deploy
   args:
     chdir: /home/openstates/src/openstates.org
   environment:
