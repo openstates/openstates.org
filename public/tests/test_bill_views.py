@@ -123,6 +123,12 @@ def test_bills_view_status(client, django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_bills_view_bad_page(client):
+    resp = client.get("/ak/bills/?page=A")
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
 def test_bill_view(client, django_assert_num_queries):
     with django_assert_num_queries(17):
         resp = client.get("/ak/bills/2018/HB1/")

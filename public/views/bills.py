@@ -91,7 +91,10 @@ class BillList(View):
         bills, form = self.get_bills(request, state)
 
         # pagination
-        page_num = int(request.GET.get("page", 1))
+        try:
+            page_num = int(request.GET.get("page", 1))
+        except ValueError:
+            raise Http404()  # invalid pages not found
         paginator = Paginator(bills, 20)
         try:
             bills = paginator.page(page_num)
