@@ -31,6 +31,7 @@ django-recaptcha = "^2.0.6"
 django-redis-cache = "^2.1.0"
 structlog = "^20.1.0"
 colorama = "^0.4.3"
+openstates_metadata = "^2020.2.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"

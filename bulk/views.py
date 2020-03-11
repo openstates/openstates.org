@@ -1,10 +1,17 @@
 from django.shortcuts import render
 from django.contrib import messages
+from openstates_metadata import STATES_BY_NAME
 from .models import DataExport
 
 
 def overview(request):
     return render(request, "bulk/overview.html", {})
+
+
+def legislator_csv(request):
+    return render(
+        request, "bulk/legislator-csv.html", {"states": STATES_BY_NAME.values()}
+    )
 
 
 def bulk_session_list(request, data_type):

@@ -1,0 +1,91 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States Legislator Bulk Data{% endblock %}
+{% block og_title %}Open States Legislator Bulk Data{% endblock %}
+{% block description %}Download bulk data on legislators from Open States{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Open States Legislator Bulk Data</h1>
+
+<p>
+  Legislator data in Open States is powered by the <a href="https://github.com/openstates/people/">openstates/people repo</a> which contains structured YAML files on all legislators in our system, past and present.
+</p>
+<p>
+  For convenience, we also make current legislators available as CSV files as described below.
+</p>
+<p><strong>We depend upon <a href="/donate/">donations</a> to keep this work alive. Also consider <a href="mailto:contact@openstates.org">giving us a testimonial</a>, as those can help us obtain funding and always make our day.</strong>
+</p>
+
+<section>
+  <h2 class="heading--medium">Downloads</h2>
+  <p>CSV files are published nightly, and available at https://data.openstates.org/people/current/<em>[ABBR]</em>.csv, where <em>[ABBR]</em> is a state's postal code.</p>
+  <ul>
+    {% for state in states %}
+    <li><a href="https://data.openstates.org/people/current/{{ state.abbr.lower }}.csv">{{ state.name }}</a></li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2 class="heading--medium">Fields</h2>
+  <p>
+    Fields with an asterisk are required, all others are optional.
+  </p>
+  <p>
+    These CSV files include a subset of the total data we collect deemed suitable for inclusion in a CSV file, see <a href="https://github.com/openstates/people/blob/master/schema.md">YAML Schema</a> for all fields.
+  </p>
+  <dl>
+    <dt>id*</dt>
+    <dd>ocd-person identifier assigned by Open States.</dd>
+    <dt>name*</dt>
+    <dd>Full name.</dd>
+    <dt>current_party*</dt>
+    <dd>Current party affiliation.</dd>
+    <dt>current_district*</dt>
+    <dd>Currently represented district name or number.<dd>
+    <dt>current_chamber*</dt>
+    <dd>Currently represented chamber (upper|lower).<dd>
+    <dt>given_name</dt>
+    <dd>aka first name.</dd>
+    <dt>family_name</dt>
+    <dd>aka last name.</dd>
+    <dt>gender</dt>
+    <dd>Male|Female|etc.</dd>
+    <dt>biography</dt>
+    <dd>A short bio published by the state.</dd>
+    <dt>birth_date</dt>
+    <dd>In YYYY-MM-DD format.</dd>
+    <dt>death_date</dt>
+    <dd>In YYYY-MM-DD format.</dd>
+    <dt>image</dt>
+    <dd>URL to official image.</dd>
+    <dt>links</dt>
+    <dd>Semicolon separated list of official links for this person.</dd>
+    <dt>sources</dt>
+    <dd>Semicolon separated list of source URLs for this person.</dd>
+    <dt>capitol_address</dt>
+    <dd>Street address of capitol office.</dd>
+    <dt>capitol_email</dt>
+    <dd>Official email address.</dd>
+    <dt>capitol_voice</dt>
+    <dd>Phone number for capitol office.</dd>
+    <dt>capitol_fax</dt>
+    <dd>Fax number for capitol office.</dd>
+    <dt>district_address</dt>
+    <dd>Street address of district office.</dd>
+    <dt>district_email</dt>
+    <dd>Official email address.</dd>
+    <dt>district_voice</dt>
+    <dd>Phone number for district office.</dd>
+    <dt>district_fax</dt>
+    <dd>Fax number for district office.</dd>
+    <dt>twitter</dt>
+    <dt>youtube</dt>
+    <dt>instagram</dt>
+    <dt>facebook</dt>
+    <dd>Social media accounts.</dd>
+  </dl>
+</section>
+
+{% endblock %}

@@ -525,6 +525,17 @@ psycopg2-binary = "*"
 dev = ["pytest (>=3.6)", "pytest-cov", "pytest-django", "coveralls", "flake8"]
 
 [[package]]
+category = "main"
+description = "metadata for the openstates project"
+name = "openstates-metadata"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "2020.2.2"
+
+[package.dependencies]
+attrs = ">=19.3,<20.0"
+
+[[package]]
 category = "dev"
 description = "Core utilities for Python packages"
 name = "packaging"
@@ -1027,7 +1038,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "64bf77f0a9a23e663d8c528bcac91d5509aadd18dc24e492dac9a7400d7718fa"
+content-hash = "60857e83fe48f024a4b007a3dddd67fff82c21adc33c34cf84bb3322ed1094bb"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1202,6 +1213,10 @@ oauthlib = [
 ]
 opencivicdata = [
     {file = "opencivicdata-3.1.0.tar.gz", hash = "sha256:cbd8693a53ddac867f642963209ae98c21fd565db4df20769c727395eaedafd8"},
+]
+openstates-metadata = [
+    {file = "openstates_metadata-2020.2.2-py3-none-any.whl", hash = "sha256:90ddca1d2b8ea2a3469870d3d0720684e491ac73dd7c478699682ad2fe74be09"},
+    {file = "openstates_metadata-2020.2.2.tar.gz", hash = "sha256:94f0695a6ec5dd7c0e798475b2b70c8b28bda8ed051474f951ec72901a4adcbc"},
 ]
 packaging = [
     {file = "packaging-20.1-py2.py3-none-any.whl", hash = "sha256:170748228214b70b672c581a3dd610ee51f733018650740e98c7df862a583f73"},

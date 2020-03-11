@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path("", views.overview),
+    path("legislator-csv/", views.legislator_csv),
     path("session-csv/", views.bulk_session_list, {"data_type": "csv"}),
     path("session-json/", views.bulk_session_list, {"data_type": "json"}),
 ]
