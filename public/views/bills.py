@@ -253,10 +253,8 @@ def bill(request, state, session, bill_id):
         bill.actions.all()
         .select_related("organization")
         .prefetch_related(related_entities)
+        .order_by("-date")
     )
-    # ensure actions are in descending order
-    if actions and actions[0].date < actions[-1].date:
-        actions.reverse()
     votes = list(
         bill.votes.all().select_related("organization")
     )  # .prefetch_related('counts')
