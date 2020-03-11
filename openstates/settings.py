@@ -1,7 +1,13 @@
 import os
 import dj_database_url
 import structlog
+import sentry_sdk
 from corsheaders.defaults import default_headers
+from sentry_sdk.integrations.django import DjangoIntegration
+
+if "SENTRY_DSN" in os.environ:
+    sentry_sdk.init(dsn=os.environ["SENTRY_DSN"], integrations=[DjangoIntegration()])
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -93,9 +99,6 @@ if "CACHE_URL" in os.environ:
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 
-if "RAVEN_DSN" in os.environ:
-    RAVEN_CONFIG = {"dsn": os.environ["RAVEN_DSN"]}
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -105,7 +108,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django.contrib.sites",
-    "raven.contrib.django.raven_compat",
     "webpack_loader",
     "captcha",
     "allauth",
