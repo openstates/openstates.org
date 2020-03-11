@@ -294,7 +294,7 @@ def bill_list(request):
     if per_page and not page:
         page = 1
 
-    if page:
+    if page and int(page) > 0:
         page = int(page)
         per_page = int(per_page)
         start = per_page * (page - 1)
