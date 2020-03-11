@@ -117,7 +117,7 @@ def person_qs():
 @jsonp
 def state_metadata(request, abbr):
     jid = abbr_to_jid(abbr.lower())
-    jurisdiction = jurisdictions_qs().get(pk=jid)
+    jurisdiction = get_object_or_404(jurisdictions_qs(), pk=jid)
     return JsonResponse(v1_metadata(abbr.lower(), jurisdiction))
 
 
