@@ -152,12 +152,17 @@ def legislator_list(request, geo=False):
             return JsonResponse(
                 "Bad Request: must include lat & long", status=400, safe=False
             )
+        try:
+            latitude = float(latitude)
+            longitude = float(longitude)
+        except ValueError:
+            return JsonResponse("Bad Request: invalid lat, lon", status=400, safe=False)
 
         today = datetime.date.today().isoformat()
         filter_params += [
             Q(
                 memberships__post__division__geometries__boundary__shape__contains=(
-                    Point(float(longitude), float(latitude))
+                    Point(longitude, latitude)
                 )
             ),
             Q(memberships__post__division__geometries__boundary__set__end_date=None)
