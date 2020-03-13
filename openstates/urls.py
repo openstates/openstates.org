@@ -11,6 +11,7 @@ urlpatterns = [
     path("djadmin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("accounts/profile/", include("profiles.urls")),
+    path("dashboard/", include("dashboards.urls")),
     url("", include("geo.urls")),
     url(r"^api/v1/", include("v1.urls")),
     url(

@@ -106,7 +106,13 @@ export default class AccountsOverview extends React.Component {
 
         <div>
           <h3 className="header">Registrations</h3>
-          <ColoredPie data={this.props.providers} />
+
+          <BarChart width={500} height={100} data={this.props.providers}>
+            <XAxis dataKey="name" />
+            <Tooltip />
+            <Bar dataKey="value" fill="#8884d8" />
+          </BarChart>
+
           <h3 className="header">Email Frequency</h3>
           <ColoredPie data={this.props.email_frequencies} />
         </div>
