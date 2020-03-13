@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import ArrayField
 from utils.common import pretty_url
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
+from simplekeys.models import Key
 from .utils import utcnow
 
 
@@ -138,3 +139,14 @@ class Notification(models.Model):
     sent = models.DateTimeField(editable=False)
     num_query_updates = models.PositiveIntegerField(editable=False)
     num_bill_updates = models.PositiveIntegerField(editable=False)
+
+
+class UsageReport(models.Model):
+    key = models.ForeignKey(Key, related_name="usage_reports", on_delete=models.CASCADE)
+    date = models.DateField()
+    endpoint = models.CharField(max_length=100)
+    calls = models.PositiveIntegerField()
+    total_duration_seconds = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ("key", "date", "endpoint")

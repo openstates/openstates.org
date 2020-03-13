@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("profiles", "0009_auto_20200130_0244"),
-    ]
+    dependencies = [("profiles", "0009_auto_20200130_0244")]
 
     operations = [
         migrations.AlterField(
             model_name="profile",
             name="feature_subscriptions",
             field=models.BooleanField(default=True),
-        ),
+        )
     ]
