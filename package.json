@@ -54,7 +54,7 @@
   "scripts": {
     "start": "webpack --watch --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "prettier": "prettier --write public/static/public/js/*"
+    "prettier": "prettier --write static/js/*"
   },
   "browserslist": [
     "> 1% in US",

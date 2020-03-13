@@ -2,17 +2,17 @@ const path = require("path")
 const BundleTracker = require('webpack-bundle-tracker')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const output_dir = 'public/static/public/bundles'
+const output_dir = 'static/bundles'
 
 
 module.exports = {
   entry: {
-    main: ['babel-polyfill', './public/static/public/js/index'],
-    common_components: ['./public/static/public/js/common-components'],
-    fyl: ['./public/static/public/js/find-your-legislator'],
-    state_map: ['./public/static/public/js/state-map'],
-    district_map: ['./public/static/public/js/legislator-map'],
-    account_overview: ['./public/static/public/js/account-overview'],
+    main: ['babel-polyfill', './static/js/index'],
+    common_components: ['./static/js/common-components'],
+    fyl: ['./static/js/find-your-legislator'],
+    state_map: ['./static/js/state-map'],
+    district_map: ['./static/js/legislator-map'],
+    account_overview: ['./static/js/account-overview'],
   },
   output: {
     path: path.resolve(output_dir),

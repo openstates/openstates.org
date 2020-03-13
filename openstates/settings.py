@@ -171,7 +171,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "public/static/"),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static/"),)
 
 STATIC_ROOT = os.path.join(BASE_DIR, "collected_static")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -226,7 +226,7 @@ AUTHENTICATION_BACKENDS = (
 WEBPACK_LOADER = {
     "DEFAULT": {
         "CACHE": not DEBUG,
-        "BUNDLE_DIR_NAME": "public/bundles/",
+        "BUNDLE_DIR_NAME": "bundles/",
         "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
         "POLL_INTERVAL": 0.1,
         "TIMEOUT": None,
