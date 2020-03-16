@@ -66,7 +66,7 @@
   command: python /tmp/get-poetry.py -y
   become_user: "openstates"
 
-# letsencrypt
+# letsencrypt & cronjobs
 
 - name: add letsencrypt cert
   command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
@@ -76,6 +76,8 @@
   cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="hourly" name="update materialized views"
 - name: add process_subscriptions cron
   cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py process_subscriptions >> /tmp/subscriptions.log" hour="12" minute="30" name="process subscriptions"
+- name: add aggregate usage cron
+  cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py aggregate_api_usage /var/log/uwsgi/app/openstates.log /var/log/uwsgi/app/openstates.log.1 >> /tmp/aggregation.log" hour="*/2" minute="19" name="aggregate usage"
 - name: restart nginx weekly
   cron: job="systemctl restart nginx" special_time="weekly" name="restart nginx"
 - name: archive letsencrypt stuff
