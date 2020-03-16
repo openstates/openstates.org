@@ -1,5 +1,4 @@
 import React, { PureComponent } from "react";
-import ReactDOM from "react-dom";
 import {
   BarChart,
   Bar,
@@ -128,11 +127,3 @@ export default class AccountsOverview extends React.Component {
     );
   }
 }
-
-window.addEventListener("load", () => {
-  const div = document.querySelector('[data-hook="account-overview"]');
-  if (div) {
-    var context = JSON.parse(document.getElementById("context").textContent);
-    ReactDOM.render(React.createElement(AccountsOverview, context), div);
-  }
-});

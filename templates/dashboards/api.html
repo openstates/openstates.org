@@ -2,17 +2,17 @@
 {% load render_bundle from webpack_loader %}
 
 {% block scripts %}
-    {% render_bundle 'account_overview' 'js' %}
+    {% render_bundle 'dashboards' 'js' %}
 {% endblock %}
 {% block styles %}
-    {% render_bundle 'account_overview' 'css' %}
+    {% render_bundle 'dashboards' 'css' %}
 {% endblock %}
 
 {% block content %}
 
 {{ context|json_script:"context" }}
 
-<div data-hook="account-overview">
+<div data-hook="api-dashboard">
 </div>
 
 {% endblock %}

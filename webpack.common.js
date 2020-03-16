@@ -12,7 +12,7 @@ module.exports = {
     fyl: ['./static/js/find-your-legislator'],
     state_map: ['./static/js/state-map'],
     district_map: ['./static/js/legislator-map'],
-    account_overview: ['./static/js/account-overview'],
+    dashboards: ['./static/js/dashboards'],
   },
   output: {
     path: path.resolve(output_dir),
