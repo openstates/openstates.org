@@ -39,10 +39,9 @@ def profile(request):
     primary = request.user.emailaddress_set.get(primary=True)
 
     # only get their key if the email is verified
-    key = None
     graphql_limit = None
     if primary.verified:
-        graphql_limit = request.user.get_tier_details()["v2"]
+        graphql_limit = request.user.profile.get_tier_details()["v2"]
 
     subscriptions = request.user.subscriptions.filter(active=True).order_by(
         "-created_at"
@@ -53,7 +52,6 @@ def profile(request):
         "account/profile.html",
         {
             "primary_email": primary,
-            "key": key,
             "subscriptions": subscriptions,
             "graphql_limit": graphql_limit,
         },
