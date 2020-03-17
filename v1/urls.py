@@ -23,9 +23,4 @@ urlpatterns = [
         r"districts/(?P<abbr>[a-zA-Z-]+)/(?P<chamber>upper|lower)/$",
         views.district_list,
     ),
-    # removed views
-    re_path(r"^committees/(?P<id>[A-Z-]+C\d{6})/$", views.item_404),
-    re_path(r"^committees/$", views.empty_list),
-    re_path(r"^events/$", views.empty_list),
-    re_path(r"^events/(?P<id>[A-Z-]+E\d{8})/$", views.item_404),
 ]

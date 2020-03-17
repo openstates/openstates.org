@@ -44,19 +44,6 @@ def jsonp(view_func):
     return new_view
 
 
-# these are to mimic empty committee/event responses
-
-
-@jsonp
-def empty_list(request):
-    return JsonResponse([], safe=False)
-
-
-@jsonp
-def item_404(request, id):
-    return JsonResponse("Not Found", safe=False, status=404)
-
-
 def jurisdictions_qs():
     return (
         Jurisdiction.objects.all()
