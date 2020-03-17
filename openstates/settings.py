@@ -141,7 +141,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "simplekeys.middleware.SimpleKeysMiddleware",
 ]
 
 ROOT_URLCONF = "openstates.urls"
@@ -253,13 +252,6 @@ CORS_ALLOW_HEADERS = default_headers + ("x-api-key",)
 
 
 GRAPHENE = {"SCHEMA": "graphapi.schema.schema", "MIDDLEWARE": []}
-
-SIMPLEKEYS_ZONE_PATHS = [("/api/v1/legislators/geo/", "geo"), ("/api/v1/", "default")]
-SIMPLEKEYS_CACHE_TIMEOUT = 60 * 60 * 24 * 8  # 8 days
-SIMPLEKEYS_ERROR_NOTE = (
-    "Login and visit https://openstates.org/account/profile/ for your API key. "
-    "contact@openstates.org to raise limits"
-)
 
 
 # structlog config
