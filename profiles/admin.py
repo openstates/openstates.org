@@ -4,9 +4,8 @@ from profiles.models import Profile, Subscription, Notification
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "email", "feature_subscriptions")
-    list_editable = ("feature_subscriptions",)
-    search_fields = ("user__email",)
+    list_display = ("user", "email", "api_tier")
+    search_fields = ("user__email", "api_key")
 
     def email(self, p):
         return p.user.email
