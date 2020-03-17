@@ -5,7 +5,6 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse, HttpResponseBadRequest
-from simplekeys.models import Key, Tier
 from .models import Subscription, Profile, Notification, WEEKLY
 
 
@@ -43,11 +42,7 @@ def profile(request):
     key = None
     graphql_limit = None
     if primary.verified:
-        try:
-            key = Key.objects.get(email=primary.email)
-            graphql_limit = key.tier.limits.get(zone__slug="graphapi")
-        except Key.DoesNotExist:
-            pass
+        graphql_limit = request.user.get_tier_details()["v2"]
 
     subscriptions = request.user.subscriptions.filter(active=True).order_by(
         "-created_at"
@@ -199,17 +194,8 @@ def request_key(request):
     primary_email = request.user.emailaddress_set.filter(primary=True, verified=True)
     if not primary_email:
         messages.warning(request, "Must verify your email address to obtain API Key.")
-    else:
+    elif request.user.api_tier == "inactive":
+        request.user.api_tier = "default"
         primary_email = primary_email[0].email
-        try:
-            Key.objects.get(email=primary_email)
-            messages.warning(request, "Key already exists.")
-        except Key.DoesNotExist:
-            messages.success(request, "Your API Key is ready to use!")
-            Key.objects.create(
-                tier=Tier.objects.get(slug="default"),
-                status="a",
-                email=primary_email,
-                name=primary_email,
-            )
+        messages.success(request, "Your API Key is ready to use!")
     return redirect("/accounts/profile/")

@@ -74,7 +74,7 @@ else:
         "django.template.loaders.filesystem.Loader",
         "django.template.loaders.app_directories.Loader",
     ]
-    GRAPHQL_DEMO_KEY = "graphiql-demo-key"
+    GRAPHQL_DEMO_KEY = "testkey"
     if "RECAPTCHA_PUBLIC_KEY" in os.environ:
         RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     if "RECAPTCHA_PRIVATE_KEY" in os.environ:

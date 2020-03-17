@@ -85,15 +85,20 @@ def verify(key, zone):
     return True
 
 
+def get_key_from_request(request):
+    key = request.META.get("HTTP_X_API_KEY")
+    if not key:
+        key = request.GET.get("apikey")
+    return key
+
+
 def verify_request(request, zone):
     ERROR_NOTE = (
         "Login and visit https://openstates.org/account/profile/ for your API key. "
         "contact@openstates.org to raise limits"
     )
 
-    key = request.META.get("HTTP_X_API_KEY")
-    if not key:
-        key = request.GET.get("apikey")
+    key = get_key_from_request(request)
 
     try:
         verify(key, zone)
