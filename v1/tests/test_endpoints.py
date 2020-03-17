@@ -15,20 +15,6 @@ def setup():
 
 
 @pytest.mark.django_db
-def test_removed_views(client):
-    resp = client.get("/api/v1/committees/")
-    assert resp.status_code == 200
-    assert resp.json() == []
-    resp = client.get("/api/v1/events/")
-    assert resp.status_code == 200
-    assert resp.json() == []
-    resp = client.get("/api/v1/committees/AKC000001/")
-    assert resp.status_code == 404
-    resp = client.get("/api/v1/events/AKE00000001/")
-    assert resp.status_code == 404
-
-
-@pytest.mark.django_db
 def test_metadata_detail(client, django_assert_num_queries):
     with django_assert_num_queries(4):
         resp = client.get("/api/v1/metadata/ak/")
