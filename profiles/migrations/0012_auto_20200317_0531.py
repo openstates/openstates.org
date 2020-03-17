@@ -7,9 +7,7 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("profiles", "0011_usagereport"),
-    ]
+    dependencies = [("profiles", "0011_usagereport")]
 
     operations = [
         migrations.AddField(
