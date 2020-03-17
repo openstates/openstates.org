@@ -6,6 +6,7 @@ u = User.objects.create_superuser("local", password="password", email="local@loc
 u.profile.api_key = "testkey"
 u.profile.api_tier = "unlimited"
 u.profile.save()
+u.emailaddress_set.create(email="local@localhost", verified=True, primary=True)
 
 
 # fb socialapp so that login page works
