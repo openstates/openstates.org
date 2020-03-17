@@ -6,7 +6,6 @@ from django.http import JsonResponse
 from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
-from django.conf import settings
 from structlog import get_logger
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
@@ -26,10 +25,7 @@ def jsonp(view_func):
         log = logger.bind(
             user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
             remote_addr=request.META.get("REMOTE_ADDR"),
-            api_key=request.META.get(
-                getattr(settings, "SIMPLEKEYS_HEADER", "HTTP_X_API_KEY"),
-                request.GET.get("apikey"),
-            ),
+            api_key=request.META.get("HTTP_X_API_KEY", request.GET.get("apikey")),
             url=request.path_info,
             params=request.GET,
         )
