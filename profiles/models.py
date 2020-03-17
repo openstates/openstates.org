@@ -1,18 +1,39 @@
 import uuid
 import urllib.parse
 import base62
+from collections import namedtuple
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from utils.common import pretty_url
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
-from simplekeys.models import Key
 from .utils import utcnow
 
 
 DAILY = "d"
 WEEKLY = "w"
+
+
+Limit = namedtuple("Limit", "daily_requests requests_per_second burst_size")
+KEY_TIERS = {
+    "inactive": {"name": "Not Yet Activated"},
+    "suspended": {"name": "Suspended"},
+    "demo": {"name": "Demo", "v2": Limit(1000, 5, 5)},
+    "unlimited": {
+        "name": "Unlimited",
+        "v1": Limit(1000000, 1000000, 1000000),
+        "v2": Limit(1000000, 1000000, 1000000),
+    },
+    "default": {
+        "name": "Default (new user)",
+        "v1": Limit(100, 1, 2),
+        "v2": Limit(500, 1, 2),
+    },
+    "bronze": {"name": "Bronze", "v1": Limit(3000, 2, 3), "v2": Limit(3000, 2, 3)},
+    "silver": {"name": "Silver", "v1": Limit(30000, 2, 5), "v2": Limit(30000, 2, 5)},
+}
+KEY_TIER_CHOICES = [(k, v["name"]) for k, v in KEY_TIERS.items()]
 
 
 class Profile(models.Model):
@@ -24,11 +45,24 @@ class Profile(models.Model):
     # feature flags
     feature_subscriptions = models.BooleanField(default=True)
 
+    # subscriptions
     subscription_emails_html = models.BooleanField(default=True)
     subscription_frequency = models.CharField(
         max_length=1, choices=((DAILY, "daily"), (WEEKLY, "weekly")), default=WEEKLY
     )
     subscription_last_checked = models.DateTimeField(default=utcnow)
+
+    # API key
+    api_key = models.CharField(max_length=40, unique=True, default=uuid.uuid4)
+    api_tier = models.SlugField(
+        max_length=50, choices=KEY_TIER_CHOICES, default="inactive"
+    )
+
+    def get_tier_details(self):
+        if self.api_tier not in KEY_TIERS:
+            # don't actually write to db on this call
+            self.api_tier = "inactive"
+        return KEY_TIERS[self.api_tier]
 
     def __str__(self):
         return f"Profile for {self.user}"
@@ -142,7 +176,9 @@ class Notification(models.Model):
 
 
 class UsageReport(models.Model):
-    key = models.ForeignKey(Key, related_name="usage_reports", on_delete=models.CASCADE)
+    key = models.ForeignKey(
+        Profile, related_name="usage_reports", on_delete=models.CASCADE
+    )
     date = models.DateField()
     endpoint = models.CharField(max_length=100)
     calls = models.PositiveIntegerField()
