@@ -42,3 +42,6 @@ collected_static
 
 # ansible
 *.retry
+
+# database dumps
+*.pgdump
