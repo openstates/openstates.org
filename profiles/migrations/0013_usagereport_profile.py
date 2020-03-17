@@ -17,6 +17,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="usage_reports",
                 to="profiles.Profile",
+                null=True,
             ),
         )
     ]

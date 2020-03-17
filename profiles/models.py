@@ -179,7 +179,11 @@ class Notification(models.Model):
 class UsageReport(models.Model):
     key = models.ForeignKey(Key, related_name="usage_reports", on_delete=models.CASCADE)
     profile = models.ForeignKey(
-        Profile, related_name="usage_reports", on_delete=models.CASCADE, default=None
+        Profile,
+        related_name="usage_reports",
+        on_delete=models.CASCADE,
+        default=None,
+        null=True,
     )
     date = models.DateField()
     endpoint = models.CharField(max_length=100)
