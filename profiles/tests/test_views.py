@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
 from graphapi.tests.utils import populate_db
 from opencivicdata.core.models import Person
 from profiles.models import Subscription, Notification
@@ -242,6 +243,44 @@ def test_unsubscribe_email_param(client, user):
 
 
 @pytest.mark.django_db
-def test_unsubscribe_403(client, user):
+def test_unsubscribe_access_denied(client, user):
     resp = client.get("/accounts/profile/unsubscribe/")
     assert resp.status_code == 302
+
+
+@pytest.mark.django_db
+def test_request_key_success(client, user):
+    client.force_login(user)
+    user.emailaddress_set.create(email="test@example.com", primary=True, verified=True)
+    assert user.profile.api_tier == "inactive"
+    resp = client.post("/accounts/profile/request_key/")
+    messages = list(get_messages(resp.wsgi_request))
+    assert messages[0].level_tag == "success"
+    refreshed_user = User.objects.get()
+    assert refreshed_user.profile.api_tier == "default"
+
+
+@pytest.mark.django_db
+def test_request_key_errors(client, user):
+    # not logged in
+    resp = client.post("/accounts/profile/request_key/")
+    assert resp.status_code == 302
+
+    # no valid email
+    client.force_login(user)
+    resp = client.post("/accounts/profile/request_key/")
+    messages = list(get_messages(resp.wsgi_request))
+    assert messages[0].level_tag == "warning"
+    refreshed_user = User.objects.get()
+    assert refreshed_user.profile.api_tier == "inactive"
+
+    # valid email, but suspended
+    user.emailaddress_set.create(email="test@example.com", primary=True, verified=True)
+    user.profile.api_tier = "suspended"
+    user.profile.save()
+    client.force_login(user)
+    resp = client.post("/accounts/profile/request_key/")
+    messages = list(get_messages(resp.wsgi_request))
+    assert messages[0].level_tag == "warning"
+    refreshed_user = User.objects.get()
+    assert refreshed_user.profile.api_tier == "suspended"

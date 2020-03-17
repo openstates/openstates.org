@@ -6,7 +6,6 @@ from django.http import JsonResponse
 from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
-from django.conf import settings
 from structlog import get_logger
 from opencivicdata.legislative.models import Bill, LegislativeSession
 from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
@@ -14,22 +13,24 @@ from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
 from utils.common import jid_to_abbr, abbr_to_jid
 from utils.people import current_role_filters
 from utils.bills import search_bills
+from profiles.verifier import get_key_from_request, verify_request
 
 
 logger = get_logger("openstates")
 
 
-def jsonp(view_func):
+def api_method(view_func):
+    """ check API key, log, and wrap JSONP response """
+
     @functools.wraps(view_func)
     def new_view(request, *args, **kwargs):
-        callback = request.GET.get("callback")
+        error = verify_request(request, "v1")
+        if error:
+            return error
         log = logger.bind(
             user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
             remote_addr=request.META.get("REMOTE_ADDR"),
-            api_key=request.META.get(
-                getattr(settings, "SIMPLEKEYS_HEADER", "HTTP_X_API_KEY"),
-                request.GET.get("apikey"),
-            ),
+            api_key=get_key_from_request(request),
             url=request.path_info,
             params=request.GET,
         )
@@ -37,6 +38,7 @@ def jsonp(view_func):
         resp = view_func(request, *args, **kwargs)
         log = log.bind(duration=time.time() - start)
         log.info("v1")
+        callback = request.GET.get("callback")
         if callback:
             resp.content = bytes(callback, "utf8") + b"(" + resp.content + b")"
         return resp
@@ -101,21 +103,21 @@ def person_qs():
     )
 
 
-@jsonp
+@api_method
 def state_metadata(request, abbr):
     jid = abbr_to_jid(abbr.lower())
     jurisdiction = get_object_or_404(jurisdictions_qs(), pk=jid)
     return JsonResponse(v1_metadata(abbr.lower(), jurisdiction))
 
 
-@jsonp
+@api_method
 def all_metadata(request):
     return JsonResponse(
         [v1_metadata(jid_to_abbr(j.id), j) for j in jurisdictions_qs()], safe=False
     )
 
 
-@jsonp
+@api_method
 def legislator_detail(request, id):
     person = get_object_or_404(
         person_qs(), identifiers__scheme="legacy_openstates", identifiers__identifier=id
@@ -123,7 +125,7 @@ def legislator_detail(request, id):
     return JsonResponse(convert_legislator(person))
 
 
-@jsonp
+@api_method
 def legislator_list(request, geo=False):
     abbr = request.GET.get("state")
     chamber = request.GET.get("chamber")
@@ -171,7 +173,7 @@ def legislator_list(request, geo=False):
     return JsonResponse([convert_legislator(l) for l in people], safe=False)
 
 
-@jsonp
+@api_method
 def district_list(request, abbr, chamber=None):
     jid = abbr_to_jid(abbr)
     if chamber is None:
@@ -189,7 +191,7 @@ def district_list(request, abbr, chamber=None):
     return JsonResponse([convert_post(p) for p in posts], safe=False)
 
 
-@jsonp
+@api_method
 def bill_detail(
     request, abbr=None, session=None, bill_id=None, chamber=None, billy_bill_id=None
 ):
@@ -213,7 +215,7 @@ def bill_detail(
     return JsonResponse(convert_bill(bill, include_votes=True))
 
 
-@jsonp
+@api_method
 def bill_list(request):
     state = request.GET.get("state")
     chamber = request.GET.get("chamber")

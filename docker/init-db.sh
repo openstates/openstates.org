@@ -15,6 +15,8 @@ FILE=data.pgdump
 if [ ! -f "$FILE" ]; then
   wget https://data.openstates.org/postgres/monthly/$WHICH-public.pgdump -O $FILE
 fi
+
+echo "beginning database restore, will take a while..."
 PGPASSWORD=openstates pg_restore --host db --user openstates -d openstatesorg $FILE;
 # rm $FILE;
 

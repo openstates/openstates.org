@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import User
 from graphapi.tests.utils import populate_db
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
@@ -12,12 +13,27 @@ def setup():
     LegacyBillMapping.objects.create(
         legacy_id="AKB00000001", bill=Bill.objects.get(identifier="HB 1")
     )
+    u = User.objects.create(username="testkey")
+    u.profile.api_key = "testkey"
+    u.profile.api_tier = "unlimited"
+    u.profile.save()
+
+
+HEADERS = {"HTTP_X_API_KEY": "testkey"}
+
+
+@pytest.mark.django_db
+def test_no_api_key(client, django_assert_num_queries):
+    with django_assert_num_queries(1):
+        resp = client.get("/api/v1/metadata/ak/")
+        assert resp.status_code == 403
+        assert resp.json()["error"] == "no valid key"
 
 
 @pytest.mark.django_db
 def test_metadata_detail(client, django_assert_num_queries):
-    with django_assert_num_queries(4):
-        resp = client.get("/api/v1/metadata/ak/")
+    with django_assert_num_queries(5):
+        resp = client.get("/api/v1/metadata/ak/", **HEADERS)
         assert resp.status_code == 200
         assert resp.json() == {
             "id": "ak",
@@ -79,15 +95,15 @@ def test_metadata_detail(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_metadata_list(client, django_assert_num_queries):
-    with django_assert_num_queries(4):
-        resp = client.get("/api/v1/metadata/")
+    with django_assert_num_queries(5):
+        resp = client.get("/api/v1/metadata/", **HEADERS)
         assert resp.status_code == 200
 
 
 @pytest.mark.django_db
 def test_bill_detail(client, django_assert_num_queries):
-    with django_assert_num_queries(19):
-        resp = client.get("/api/v1/bills/ak/2018/HB 1/")
+    with django_assert_num_queries(20):
+        resp = client.get("/api/v1/bills/ak/2018/HB 1/", **HEADERS)
         assert resp.status_code == 200
         bill = resp.json()
         bill.pop("created_at")
@@ -146,75 +162,87 @@ def test_bill_detail(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bill_detail_alternate_forms(client):
-    resp = client.get("/api/v1/bills/ak/2018/HB 1/").json()
-    assert client.get("/api/v1/bills/ak/2018/lower/HB 1/").json() == resp
-    assert client.get("/api/v1/bills/AKB00000001/").json() == resp
+    resp = client.get("/api/v1/bills/ak/2018/HB 1/", **HEADERS).json()
+    assert client.get("/api/v1/bills/ak/2018/lower/HB 1/", **HEADERS).json() == resp
+    assert client.get("/api/v1/bills/AKB00000001/", **HEADERS).json() == resp
 
 
 @pytest.mark.django_db
 def test_bill_list_basic(client, django_assert_num_queries):
-    with django_assert_num_queries(13):
+    with django_assert_num_queries(14):
         # need updated_since on there to avoid too-big detection
-        resp = client.get("/api/v1/bills/?updated_since=2017-01-01")
+        resp = client.get("/api/v1/bills/?updated_since=2017-01-01", **HEADERS)
         assert len(resp.json()) == 26
         assert resp.status_code == 200
 
 
 @pytest.mark.django_db
 def test_bill_list_state_param(client):
-    wy = client.get("/api/v1/bills/?state=wy&updated_since=2017-01-01")
-    ak = client.get("/api/v1/bills/?state=ak&updated_since=2017-01-01")
+    wy = client.get("/api/v1/bills/?state=wy&updated_since=2017-01-01", **HEADERS)
+    ak = client.get("/api/v1/bills/?state=ak&updated_since=2017-01-01", **HEADERS)
     assert len(wy.json()) + len(ak.json()) == 26
 
 
 @pytest.mark.django_db
 def test_bill_list_chamber_param(client):
-    wy = client.get("/api/v1/bills/?state=wy&updated_since=2017-01-01")
-    upper = client.get("/api/v1/bills/?state=wy&chamber=upper&updated_since=2017-01-01")
-    lower = client.get("/api/v1/bills/?state=wy&chamber=lower&updated_since=2017-01-01")
+    wy = client.get("/api/v1/bills/?state=wy&updated_since=2017-01-01", **HEADERS)
+    upper = client.get(
+        "/api/v1/bills/?state=wy&chamber=upper&updated_since=2017-01-01", **HEADERS
+    )
+    lower = client.get(
+        "/api/v1/bills/?state=wy&chamber=lower&updated_since=2017-01-01", **HEADERS
+    )
     assert len(upper.json()) + len(lower.json()) == len(wy.json())
 
 
 @pytest.mark.django_db
 def test_bill_list_bill_id_param(client):
-    hb1 = client.get("/api/v1/bills/?bill_id=HB 1")
+    hb1 = client.get("/api/v1/bills/?bill_id=HB 1", **HEADERS)
     assert len(hb1.json()) == 1
 
 
 @pytest.mark.django_db
 def test_bill_list_q_param(client):
-    moose = client.get("/api/v1/bills/?q=moose")
+    moose = client.get("/api/v1/bills/?q=moose", **HEADERS)
     assert len(moose.json()) == 1
     assert moose.json()[0]["title"] == "Moose Freedom Act"
 
 
 @pytest.mark.django_db
 def test_bill_list_search_window_param(client):
-    wy = client.get("/api/v1/bills/?state=wy&updated_since=2017-01-01")
-    session2017 = client.get("/api/v1/bills/?state=wy&search_window=session:2017")
-    session2018 = client.get("/api/v1/bills/?state=wy&search_window=session:2018")
-    session_now = client.get("/api/v1/bills/?state=wy&search_window=session")
+    wy = client.get("/api/v1/bills/?state=wy&updated_since=2017-01-01", **HEADERS)
+    session2017 = client.get(
+        "/api/v1/bills/?state=wy&search_window=session:2017", **HEADERS
+    )
+    session2018 = client.get(
+        "/api/v1/bills/?state=wy&search_window=session:2018", **HEADERS
+    )
+    session_now = client.get("/api/v1/bills/?state=wy&search_window=session", **HEADERS)
     assert len(session2017.json()) + len(session2018.json()) == len(wy.json())
     assert session2018.json() == session_now.json()
 
 
 @pytest.mark.django_db
 def test_bill_list_updated_since_param(client):
-    since = client.get("/api/v1/bills/?updated_since=2018-01-01")
+    since = client.get("/api/v1/bills/?updated_since=2018-01-01", **HEADERS)
     assert len(since.json()) == 26
-    since = client.get("/api/v1/bills/?updated_since=2038-01-01")
+    since = client.get("/api/v1/bills/?updated_since=2038-01-01", **HEADERS)
     assert len(since.json()) == 0
 
 
 @pytest.mark.django_db
 def test_bill_list_sort(client):
-    all = client.get("/api/v1/bills/?sort=created_at&updated_since=2017-01-01").json()
+    all = client.get(
+        "/api/v1/bills/?sort=created_at&updated_since=2017-01-01", **HEADERS
+    ).json()
     assert all[0]["created_at"] >= all[10]["created_at"] >= all[-1]["created_at"]
 
     some_bill = Bill.objects.all()[16]
     some_bill.title = "latest updated"
     some_bill.save()
-    all = client.get("/api/v1/bills/?sort=updated_at&updated_since=2017-01-01").json()
+    all = client.get(
+        "/api/v1/bills/?sort=updated_at&updated_since=2017-01-01", **HEADERS
+    ).json()
     assert all[0]["updated_at"] >= all[10]["updated_at"] >= all[-1]["updated_at"]
     assert all[0]["title"] == "latest updated"
 
@@ -224,8 +252,8 @@ def test_legislator_detail(client, django_assert_num_queries):
     leg = Person.objects.get(name="Amanda Adams")
     leg.identifiers.create(scheme="legacy_openstates", identifier="AKL000001")
 
-    with django_assert_num_queries(8):
-        resp = client.get("/api/v1/legislators/AKL000001/")
+    with django_assert_num_queries(9):
+        resp = client.get("/api/v1/legislators/AKL000001/", **HEADERS)
         assert resp.status_code == 200
         resp = resp.json()
         resp.pop("updated_at")
@@ -270,27 +298,27 @@ def test_legislator_detail(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_legislator_list_basic(client, django_assert_num_queries):
-    with django_assert_num_queries(8):
-        resp = client.get("/api/v1/legislators/")
+    with django_assert_num_queries(9):
+        resp = client.get("/api/v1/legislators/", **HEADERS)
         assert resp.status_code == 200
 
 
 @pytest.mark.django_db
 def test_legislator_list_params(client, django_assert_num_queries):
     # check state filter
-    resp = client.get("/api/v1/legislators/")
+    resp = client.get("/api/v1/legislators/", **HEADERS)
     assert len(resp.json()) == 8
-    resp = client.get("/api/v1/legislators/?state=wy")
+    resp = client.get("/api/v1/legislators/?state=wy", **HEADERS)
     assert len(resp.json()) == 2
 
     # check chamber filter
-    resp = client.get("/api/v1/legislators/?state=ak&chamber=upper")
+    resp = client.get("/api/v1/legislators/?state=ak&chamber=upper", **HEADERS)
     assert len(resp.json()) == 2
-    resp = client.get("/api/v1/legislators/?state=ak&chamber=lower")
+    resp = client.get("/api/v1/legislators/?state=ak&chamber=lower", **HEADERS)
     assert len(resp.json()) == 4
 
     # district filter
-    resp = client.get("/api/v1/legislators/?district=1")
+    resp = client.get("/api/v1/legislators/?district=1", **HEADERS)
     assert len(resp.json()) == 3
 
 
@@ -301,8 +329,8 @@ def test_legislator_list_params(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_districts_list(client, django_assert_num_queries):
-    with django_assert_num_queries(1):
-        resp = client.get("/api/v1/districts/ak/")
+    with django_assert_num_queries(2):
+        resp = client.get("/api/v1/districts/ak/", **HEADERS)
         assert resp.status_code == 200
         assert len(resp.json()) == 8
         expected = {
@@ -318,20 +346,20 @@ def test_districts_list(client, django_assert_num_queries):
         assert expected in resp.json()
 
     # test filtering by URL
-    resp = client.get("/api/v1/districts/ak/upper/")
+    resp = client.get("/api/v1/districts/ak/upper/", **HEADERS)
     assert len(resp.json()) == 3
-    resp = client.get("/api/v1/districts/ak/lower/")
+    resp = client.get("/api/v1/districts/ak/lower/", **HEADERS)
     assert len(resp.json()) == 5
 
 
 @pytest.mark.django_db
 def test_since_truncation(client):
-    resp = client.get("/api/v1/bills/?updated_since=2020-01-01 11:21:12")
+    resp = client.get("/api/v1/bills/?updated_since=2020-01-01 11:21:12", **HEADERS)
     assert resp.status_code == 200
 
 
 @pytest.mark.django_db
 def test_search_window_message(client):
-    resp = client.get("/api/v1/bills/?search_window=term:2020&state=ca")
+    resp = client.get("/api/v1/bills/?search_window=term:2020&state=ca", **HEADERS)
     assert resp.status_code == 400
     assert b"invalid search_window" in resp.content

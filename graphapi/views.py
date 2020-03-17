@@ -1,8 +1,7 @@
 import time
-from simplekeys.verifier import verify_request
 from graphene_django.views import GraphQLView
 from django.conf import settings
-import newrelic
+from profiles.verifier import verify_request, get_key_from_request
 from structlog import get_logger
 
 
@@ -16,23 +15,14 @@ class KeyedGraphQLView(GraphQLView):
         log = logger.bind(
             user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
             remote_addr=request.META.get("REMOTE_ADDR"),
-            api_key=request.META.get(
-                getattr(settings, "SIMPLEKEYS_HEADER", "HTTP_X_API_KEY")
-            ),
+            api_key=get_key_from_request(request),
             query=data.get("query") or request.GET.get("query"),
         )
         start = time.time()
 
         # check key only if we're not handling a graphiql request
         if not show_graphiql:
-            newrelic.agent.add_custom_parameter(
-                "key",
-                request.META.get(
-                    getattr(settings, "SIMPLEKEYS_HEADER", "HTTP_X_API_KEY")
-                ),
-            )
-            newrelic.agent.add_custom_parameter("request-data", data)
-            error = verify_request(request, "graphapi")
+            error = verify_request(request, "v2")
             if error:
                 log = log.bind(
                     error=error,

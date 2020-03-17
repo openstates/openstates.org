@@ -5,7 +5,6 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse, HttpResponseBadRequest
-from simplekeys.models import Key, Tier
 from .models import Subscription, Profile, Notification, WEEKLY
 
 
@@ -38,17 +37,6 @@ def profile(request):
         messages.success(request, "Updated profile settings.")
 
     primary = request.user.emailaddress_set.get(primary=True)
-
-    # only get their key if the email is verified
-    key = None
-    graphql_limit = None
-    if primary.verified:
-        try:
-            key = Key.objects.get(email=primary.email)
-            graphql_limit = key.tier.limits.get(zone__slug="graphapi")
-        except Key.DoesNotExist:
-            pass
-
     subscriptions = request.user.subscriptions.filter(active=True).order_by(
         "-created_at"
     )
@@ -56,12 +44,7 @@ def profile(request):
     return render(
         request,
         "account/profile.html",
-        {
-            "primary_email": primary,
-            "key": key,
-            "subscriptions": subscriptions,
-            "graphql_limit": graphql_limit,
-        },
+        {"primary_email": primary, "subscriptions": subscriptions},
     )
 
 
@@ -199,17 +182,10 @@ def request_key(request):
     primary_email = request.user.emailaddress_set.filter(primary=True, verified=True)
     if not primary_email:
         messages.warning(request, "Must verify your email address to obtain API Key.")
+    elif request.user.profile.api_tier == "inactive":
+        request.user.profile.api_tier = "default"
+        request.user.profile.save()
+        messages.success(request, "Your API Key is ready to use!")
     else:
-        primary_email = primary_email[0].email
-        try:
-            Key.objects.get(email=primary_email)
-            messages.warning(request, "Key already exists.")
-        except Key.DoesNotExist:
-            messages.success(request, "Your API Key is ready to use!")
-            Key.objects.create(
-                tier=Tier.objects.get(slug="default"),
-                status="a",
-                email=primary_email,
-                name=primary_email,
-            )
+        messages.warning(request, "Could not change status of key.")
     return redirect("/accounts/profile/")

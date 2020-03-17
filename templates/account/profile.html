@@ -70,18 +70,14 @@
 <hr>
 <section>
   <h2 class="heading">API Key</h2>
-  {% if key %}
+  {% if request.user.profile.api_tier != "inactive" %}
   <dl class="apikey_details">
     <dt>API Key</dt>
-    <dd><pre class="apikey">{{ key.key }}</dd>
-    <dt>Status</dt>
-    <dd>{{ key.get_status_display }} </dd>
+    <dd><pre class="apikey">{{ request.user.profile.api_key }}</dd>
     <dt>Tier</dt>
-    <dd>{{ key.tier }}</dd>
-    {% if graphql_limit %}
-    <dd>{{ graphql_limit.quota_requests }} {{ graphql_limit.get_quota_period_display }} requests</dd>
-    <dd>{{ graphql_limit.requests_per_second }} requests/sec</dd>
-    {% endif %}
+    <dd>{{ request.user.profile.get_tier_details.name }} </dd>
+    <dd>{{ request.user.profile.get_tier_details.v2.daily_requests }} daily requests</dd>
+    <dd>{{ request.user.profile.get_tier_details.v2.requests_per_second }} requests/sec</dd>
   </dl>
   <p>
    To use the API check out the <a href="https://docs.openstates.org/en/latest/api/v2/">API Documentation</a>, and ask questions over at our <a href="https://discourse.openstates.org/">Discourse</a>.
