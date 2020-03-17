@@ -194,8 +194,10 @@ def request_key(request):
     primary_email = request.user.emailaddress_set.filter(primary=True, verified=True)
     if not primary_email:
         messages.warning(request, "Must verify your email address to obtain API Key.")
-    elif request.user.api_tier == "inactive":
-        request.user.api_tier = "default"
-        primary_email = primary_email[0].email
+    elif request.user.profile.api_tier == "inactive":
+        request.user.profile.api_tier = "default"
+        request.user.profile.save()
         messages.success(request, "Your API Key is ready to use!")
+    else:
+        messages.warning(request, "Could not change status of key.")
     return redirect("/accounts/profile/")
