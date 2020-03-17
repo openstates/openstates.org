@@ -8,6 +8,7 @@ from django.contrib.postgres.fields import ArrayField
 from utils.common import pretty_url
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
+from simplekeys.models import Key
 from .utils import utcnow
 
 
@@ -53,7 +54,7 @@ class Profile(models.Model):
     subscription_last_checked = models.DateTimeField(default=utcnow)
 
     # API key
-    api_key = models.CharField(max_length=40, unique=True, default=uuid.uuid4)
+    api_key = models.CharField(max_length=40, default="")
     api_tier = models.SlugField(
         max_length=50, choices=KEY_TIER_CHOICES, default="inactive"
     )
@@ -176,9 +177,7 @@ class Notification(models.Model):
 
 
 class UsageReport(models.Model):
-    key = models.ForeignKey(
-        Profile, related_name="usage_reports", on_delete=models.CASCADE
-    )
+    key = models.ForeignKey(Key, related_name="usage_reports", on_delete=models.CASCADE)
     date = models.DateField()
     endpoint = models.CharField(max_length=100)
     calls = models.PositiveIntegerField()
