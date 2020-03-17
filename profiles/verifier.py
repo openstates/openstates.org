@@ -25,7 +25,7 @@ class CacheBackend:
 
     def get_tokens_and_timestamp(self, key, zone):
         kz = "{}~{}".format(key, zone)
-        return self.cache.get_or_set(kz, (0, None), self.timeout)
+        return self.cache.get_or_set(kz, lambda: (0, None), self.timeout)
 
     def set_token_count(self, key, zone, tokens):
         kz = "{}~{}".format(key, zone)
