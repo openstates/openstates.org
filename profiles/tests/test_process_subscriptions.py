@@ -202,7 +202,7 @@ def test_send_email_simple_bill_no_email(user, mailoutbox):
 
     # can't send without a verified email
     user.emailaddress_set.update(verified=False)
-    with pytest.raises(ValueError):
+    with pytest.raises(SkipCheck):
         send_subscription_email(user, [], bill_updates)
     assert Notification.objects.count() == 0
 
