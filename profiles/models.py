@@ -8,7 +8,6 @@ from django.contrib.postgres.fields import ArrayField
 from utils.common import pretty_url
 from opencivicdata.core.models import Person
 from opencivicdata.legislative.models import Bill
-from simplekeys.models import Key
 from .utils import utcnow
 
 
@@ -177,7 +176,6 @@ class Notification(models.Model):
 
 
 class UsageReport(models.Model):
-    key = models.ForeignKey(Key, related_name="usage_reports", on_delete=models.CASCADE)
     profile = models.ForeignKey(
         Profile,
         related_name="usage_reports",
@@ -191,4 +189,4 @@ class UsageReport(models.Model):
     total_duration_seconds = models.PositiveIntegerField()
 
     class Meta:
-        unique_together = ("key", "date", "endpoint")
+        unique_together = ("profile", "date", "endpoint")
