@@ -1,4 +1,5 @@
 import json
+import uuid
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
@@ -182,7 +183,11 @@ def request_key(request):
     primary_email = request.user.emailaddress_set.filter(primary=True, verified=True)
     if not primary_email:
         messages.warning(request, "Must verify your email address to obtain API Key.")
-    elif request.user.profile.api_tier == "inactive":
+    elif (
+        request.user.profile.api_tier == "inactive" or not request.user.profile.api_key
+    ):
+        if not request.user.profile.api_key:
+            request.user.profile.api_key = uuid.uuid4()
         request.user.profile.api_tier = "default"
         request.user.profile.save()
         messages.success(request, "Your API Key is ready to use!")
