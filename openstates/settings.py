@@ -128,7 +128,6 @@ INSTALLED_APPS = [
     "v1",
     "bulk",
     "profiles.apps.ProfilesConfig",
-    "simplekeys",
 ]
 
 MIDDLEWARE = [

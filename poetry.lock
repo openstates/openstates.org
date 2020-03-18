@@ -214,20 +214,6 @@ six = "*"
 
 [[package]]
 category = "main"
-description = "Django API Key management & validation"
-name = "django-simplekeys"
-optional = false
-python-versions = "*"
-version = "0.5.3"
-
-[package.dependencies]
-Django = "*"
-
-[package.extras]
-dev = ["freezegun", "flake8", "sphinx", "sphinx-rtd-theme"]
-
-[[package]]
-category = "main"
 description = "Transparently use webpack with django"
 name = "django-webpack-loader"
 optional = false
@@ -1064,7 +1050,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "0e2de967e1222b5cb0dc94bd721b44630a1ed2247928b3b29d058857e765d8ab"
+content-hash = "3e6f66f783b42dd3521e0efad767d59df2a19e0d8dedd54cf459e84b7845f5e5"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1145,10 +1131,6 @@ django-recaptcha = [
 django-redis-cache = [
     {file = "django-redis-cache-2.1.0.tar.gz", hash = "sha256:5c581743de5994e6b15abfd5b3dbcb8bf00e42d97658c96b7218bcb6a63f863b"},
     {file = "django_redis_cache-2.1.0-py3-none-any.whl", hash = "sha256:bc0eaf20d275708e0437cbea28f9965e1922c15291f6206edbef3966c029836b"},
-]
-django-simplekeys = [
-    {file = "django-simplekeys-0.5.3.tar.gz", hash = "sha256:65d1119ad43b3dc1853b1ca5be9db54c0aaeee2e4136c7c480c0a096d1ca37df"},
-    {file = "django_simplekeys-0.5.3-py2.py3-none-any.whl", hash = "sha256:a926eb5e9a83be34516871d1f432555623d377593ceca5422141a377a070f652"},
 ]
 django-webpack-loader = [
     {file = "django-webpack-loader-0.6.0.tar.gz", hash = "sha256:60bab6b9a037a5346fad12d2a70a6bc046afb33154cf75ed640b93d3ebd5f520"},
