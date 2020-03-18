@@ -93,12 +93,13 @@ def api_overview(request):
     key_usage = defaultdict(lambda: defaultdict(int))
     key_totals = Counter()
 
-    reports = list(UsageReport.objects.all())
+    reports = list(UsageReport.objects.all().select_related("profile__user"))
     for report in reports:
         date = str(report.date)
+        key = f"{report.profile.api_key} - {report.profile.user.email}"
         endpoint_usage[date][report.endpoint] += report.calls
-        key_usage[date][str(report.key)] += report.calls
-        key_totals[str(report.key)] += report.calls
+        key_usage[date][key] += report.calls
+        key_totals[key] += report.calls
 
     context = {
         "endpoint_usage": _counter_to_chartdata(endpoint_usage),
