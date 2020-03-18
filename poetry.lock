@@ -202,18 +202,6 @@ django = ">1.11,<4.0"
 
 [[package]]
 category = "main"
-description = "Redis Cache Backend for Django"
-name = "django-redis-cache"
-optional = false
-python-versions = "*"
-version = "2.1.0"
-
-[package.dependencies]
-redis = "<4.0"
-six = "*"
-
-[[package]]
-category = "main"
 description = "Transparently use webpack with django"
 name = "django-webpack-loader"
 optional = false
@@ -786,17 +774,6 @@ version = "2019.3"
 
 [[package]]
 category = "main"
-description = "Python client for Redis key-value store"
-name = "redis"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "3.4.1"
-
-[package.extras]
-hiredis = ["hiredis (>=0.1.3)"]
-
-[[package]]
-category = "main"
 description = "A web API to geographic boundaries loaded from shapefiles, packaged as a Django app."
 name = "represent-boundaries"
 optional = false
@@ -1050,7 +1027,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "3e6f66f783b42dd3521e0efad767d59df2a19e0d8dedd54cf459e84b7845f5e5"
+content-hash = "58e35cb35da17686cb61e3d0883d1907c1c1dc8676ab5dc4e691c039d1ef5218"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1127,10 +1104,6 @@ django-cors-headers = [
 ]
 django-recaptcha = [
     {file = "django_recaptcha-2.0.6-py2.py3-none-any.whl", hash = "sha256:567784963fd5400feaf92e8951d8dbbbdb4b4c48a76e225d4baa63a2c9d2cd8c"},
-]
-django-redis-cache = [
-    {file = "django-redis-cache-2.1.0.tar.gz", hash = "sha256:5c581743de5994e6b15abfd5b3dbcb8bf00e42d97658c96b7218bcb6a63f863b"},
-    {file = "django_redis_cache-2.1.0-py3-none-any.whl", hash = "sha256:bc0eaf20d275708e0437cbea28f9965e1922c15291f6206edbef3966c029836b"},
 ]
 django-webpack-loader = [
     {file = "django-webpack-loader-0.6.0.tar.gz", hash = "sha256:60bab6b9a037a5346fad12d2a70a6bc046afb33154cf75ed640b93d3ebd5f520"},
@@ -1344,10 +1317,6 @@ python3-openid = [
 pytz = [
     {file = "pytz-2019.3-py2.py3-none-any.whl", hash = "sha256:1c557d7d0e871de1f5ccd5833f60fb2550652da6be2693c1e02300743d21500d"},
     {file = "pytz-2019.3.tar.gz", hash = "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"},
-]
-redis = [
-    {file = "redis-3.4.1-py2.py3-none-any.whl", hash = "sha256:b205cffd05ebfd0a468db74f0eedbff8df1a7bfc47521516ade4692991bb0833"},
-    {file = "redis-3.4.1.tar.gz", hash = "sha256:0dcfb335921b88a850d461dc255ff4708294943322bd55de6cfd68972490ca1f"},
 ]
 represent-boundaries = [
     {file = "represent-boundaries-0.9.4.tar.gz", hash = "sha256:dd78e6d42e15a3ba18d8ee70904f2be548b8e7dff00086450958e05214a35684"},
