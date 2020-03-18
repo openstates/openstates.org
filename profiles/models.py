@@ -54,7 +54,7 @@ class Profile(models.Model):
     subscription_last_checked = models.DateTimeField(default=utcnow)
 
     # API key
-    api_key = models.CharField(max_length=40, default="")
+    api_key = models.CharField(max_length=40, default=uuid.uuid4)
     api_tier = models.SlugField(
         max_length=50, choices=KEY_TIER_CHOICES, default="inactive"
     )
