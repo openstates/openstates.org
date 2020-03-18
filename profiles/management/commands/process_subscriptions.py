@@ -85,7 +85,7 @@ def send_subscription_email(user, query_updates, bill_updates, dry_run=False):
 
     verified_email = user.emailaddress_set.filter(primary=True, verified=True)
     if not verified_email:
-        raise ValueError("user does not have a verified email: " + str(user))
+        raise SkipCheck("user does not have a verified email: " + str(user))
     verified_email = verified_email[0].email
 
     if dry_run:
