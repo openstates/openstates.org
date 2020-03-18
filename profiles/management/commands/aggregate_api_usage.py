@@ -2,8 +2,7 @@ import re
 import json
 from collections import defaultdict, Counter
 from django.core.management.base import BaseCommand
-from simplekeys.models import Key
-from ...models import UsageReport
+from ...models import UsageReport, Profile
 
 v1_endpoint_mapping = [
     ("^/api/v1/legislators/geo/$", "v1.geo"),
@@ -68,7 +67,7 @@ class Command(BaseCommand):
                 oldest_day = day
         print(f"found logs from {oldest_day} to {newest_day}, dropping {oldest_day}")
 
-        keys = {key.key: key for key in Key.objects.all()}
+        keys = {key.api_key: key for key in Profile.objects.all()}
 
         for day, counter in self.count_by_day.items():
             # skip oldest day
@@ -81,13 +80,13 @@ class Command(BaseCommand):
 
                 # convert key
                 try:
-                    key = keys[key]
+                    profile = keys[key]
                 except KeyError:
                     print(f"unknown key {key} with {calls} calls")
                     continue
 
                 UsageReport.objects.update_or_create(
-                    key=key,
+                    profile=profile,
                     date=day,
                     endpoint=endpoint,
                     defaults=dict(calls=calls, total_duration_seconds=duration),
