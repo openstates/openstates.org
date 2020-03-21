@@ -76,9 +76,21 @@
     <dd><pre class="apikey">{{ request.user.profile.api_key }}</dd>
     <dt>Tier</dt>
     <dd>{{ request.user.profile.get_tier_details.name }} </dd>
+    <dt>GraphQL Limits</dt>
     <dd>{{ request.user.profile.get_tier_details.v2.daily_requests }} daily requests</dd>
     <dd>{{ request.user.profile.get_tier_details.v2.requests_per_second }} requests/sec</dd>
+    <dt>API v1 Limits</dt>
+    <dd>{{ request.user.profile.get_tier_details.v1.daily_requests }} daily requests</dd>
+    <dd>{{ request.user.profile.get_tier_details.v1.requests_per_second }} requests/sec</dd>
   </dl>
+  {% if recent_usage %}
+  <table>
+  <tr><th>Day</th><th>v1 Calls</th><th>v2 Calls</th></tr>
+  {% for day, segment in recent_usage %}
+  <tr><td>{{ day }}</td><td>{{ segment.v1 }}</td><td>{{ segment.v2 }}</td></tr>
+  {% endfor %}
+  </table>
+  {% endif %}
   <p>
    To use the API check out the <a href="https://docs.openstates.org/en/latest/api/v2/">API Documentation</a>, and ask questions over at our <a href="https://discourse.openstates.org/">Discourse</a>.
   </p>

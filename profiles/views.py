@@ -1,5 +1,7 @@
 import json
 import uuid
+import datetime
+from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
@@ -41,11 +43,23 @@ def profile(request):
     subscriptions = request.user.subscriptions.filter(active=True).order_by(
         "-created_at"
     )
+    recent_usage = defaultdict(lambda: {"v1": 0, "v2": 0})
+    for r in request.user.profile.usage_reports.filter(
+        date__gt=datetime.date.today() - datetime.timedelta(days=7)
+    ):
+        if r.endpoint.startswith("v1"):
+            recent_usage[r.date]["v1"] += r.calls
+        elif r.endpoint == "graphql":
+            recent_usage[r.date]["v2"] += r.calls
 
     return render(
         request,
         "account/profile.html",
-        {"primary_email": primary, "subscriptions": subscriptions},
+        {
+            "primary_email": primary,
+            "subscriptions": subscriptions,
+            "recent_usage": sorted(dict(recent_usage).items(), reverse=True),
+        },
     )
 
 
