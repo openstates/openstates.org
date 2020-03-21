@@ -8,6 +8,7 @@ import boto3
 import base62
 from django.core.management.base import BaseCommand
 from django.db.models import F
+from openstates_metadata import STATES_BY_NAME
 from opencivicdata.legislative.models import (
     LegislativeSession,
     Bill,
@@ -280,13 +281,37 @@ def upload_and_publish(state, session, filename, data_type):
     )
 
 
+def get_available_sessions(state):
+    return [
+        s.identifier
+        for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
+    ]
+
+
+def export_data(state, session, data_type):
+    if data_type == "csv":
+        filename = export_session_csv(state, session)
+    else:
+        filename = export_session_json(state, session)
+    if filename:
+        upload_and_publish(state, session, filename, data_type)
+
+
+def export_all_states(data_type):
+    for state in STATES_BY_NAME.values():
+        print(state.abbr)
+        for session in get_available_sessions(state.abbr):
+            print(session)
+            # export_data(state.abbr, session, data_type)
+
+
 class Command(BaseCommand):
     help = "export data as CSV"
 
     def add_arguments(self, parser):
         parser.add_argument("state")
         parser.add_argument("sessions", nargs="*")
-        parser.add_argument("--all", action="store_true")
+        parser.add_argument("--all-sessions", action="store_true")
         parser.add_argument("--format")
 
     def handle(self, *args, **options):
@@ -294,13 +319,15 @@ class Command(BaseCommand):
         if data_type not in ("csv", "json"):
             raise ValueError("--format must be csv or json")
         state = options["state"]
-        sessions = [
-            s.identifier
-            for s in LegislativeSession.objects.filter(
-                jurisdiction_id=abbr_to_jid(state)
-            )
-        ]
-        if options["all"]:
+
+        # special case
+        if state == "all":
+            export_all_states(data_type)
+            return
+
+        sessions = get_available_sessions(state)
+
+        if options["all-sessions"]:
             options["sessions"] = sessions
         if not options["sessions"]:
             print("available sessions:")
@@ -309,9 +336,4 @@ class Command(BaseCommand):
         else:
             for session in options["sessions"]:
                 if session in sessions:
-                    if data_type == "csv":
-                        filename = export_session_csv(state, session)
-                    else:
-                        filename = export_session_json(state, session)
-                    if filename:
-                        upload_and_publish(state, session, filename, data_type)
+                    export_data(state, session, data_type)
