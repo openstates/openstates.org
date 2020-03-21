@@ -88,6 +88,14 @@ DATABASE_URL = os.environ.get(
 DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
 
+if "CACHE_URL" in os.environ:
+    CACHES = {
+        "default": {
+            "BACKEND": "redis_cache.RedisCache",
+            "LOCATION": os.environ["CACHE_URL"],
+        }
+    }
+
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 
