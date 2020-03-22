@@ -135,21 +135,35 @@ export default class APIDashboard extends React.Component {
       <div>
         <div className="numeric-summary">
           <div>
-            <span>{this.props.user_count}</span>
-            <span>Users</span>
+            <span>{this.props.total_keys}</span>
+            <span>Issued Keys</span>
           </div>
           <div>
-            <span>{this.props.subscriber_count}</span>
-            <span>Subscribing Users</span>
+            <span>{this.props.active_keys}</span>
+            <span>Active Keys</span>
           </div>
-          <div>
-            <span>{this.props.bill_subscriptions}</span>
-            <span>Bill Subscriptions</span>
-          </div>
-          <div>
-            <span>{this.props.query_subscriptions}</span>
-            <span>Query Subscriptions</span>
-          </div>
+        </div>
+
+        <div>
+          <h3 className="header">Key Tiers</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th colSpan={3}>v1 Limits</th>
+                <th colSpan={3}>v2 Limits</th>
+              </tr>
+            </thead>
+            {this.props.key_tiers.map(kobj => (<tr key={kobj.name}>
+            <td>{kobj.name}</td>
+            <td>{kobj.v1 ? kobj.v1[0] : 0}/day</td>
+            <td>{kobj.v1 ? kobj.v1[1] : 0}/sec</td>
+            <td>{kobj.v1 ? kobj.v1[2] : 0}/sec burst</td>
+            <td>{kobj.v2 ? kobj.v2[0] : 0}/day</td>
+            <td>{kobj.v2 ? kobj.v2[1] : 0}/sec</td>
+            <td>{kobj.v2 ? kobj.v2[2] : 0}/sec burst</td>
+            </tr>))}
+          </table>
         </div>
 
         <div>

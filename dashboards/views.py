@@ -4,7 +4,7 @@ from django.db.models import Count, F
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
-from profiles.models import Subscription, Notification, UsageReport
+from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -92,6 +92,7 @@ def api_overview(request):
     endpoint_usage = defaultdict(lambda: defaultdict(int))
     key_usage = defaultdict(lambda: defaultdict(int))
     key_totals = Counter()
+    all_keys = set()
 
     reports = list(UsageReport.objects.all().select_related("profile__user"))
     for report in reports:
@@ -100,11 +101,17 @@ def api_overview(request):
         endpoint_usage[date][report.endpoint] += report.calls
         key_usage[date][key] += report.calls
         key_totals[key] += report.calls
+        all_keys.add(key)
 
     context = {
         "endpoint_usage": _counter_to_chartdata(endpoint_usage),
         "key_usage": _counter_to_chartdata(key_usage),
         "most_common": key_totals.most_common(),
+        "key_tiers": list(KEY_TIERS.values()),
+        "total_keys": Profile.objects.exclude(
+            api_tier__in=("inactive", "suspended")
+        ).count(),
+        "active_keys": len(all_keys),
     }
 
     return render(request, "dashboards/api.html", {"context": context})
