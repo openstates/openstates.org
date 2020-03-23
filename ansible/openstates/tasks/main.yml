@@ -7,12 +7,6 @@
 - name: add aggregate usage cron
   cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py aggregate_api_usage /var/log/uwsgi/app/openstates.log /var/log/uwsgi/app/openstates.log.1 >> /tmp/aggregation.log" hour="*/2" minute="19" name="aggregate usage"
 
-# new relic
-- name: generate new relic config
-  command: /home/openstates/virt/bin/newrelic-admin generate-config {{ newrelic_key }} /home/openstates/newrelic.ini creates=/home/openstates/newrelic.ini
-- name: rename new relic app
-  replace: dest=/home/openstates/newrelic.ini regexp='Python Application' replace='openstates.org'
-
 # django commands
 - name: collectstatic
   command: /home/openstates/virt/bin/python manage.py collectstatic --settings=openstates.settings --noinput chdir=/home/openstates/src/openstates.org

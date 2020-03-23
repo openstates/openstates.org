@@ -5,7 +5,7 @@ from django.core.wsgi import get_wsgi_application
 try:
     import newrelic.agent
 
-    newrelic.agent.initialize("/home/openstates/newrelic.ini")
+    newrelic.agent.initialize()
     newrelic.agent.capture_request_params()
 except Exception as e:
     print("newrelic couldn't be initialized:", e)
