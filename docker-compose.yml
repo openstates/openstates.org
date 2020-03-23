@@ -23,7 +23,7 @@ services:
     networks:
       - openstates-network
 
-  uwsgi:
+  django:
     build:
       context: .
       dockerfile: docker/uwsgi/Dockerfile
@@ -42,9 +42,9 @@ services:
   nginx: 
     build: docker/nginx
     ports:
-      - "7777:80"
+      - "8000:80"
     depends_on:
-      - uwsgi
+      - django
     networks:
       - openstates-network
 
