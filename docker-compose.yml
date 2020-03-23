@@ -39,6 +39,13 @@ services:
     networks:
       - openstates-network
 
+  nginx: 
+    build: docker/nginx
+    ports:
+      - "7777:80"
+    networks:
+      - openstates-network
+
   # webpack:
   #   build: .
   #   command: ./docker/webpack-start.sh
