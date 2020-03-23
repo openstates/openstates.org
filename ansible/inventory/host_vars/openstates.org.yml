@@ -1,6 +1,7 @@
 ---
 django_environment:
     DEBUG: false
+    ADMINS: James Turk james@openstates.org
     SECRET_KEY: "{{ lookup('aws_ssm', '/site/SECRET_KEY') }}"
     EMAIL_HOST: email-smtp.us-east-1.amazonaws.com
     EMAIL_HOST_USER: "{{ lookup('aws_ssm', '/site/EMAIL_HOST_USER') }}"
@@ -13,6 +14,13 @@ django_environment:
     SENTRY_DSN: "{{ lookup('aws_ssm', '/site/SENTRY_DSN') }}"
     RECAPTCHA_PUBLIC_KEY: "{{ lookup('aws_ssm', '/site/RECAPTCHA_PUBLIC_KEY_V2') }}"
     RECAPTCHA_PRIVATE_KEY: "{{ lookup('aws_ssm', '/site/RECAPTCHA_PRIVATE_KEY_V2') }}"
+
+# postgres
+pg_password: "{{ lookup('aws_ssm', '/bobsled/backups/PGPASSWORD') }}" 
+pg_host: "{{ lookup('aws_ssm', '/bobsled/backups/PGHOST') }}" 
+pg_user: "{{ lookup('aws_ssm', '/bobsled/backups/PGUSER') }}" 
+pg_port: 5432
+pg_database: openstatesorg
 
 # server config
 newrelic_key: "{{ lookup('aws_ssm', '/site/NEWRELIC_INI_KEY') }}" 

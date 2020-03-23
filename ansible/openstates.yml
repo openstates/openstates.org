@@ -1,0 +1,7 @@
+---
+- name: Install openstates
+  hosts: openstates.org
+  user: ubuntu
+  become: yes
+  roles:
+    - role: openstates
