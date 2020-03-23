@@ -1,6 +1,0 @@
----
-- name: restart django-application
-  service: name=uwsgi state=restarted
-- name: restart nginx
-  service: name=nginx state=restarted
-  become: yes

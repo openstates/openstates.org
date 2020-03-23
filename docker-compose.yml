@@ -23,12 +23,12 @@ services:
     networks:
       - openstates-network
 
-  django:
-    build: .
+  uwsgi:
+    build:
+      context: .
+      dockerfile: docker/uwsgi/Dockerfile
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
     environment:
       - DATABASE_URL
       - RECAPTCHA_PUBLIC_KEY
@@ -43,6 +43,8 @@ services:
     build: docker/nginx
     ports:
       - "7777:80"
+    depends_on:
+      - uwsgi
     networks:
       - openstates-network
 

@@ -1,12 +1,6 @@
 [uwsgi]
-uid = openstates
-gid = openstates
-socket = /home/openstates/uwsgi.sock
-stats = /home/openstates/uwsgi-stats.sock
 virtualenv = /home/openstates/virt/
-master = true
 vacuum = true
-chmod-socket = 666
 processes = 4
 buffer-size = 8096
 harakiri = 30

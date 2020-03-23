@@ -1,7 +1,0 @@
-User-agent: *
-Disallow: /admin/
-Disallow: /api/v1/
-Disallow: /graphql
-Disallow: /get_district/
-User-agent: googlecivicsapi
-Allow: /api/v1/
