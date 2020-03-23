@@ -1,4 +1,0 @@
----
-django_environment:
-    SECRET_KEY: not-so-secret
-    DEBUG: false
