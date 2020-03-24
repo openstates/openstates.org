@@ -52,7 +52,6 @@ if os.environ.get("DEBUG", "true").lower() == "false":
     REGISTRATION_DEFAULT_FROM_EMAIL = (
         DEFAULT_FROM_EMAIL
     ) = SERVER_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "contact@openstates.org")
-    GRAPHQL_DEMO_KEY = os.environ["GRAPHQL_DEMO_KEY"]
     RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
     RECAPTCHA_USE_SSL = True
@@ -74,7 +73,6 @@ else:
         "django.template.loaders.filesystem.Loader",
         "django.template.loaders.app_directories.Loader",
     ]
-    GRAPHQL_DEMO_KEY = "testkey"
     if "RECAPTCHA_PUBLIC_KEY" in os.environ:
         RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     if "RECAPTCHA_PRIVATE_KEY" in os.environ:

@@ -1,6 +1,5 @@
 import time
 from graphene_django.views import GraphQLView
-from django.conf import settings
 from profiles.verifier import verify_request, get_key_from_request
 from structlog import get_logger
 
@@ -9,8 +8,6 @@ logger = get_logger("openstates")
 
 
 class KeyedGraphQLView(GraphQLView):
-    graphiql_template = "graphene/graphiql-keyed.html"
-
     def get_response(self, request, data, show_graphiql=False):
         log = logger.bind(
             user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
@@ -20,8 +17,10 @@ class KeyedGraphQLView(GraphQLView):
         )
         start = time.time()
 
+        internal = request.get_host() in request.META.get("HTTP_ORIGIN")
+
         # check key only if we're not handling a graphiql request
-        if not show_graphiql:
+        if not show_graphiql and not internal:
             error = verify_request(request, "v2")
             if error:
                 log = log.bind(
@@ -36,7 +35,3 @@ class KeyedGraphQLView(GraphQLView):
         log = log.bind(duration=time.time() - start)
         log.info("graphql")
         return resp
-
-    def render_graphiql(self, request, **data):
-        data["demo_key"] = settings.GRAPHQL_DEMO_KEY
-        return super().render_graphiql(request, **data)
