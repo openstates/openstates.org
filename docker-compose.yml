@@ -30,10 +30,13 @@ services:
     volumes:
       - .:/code
     environment:
+      - DEBUG
       - DATABASE_URL
+      - CACHE_URL
+      - STRIPE_PUBLIC_KEY
+      - STRIPE_SECRET_KEY
       - RECAPTCHA_PUBLIC_KEY
       - RECAPTCHA_PRIVATE_KEY
-      - CACHE_URL
     depends_on:
       - db
     networks:

@@ -1,7 +1,6 @@
 ---
 django_environment:
     DEBUG: false
-    ADMINS: James Turk james@openstates.org
     SECRET_KEY: "{{ lookup('aws_ssm', '/site/SECRET_KEY') }}"
     EMAIL_HOST: email-smtp.us-east-1.amazonaws.com
     EMAIL_HOST_USER: "{{ lookup('aws_ssm', '/site/EMAIL_HOST_USER') }}"
