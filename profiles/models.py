@@ -26,6 +26,11 @@ KEY_TIERS = {
     },
     "bronze": {"name": "Bronze", "v1": Limit(3000, 2, 3), "v2": Limit(3000, 2, 3)},
     "silver": {"name": "Silver", "v1": Limit(30000, 2, 5), "v2": Limit(30000, 2, 5)},
+    "unlimited": {
+        "name": "Unlimited",
+        "v1": Limit(1000000, 100000, 100000),
+        "v2": Limit(1000000, 100000, 100000),
+    },
 }
 KEY_TIER_CHOICES = [(k, v["name"]) for k, v in KEY_TIERS.items()]
 
