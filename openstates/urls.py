@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.contrib import admin
 from django.views.decorators.csrf import csrf_exempt
@@ -12,8 +12,8 @@ urlpatterns = [
     path("accounts/profile/", include("profiles.urls")),
     path("dashboard/", include("dashboards.urls")),
     path("api/v1/", include("v1.urls")),
-    path(
-        "graphql",
+    re_path(
+        "^graphql/?$",
         csrf_exempt(
             KeyedGraphQLView.as_view(
                 graphiql=True, middleware=[QueryProtectionMiddleware(5000)]
