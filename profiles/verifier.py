@@ -33,7 +33,11 @@ class CacheBackend:
 
     def get_and_inc_quota_value(self, key, zone, quota_range):
         quota_key = "{}~{}~{}".format(key, zone, quota_range)
-        self.cache.get_or_set(quota_key, lambda: 0, timeout=self.timeout)
+        # sometimes calling get_or_set followed by incr leads to an error where the
+        # get or set hasn't landed yet, so we'll special case the creation case
+        # starting the value at 1 instead of zero
+        if self.cache.get_or_set(quota_key, lambda: 1, timeout=self.timeout) == 1:
+            return 1
         return self.cache.incr(quota_key)
 
 
