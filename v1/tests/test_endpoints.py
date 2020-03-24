@@ -15,7 +15,7 @@ def setup():
     )
     u = User.objects.create(username="testkey")
     u.profile.api_key = "testkey"
-    u.profile.api_tier = "unlimited"
+    u.profile.api_tier = "silver"
     u.profile.save()
 
 

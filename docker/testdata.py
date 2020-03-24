@@ -4,7 +4,7 @@ from allauth.socialaccount.models import SocialApp
 
 u = User.objects.create_superuser("local", password="password", email="local@localhost")
 u.profile.api_key = "testkey"
-u.profile.api_tier = "unlimited"
+u.profile.api_tier = "silver"
 u.profile.save()
 u.emailaddress_set.create(email="local@localhost", verified=True, primary=True)
 
