@@ -19,12 +19,6 @@ Limit = namedtuple("Limit", "daily_requests requests_per_second burst_size")
 KEY_TIERS = {
     "inactive": {"name": "Not Yet Activated"},
     "suspended": {"name": "Suspended"},
-    "demo": {"name": "Demo", "v2": Limit(1000, 5, 5)},
-    "unlimited": {
-        "name": "Unlimited",
-        "v1": Limit(1000000, 1000000, 1000000),
-        "v2": Limit(1000000, 1000000, 1000000),
-    },
     "default": {
         "name": "Default (new user)",
         "v1": Limit(100, 1, 2),
