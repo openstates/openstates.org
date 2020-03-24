@@ -24,10 +24,10 @@ HEADERS = {"HTTP_X_API_KEY": "testkey"}
 
 @pytest.mark.django_db
 def test_no_api_key(client, django_assert_num_queries):
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(0):
         resp = client.get("/api/v1/metadata/ak/")
         assert resp.status_code == 403
-        assert resp.json()["error"] == "no valid key"
+        assert resp.json()["error"] == "must provide an API key"
 
 
 @pytest.mark.django_db

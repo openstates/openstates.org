@@ -303,7 +303,9 @@ class CoreQuery:
     person = graphene.Field(PersonNode, id=graphene.ID())
     organization = graphene.Field(OrganizationNode, id=graphene.ID())
 
-    def resolve_jurisdictions(self, info):
+    def resolve_jurisdictions(
+        self, info, first=None, last=None, before=None, after=None
+    ):
         qs = Jurisdiction.objects.all()
         return optimize(
             qs,

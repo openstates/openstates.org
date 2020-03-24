@@ -24,18 +24,34 @@ services:
       - openstates-network
 
   django:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/uwsgi/Dockerfile
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
     environment:
+      # dev settings to reload python files when edited
+      - UWSGI_PYTHON_AUTORELOAD=3
+      - UWSGI_ENABLE_THREADS=1
+      - DEBUG
+      - SECRET_KEY
       - DATABASE_URL
+      - CACHE_URL
+      - STRIPE_PUBLIC_KEY
+      - STRIPE_SECRET_KEY
       - RECAPTCHA_PUBLIC_KEY
       - RECAPTCHA_PRIVATE_KEY
-      - CACHE_URL
     depends_on:
       - db
+    networks:
+      - openstates-network
+
+  nginx: 
+    build: docker/nginx
+    ports:
+      - "8000:80"
+    depends_on:
+      - django
     networks:
       - openstates-network
 

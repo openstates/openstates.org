@@ -40,10 +40,9 @@ if os.environ.get("DEBUG", "true").lower() == "false":
     # non-debug settings
     DEBUG = False
     ALLOWED_HOSTS = ["*"]
+    ADMINS = [("James Turk", "james@openstates.org")]
     # DOMAIN = ''
     SECRET_KEY = os.environ["SECRET_KEY"]
-    # ADMINS list should be 'Name Email, Name Email, Name Email...'
-    ADMINS = [a.rsplit(" ", 1) for a in os.environ.get("ADMINS", "").split(",")]
     EMAIL_HOST = os.environ["EMAIL_HOST"]
     EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
     EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
@@ -52,7 +51,6 @@ if os.environ.get("DEBUG", "true").lower() == "false":
     REGISTRATION_DEFAULT_FROM_EMAIL = (
         DEFAULT_FROM_EMAIL
     ) = SERVER_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "contact@openstates.org")
-    GRAPHQL_DEMO_KEY = os.environ["GRAPHQL_DEMO_KEY"]
     RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
     RECAPTCHA_USE_SSL = True
@@ -74,7 +72,6 @@ else:
         "django.template.loaders.filesystem.Loader",
         "django.template.loaders.app_directories.Loader",
     ]
-    GRAPHQL_DEMO_KEY = "testkey"
     if "RECAPTCHA_PUBLIC_KEY" in os.environ:
         RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     if "RECAPTCHA_PRIVATE_KEY" in os.environ:

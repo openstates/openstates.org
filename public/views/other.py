@@ -109,7 +109,7 @@ def state(request, state):
                 parties.append(legislator.current_role["party"])
                 titles.append(legislator.current_role["role"])
 
-        chamber.parties = dict(Counter(parties))
+        chamber.parties = dict(Counter(parties).most_common())
         chamber.title = titles[0]
         if chamber.seats - len(legislators) > 0:
             chamber.parties["Vacancies"] = chamber.seats - len(legislators)

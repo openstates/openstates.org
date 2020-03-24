@@ -34,13 +34,20 @@ class CacheBackend:
     def get_and_inc_quota_value(self, key, zone, quota_range):
         quota_key = "{}~{}~{}".format(key, zone, quota_range)
         self.cache.get_or_set(quota_key, lambda: 0, timeout=self.timeout)
-        return self.cache.incr(quota_key)
+        # sometimes calling get_or_set followed by incr leads to an error where the
+        # get or set hasn't landed yet, so we'll special case the creation case
+        try:
+            return self.cache.incr(quota_key)
+        except ValueError:
+            return 1
 
 
 backend = CacheBackend()
 
 
 def verify(key, zone):
+    if not key:
+        raise VerificationError("must provide an API key")
     # ensure we have a verified key w/ access to the zone
     try:
         # could also do this w/ new subquery expressions in 1.11

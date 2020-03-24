@@ -201,6 +201,31 @@ def test_people_by_member_of(django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_variable_people_by_member_of(django_assert_num_queries):
+    ak_house = Organization.objects.get(
+        jurisdiction__name="Alaska", classification="lower"
+    )
+    with django_assert_num_queries(2):
+        result = schema.execute(
+            """
+            query peeps($f: Int){
+                people(memberOf: "%s", first: $f) {
+                    edges {
+                        node {
+                            name
+                        }
+                    }
+                }
+            }
+        """
+            % ak_house.id,
+            variables={"f": 3},
+        )
+    assert result.errors is None
+    assert len(result.data["people"]["edges"]) == 3
+
+
+@pytest.mark.django_db
 def test_people_by_ever_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(
         jurisdiction__name="Alaska", classification="lower"
