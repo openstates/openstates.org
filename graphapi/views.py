@@ -17,7 +17,7 @@ class KeyedGraphQLView(GraphQLView):
         )
         start = time.time()
 
-        internal = request.get_host() in request.META.get("HTTP_ORIGIN")
+        internal = request.get_host() in request.META.get("HTTP_ORIGIN", "")
 
         # check key only if we're not handling a graphiql request
         if not show_graphiql and not internal:
