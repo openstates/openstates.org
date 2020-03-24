@@ -1,0 +1,47 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States Bulk Geo Data{% endblock %}
+{% block og_title %}Open States Bulk Geo Data{% endblock %}
+{% block description %}Download bulk geo data from Open States{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Open States Boundary Data</h1>
+
+<p>We provide files that serve as a static API for obtaining simplified GeoJSON describing the boundaries of legislative districts.</p>
+
+<p>If you obtain an Open Civic Data Division ID (e.g. <code>ocd-division/country:us/state:ks/sldl:1</code> you can convert it to a URL like <code>https://data.openstates.org/boundaries/2018/ocd-division/country:us/state:ks/sldl:1.json</code>.</p>
+
+<p>The URL consists of a few parts:</p>
+
+<ul>
+  <li><code>https://data.openstates.org/boundaries/</code> - base URL</li>
+  <li><code>2018</code> - division issue year, currently only 2018 supported (divisions do not change most years)</li>
+  <li><code>ocd-division/country:us/state:ks/sldl:1</code> - Open Civic Data Division ID</li>
+  <li><code>json</code> - end URL with `.json`</li>
+</ul>
+
+<section>
+  <h2 class="heading--medium">File Format</h2>
+  <ul>
+    <li> <code>division_id</code> - Open Civic Data Division ID, same as URL.</li>
+    <li> <code>year</code> - Issue year for Boundary, same as URL.</li>
+    <li> <code>centroid</code> - GeoJSON Point representing the centroid of this boundary.</li>
+    <li> <code>extent</code> - Coordinates for upper-left &amp; lower-right extent of boundary.</li>
+    <li> <code>shape</code> - Simplified GeoJSON MultiPolygon for display purposes.  This data has been simplified (losing some detail to gain speed when drawing/processing) and should be used for display but not intersection/point-in-polygon testing.</li>
+    <li> <code>metadata</code> - Metadata that was provided by issuer, typically a bit of Census data.  No particular guarantee is made about what is here.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="heading--medium">Obtaining ocd-division IDs</h2>
+
+  <p>If you're using Open States data you'll see ocd-division IDs in a few places:</p>
+
+<ul>
+  <li>The division_id &amp; boundary_id keys in the <a href="https://docs.openstates.org/en/latest/api/districts.html#districts">districts endpoint of API v1</a>.</li>
+  <li>The id attribute on <a href="https://docs.openstates.org/en/latest/api/v2/types.html#divisionnode">DivisionNode</a> in our GraphQL API.</li>
+</ul>
+</section>
+
+{% endblock %}

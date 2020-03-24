@@ -1,0 +1,51 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+{% load render_bundle from webpack_loader %}
+
+{% block title %}{{ state|state_name }} Legislators - Open States{% endblock %}
+{% block og_title %}{{ state|state_name }} Legislators - Open States{% endblock %}
+{% block description %}Learn more about who represents you in {{state|state_name}}.{% endblock %}
+
+{% block scripts %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="heading--large">{{ state|state_name }} Legislators</h1>
+
+    <div class="legislators-container">
+
+    <div id="fyl-aside" class="sidebar">
+        <h4 class="heading--small">Don't know who your legislator is?</h4>
+        <h4 class="heading--small">Find them now!</h4>
+
+        <form action="/find_your_legislator/">
+          <input type="hidden" name="state" value="{{ state }}">
+            <div class="input-group">
+                <input class="input-group-field" type="search" placeholder="Enter Address" name="address">
+                <div class="input-group-button">
+                    <input type="submit" class="button button--primary" value="Search">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="legislator-list" data-hook="legislator-list"></div>
+
+    <script>
+        window.legislators = {{ legislators|jsonify }};
+        window.chambers = {{ chambers|jsonify }};
+    </script>
+    <noscript>
+        <ul>
+        {% for leg in legislators %}
+        <li><a href="{{ leg.pretty_url }}">{{ leg.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </noscript>
+
+    </div>
+{% endblock %}

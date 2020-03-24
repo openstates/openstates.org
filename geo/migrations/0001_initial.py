@@ -9,17 +9,39 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('boundaries', '0007_auto_20180325_1421'),
-        ('core', '0004_auto_20171005_2028'),
+        ("boundaries", "0007_auto_20180325_1421"),
+        ("core", "0004_auto_20171005_2028"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DivisionGeometry',
+            name="DivisionGeometry",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('boundary', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='geometries', to='boundaries.Boundary')),
-                ('division', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='geometries', to='core.Division')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "boundary",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="geometries",
+                        to="boundaries.Boundary",
+                    ),
+                ),
+                (
+                    "division",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="geometries",
+                        to="core.Division",
+                    ),
+                ),
             ],
-        ),
+        )
     ]

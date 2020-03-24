@@ -1,0 +1,803 @@
+{% extends "../components/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Typography -->
+<div class="section">
+    <h2 class="heading--small">Typography</h2>
+    <hr>
+    <h1 class="heading--large">We the People of the United States</h1>
+    <h2 class="heading--medium">We the People of the United States</h2>
+    <h3 class="heading--small">We the People of the United States</h3>
+    <h3 class="heading--xsmall">We the People of the United States</h3>
+
+    <p>
+        We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
+    </p>
+
+    <p class="type--xsmall">
+        We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
+    </p>
+
+    <h3 class="heading--xsmall">Narrow Measure</h3>
+    <p class="u-measure--narrow">
+        We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
+    </p>
+
+    <h3 class="heading--xsmall">Base Measure</h3>
+    <p class="u-measure--base">
+        We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
+    </p>
+
+    <h3 class="heading--xsmall">Wide Measure</h3>
+    <p class="u-measure--wide">
+        We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
+    </p>
+</div>
+
+<!-- Color Palette -->
+<div class="section">
+    <h2 class="heading--small">Color Palette</h2>
+    <hr>
+    <h3 class="heading--xsmall">General Colors</h3>
+    <div class="grid-container full">
+        <div class="grid-x grid-margin-x small-up-2 medium-up-4">
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--primary"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#0039c1</strong>
+                        <br>
+                        <code class="swatch__label">$color-primary</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--secondary"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#002f5a</strong>
+                        <br>
+                        <code class="swatch__label">$color-secondary</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--accent"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#edfdff</strong>
+                        <br>
+                        <code class="swatch__label">$color-accent</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--white"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#ffffff</strong>
+                        <br>
+                        <code class="swatch__label">$color-white</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <h3 class="heading--xsmall">Text and Background Colors</h3>
+        <div class="grid-x grid-margin-x small-up-2 medium-up-4">
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--black"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#222222</strong>
+                        <br>
+                        <code class="swatch__label">$color-black</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--gray"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#dbe6f1</strong>
+                        <br>
+                        <code class="swatch__label">$color-gray</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--gray-light"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#edf3f8</strong>
+                        <br>
+                        <code class="swatch__label">$color-gray-light</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--gray-lighter"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#f9fdff</strong>
+                        <br>
+                        <code class="swatch__label">$color-gray-lighter</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <h3 class="heading--xsmall">Data Visualization Colors</h3>
+        <div class="grid-x grid-margin-x small-up-2 medium-up-4">
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--blue"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#00abff</strong>
+                        <br>
+                        <code class="swatch__label">$color-blue</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--red"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#9e0e44</strong>
+                        <br>
+                        <code class="swatch__label">$color-red</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--yellow"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#ffd035</strong>
+                        <br>
+                        <code class="swatch__label">$color-yellow</code>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card-swatch">
+                    <div class="swatch u-fill--green"></div>
+                    <div class="card-section type--xsmall">
+                        <strong>#2cceb0</strong>
+                        <br>
+                        <code class="swatch__label">$color-green</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Buttons -->
+<div class="section">
+    <h2 class="heading--small">Buttons</h2>
+    <hr>
+    <h3 class="heading--xsmall">Default Buttons</h3>
+    <button type="button" class="button button--active">View latest bill text</button>
+    <button type="button" class="button">View roll call</button>
+    <br>
+    <br>
+
+    <h3 class="heading--xsmall">Primary Call-to-action buttons</h3>
+    <button type="button" class="button button--primary">Submit</button>
+    <button type="button" class="button">Cancel</button>
+    <br>
+    <br>
+
+    <h3 class="heading--xsmall">Button Groups</h3>
+    <div class="button-group">
+        <button type="button" class="button">Senate</button>
+        <button type="button" class="button">House</button>
+        <button type="button" class="button">Both Chambers</button>
+    </div>
+    <div class="button-group">
+        <button type="button" class="button">Senate</button>
+        <button type="button" class="button button--active">House</button>
+        <button type="button" class="button">Both Chambers</button>
+    </div>
+    <div class="button-group">
+        <button type="button" class="button button--active">1</button>
+        <button type="button" class="button">2</button>
+        <button type="button" class="button">3</button>
+        <button type="button" class="button">4</button>
+        <button type="button" class="button">5</button>
+        <button type="button" class="button">6</button>
+        <button type="button" class="button">7</button>
+        <button type="button" class="button">8</button>
+    </div>
+</div>
+
+<!-- Labels -->
+<div class="section">
+    <h2 class="heading--small">Labels</h2>
+    <hr>
+    <h3 class="heading--xsmall">Default Labels</h3>
+
+    
+    <p>By default, labels are wrapped in a <code>span</code>.</p>
+    <span class="label">PDF</span>
+    <span class="label">HTML</span>
+    
+    <br><br>
+
+    <h3 class="heading--xsmall">Linked Labels</h3>
+    <p>Use an anchor tag when you want a label to link to something else. These labels will automatically have a different treatment to indicate it is linked.</p>
+    <a class="label" link="#">Welfare and Poverty</a>
+    <a class="label" link="#">Municipal and County Issues</a>
+    <a class="label" link="#">Crime</a>
+    <a class="label" link="#">Other</a>
+
+    <br><br>
+
+    <h3 class="heading--xsmall">Labels with icons</h3>
+    <a class="label" link="#">
+        <svg class="label__icon"><use xlink:href="{% static 'images/icons.svg' %}#icon-group"></use></svg>
+        General Laws and Technology
+    </a>
+    <a class="label" link="#">
+        <svg class="label__icon"><use xlink:href="{% static 'images/icons.svg' %}#icon-group"></use></svg>
+        Rehabilitation and Social Services
+    </a>
+    <a class="label" link="#">
+        <svg class="label__icon"><use xlink:href="{% static 'images/icons.svg' %}#icon-group"></use></svg>
+        Agriculture, Conservation, and Natural Resources
+    </a>
+
+    <br><br>
+    <h3 class="heading--xsmall">Linked Labels</h3>
+    <p>Labels can also be colored to illustrate status. Available color modifiers include <code>.label--green</code> and <code>.label--red</code></p>
+    
+    <span class="label label--green">Success</span>
+    <span class="label label--green">Pass</span>
+    <span class="label label--red">Vetoed</span>
+    <span class="label label--red">Fail</span>
+</div>
+
+<!-- Forms -->
+<div class="section">
+    <h2 class="heading--small">Forms</h2>
+    <hr>
+
+    <div class="grid-x grid-margin-x">
+        <div class="cell medium-5">
+            <form>
+                <label>Input Label
+                    <p class="help-text" id="exampleHelpText">Example help text</p>
+                    <input type="text" placeholder="Placeholder input text" aria-describedby="exampleHelpText">
+                </label>
+
+                <label>
+                    What's the password?
+                    <input type="password">
+                </label>
+            
+                <label>
+                    Enter a few items or a long comment.
+                    <textarea placeholder="A long comment…" rows="3"></textarea>
+                </label>
+
+                <label>Select one of these items from the list.
+                    <select>
+                        <option value="husker">Item One</option>
+                        <option value="starbuck">Item Two</option>
+                        <option value="hotdog">Item Three</option>
+                        <option value="apollo">Item Four</option>
+                    </select>
+                </label>
+
+                <fieldset class="mb1">
+                    <legend>Choose one of these items.</legend>
+                    <input type="radio" name="item" value="Red" id="formRed" required>
+                    <label for="formRed">Red Dog</label>
+                    <br>
+                    <input type="radio" name="item" value="Blue" id="formBlue">
+                    <label for="formBlue">Blue Dog</label>
+                    <br>
+                    <input type="radio" name="item" value="Yellow" id="formYellow">
+                    <label for="formYellow">Yellow Dog</label>
+                </fieldset>
+
+                <fieldset class="mb1">
+                    <legend>Select all that are in your pocket.</legend>
+                    <input id="formCheckbox1" type="checkbox">
+                    <label for="formCheckbox1">Wallet</label>
+                    <br>
+                    <input id="formCheckbox2" type="checkbox">
+                    <label for="formCheckbox2">Phone</label>
+                    <br>
+                    <input id="formCheckbox3" type="checkbox">
+                    <label for="formCheckbox3">Keys</label>
+                </fieldset>
+
+
+                <div class="input-group">
+                    <input class="input-group-field" type="search" placeholder="Search for any term">
+                    <div class="input-group-button">
+                        <input type="submit" class="button button--primary" value="Search">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tables -->
+<div class="section">
+    <h2 class="heading--small">Tables</h2>
+    <hr>
+    <table class="hover">
+        <thead>
+            <tr>
+                <th width="50">Name</th>
+                <th></th>
+                <th>Party</th>
+                <th>District</th>
+                <th>Chamber</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <img class="thumbnail thumbnail--small" src="https://s.openstates.org/photos/small/NYL000063.jpg">
+                </td>
+                <td><strong>Peter Abbate, Jr.</strong></td>
+                <td>Democrat</td>
+                <td>District 49</td>
+                <td>Assembly</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="thumbnail thumbnail--small thumbnail--placeholder"></div>
+                </td>
+                <td><strong>Shelley Mayer</strong></td>
+                <td>Democrat</td>
+                <td>District 27</td>
+                <td>Senator</td>
+            </tr>
+            <tr>
+                <td>
+                    <img class="thumbnail thumbnail--small" src="https://s.openstates.org/photos/small/NYL000043.jpg">
+                </td>
+                <td><strong>Kevin S. Parker</strong></td>
+                <td>Democrat</td>
+                <td>District 21</td>
+                <td>Senator</td>
+            </tr>
+            <tr>
+                <td>
+                    <img class="thumbnail thumbnail--small" src="https://s.openstates.org/photos/small/NYL000447.jpg">
+                </td>
+                <td><strong>Mary Beth Walsh</strong></td>
+                <td>Republican</td>
+                <td>District 112</td>
+                <td>Assembly</td>
+            </tr>
+            <tr>
+                <td>
+                    <img class="thumbnail thumbnail--small" src="https://s.openstates.org/photos/small/NYL000039.jpg">
+                </td>
+                <td><strong>Velmanette Montgomery</strong></td>
+                <td>Democrat</td>
+                <td>District 25</td>
+                <td>Senator</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="thumbnail thumbnail--small thumbnail--placeholder"></div>
+                </td>
+                <td><strong>Chris Tague</strong></td>
+                <td>Republican</td>
+                <td>District 102</td>
+                <td>Assembly</td>
+            </tr>
+        </tr>
+      </tbody>
+    </table>
+
+    <br>
+    <br>
+    <br>
+
+     <table class="hover">
+        <thead>
+            <tr>
+                <th>Bill Text Versions</th>
+                <th>Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Senate: Prefiled and ordered printed; offered 01/11/17 17101850D</td>
+                <td>
+                    <span class="label label--static">HTML</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Senate: Committee substitute printed 17104579D-S1</td>
+                <td>
+                    <span class="label label--static">PDF</span>
+                </td>
+            </tr>
+            <tr>
+                <td>House: Committee substitute printed 17105464D-H1</td>
+                <td>
+                    <span class="label label--static">HTML</span>
+                    <span class="label label--static">PDF</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Generic Card -->
+<div class="section">
+    <h2 class="heading--small">Generic Card</h2>
+    <hr>
+    <div class="grid-container full">
+    <div class="grid-x grid-margin-x medium-up-2">
+        <div class="cell">
+        <div class="card">
+            <div>
+                <h3 class="heading--small"><a href="#">SB 1028</a></h3>
+                <p>Va. Public Procurement Act; local labor use requirement for certain construction contracts, penalty.</p>
+                <ul class="card__detail-group">
+                    <li class="card__detail type--xsmall">October 22, 2018</li>
+                    <li class="card__detail type--xsmall">Sponsored by <a href="#">David W. Marsden</a></li>
+                    <li class="card__detail type--xsmall">2019 Regular Session</li>
+                </ul>
+            <a class="label" link="#">Government Reform</a>
+            <a class="label" link="#">Business and Consumers</a>
+            </div>
+        </div>
+    </div>
+    <div class="cell">
+        <div class="card">
+            <div>
+                <h3 class="heading--small"><a href="#">SB 1239</a></h3>
+                <p>Child day programs; excemptions from licensure, certification of preschool or nursery school program.</p>
+                <ul class="card__detail-group">
+                    <li class="card__detail type--xsmall">Introduced Jan 10, 2017</li>
+                    <li class="card__detail type--xsmall">Sponsored by <a href="#">David B Albo</a></li>
+                    <li class="card__detail type--xsmall">2018 Regular Session</li>
+                </ul>
+            <a class="label" link="#">Welfare and Poverty</a>
+            <a class="label" link="#">Municipal and County Issues</a>
+            <a class="label" link="#">Crime</a>
+            <a class="label" link="#">Other</a>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</div>
+
+<!-- Person Card -->
+<div class="section">
+    <h2 class="heading--small">Person Card</h2>
+    <hr>
+    <div class="grid-container full">
+        <div class="grid-x grid-margin-x medium-up-2">
+            <div class="cell">
+                <div class="card card--profile">
+                    <img class="thumbnail mr1" src="https://s.openstates.org/photos/small/VAL000244.jpg">
+                    <div>
+                        <h3 class="card__heading heading--small">Lashrecse D. Aird</h3>
+                        <ul class="card__detail-group">
+                            <li class="card__detail type--xsmall">Democrat</li>
+                            <li class="card__detail type--xsmall">Delegate</li>
+                            <li class="card__detail type--xsmall">District 63</a></li>
+                        </ul>
+                        <div class="heading--xsmall">Sponsor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card--profile">
+                    <img class="thumbnail mr1" src="https://s.openstates.org/photos/small/VAL000122.jpg">
+                    <div>
+                        <h3 class="card__heading heading--small">Roxann L. Robinson</h3>
+                        <ul class="card__detail-group">
+                            <li class="card__detail type--xsmall">Republican</li>
+                            <li class="card__detail type--xsmall">Delegate</li>
+                            <li class="card__detail type--xsmall">District 27</a></li>
+                        </ul>
+                        <div class="heading--xsmall">Cosponsor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card--profile">
+                    <img class="thumbnail mr1" src="https://s.openstates.org/photos/small/VAL000036.jpg">
+                    <div>
+                        <h3 class="card__heading heading--small">Jill Holtzman Vogel</h3>
+                        <ul class="card__detail-group">
+                            <li class="card__detail type--xsmall">Republican</li>
+                            <li class="card__detail type--xsmall">Senator</li>
+                            <li class="card__detail type--xsmall">District 27</a></li>
+                        </ul>
+                        <div class="heading--xsmall">Cosponsor</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="card card--profile">
+                    <div class="thumbnail thumbnail--placeholder mr1"></div>
+                    <div>
+                        <h3 class="card__heading heading--small">T. Montgomery "Monty" Mason</h3>
+                        <ul class="card__detail-group">
+                            <li class="card__detail type--xsmall">Democrat</li>
+                            <li class="card__detail type--xsmall">Senator</li>
+                            <li class="card__detail type--xsmall">District 1</a></li>
+                        </ul>
+                        <div class="heading--xsmall">Cosponsor</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Legislator Overview Card -->
+<div class="section">
+    <h1 class="heading--small">Legislator Overview</h1>
+    <hr>
+
+    <div class="overview">
+    
+        <!-- Overview Header -->
+        <div class="overview__header">
+            <img class="thumbnail mr1" src="https://s.openstates.org/photos/small/VAL000161.jpg">
+            <div>
+                <h3 class="overview__heading">Alfonso H. Lopez</h3>
+                <ul class="card__detail-group">
+                    <li class="card__detail type--xsmall">Democrat</li>
+                    <li class="card__detail type--xsmall">Virginia</li>
+                    <li class="card__detail type--xsmall">Delegate</li>
+                    <li class="card__detail type--xsmall">District 49</a></li>
+                    </ul>
+            </div>
+        </div>
+
+        <!-- Overview Body -->
+        <div class="overview__section overview__section--parent">
+            <div class="overview__subsection">
+                <address class="contact">
+                    <h3 class="heading--small">Capitol Office</h3>
+                    <p>
+                        Senate Box 203033<br>
+                        Room 172, Main Capitol<br>
+                        Harrisburg, PA 17120-3033
+                    </p>
+
+                    <p>
+                        <span class="contact__label">Phone</span>
+                        717-787-4651
+                    </p>
+
+                    <p>
+                        <span class="contact__label">Fax</span>
+                        717-772-2753
+                    </p>
+
+                    <p>
+                        <span class="contact__label">Email</span>
+                        alloway@pasen.gov
+                    </p>
+                </address>
+            </div>
+            <div class="overview__subsection">
+                <address class="contact">
+                    <h3 class="heading--small">District Office</h3>
+                    <p>
+                        37 South Main Street Suite 200<br>
+                        Chambersburg, PA 17201
+                    </p>
+                    
+                    <p>
+                        <span class="contact__label">Phone</span>
+                        717-264-6100
+                    </p>
+                        
+                    <p>
+                        <span class="contact__label">Fax</span>
+                        717-264-3652
+                    </p>
+                    
+                    <p>
+                        <span class="contact__label">Email</span>
+                        alloway@pasen.gov
+                    </p>
+                </address>
+            </div>
+            <div class="overview__subsection overview__subsection--map">
+                <p class="heading--xsmall">District 49 Boundaries</p>
+                <img class="map" width="280" height="215" src="../static/images/map_placeholder.png">
+            </div>
+        </div>
+        
+        <!-- Overview Footer -->
+        <div class="overview__section">
+            <h3 class="heading--xsmall">Committee Membership (3)</h3>
+            <a class="label" link="#">
+                <svg class="label__icon"><use xlink:href="../static/images/icons.svg#icon-group"></use></svg>
+                General Laws and Technology
+            </a>
+            <a class="label" link="#">
+                <svg class="label__icon"><use xlink:href="../static/images/icons.svg#icon-group"></use></svg>
+                Rehabilitation and Social Services
+            </a>
+            <a class="label" link="#">
+                <svg class="label__icon"><use xlink:href="../static/images/icons.svg#icon-group"></use></svg>
+                Agriculture, Conservation, and Natural Resources
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2 class="heading--small">Meters</h2>
+    <hr>
+    <ul class="meter">
+        <li class="meter-bar meter-bar--green meter-bar--current">
+            <span class="meter-bar__title">Introduced in House</span>
+            <span class="meter-bar__detail">Jan 17, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--inactive">
+            <span class="meter-bar__title">Failed in House</span>
+            <span class="meter-bar__detail">Feb 9, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--inactive">
+            <span class="meter-bar__title">Senate</span>
+            <span class="meter-bar__detail"></span>
+        </li>
+        <li class="meter-bar meter-bar--inactive">
+            <span class="meter-bar__title">Governor</span>
+            <span class="meter-bar__detail"></span>
+        </li>
+    </ul>
+    <br><br>
+    <ul class="meter">
+        <li class="meter-bar meter-bar--green">
+            <span class="meter-bar__title">Introduced in House</span>
+            <span class="meter-bar__detail">Jan 17, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--current meter-bar--red">
+            <span class="meter-bar__title">Failed in House</span>
+            <span class="meter-bar__detail">Feb 9, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--inactive">
+            <span class="meter-bar__title">Senate</span>
+            <span class="meter-bar__detail"></span>
+        </li>
+        <li class="meter-bar meter-bar--inactive">
+            <span class="meter-bar__title">Governor</span>
+            <span class="meter-bar__detail"></span>
+        </li>
+    </ul>
+    <br><br>
+
+    <ul class="meter">
+        <li class="meter-bar meter-bar--green">
+            <span class="meter-bar__title">Introduced in Senate</span>
+            <span class="meter-bar__detail">Jan 17, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--green">
+            <span class="meter-bar__title">Passed Senate</span>
+            <span class="meter-bar__detail">Feb 9, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--current meter-bar--red">
+            <span class="meter-bar__title">Failed in House</span>
+            <span class="meter-bar__detail">Feb 28, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--inactive">
+            <span class="meter-bar__title">Governor</span>
+            <span class="meter-bar__detail"></span>
+        </li>
+    </ul>
+
+    <br><br>
+
+    <ul class="meter">
+        <li class="meter-bar meter-bar--green">
+            <span class="meter-bar__title">Introduced in Senate</span>
+            <span class="meter-bar__detail">Jan 17, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--green">
+            <span class="meter-bar__title">Passed Senate</span>
+            <span class="meter-bar__detail">Feb 9, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--green">
+            <span class="meter-bar__title">Passed House</span>
+            <span class="meter-bar__detail">Feb 28, 2018</span>
+        </li>
+        <li class="meter-bar meter-bar--current meter-bar--green">
+            <span class="meter-bar__title">Signed into Law</span>
+            <span class="meter-bar__detail">Mar 5, 2018</span>
+        </li>
+    </ul>
+
+</div>
+
+<!-- Timeline Component -->
+<div class="section">
+    <h2 class="heading--small">Timeline Component</h2>
+    <hr>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-date">
+                <h3 class="heading--xsmall">April 5, 2017</h3>
+            </div>
+            <div class="timeline-activity__group">
+                <div class="timeline-activity">
+                    <p>Lashrecse D. Aird <strong class="u-color--green">voted Yes</strong> on HB 1708.</p>
+                    <div class="card">
+                        <div>
+                            <h3 class="heading--small"><a href="#">SB 1028</a></h3>
+                            <p>Va. Public Procurement Act; local labor use requirement for certain construction contracts, penalty.</p>
+                            <ul class="card__detail-group">
+                                <li class="card__detail type--xsmall">October 22, 2018</li>
+                                <li class="card__detail type--xsmall">Sponsored by <a href="#">David W. Marsden</a></li>
+                                <li class="card__detail type--xsmall">2019 Regular Session</li>
+                            </ul>
+                        <a class="label" link="#">Government Reform</a>
+                        <a class="label" link="#">Business and Consumers</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-activity">
+                    <p>Lashrecse D. Aird <strong class="u-color--red">voted No</strong> on HB 1708.</p>
+                    <div class="card">
+                        <div>
+                            <h3 class="heading--small"><a href="#">SB 1028</a></h3>
+                            <p>Va. Public Procurement Act; local labor use requirement for certain construction contracts, penalty.</p>
+                            <ul class="card__detail-group">
+                                <li class="card__detail type--xsmall">October 22, 2018</li>
+                                <li class="card__detail type--xsmall">Sponsored by <a href="#">David W. Marsden</a></li>
+                                <li class="card__detail type--xsmall">2019 Regular Session</li>
+                            </ul>
+                        <a class="label" link="#">Government Reform</a>
+                        <a class="label" link="#">Business and Consumers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">
+                <h3 class="heading--xsmall">April 1, 2017</h3>
+            </div>
+            <div class="timeline-activity__group">
+                <div class="timeline-activity">
+                    <p>Lashrecse D. Aird <strong class="u-color--green">voted Yes</strong> on HB 1708.</p>
+                    <div class="card">
+                        <div>
+                            <h3 class="heading--small"><a href="#">SB 1028</a></h3>
+                            <p>Va. Public Procurement Act; local labor use requirement for certain construction contracts, penalty.</p>
+                            <ul class="card__detail-group">
+                                <li class="card__detail type--xsmall">October 22, 2018</li>
+                                <li class="card__detail type--xsmall">Sponsored by <a href="#">David W. Marsden</a></li>
+                                <li class="card__detail type--xsmall">2019 Regular Session</li>
+                            </ul>
+                        <a class="label" link="#">Government Reform</a>
+                        <a class="label" link="#">Business and Consumers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

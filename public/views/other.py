@@ -1,12 +1,16 @@
-from collections import Counter
+import pytz
 import datetime
 import feedparser
-from django.db.models import Sum
-from django.shortcuts import render
+from collections import Counter
 from django.core.cache import cache
+from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Sum, F
+from django.http import Http404
+from django.shortcuts import render
 from opencivicdata.legislative.models import Bill
 from opencivicdata.core.models import Organization
 from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
+from utils.bills import search_bills
 from ..models import PersonProxy
 
 
@@ -15,11 +19,11 @@ def styleguide(request):
 
 
 def _get_latest_updates():
-    RSS_FEED = "https://blog.openstates.org/feed"
+    RSS_FEED = "https://blog.openstates.org/index.xml"
 
     feed = feedparser.parse(RSS_FEED)
     return [
-        {"title": entry.title, "link": entry.link, "date": entry.date}
+        {"title": entry.title, "link": entry.link, "date": entry.published}
         for entry in feed.entries
     ][:3]
 
@@ -27,7 +31,11 @@ def _get_latest_updates():
 def _get_random_bills():
     bills = (
         Bill.objects.all()
-        .filter(updated_at__gte=datetime.datetime.now() - datetime.timedelta(days=3))
+        .filter(
+            updated_at__gte=pytz.utc.localize(
+                datetime.datetime.utcnow() - datetime.timedelta(days=3)
+            )
+        )
         .select_related(
             "legislative_session", "legislative_session__jurisdiction", "billstatus"
         )
@@ -37,6 +45,18 @@ def _get_random_bills():
     for bill in bills:
         bill.state = jid_to_abbr(bill.legislative_session.jurisdiction_id)
     return bills
+
+
+def _preprocess_sponsors(bills):
+    FIRST_SPONSORS_COUNT = 3
+
+    for bill in bills:
+        bill.first_sponsors = []
+        sponsorships = list(bill.sponsorships.all())
+        bill.first_sponsors = sorted(
+            sponsorships, key=lambda s: (s.primary, s.person_id or "zzz", s.id)
+        )[:FIRST_SPONSORS_COUNT]
+        bill.extra_sponsors = len(sponsorships) - len(bill.first_sponsors)
 
 
 def home(request):
@@ -89,7 +109,7 @@ def state(request, state):
                 parties.append(legislator.current_role["party"])
                 titles.append(legislator.current_role["role"])
 
-        chamber.parties = dict(Counter(parties))
+        chamber.parties = dict(Counter(parties).most_common())
         chamber.title = titles[0]
         if chamber.seats - len(legislators) > 0:
             chamber.parties["Vacancies"] = chamber.seats - len(legislators)
@@ -139,13 +159,31 @@ def state(request, state):
     )
 
 
-def _preprocess_sponsors(bills):
-    FIRST_SPONSORS_COUNT = 3
+def site_search(request):
+    query = request.GET.get("query")
+    state = request.GET.get("state")
 
-    for bill in bills:
-        bill.first_sponsors = []
-        sponsorships = list(bill.sponsorships.all())
-        bill.first_sponsors = sorted(
-            sponsorships, key=lambda s: (s.primary, s.person_id or "zzz", s.id)
-        )[:FIRST_SPONSORS_COUNT]
-        bill.extra_sponsors = len(sponsorships) - len(bill.first_sponsors)
+    bills = []
+    people = []
+    if query:
+        bills = search_bills(state=state, query=query)
+        bills = bills.order_by(
+            F("billstatus__latest_action_date").desc(nulls_last=True)
+        )
+
+        # pagination
+        page_num = int(request.GET.get("page", 1))
+        bills_paginator = Paginator(bills, 20)
+        try:
+            bills = bills_paginator.page(page_num)
+        except EmptyPage:
+            raise Http404()
+
+        # people search
+        people = [p.as_dict() for p in PersonProxy.search_people(query, state=state)]
+
+    return render(
+        request,
+        "public/views/search.html",
+        {"query": query, "state": state, "bills": bills, "people": people},
+    )

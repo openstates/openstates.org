@@ -1,0 +1,124 @@
+.openstates_signup {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+label[for="id_captcha"] {
+  display: none;
+}
+
+.socialaccount_providers {
+  display: grid;
+  grid-template-columns: auto;
+  justify-items: center;
+  align-items: center;
+
+  @include breakpoint(medium) {
+    grid-template-columns: auto auto auto auto;
+  }
+}
+.socialaccount_providers li {
+  list-style: none;
+}
+
+.login-or {
+  font-size: 200%;
+  width: 100%;
+  text-align: center;
+}
+.login-or::after, .login-or::before {
+  @include breakpoint(medium) {
+    content: "";
+    display: inline-block;
+    min-width: 10rem;
+    margin: 0.6rem 1rem;
+    border-bottom: 1px solid $color-black;
+  }
+}
+
+a.socialaccount_provider {
+  &:before {
+    @include breakpoint(large) {
+      content: "Sign in with ";
+    }
+  }
+  &.openstates {
+    @include button(false, $color-royalblue, $color-royalblue, $color-royalblue, hollow);
+    background-image: url("/static/images/openstates_icon_transparent.png");
+    &:before { content: ""; }
+  }
+  &.facebook {
+    @include button(false, #4267b2, #4267b2, $white, solid);
+    background-image: url("/static/images/logos/f_logo_RGB-White_100.png");
+  }
+  &.twitter {
+    @include button(false, #1da1f2, #1da1f2, $white, solid);
+    background-image: url("/static/images/logos/Twitter_Logo_WhiteOnBlue.png");
+  }
+  &.google {
+    @include button(false, #000, #000, #666, hollow);
+    background-image: url("/static/images/logos/g-logo.png");
+  }
+  &.github {
+    @include button(false, #000, #000, $white, solid);
+    background-image: url("/static/images/logos/GitHub-Mark-Light-64px.png");
+  }
+
+  margin-right: .25rem;
+  background-repeat: no-repeat;
+  border: none;
+  font-weight: bold;
+  background-position: 5% 50%;
+  background-size: 32px 32px;
+  padding-left: 48px !important;
+}
+
+.email-verified {
+  font-weight: bold;
+}
+.email-not-verified {
+  font-weight: bold;
+}
+.apikey_details dd {
+  margin-left: 2rem;
+}
+
+form.login, form#signup_form, form.password_change { 
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+form.login label {
+  display: inline;
+  padding-right: 1rem;
+}
+
+form#signup_form button,
+form.password_change button,
+button.primaryAction,
+input.primaryAction,
+button[name="action_add"],
+form[action='/accounts/logout/'] button,
+form[action='/accounts/social/connections/'] button,
+form[action^='/accounts/confirm-email/'] button
+{
+  @extend .button;
+  @extend .button--primary;
+}
+
+button.secondaryAction {
+  @extend .button;
+}
+
+div.profile-settings {
+    display: grid;
+    grid-template-columns: auto;
+    grid-column-gap: 5em;
+
+    @include breakpoint(medium) {
+        grid-template-columns: 40% 60%;
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+}

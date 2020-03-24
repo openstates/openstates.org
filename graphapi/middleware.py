@@ -6,7 +6,7 @@ class QueryCostException(Exception):
     pass
 
 
-log = logging.getLogger('graphapi')
+log = logging.getLogger("graphapi")
 
 
 def _get_counts(info, fragments, variable_values):
@@ -19,7 +19,7 @@ def _get_counts(info, fragments, variable_values):
     else:
         # the multiplier is either 1 or the number of elements returned
         for argument in info.arguments:
-            if argument.name.value in ('first', 'last'):
+            if argument.name.value in ("first", "last"):
                 if isinstance(argument.value, Variable):
                     multiplier = variable_values[argument.value.name.value]
                 else:
@@ -43,10 +43,14 @@ class QueryProtectionMiddleware(object):
 
     def resolve(self, next, root, info, **args):
         if root is None:
-            count = _get_counts(info.field_asts[0], info.fragments, info.variable_values)
-            log.debug(f'graphql query name={info.field_name} asts={info.field_asts} cost={count}')
+            count = _get_counts(
+                info.field_asts[0], info.fragments, info.variable_values
+            )
+            log.debug(
+                f"graphql query name={info.field_name} asts={info.field_asts} cost={count}"
+            )
             if count > self.max_cost:
                 raise QueryCostException(
-                    f'Query Cost is too high ({count}), limit is {self.max_cost}'
+                    f"Query Cost is too high ({count}), limit is {self.max_cost}"
                 )
         return next(root, info, **args)

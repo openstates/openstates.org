@@ -1,0 +1,13 @@
+.numeric-summary {
+  display: flex;
+
+  > div {
+    display: grid;
+    justify-items: center;
+    padding-right: 3rem;
+
+    span:first-child {
+      font-size: 150%;
+    }
+  }
+}

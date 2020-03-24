@@ -1,0 +1,119 @@
+{% extends "../components/base.html" %}
+{% load custom_tags %}
+{% load render_bundle from webpack_loader %}
+
+{% block title %}"{{ query }}" - Open States{% endblock %}
+{% block og_title %}{{ query }} - Open States{% endblock %}
+{% block description %}Search bills and people for {{ query }}.{% endblock %}
+
+{% block scripts %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
+{% endblock %}
+
+{% block content %}
+<section class="section">
+
+  {% if query %} 
+    <h1 class="heading--large">
+      Search Results for "{{query}}"
+      {% if state %}
+      in {{ state|upper  }}
+      {% endif %}
+    </h1>
+
+    <h2 class="heading--small">Found {{ bills.paginator.count|default:0 }} bill{{ bills.paginator.count|default:0|pluralize }} and {{ people|length }} {% if people|length == 1 %}person{% else %}people{% endif %}.</h2>
+
+  {% else %}
+    <h2 class="heading--small">
+      Try searching for something:
+    </h2>
+    <form>
+      <div class="input-group">
+          <input class="input-group-field" type="search" placeholder="HB 21, Cannabis, Maria" name="query">
+          <div class="input-group-button">
+              <button type="submit" class="button button--secondary">
+                Search
+              </button>
+          </div>
+      </div>
+    </form>
+  {% endif %}
+
+
+    <div class="grid-x grid-margin-x">
+        <div class="cell medium-9">
+
+{% if bills.paginator.count %}
+<section>    
+<h2 class="heading--medium">Bills</h2>
+      <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
+
+            <table class="hover">
+                <thead>
+                    <tr>
+                        <th>Bill Title</th>
+                        <th width="100">Introduced</th>
+                        <th width="250">Latest Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                        <tr class="row--align-top">
+                            <td>
+                                <strong><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></strong>
+                                <span class="u-color--gray">(<strong>{{ bill.legislative_session.jurisdiction }}</strong> - {{ bill.legislative_session.name }})</span>
+                                <br>
+                                <span>{{ bill.title|titlecase_caps }}</span>
+                            </td>
+                            <td>{{ bill.billstatus.first_action_date|fdate:"%b %d %Y" }}</td>
+                            <td>
+                                <span>{{ bill.billstatus.latest_action_description|title }}</span>
+                                <br>
+                                <span class="u-color--gray">{{ bill.billstatus.latest_action_date|fdate:"%b %d %Y" }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
+            {% pagination bills request.GET %}</p>
+</section>
+{% endif %}
+
+{% if people %}
+<section>
+  <h2 class="heading--medium">Active Legislators</h2>
+
+  <table class="hover">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Party</th>
+        <th>State</th>
+        <th>District</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in people %}
+      <tr>
+        <td><div data-hook="legislator-image" data-image="{{ p.image }}" data-person-id="{{ p.id }}" data-size="small"> </div></td>
+        <td><a href="{{ p.pretty_url }}">{{ p.name }}</a></td>
+        <td>{{ p.current_role.party }}</td>
+        <td>{{ p.current_role.state|upper }}</td>
+        <td>{{ p.current_role.district }}</td>
+      </tr>
+      {% endfor p %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+        </div>
+    </div>
+</section>
+{% endblock %}

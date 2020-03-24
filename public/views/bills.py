@@ -1,7 +1,6 @@
-import re
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Func, Prefetch
+from django.db.models import Func, Prefetch, F
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
@@ -10,7 +9,7 @@ from opencivicdata.core.models import Membership
 from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, VoteEvent
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import fix_bill_id
+from utils.bills import fix_bill_id, search_bills
 from .fallback import fallback
 from ..models import PersonProxy
 
@@ -43,12 +42,6 @@ class BillList(View):
         return options
 
     def get_bills(self, request, state):
-        jid = abbr_to_jid(state)
-        bills = Bill.objects.all().select_related(
-            "legislative_session", "legislative_session__jurisdiction", "billstatus"
-        )
-        bills = bills.filter(legislative_session__jurisdiction_id=jid)
-
         # query parameter filtering
         query = request.GET.get("query", "")
         chamber = request.GET.get("chamber")
@@ -68,37 +61,19 @@ class BillList(View):
             "status": status,
         }
 
-        if query:
-            if re.match(r"\w{1,3}\s*\d{1,5}", query):
-                bills = bills.filter(identifier=fix_bill_id(query))
-            else:
-                bills = bills.filter(title__icontains=query)
-        if chamber:
-            bills = bills.filter(from_organization__classification=chamber)
-        if session:
-            bills = bills.filter(legislative_session__identifier=session)
-        if sponsor:
-            bills = bills.filter(sponsorships__person_id=sponsor)
-        if classification:
-            bills = bills.filter(classification__contains=[classification])
-        if q_subjects:
-            bills = bills.filter(subject__overlap=q_subjects)
-        if "passed-lower-chamber" in status:
-            bills = bills.filter(
-                actions__classification__contains=["passage"],
-                actions__organization__classification="lower",
-            )
-        elif "passed-upper-chamber" in status:
-            bills = bills.filter(
-                actions__classification__contains=["passage"],
-                actions__organization__classification="upper",
-            )
-        elif "signed" in status:
-            bills = bills.filter(
-                actions__classification__contains=["executive-signature"]
-            )
-
-        bills = bills.order_by("-billstatus__latest_action_date")
+        bills = search_bills(
+            state=state,
+            query=query,
+            chamber=chamber,
+            session=session,
+            sponsor=sponsor,
+            classification=classification,
+            subjects=q_subjects,
+            status=status,
+        )
+        bills = bills.order_by(
+            F("billstatus__latest_action_date").desc(nulls_last=True)
+        )
 
         return bills, form
 
@@ -116,7 +91,10 @@ class BillList(View):
         bills, form = self.get_bills(request, state)
 
         # pagination
-        page_num = int(request.GET.get("page", 1))
+        try:
+            page_num = int(request.GET.get("page", 1))
+        except ValueError:
+            raise Http404()  # invalid pages not found
         paginator = Paginator(bills, 20)
         try:
             bills = paginator.page(page_num)
@@ -275,6 +253,7 @@ def bill(request, state, session, bill_id):
         bill.actions.all()
         .select_related("organization")
         .prefetch_related(related_entities)
+        .order_by("-date")
     )
     votes = list(
         bill.votes.all().select_related("organization")
@@ -284,7 +263,7 @@ def bill(request, state, session, bill_id):
     # get other chamber name
     chambers = {c.classification: c.name for c in get_chambers_from_abbr(state)}
     second_chamber = None
-    if len(chambers) > 1 and bill.from_organization.classification != 'legislature':
+    if len(chambers) > 1 and bill.from_organization.classification != "legislature":
         second_chamber = {"upper": chambers["lower"], "lower": chambers["upper"]}[
             bill.from_organization.classification
         ]

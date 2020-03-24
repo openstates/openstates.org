@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+# based on https://cloudonaut.io/how-to-dockerize-your-python-django-application-for-aws-fargate/
+
+echo "running migrations & collectstatic"
+poetry run ./manage.py migrate
+poetry run ./manage.py shell -c "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')"
+poetry run ./manage.py collectstatic --noinput
+
+export UWSGI_VIRTUALENV=$(poetry env info --path)
+
+echo "running $@"
+exec "$@"
+

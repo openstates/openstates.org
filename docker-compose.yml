@@ -1,18 +1,62 @@
-version: "3"
-services:
-  website:
-    image: openstates/openstates.org
-    volumes:
-      - .:/opt/openstates/openstates.org/
-    entrypoint: ['/bin/bash']
+version: "3.5"
 
-  database:
-    # With this service up, your host can use a database URL of
-    # `postgres://openstates@localhost:5433/openstates`
-    image: mdillon/postgis:9.6
+networks:
+  openstates-network:
+      name: openstates-network
+
+volumes:
+  openstates-postgres:
+    name: openstates-postgres
+
+services:
+  db:
+    image: "mdillon/postgis:11-alpine"
+    hostname: "db"
     ports:
-      # Avoid conflict with the host's Postgres port
-      - "5433:5432"
+      - "5405:5432"
     environment:
-      - POSTGRES_DB=openstates
-      - POSTGRES_USER=openstates
+      POSTGRES_PASSWORD: openstates
+      POSTGRES_USER: openstates
+      POSTGRES_DB: openstatesorg
+    volumes:
+      - openstates-postgres:/var/lib/postgresql/data
+    networks:
+      - openstates-network
+
+  django:
+    build:
+      context: .
+      dockerfile: docker/uwsgi/Dockerfile
+    volumes:
+      - .:/code
+    environment:
+      # dev settings to reload python files when edited
+      - UWSGI_PYTHON_AUTORELOAD=3
+      - UWSGI_ENABLE_THREADS=1
+      - DEBUG
+      - SECRET_KEY
+      - DATABASE_URL
+      - CACHE_URL
+      - STRIPE_PUBLIC_KEY
+      - STRIPE_SECRET_KEY
+      - RECAPTCHA_PUBLIC_KEY
+      - RECAPTCHA_PRIVATE_KEY
+    depends_on:
+      - db
+    networks:
+      - openstates-network
+
+  nginx: 
+    build: docker/nginx
+    ports:
+      - "8000:80"
+    depends_on:
+      - django
+    networks:
+      - openstates-network
+
+  # webpack:
+  #   build: .
+  #   command: ./docker/webpack-start.sh
+  #   volumes:
+  #     - .:/code

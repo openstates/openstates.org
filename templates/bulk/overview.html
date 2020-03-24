@@ -1,0 +1,111 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States Bulk Data{% endblock %}
+{% block og_title %}Open States Bulk Data{% endblock %}
+{% block description %}Download bulk data from Open States{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Open States Bulk Data</h1>
+
+<p>
+  Open States makes almost all of our data available in bulk.  Unless otherwise noted data is provided under a public domain dedication but attribution is greatly appreciated and very helpful.
+</p>
+<p>
+  If you're looking for details on our API, visit: <a href="https://docs.openstates.org/en/latest/api/v2/index.html">v2 GraphQL API</a>.
+
+<p><strong>We depend upon <a href="/donate/">donations</a> to keep this work alive. Also consider <a href="mailto:contact@openstates.org">giving us a testimonial</a>, as those can help us obtain funding and always make our day.</strong>
+</p>
+<section>
+  <h2 class="heading--medium">Legislator Data</h2>
+  <p>Structured data files for every legislator we've tracked, stored in version control.</p>
+  <dl>
+    <dt>Downloads</dt>
+    <dd><a href="https://github.com/openstates/people/">YAML (repository)</a></dd>
+    <dd><a href="/data/legislator-csv/">CSV</a></dd>
+    <dt>Source</dt>
+    <dd>Legislator Data is obtained by scraping state legislative sites and updated via curated contributions from users.</dd>
+    <dt>Documentation</dt>
+    <dd><a href="https://github.com/openstates/people/blob/master/schema.md">YAML Schema</a></dd>
+    <dd><a href="/data/legislator-csv/">CSV Schema</a></dd>
+    <dt>Update Schedule</dt>
+    <dd>This data is updated periodically throughout the session on an as-needed basis.  If data looks out of data consider submitting an issue or pull request.</dd>
+    <dt>Issues?</dt>
+    <dd><a href="https://github.com/openstates/people/issues/">People Issues</a></dd>
+  </dl>
+</section>
+
+<section>
+  <h2 class="heading--medium">Bill &amp; Vote CSV Data [beta]</h2>
+  <p>CSV files representing all bills &amp; votes, available on a per-session basis. In beta as of February 2020.</p>
+  <dl>
+    <dt>Link</dt>
+    <dd><a href="/data/session-csv/">Session CSV Archives</a></dd>
+    <dt>Source</dt>
+    <dd>Data is obtained by scraping state legislative sites using <a href="https://github.com/openstates/openstates">our scrapers</a>.</dd>
+    <dt>Documentation</dt>
+    <dd>Documentation coming soon, for now <a href="mailto:contact@openstates.org">get in touch</a> if you have questions.</dd>
+    <dt>Update Schedule</dt>
+    <dd>This data will update monthly once it is out of beta, for now <a href="mailto:contact@openstates.org">get in touch</a> if you need specific data.</dd>
+    <dt>Issues?</dt>
+    <dd><a href="https://github.com/openstates/openstates/issues/">Scraper Issues</a></dd>
+  </dl>
+</section>
+
+<section>
+  <h2 class="heading--medium">Geographic Data</h2>
+  <p>Polygons representing the state legislative districts.</p>
+  <dl>
+    <dt>Link</dt>
+    <dd><a href="/data/geo/">Boundary Data Documentation</a></dd>
+    <dt>Source</dt>
+    <dd>Geographic boundary data is sourced primarily from the Census, and we provide it via JSON files.</dd>
+    <dt>Documentation</dt>
+    <dd><a href="/data/geo/">Boundary Data Documentation</a></dd>
+    <dt>Update Schedule</dt>
+    <dd>The latest iteration of this data was created in November 2018.</dd>
+    <dt>Issues?</dt>
+    <dd><a href="https://github.com/openstates/openstates.org/issues/">OpenStates.org Issues</a></dd>
+  </dl>
+</section>
+
+<section>
+  <h2 class="heading--medium">PostgreSQL Data Dump</h2>
+  <p>Nearly-complete database dump of Open States' public data.</p>
+  <dl>
+    <dt>Links</dt>
+    <dd><a href="https://data.openstates.org/postgres/schema/2020-01-schema.pgdump">January 2020 Schema</a></dd>
+    <dd><a href="https://data.openstates.org/postgres/monthly/2020-01-public.pgdump">January 2020 Data</a></dd>
+    <dt>Source</dt>
+    <dd>Combined people, bill, vote, etc. data, sources vary but are recorded in database.</dd>
+    <dt>Documentation</dt>
+    <dd>
+    Currently only supported in the context of <a href="https://docs.openstates.org/en/latest/contributing/running-the-site.html#getting-a-working-database">restoring a database for development</a>.  No guarantees are made about internal schema changes or availability.
+    </dd>
+    <dt>Update Schedule</dt>
+    <dd>This data updates regularly throughout the month, typically no more than a day or two behind what is online.</dd>
+    <dt>Issues?</dt>
+    <dd><a href="https://github.com/openstates/openstates.org/issues/">OpenStates.org Issues</a></dd>
+  </dl>
+</section>
+
+<section>
+  <h2 class="heading--medium">Legacy Data Dumps</h2>
+  <p>Data from Open States' old services, prior to 2019.</p>
+  <dl>
+    <dt>Links</dt>
+    <dd><a href="https://docs.openstates.org/en/latest/bulk/legacy-json.html#downloads">Legacy JSON Data</a></dd>
+    <dd><a href="https://docs.openstates.org/en/latest/bulk/legacy-csv.html#downloads">Legacy CSV Data</a></dd>
+    <dt>Source</dt>
+    <dd>Sources are present in data files.</dd>
+    <dt>Documentation</dt>
+    <dd><a href="https://docs.openstates.org/en/latest/bulk/legacy-json.html">Legacy JSON Data</a></dd>
+    <dd><a href="https://docs.openstates.org/en/latest/bulk/legacy-csv.html">Legacy CSV Data</a></dd>
+    <dt>Update Schedule</dt>
+    <dd>This data was generated on November 3rd, 2018 and and will not be updated.</dd>
+    <dt>Issues?</dt>
+    <dd>This data is no longer officially supported.</dd>
+  </dl>
+</section>
+
+{% endblock %}

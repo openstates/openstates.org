@@ -54,8 +54,9 @@ def _people_from_lat_lon(lat, lon):
 def find_your_legislator(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
+    json = request.GET.get("json")
 
-    if lat and lon:
+    if json and lat and lon:
         # got a passed lat/lon. Let's build off it.
         people = _people_from_lat_lon(lat, lon)
         return JsonResponse({"legislators": people})
@@ -88,7 +89,12 @@ def person(request, person_id):
     SPONSORED_BILLS_TO_SHOW = 4
     RECENT_VOTES_TO_SHOW = 3
 
-    ocd_person_id = decode_uuid(person_id)
+    try:
+        ocd_person_id = decode_uuid(person_id)
+    except ValueError:
+        ocd_person_id = (
+            person_id  # will be invalid and raise 404, but useful in logging later
+        )
     person = get_object_or_404(
         PersonProxy.objects.prefetch_related("memberships__organization"),
         pk=ocd_person_id,

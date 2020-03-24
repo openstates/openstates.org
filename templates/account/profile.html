@@ -1,0 +1,116 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}Open States Account Profile{% endblock %}
+{% block og_title %}Open States Account Profile{% endblock %}
+{% block description %}Open States Account Profile{% endblock %}
+
+{% block content %}
+<h1 class="heading--large">Account Profile</h1>
+<p>You are logged in as {{ primary_email }}, address is
+  {% if primary_email.verified %}
+    <span class="email-verified">verified</span>.
+  {% else %}
+    <span class="email-not-verified">not verified</span>.  
+    <p>Click the email you received when you signed up, or <a href="/accounts/email/">request a new verification email</a>.
+    </p>
+  {% endif %}
+</p>
+<hr>
+
+<div class="profile-settings">
+<section>
+  <h2 class="heading">Settings</h2>
+
+  <form method="POST">
+    <label>
+      Organization Name
+      <input type="text" name="organization" value="{{ request.user.profile.organization_name }}" />
+    </label>
+    <label>
+      About
+      <textarea name="about" placeholder="How you use Open States" rows=3>{{ request.user.profile.about }}</textarea>
+    </label>
+
+    {% if request.user.profile.feature_subscriptions %}
+    <label>
+      <input type="checkbox" name="subscription_emails_html" value="html"
+      {% if request.user.profile.subscription_emails_html %}checked=1{% endif %} />
+      HTML Email
+      <p class="help-text">
+        If you prefer plain text emails, uncheck this box.
+      </p>
+    </label>
+    <label>
+      Email Frequency:
+      <select name="subscription_frequency">
+        <option value="d" {% if request.user.profile.subscription_frequency == "d" %}selected=1{% endif %}>Daily</option>
+        <option value="w" {% if request.user.profile.subscription_frequency == "w" %}selected=1{% endif %}>Weekly</option>
+      </select>
+    </label>
+    {% endif %}
+    {% csrf_token %}
+    <input type="submit" class="button button--primary" value="Update Profile" />
+  </form>
+</section>
+
+<div class="profile-settings-right-col">
+<section>
+  <h2 class="heading">Manage Account</h2>
+  <p>
+    <ul>
+      <li><a href="/accounts/email/">Manage Email Addresses</a></li>
+      <li><a href="/accounts/password/change/">Change Your Password</a></li>
+      <li><a href="/accounts/social/connections/">Manage Social Auth Connections</a></li>
+    </ul>
+  </p>
+</section>
+
+<a name="apikey"></a>
+<hr>
+<section>
+  <h2 class="heading">API Key</h2>
+  {% if request.user.profile.api_tier != "inactive" %}
+  <dl class="apikey_details">
+    <dt>API Key</dt>
+    <dd><pre class="apikey">{{ request.user.profile.api_key }}</dd>
+    <dt>Tier</dt>
+    <dd>{{ request.user.profile.get_tier_details.name }} </dd>
+    <dt>GraphQL Limits</dt>
+    <dd>{{ request.user.profile.get_tier_details.v2.daily_requests }} daily requests</dd>
+    <dd>{{ request.user.profile.get_tier_details.v2.requests_per_second }} requests/sec</dd>
+    <dt>API v1 Limits</dt>
+    <dd>{{ request.user.profile.get_tier_details.v1.daily_requests }} daily requests</dd>
+    <dd>{{ request.user.profile.get_tier_details.v1.requests_per_second }} requests/sec</dd>
+  </dl>
+  {% if recent_usage %}
+  <table>
+  <tr><th>Day</th><th>v1 Calls</th><th>v2 Calls</th></tr>
+  {% for day, segment in recent_usage %}
+  <tr><td>{{ day }}</td><td>{{ segment.v1 }}</td><td>{{ segment.v2 }}</td></tr>
+  {% endfor %}
+  </table>
+  {% endif %}
+  <p>
+   To use the API check out the <a href="https://docs.openstates.org/en/latest/api/v2/">API Documentation</a>, and ask questions over at our <a href="https://discourse.openstates.org/">Discourse</a>.
+  </p>
+
+  <p>
+    If you'd like to request a change to your key's status, please <a href="mailto:contact@openstates.org">contact us</a>.
+  </p>
+  {% elif primary_email.verified %}
+  <p>
+    <form action="/accounts/profile/request_key/" method="POST">
+    {% csrf_token %}
+    <input type="submit" class="button button--primary" value="Enable API Key" />
+    </form>
+  </p>
+  {% else %}
+  <p>Please verify your email above to request an API Key.</p>
+  {% endif %}
+</section>
+</div>
+</div>
+
+{% include "account/_subscriptions.html" %}
+{% endblock %}

@@ -1,5 +1,6 @@
 # build artifacts
 /public/static/public/bundles
+/static/bundles
 webpack-stats.json
 *.pyc
 __pycache__
@@ -8,6 +9,7 @@ __pycache__
 
 # dependencies
 /node_modules
+.venv
 
 # testing
 /coverage
@@ -23,7 +25,7 @@ __pycache__
 .env.production.local
 openstates.sqlite
 openstates.sqlite3
-
+latest.pgdump
 .cache
 
 npm-debug.log*
@@ -40,3 +42,6 @@ collected_static
 
 # ansible
 *.retry
+
+# database dumps
+*.pgdump

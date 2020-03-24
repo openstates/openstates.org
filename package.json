@@ -3,17 +3,23 @@
   "version": "0.1.0",
   "description": "",
   "dependencies": {
+    "babel-eslint": "^10.0.2",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "deep-extend": ">=0.5.1",
+    "eslint-config-prettier": "^6.7.0",
+    "file-loader": "^5.1.0",
     "foundation-sites": "^6.5.0",
-    "lodash": "^4.17.11",
-    "mapbox-gl": "^0.44.2",
-    "npm": "^6.4.1",
+    "js-cookie": "^2.2.1",
+    "lodash": "^4.17.14",
+    "mapbox-gl": "^1.6.0",
+    "npm": "^6.13.7",
+    "prettier": "^1.19.1",
     "promise-polyfill": "8.1.0",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
-    "react-mapbox-gl": "^3.8.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-mapbox-gl": "^4.8.2",
+    "recharts": "^2.0.0-beta.1",
     "url-search-params-polyfill": "^5.0.0",
     "whatwg-fetch": "^3.0.0"
   },
@@ -25,32 +31,46 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "clean-webpack-plugin": "^1.0.0",
+    "clean-webpack-plugin": "^1.0.1",
     "css-loader": "^0.28.11",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",
-    "node-sass": "^4.9.4",
+    "node-sass": "^4.13.1",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
-    "webpack": "^4.27.1",
-    "webpack-bundle-tracker": "^0.3.0",
-    "webpack-cli": "^3.1.2",
+    "webpack": "^4.41.2",
+    "webpack-bundle-tracker": "^0.4.3",
+    "webpack-cli": "^3.3.10",
     "webpack-livereload-plugin": "^1.2.0",
-    "webpack-merge": "^4.1.5"
+    "webpack-merge": "^4.2.2"
   },
   "engines": {
     "node": "^8.9"
   },
   "scripts": {
     "start": "webpack --watch --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "prettier": "prettier --write static/js/*"
   },
   "browserslist": [
     "> 1% in US",
     "IE 11"
-  ]
+  ],
+  "prettier": {
+    "trailingComma": "es5"
+  },
+  "eslintConfig": {
+    "extends": "prettier",
+    "parser": "babel-eslint",
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true,
+        "modules": true
+      }
+    }
+  }
 }

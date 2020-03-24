@@ -9,7 +9,7 @@ CHANGELOG=""
 DESCRIPTION=""
 USER="$(whoami)@$(hostname)"
 
-ansible-playbook openstates.yml -i inventory/
+ansible-playbook openstates.yml -i inventory/ 
 
 curl -X POST "https://api.newrelic.com/v2/applications/$NEWRELIC_APP_ID/deployments.json" \
      -H "X-Api-Key:$NEWRELIC_API_KEY" -i \

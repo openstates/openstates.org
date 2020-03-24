@@ -2,11 +2,18 @@ const path = require("path")
 const BundleTracker = require('webpack-bundle-tracker')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const output_dir = 'public/static/public/bundles'
+const output_dir = 'static/bundles'
 
 
 module.exports = {
-  entry: ['babel-polyfill', './public/static/public/js/index'],
+  entry: {
+    main: ['babel-polyfill', './static/js/index'],
+    common_components: ['./static/js/common-components'],
+    fyl: ['./static/js/find-your-legislator'],
+    state_map: ['./static/js/state-map'],
+    district_map: ['./static/js/legislator-map'],
+    dashboards: ['./static/js/dashboards'],
+  },
   output: {
     path: path.resolve(output_dir),
     filename: "[name]-[hash].js",
@@ -31,10 +38,22 @@ module.exports = {
         ]
       },
       { test: /\.css$/, use: [{loader: "css-loader"}] },
-    ]
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/'
+            }
+          }
+        ]
+      }
+    ],
   },
   plugins: [
     new BundleTracker({filename: './webpack-stats.json'}),
     new CleanWebpackPlugin([output_dir], {watch: true})
-  ]
+  ],
 }

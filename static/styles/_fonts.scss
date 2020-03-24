@@ -1,0 +1,26 @@
+/* generated with https://github.com/neverpanic/google-font-download */
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local('Source Sans Pro Regular'),
+    local('SourceSansPro-Regular'),
+    /* from https://fonts.gstatic.com/s/sourcesanspro/v13/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7l.woff2 */
+    url('/static/fonts/Source_Sans_Pro_400.woff2') format('woff2'),
+    /* from https://fonts.gstatic.com/s/sourcesanspro/v13/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7j.woff */
+    url('/static/fonts/Source_Sans_Pro_400.woff') format('woff');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    local('Source Sans Pro Bold'),
+    local('SourceSansPro-Bold'),
+    /* from https://fonts.gstatic.com/s/sourcesanspro/v13/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlxdu.woff2 */
+    url('/static/fonts/Source_Sans_Pro_700.woff2') format('woff2'),
+    /* from https://fonts.gstatic.com/s/sourcesanspro/v13/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlxdo.woff */
+    url('/static/fonts/Source_Sans_Pro_700.woff') format('woff');
+}

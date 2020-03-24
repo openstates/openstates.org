@@ -34,15 +34,19 @@ class DjangoConnectionField(graphene.relay.ConnectionField):
             return resolved
 
         if not isinstance(resolved, Iterable):
-            raise AssertionError('Resolved value from the connection field have to be '
-                                 'iterable or instance of {}. Received "{}"'
-                                 ).format(connection_type, type(resolved))
+            raise AssertionError(
+                "Resolved value from the connection field have to be "
+                'iterable or instance of {}. Received "{}"'
+            ).format(connection_type, type(resolved))
 
-        if getattr(connection_type, 'max_items', None):
-            total_size = args.get('first') or args.get('last')
+        if getattr(connection_type, "max_items", None):
+            total_size = args.get("first") or args.get("last")
             if not total_size or total_size > connection_type.max_items:
-                raise ValueError("must specify a 'first' or 'last' parameter <= {}".format(
-                    connection_type.max_items))
+                raise ValueError(
+                    "must specify a 'first' or 'last' parameter <= {}".format(
+                        connection_type.max_items
+                    )
+                )
 
         if isinstance(resolved, list):
             _len = len(resolved)
@@ -72,7 +76,7 @@ class CountableConnectionBase(graphene.relay.Connection):
     total_count = graphene.Int()
 
     def resolve_total_count(self, info):
-        count = getattr(self, '_len')
+        count = getattr(self, "_len")
         if count is None:
             count = self.iterable.count()
         return count

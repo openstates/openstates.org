@@ -92,7 +92,7 @@
     <p>If you'd like to discuss funding specific work or make a larger donation please get in touch at <a href="mailto:funding@openstates.org">funding@openstates.org</a>.</p>
 
     <p>
-        <a href="https://stripe.com"><img class="stripe-logo" src="{% static "public/images/powered_by_stripe.svg" %}" alt="powered by Stripe" /></a>
+        <a href="https://stripe.com"><img class="stripe-logo" src="{% static "images/powered_by_stripe.svg" %}" alt="powered by Stripe" /></a>
     </p>
     <p>
         Donation processing is powered by Stripe,
@@ -105,7 +105,7 @@ var amount = null;
 
 var handler = StripeCheckout.configure({
     key: "{{ STRIPE_PUBLIC_KEY }}",
-    image: "{% static 'public/images/openstates_icon_white.png' %}",
+    image: "{% static 'images/openstates_icon_white.png' %}",
     name: "Open States",
     locale: 'auto',
     zipCode: true,

@@ -37,7 +37,7 @@ def test_person_view(client, django_assert_num_queries):
         "role": "",
         "party": "Republican",
     }
-    assert len(person.sponsored_bills) == 1
+    assert len(person.sponsored_bills) == 2
     assert len(person.vote_events) == 1
     assert resp.context["retired"] is False
 
@@ -54,6 +54,15 @@ def test_person_view_retired(client, django_assert_num_queries):
     person = resp.context["person"]
     assert person.name == "Rhonda Retired"
     assert resp.context["retired"] is True
+
+
+@pytest.mark.django_db
+def test_person_view_invalid_uuid(client, django_assert_num_queries):
+    p = PersonProxy.objects.get(name="Rhonda Retired")
+    resp = client.get(
+        p.pretty_url()[:-1] + "abcdefghij/"
+    )  # this won't be a valid pretty UUID
+    assert resp.status_code == 404
 
 
 @pytest.mark.django_db

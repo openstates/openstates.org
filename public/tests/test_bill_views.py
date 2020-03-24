@@ -9,7 +9,7 @@ def setup():
     populate_db()
 
 
-BILLS_QUERY_COUNT = 9
+BILLS_QUERY_COUNT = 7
 ALASKA_BILLS = 12
 
 
@@ -31,8 +31,14 @@ def test_bills_view_basics(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bills_view_query(client, django_assert_num_queries):
+    # title search works
     with django_assert_num_queries(BILLS_QUERY_COUNT):
-        resp = client.get("/ak/bills/?query=Moose")
+        resp = client.get("/ak/bills/?query=moose")
+    assert resp.status_code == 200
+    assert len(resp.context["bills"]) == 1
+
+    # search in body works
+    resp = client.get("/ak/bills/?query=gorgonzola")
     assert resp.status_code == 200
     assert len(resp.context["bills"]) == 1
 
@@ -43,6 +49,20 @@ def test_bills_view_query(client, django_assert_num_queries):
     assert len(resp.context["subjects"]) > 10
     assert len(resp.context["sponsors"]) == 7
     assert len(resp.context["classifications"]) == 3
+
+
+@pytest.mark.django_db
+def test_bills_view_query_bill_id(client, django_assert_num_queries):
+    # query by bill id
+    with django_assert_num_queries(BILLS_QUERY_COUNT):
+        resp = client.get("/ak/bills/?query=HB 1")
+    assert resp.status_code == 200
+    assert len(resp.context["bills"]) == 1
+
+    # case insensitive
+    resp = client.get("/ak/bills/?query=hb 1")
+    assert resp.status_code == 200
+    assert len(resp.context["bills"]) == 1
 
 
 @pytest.mark.django_db
@@ -67,7 +87,7 @@ def test_bills_view_session(client, django_assert_num_queries):
 def test_bills_view_sponsor(client, django_assert_num_queries):
     amanda = Person.objects.get(name="Amanda Adams")
     with django_assert_num_queries(BILLS_QUERY_COUNT):
-        assert len(client.get(f"/ak/bills/?sponsor={amanda.id}").context["bills"]) == 1
+        assert len(client.get(f"/ak/bills/?sponsor={amanda.id}").context["bills"]) == 2
 
 
 @pytest.mark.django_db
@@ -103,8 +123,14 @@ def test_bills_view_status(client, django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_bills_view_bad_page(client):
+    resp = client.get("/ak/bills/?page=A")
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
 def test_bill_view(client, django_assert_num_queries):
-    with django_assert_num_queries(16):
+    with django_assert_num_queries(17):
         resp = client.get("/ak/bills/2018/HB1/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
@@ -112,6 +138,7 @@ def test_bill_view(client, django_assert_num_queries):
     assert resp.context["bill"].identifier == "HB 1"
     assert len(resp.context["sponsorships"]) == 2
     assert len(resp.context["actions"]) == 3
+    assert resp.context["actions"][0].date > resp.context["actions"][2].date
     assert len(resp.context["votes"]) == 1
     assert len(resp.context["versions"]) == 2
     assert len(resp.context["documents"]) == 2
