@@ -40,10 +40,9 @@ if os.environ.get("DEBUG", "true").lower() == "false":
     # non-debug settings
     DEBUG = False
     ALLOWED_HOSTS = ["*"]
+    ADMINS = [("James Turk", "james@openstates.org")]
     # DOMAIN = ''
     SECRET_KEY = os.environ["SECRET_KEY"]
-    # ADMINS list should be 'Name Email, Name Email, Name Email...'
-    ADMINS = [a.rsplit(" ", 1) for a in os.environ.get("ADMINS", "").split(",")]
     EMAIL_HOST = os.environ["EMAIL_HOST"]
     EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
     EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
