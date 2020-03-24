@@ -41,6 +41,8 @@ backend = CacheBackend()
 
 
 def verify(key, zone):
+    if not key:
+        raise VerificationError("must provide an API key")
     # ensure we have a verified key w/ access to the zone
     try:
         # could also do this w/ new subquery expressions in 1.11
