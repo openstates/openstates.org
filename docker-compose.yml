@@ -30,6 +30,9 @@ services:
     volumes:
       - .:/code
     environment:
+      # dev settings to reload python files when edited
+      - UWSGI_PYTHON_AUTORELOAD=3
+      - UWSGI_ENABLE_THREADS=1
       - DEBUG
       - SECRET_KEY
       - DATABASE_URL
