@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.views.decorators.csrf import csrf_exempt
 from graphapi.views import KeyedGraphQLView
 from graphapi.middleware import QueryProtectionMiddleware
+from bundles.views import bundle_view
 
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path("", include("openstates.redirects")),
     path("data/", include("bulk.urls")),
     path("bundles/", include("bundles.urls")),
+    path("covid19/", bundle_view, {"slug": "covid19"}),
 ]
 
 
