@@ -1,6 +1,6 @@
 from collections import defaultdict
 from .models import Bundle
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
 
 def bundle_view(request, slug):
@@ -8,7 +8,9 @@ def bundle_view(request, slug):
     bills_by_state = defaultdict(list)
     total_bills = 0
 
-    for bill in bundle.bills.all().select_related("legislative_session__jurisdiction"):
+    for bill in bundle.bills.all().select_related(
+        "legislative_session__jurisdiction", "billstatus"
+    ):
         bills_by_state[bill.legislative_session.jurisdiction.name].append(bill)
         total_bills += 1
 
@@ -17,7 +19,8 @@ def bundle_view(request, slug):
         for state, bills in sorted(bills_by_state.items())
     }
 
-    return render_to_response(
+    return render(
+        request,
         "bundles/bundle.html",
         {
             "bundle": bundle,
