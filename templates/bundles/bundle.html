@@ -1,0 +1,74 @@
+{% extends "public/components/base.html" %}
+{% load custom_tags %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block title %}{{ bundle.name }} - Open States{% endblock %}
+{% block og_title %}{{ bundle.name }} - Open States{% endblock %}
+{% block description %}{% endblock %}
+
+{% block scripts %}
+    {% render_bundle 'common_components' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'common_components' 'css' %}
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="overview">
+        
+        <div class="overview__header">
+            <div style="width: 100%;">
+                <div class="align-justify">
+                    <div>
+                        <h1 class="overview__heading">{{ bundle.name }}</h1>
+                        <p>
+                          We are attempting to compile a list of all legislation relating to the ongoing COVID-19 situation.  We'll continue to update this page as we go, if you have any suggestions for missing legislation or improvments please <a href="mailto:james@openstates.org">reach out</a>.
+                        </p>
+                        <p>Currently tracking <b>{{ total_bills }}</b> bills in <b>{{ bills_by_state|length }}</b> states.</p>
+                        <p><b>Disclaimer: The situation is evolving rapidly, and we can't guarantee that this page is complete.  This page also does not include federal legislation or executive actions.  We also cannot answer specific questions about your state's planned actions or relief.</b></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+       
+        {% for state, bills in bills_by_state.items %}
+          <div>
+            <a name="{{ state }}"></a>
+            <h2 class="heading--medium">{{ state }}</h2>
+
+            <table class="hover">
+                <thead>
+                    <tr>
+                        <th>Bill Title</th>
+                        <th width="100">Introduced</th>
+                        <th width="250">Latest Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                        <tr class="row--align-top">
+                            <td>
+                                <strong><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></strong>
+                                <span class="u-color--gray">({{ bill.legislative_session.name }})</span>
+                                <br>
+                                <span>{{ bill.title|titlecase_caps }}</span>
+                            </td>
+                            <td>{{ bill.billstatus.first_action_date|fdate:"%b %d %Y" }}</td>
+                            <td>
+                                <span>{{ bill.billstatus.latest_action_description|title }}</span>
+                                <br>
+                                <span class="u-color--gray">{{ bill.billstatus.latest_action_date|fdate:"%b %d %Y" }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+          </div>
+        {% endfor %}
+  </section>
+{% endblock %}
