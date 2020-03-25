@@ -8,9 +8,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ("legislative", "0012_billdocument_extras"),
-    ]
+    dependencies = [("legislative", "0012_billdocument_extras")]
 
     operations = [
         migrations.CreateModel(
@@ -56,7 +54,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"unique_together": {("bundle_id", "bill_id")},},
+            options={"unique_together": {("bundle_id", "bill_id")}},
         ),
         migrations.AddField(
             model_name="bundle",

@@ -9,9 +9,9 @@ class Bundle(models.Model):
 
 
 class BundleBill(models.Model):
-    bundle_id = models.ForeignKey(Bundle, on_delete=models.CASCADE)
-    bill_id = models.ForeignKey(Bill, on_delete=models.CASCADE)
+    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
     order = models.IntegerField(default=1)
 
     class Meta:
-        unique_together = [("bundle_id", "bill_id")]
+        unique_together = [("bundle", "bill")]
