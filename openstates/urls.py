@@ -23,6 +23,7 @@ urlpatterns = [
     path("", include("public.urls")),
     path("", include("openstates.redirects")),
     path("data/", include("bulk.urls")),
+    path("bundles/", include("bundles.urls")),
 ]
 
 

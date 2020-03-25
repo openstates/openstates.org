@@ -125,6 +125,7 @@ INSTALLED_APPS = [
     "v1",
     "bulk",
     "profiles.apps.ProfilesConfig",
+    "bundles",
 ]
 
 MIDDLEWARE = [
