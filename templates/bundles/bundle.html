@@ -26,7 +26,11 @@
                         <p>
                           We are attempting to compile a list of all legislation relating to the ongoing COVID-19 situation.  We'll continue to update this page as we go, if you have any suggestions for missing legislation or improvments please <a href="mailto:james@openstates.org">reach out</a>.
                         </p>
+
                         <p>Currently tracking <b>{{ total_bills }}</b> bills in <b>{{ bills_by_state|length }}</b> states.</p>
+
+                        <p><b>Not seeing your state?</b>  It is likely they adjourned or do not have a session this year, The Council of State Governments <a href="https://web.csg.org/covid19/schedule-of-legislative-sessions-by-state/">has details</a>.</p>
+
                         <p><b>Disclaimer: The situation is evolving rapidly, and we can't guarantee that this page is complete.  This page also does not include federal legislation or executive actions.  We also cannot answer specific questions about your state's planned actions or relief.</b></p>
                     </div>
                 </div>
@@ -46,6 +50,7 @@
                         <th>Bill Title</th>
                         <th width="100">Introduced</th>
                         <th width="250">Latest Action</th>
+                        <th width="200">&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,6 +68,16 @@
                                 <br>
                                 <span class="u-color--gray">{{ bill.billstatus.latest_action_date|fdate:"%b %d %Y" }}</span>
                             </td>
+                            <td>
+                              {% if request.user.profile.feature_subscriptions %}
+                              <div data-hook="follow-button" data-bill-id="{{ bill.id }}"></div>
+                              {% else %}
+                              <a class="button" id="followButton" href="/accounts/signup/?next={% canonical_url bill %}">
+                                  Sign In to Follow
+                              </a>
+                              {% endif %}
+                            </td>
+
                         </tr>
                     {% endfor %}
                 </tbody>

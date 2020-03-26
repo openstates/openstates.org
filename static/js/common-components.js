@@ -28,8 +28,8 @@ window.addEventListener("load", () => {
     );
   }
 
-  const fb = document.querySelector('[data-hook="follow-button"]');
-  if (fb) {
+  const buttons = document.querySelectorAll('[data-hook="follow-button"]');
+  for (var fb of buttons) {
     ReactDOM.render(
       React.createElement(FollowButton, {
         billId: fb.getAttribute("data-bill-id"),
