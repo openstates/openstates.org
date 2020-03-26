@@ -33,6 +33,7 @@ window.addEventListener("load", () => {
     ReactDOM.render(
       React.createElement(FollowButton, {
         billId: fb.getAttribute("data-bill-id"),
+        skipCheck: fb.getAttribute("data-skip-check"),
       }),
       fb
     );

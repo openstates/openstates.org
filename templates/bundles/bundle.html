@@ -70,7 +70,7 @@
                             </td>
                             <td>
                               {% if request.user.profile.feature_subscriptions %}
-                              <div data-hook="follow-button" data-bill-id="{{ bill.id }}"></div>
+                              <div data-hook="follow-button" data-bill-id="{{ bill.id }}" data-skip-check=true></div>
                               {% else %}
                               <a class="button" id="followButton" href="/accounts/signup/?next={% canonical_url bill %}">
                                   Sign In to Follow

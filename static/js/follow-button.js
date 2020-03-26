@@ -2,6 +2,7 @@ import React from "react";
 import Cookies from "js-cookie";
 
 export default class FollowButton extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -9,7 +10,9 @@ export default class FollowButton extends React.Component {
     };
     this.toggle = this.toggle.bind(this);
     this.checkIfFollowing = this.checkIfFollowing.bind(this);
-    this.checkIfFollowing();
+    if (!this.props.skipCheck) {
+      this.checkIfFollowing();
+    }
   }
 
   checkIfFollowing() {
@@ -64,4 +67,8 @@ export default class FollowButton extends React.Component {
       );
     }
   }
+}
+
+FollowButton.defaultProps = {
+  skipCheck: false
 }
