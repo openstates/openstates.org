@@ -24,9 +24,6 @@ def api_method(view_func):
 
     @functools.wraps(view_func)
     def new_view(request, *args, **kwargs):
-        error = verify_request(request, "v1")
-        if error:
-            return error
         log = logger.bind(
             user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
             remote_addr=request.META.get("REMOTE_ADDR"),
@@ -34,9 +31,15 @@ def api_method(view_func):
             url=request.path_info,
             params=request.GET,
         )
+        error = verify_request(request, "v1")
+        if error:
+            log = log.bind(status_code=error.status_code)
+            log.info("v1")
+            return error
         start = time.time()
         resp = view_func(request, *args, **kwargs)
         log = log.bind(duration=time.time() - start)
+        log = log.bind(status_code=resp.status_code)
         log.info("v1")
         callback = request.GET.get("callback")
         if callback:

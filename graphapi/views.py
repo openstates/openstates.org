@@ -32,6 +32,7 @@ class KeyedGraphQLView(GraphQLView):
                 return error, error.status_code
 
         resp = super().get_response(request, data, show_graphiql)
-        log = log.bind(duration=time.time() - start)
+        # status code is second part of the return tuple
+        log = log.bind(duration=time.time() - start, status_code=resp[1])
         log.info("graphql")
         return resp
