@@ -2,7 +2,7 @@
 name: GraphQL Issue
 about: Issues with the v2 GraphQL API
 title: ''
-labels: API
+labels: 'component:graphql'
 assignees: ''
 
 ---
