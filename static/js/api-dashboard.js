@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import randomColor from "randomColor";
+import randomColor from "randomcolor";
 
 const COLORS = {
   graphql: "#6c5bc1",
