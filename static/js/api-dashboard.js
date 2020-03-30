@@ -13,7 +13,6 @@ import {
 } from "recharts";
 import randomColor from "randomColor";
 
-
 const COLORS = {
   graphql: "#6c5bc1",
   "v1.geo": "#55aa55",
@@ -94,7 +93,13 @@ class KeyChart extends PureComponent {
     const lines = this.props.mostCommon
       .slice(0, 15)
       .map(k => (
-        <Line key={k[0]} type="monotone" dataKey={k[0]} activeDot={{ r: 8 }} stroke={randomColor({seed: k[0]})} />
+        <Line
+          key={k[0]}
+          type="monotone"
+          dataKey={k[0]}
+          activeDot={{ r: 8 }}
+          stroke={randomColor({ seed: k[0] })}
+        />
       ));
     return (
       <LineChart
@@ -155,16 +160,18 @@ export default class APIDashboard extends React.Component {
               </tr>
             </thead>
             <tbody>
-            {this.props.key_tiers.map(kobj => (<tr key={kobj.name}>
-            <td>{kobj.name}</td>
-            <td>{kobj.v1 ? kobj.v1[0] : 0}/day</td>
-            <td>{kobj.v1 ? kobj.v1[1] : 0}/sec</td>
-            <td>{kobj.v1 ? kobj.v1[2] : 0}/sec burst</td>
-            <td>{kobj.v2 ? kobj.v2[0] : 0}/day</td>
-            <td>{kobj.v2 ? kobj.v2[1] : 0}/sec</td>
-            <td>{kobj.v2 ? kobj.v2[2] : 0}/sec burst</td>
-            </tr>))}
-          </tbody>
+              {this.props.key_tiers.map(kobj => (
+                <tr key={kobj.name}>
+                  <td>{kobj.name}</td>
+                  <td>{kobj.v1 ? kobj.v1[0] : 0}/day</td>
+                  <td>{kobj.v1 ? kobj.v1[1] : 0}/sec</td>
+                  <td>{kobj.v1 ? kobj.v1[2] : 0}/sec burst</td>
+                  <td>{kobj.v2 ? kobj.v2[0] : 0}/day</td>
+                  <td>{kobj.v2 ? kobj.v2[1] : 0}/sec</td>
+                  <td>{kobj.v2 ? kobj.v2[2] : 0}/sec burst</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
 
