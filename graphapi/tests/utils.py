@@ -1,8 +1,15 @@
 import uuid
 import random
 from django.contrib.postgres.search import SearchVector
-from opencivicdata.core.models import Division, Jurisdiction, Organization, Person
-from opencivicdata.legislative.models import Bill, VoteEvent, SearchableBill
+from openstates_core.data.models import (
+    Division,
+    Jurisdiction,
+    Organization,
+    Person,
+    Bill,
+    VoteEvent,
+    SearchableBill,
+)
 
 
 def make_random_bill(name):

@@ -2,7 +2,7 @@ import pytest
 from graphapi.tests.utils import populate_db
 from utils.orgs import get_chambers_from_abbr, get_legislature_from_abbr
 from utils.people import get_current_role
-from opencivicdata.core.models import Person
+from openstates_core.data.models import Person
 
 
 @pytest.mark.django_db

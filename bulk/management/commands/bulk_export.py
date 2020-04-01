@@ -9,7 +9,7 @@ import base62
 from django.core.management.base import BaseCommand
 from django.db.models import F
 from openstates_metadata import STATES_BY_NAME
-from opencivicdata.legislative.models import (
+from openstates_core.data.models import (
     LegislativeSession,
     Bill,
     BillAbstract,

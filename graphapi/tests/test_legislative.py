@@ -1,7 +1,6 @@
 import pytest
 from graphapi.schema import schema
-from opencivicdata.legislative.models import Bill
-from opencivicdata.core.models import Person
+from openstates_core.data.models import Bill, Person
 from .utils import populate_db
 
 

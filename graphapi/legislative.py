@@ -1,7 +1,7 @@
 import graphene
 import re
 from django.db.models import Prefetch, Max
-from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, PersonVote
+from openstates_core.data.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
 from .core import (
     LegislativeSessionNode,

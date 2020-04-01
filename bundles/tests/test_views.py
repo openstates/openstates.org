@@ -1,7 +1,7 @@
 import pytest
 from graphapi.tests.utils import populate_db
 from bundles.models import Bundle
-from opencivicdata.legislative.models import Bill
+from openstates_core.data.models import Bill
 
 
 @pytest.mark.django_db

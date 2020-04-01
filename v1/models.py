@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from opencivicdata.legislative.models import Bill
+from openstates_core.data.models import Bill
 
 
 class LegacyBillMapping(models.Model):

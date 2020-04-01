@@ -2,7 +2,7 @@ import re
 from django.db import transaction
 from django.core.management.base import BaseCommand
 from ...models import DivisionGeometry
-from opencivicdata.divisions import Division
+from openstates_core.divisions import Division
 from boundaries.models import BoundarySet
 
 

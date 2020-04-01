@@ -1,7 +1,7 @@
 import os
 import json
 from django.core.management.base import BaseCommand
-from opencivicdata.core.models import Post
+from openstates_core.data.models import Post
 
 
 class Command(BaseCommand):

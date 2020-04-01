@@ -1,6 +1,6 @@
 import pytest
 from graphapi.schema import schema
-from opencivicdata.core.models import Organization, Person
+from openstates_core.data.models import Organization, Person
 from .utils import populate_db
 
 

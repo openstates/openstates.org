@@ -4,7 +4,7 @@ import pytest
 from django.contrib.auth.models import User
 from graphapi.tests.utils import populate_db
 from profiles.models import Subscription
-from opencivicdata.legislative.models import Bill
+from openstates_core.data.models import Bill
 from ..models import Notification
 from ..utils import utcnow
 from ..management.commands.process_subscriptions import (
