@@ -36,7 +36,11 @@ TEMPLATES = [
     }
 ]
 
-if os.environ.get("DEBUG", "true").lower() == "false":
+if os.environ.get("MANAGEMENT_COMMAND_ONLY"):
+    DEBUG = False
+    ALLOWED_HOSTS = ["*"]
+    SECRET_KEY = os.environ.get("SECRET_KEY", "non-secret-key")
+elif os.environ.get("DEBUG", "true").lower() == "false":
     # non-debug settings
     DEBUG = False
     ALLOWED_HOSTS = ["*"]
@@ -61,7 +65,7 @@ if os.environ.get("DEBUG", "true").lower() == "false":
     # CSRF_COOKIE_SECURE = True
 else:
     DEBUG = True
-    SECRET_KEY = os.environ.get("SECRET_KEY", "debug-secret-key")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "non-secret-key")
     ALLOWED_HOSTS = ["*"]
     INTERNAL_IPS = ["127.0.0.1"]
     DOMAIN = "http://localhost:8000"
