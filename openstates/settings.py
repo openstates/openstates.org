@@ -40,6 +40,7 @@ if os.environ.get("MANAGEMENT_COMMAND_ONLY"):
     DEBUG = False
     ALLOWED_HOSTS = ["*"]
     SECRET_KEY = os.environ.get("SECRET_KEY", "non-secret-key")
+    SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 elif os.environ.get("DEBUG", "true").lower() == "false":
     # non-debug settings
     DEBUG = False
