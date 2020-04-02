@@ -299,10 +299,8 @@ def export_data(state, session, data_type):
 
 def export_all_states(data_type):
     for state in STATES_BY_NAME.values():
-        print(state.abbr)
         for session in get_available_sessions(state.abbr):
-            print(session)
-            # export_data(state.abbr, session, data_type)
+            export_data(state.abbr, session, data_type)
 
 
 class Command(BaseCommand):
