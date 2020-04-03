@@ -22,7 +22,7 @@ urlpatterns = [
         ),
     ),
     path("", include("public.urls")),
-    path("", include("openstates.redirects")),
+    path("", include("web.redirects")),
     path("data/", include("bulk.urls")),
     path("bundles/", include("bundles.urls")),
     path("covid19/", bundle_view, {"slug": "covid19"}),

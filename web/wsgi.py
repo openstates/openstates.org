@@ -10,6 +10,6 @@ try:
 except Exception as e:
     print("newrelic couldn't be initialized:", e)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openstates.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings")
 
 application = get_wsgi_application()

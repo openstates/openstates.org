@@ -146,8 +146,8 @@ MIDDLEWARE = [
     "profiles.middleware.structlog_middleware",
 ]
 
-ROOT_URLCONF = "openstates.urls"
-WSGI_APPLICATION = "openstates.wsgi.application"
+ROOT_URLCONF = "web.urls"
+WSGI_APPLICATION = "web.wsgi.application"
 
 
 # Password validation
