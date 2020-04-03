@@ -5,7 +5,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
-from openstates_core.data.models import (
+from openstates.data.models import (
     Membership,
     Bill,
     BillActionRelatedEntity,

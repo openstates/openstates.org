@@ -1,7 +1,7 @@
 import uuid
 import random
 from django.contrib.postgres.search import SearchVector
-from openstates_core.data.models import (
+from openstates.data.models import (
     Division,
     Jurisdiction,
     Organization,

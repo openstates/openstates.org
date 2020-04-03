@@ -1,5 +1,5 @@
 from django.db import models
-from openstates_core.data.models import Person, Organization, Bill
+from openstates.data.models import Person, Organization, Bill
 from utils.people import get_current_role, current_role_filters
 from utils.common import pretty_url, abbr_to_jid
 

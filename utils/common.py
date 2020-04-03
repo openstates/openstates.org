@@ -3,8 +3,8 @@ import uuid
 import base62
 from django.utils.text import slugify
 from django.db.models import Count
-from openstates_core.data.models import Person, Organization
-from openstates_core.data.models import Bill, VoteEvent, LegislativeSession
+from openstates.data.models import Person, Organization
+from openstates.data.models import Bill, VoteEvent, LegislativeSession
 
 # Metadata for states that are available in the platform
 states = sorted(us.STATES + [us.states.PR], key=lambda s: s.name)

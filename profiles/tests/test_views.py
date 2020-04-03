@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from graphapi.tests.utils import populate_db
-from openstates_core.data.models import Person
+from openstates.data.models import Person
 from profiles.models import Subscription, Notification
 from profiles.views import PermissionException
 from profiles.utils import utcnow

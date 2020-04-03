@@ -6,7 +6,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from utils.common import pretty_url
-from openstates_core.data.models import Person, Bill
+from openstates.data.models import Person, Bill
 from .utils import utcnow
 
 

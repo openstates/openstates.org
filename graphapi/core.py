@@ -2,7 +2,7 @@ import datetime
 import graphene
 from django.db.models import Q, Prefetch
 from django.contrib.gis.geos import Point
-from openstates_core.data.models import Jurisdiction, Organization, Person, Membership
+from openstates.data.models import Jurisdiction, Organization, Person, Membership
 from .common import (
     OCDBaseNode,
     IdentifierNode,

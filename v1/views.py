@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
-from openstates_core.data.models import (
+from openstates.data.models import (
     Bill,
     LegislativeSession,
     Jurisdiction,

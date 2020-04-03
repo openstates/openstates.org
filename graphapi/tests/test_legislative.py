@@ -1,6 +1,6 @@
 import pytest
 from graphapi.schema import schema
-from openstates_core.data.models import Bill, Person
+from openstates.data.models import Bill, Person
 from .utils import populate_db
 
 

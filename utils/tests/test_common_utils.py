@@ -7,7 +7,7 @@ from utils.common import (
     decode_uuid,
     sessions_with_bills,
 )
-from openstates_core.data.models import Division, Jurisdiction, Bill
+from openstates.data.models import Division, Jurisdiction, Bill
 
 
 def test_jid_to_abbr():

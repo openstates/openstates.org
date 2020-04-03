@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from graphapi.tests.utils import populate_db
-from openstates_core.data.models import Person, Bill
+from openstates.data.models import Person, Bill
 from ..models import LegacyBillMapping
 
 

@@ -1,5 +1,5 @@
 import re
-from openstates_core.data.models import Bill
+from openstates.data.models import Bill
 from .websearchquery import WebSearchQuery as SearchQuery
 from .common import abbr_to_jid
 

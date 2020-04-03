@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from boundaries.models import Boundary
-from openstates_core.data.models import Division
+from openstates.data.models import Division
 
 
 class DivisionGeometry(models.Model):

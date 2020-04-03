@@ -1,6 +1,6 @@
 import pytest
 from graphapi.tests.utils import populate_db
-from openstates_core.data.models import Person, VoteEvent
+from openstates.data.models import Person, VoteEvent
 
 
 @pytest.mark.django_db
