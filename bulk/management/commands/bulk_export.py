@@ -284,10 +284,10 @@ def upload_and_publish(state, session, filename, data_type):
 
 
 def get_available_sessions(state):
-    return [
+    return sorted(
         s.identifier
         for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
-    ]
+    )
 
 
 def export_data(state, session, data_type):
@@ -327,7 +327,7 @@ class Command(BaseCommand):
 
         sessions = get_available_sessions(state)
 
-        if options["all-sessions"]:
+        if options["all_sessions"]:
             options["sessions"] = sessions
         if not options["sessions"]:
             print("available sessions:")
