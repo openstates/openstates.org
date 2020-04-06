@@ -1,5 +1,5 @@
 from django.db import models
-from opencivicdata.legislative.models import LegislativeSession
+from openstates.data.models import LegislativeSession
 
 
 class DataExport(models.Model):

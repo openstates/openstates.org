@@ -7,8 +7,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Sum, F
 from django.http import Http404
 from django.shortcuts import render
-from opencivicdata.legislative.models import Bill
-from opencivicdata.core.models import Organization
+from openstates.data.models import Bill, Organization
 from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
 from utils.bills import search_bills
 from ..models import PersonProxy
