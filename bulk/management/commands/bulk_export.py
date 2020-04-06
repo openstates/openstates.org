@@ -1,3 +1,4 @@
+import os
 import csv
 import json
 import datetime
@@ -9,7 +10,7 @@ import base62
 from django.core.management.base import BaseCommand
 from django.db.models import F
 from openstates_metadata import STATES_BY_NAME
-from opencivicdata.legislative.models import (
+from openstates.data.models import (
     LegislativeSession,
     Bill,
     BillAbstract,
@@ -142,7 +143,7 @@ def export_session_csv(state, session):
         print(f"no bills for {state} {session}")
         return
     random = _str_uuid()
-    filename = f"{state}_{session}_csv_{random}.zip"
+    filename = f"/tmp/{state}_{session}_csv_{random}.zip"
     zf = zipfile.ZipFile(filename, "w")
     ts = datetime.datetime.utcnow()
     zf.writestr(
@@ -244,7 +245,7 @@ def export_session_json(state, session):
         )
     ]
     random = _str_uuid()
-    filename = f"{state}_{session}_json_{random}.zip"
+    filename = f"/tmp/{state}_{session}_json_{random}.zip"
     zf = zipfile.ZipFile(filename, "w")
     ts = datetime.datetime.utcnow()
     zf.writestr(
@@ -269,11 +270,12 @@ def upload_and_publish(state, session, filename, data_type):
     s3 = boto3.client("s3")
 
     BULK_S3_BUCKET = "data.openstates.org"
+    basename = os.path.basename(filename)
     s3_path = f"{data_type}/latest/"
-    s3_url = f"https://{BULK_S3_BUCKET}/{s3_path}{filename}"
+    s3_url = f"https://{BULK_S3_BUCKET}/{s3_path}{basename}"
 
     s3.upload_file(
-        filename, BULK_S3_BUCKET, s3_path + filename, ExtraArgs={"ACL": "public-read"}
+        filename, BULK_S3_BUCKET, s3_path + basename, ExtraArgs={"ACL": "public-read"}
     )
     print("uploaded", s3_url)
     obj, created = DataExport.objects.update_or_create(
@@ -282,10 +284,10 @@ def upload_and_publish(state, session, filename, data_type):
 
 
 def get_available_sessions(state):
-    return [
+    return sorted(
         s.identifier
         for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
-    ]
+    )
 
 
 def export_data(state, session, data_type):
@@ -299,10 +301,8 @@ def export_data(state, session, data_type):
 
 def export_all_states(data_type):
     for state in STATES_BY_NAME.values():
-        print(state.abbr)
         for session in get_available_sessions(state.abbr):
-            print(session)
-            # export_data(state.abbr, session, data_type)
+            export_data(state.abbr, session, data_type)
 
 
 class Command(BaseCommand):
@@ -327,7 +327,7 @@ class Command(BaseCommand):
 
         sessions = get_available_sessions(state)
 
-        if options["all-sessions"]:
+        if options["all_sessions"]:
             options["sessions"] = sessions
         if not options["sessions"]:
             print("available sessions:")

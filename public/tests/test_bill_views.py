@@ -1,7 +1,6 @@
 import pytest
 from graphapi.tests.utils import populate_db
-from opencivicdata.core.models import Person
-from opencivicdata.legislative.models import VoteEvent
+from openstates.data.models import Person, VoteEvent
 
 
 @pytest.mark.django_db

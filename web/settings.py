@@ -36,7 +36,12 @@ TEMPLATES = [
     }
 ]
 
-if os.environ.get("DEBUG", "true").lower() == "false":
+if os.environ.get("MANAGEMENT_COMMAND_ONLY"):
+    DEBUG = False
+    ALLOWED_HOSTS = ["*"]
+    SECRET_KEY = os.environ.get("SECRET_KEY", "non-secret-key")
+    SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
+elif os.environ.get("DEBUG", "true").lower() == "false":
     # non-debug settings
     DEBUG = False
     ALLOWED_HOSTS = ["*"]
@@ -61,7 +66,7 @@ if os.environ.get("DEBUG", "true").lower() == "false":
     # CSRF_COOKIE_SECURE = True
 else:
     DEBUG = True
-    SECRET_KEY = os.environ.get("SECRET_KEY", "debug-secret-key")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "non-secret-key")
     ALLOWED_HOSTS = ["*"]
     INTERNAL_IPS = ["127.0.0.1"]
     DOMAIN = "http://localhost:8000"
@@ -114,11 +119,10 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.twitter",
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.github",
-    "opencivicdata.core.apps.BaseConfig",
-    "opencivicdata.legislative.apps.BaseConfig",
+    "openstates.data",
+    "openstates.reports",
     "boundaries",
     "geo",
-    "pupa",
     "graphene_django",
     "public",
     "graphapi",
@@ -138,10 +142,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "profiles.middleware.structlog_middleware",
 ]
 
-ROOT_URLCONF = "openstates.urls"
-WSGI_APPLICATION = "openstates.wsgi.application"
+ROOT_URLCONF = "web.urls"
+WSGI_APPLICATION = "web.wsgi.application"
 
 
 # Password validation

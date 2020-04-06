@@ -156,10 +156,14 @@ export default class FindYourLegislator extends React.Component {
     const component = this;
     // if a state was passed in, limit geocoding to bounding box
     const bb = this.state.stateAbbr ? stateBounds[this.state.stateAbbr] : null;
-    const bbStr = this.state.stateAbbr ? `&bbox=${bb[0][0]},${bb[0][1]},${bb[1][0]},${bb[1][1]}` : "";
+    const bbStr = this.state.stateAbbr
+      ? `&bbox=${bb[0][0]},${bb[0][1]},${bb[1][0]},${bb[1][1]}`
+      : "";
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURI(
       this.state.address
-    )}.json?country=US&limit=1${bbStr}&access_token=${config.MAPBOX_ACCESS_TOKEN}`;
+    )}.json?country=US&limit=1${bbStr}&access_token=${
+      config.MAPBOX_ACCESS_TOKEN
+    }`;
 
     fetch(url)
       .then(response => response.json())

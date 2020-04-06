@@ -1,22 +1,23 @@
 import pytz
-import time
 import datetime
 import functools
 from django.http import JsonResponse
 from django.db.models import Max, Min, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
-from structlog import get_logger
-from opencivicdata.legislative.models import Bill, LegislativeSession
-from opencivicdata.core.models import Jurisdiction, Person, Post, Organization
+from openstates.data.models import (
+    Bill,
+    LegislativeSession,
+    Jurisdiction,
+    Person,
+    Post,
+    Organization,
+)
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
 from utils.common import jid_to_abbr, abbr_to_jid
 from utils.people import current_role_filters
 from utils.bills import search_bills
-from profiles.verifier import get_key_from_request, verify_request
-
-
-logger = get_logger("openstates")
+from profiles.verifier import verify_request
 
 
 def api_method(view_func):
@@ -27,17 +28,7 @@ def api_method(view_func):
         error = verify_request(request, "v1")
         if error:
             return error
-        log = logger.bind(
-            user_agent=request.META.get("HTTP_USER_AGENT", "UNKNOWN"),
-            remote_addr=request.META.get("REMOTE_ADDR"),
-            api_key=get_key_from_request(request),
-            url=request.path_info,
-            params=request.GET,
-        )
-        start = time.time()
         resp = view_func(request, *args, **kwargs)
-        log = log.bind(duration=time.time() - start)
-        log.info("v1")
         callback = request.GET.get("callback")
         if callback:
             resp.content = bytes(callback, "utf8") + b"(" + resp.content + b")"

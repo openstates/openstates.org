@@ -1,5 +1,5 @@
 from .common import abbr_to_jid
-from opencivicdata.core.models import Organization
+from openstates.data.models import Organization
 
 
 def get_chambers_from_abbr(abbr):

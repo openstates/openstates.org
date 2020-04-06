@@ -1,5 +1,5 @@
 from django.db import models
-from opencivicdata.legislative.models import Bill
+from openstates.data.models import Bill
 
 
 class Bundle(models.Model):

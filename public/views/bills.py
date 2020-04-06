@@ -5,8 +5,12 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
-from opencivicdata.core.models import Membership
-from opencivicdata.legislative.models import Bill, BillActionRelatedEntity, VoteEvent
+from openstates.data.models import (
+    Membership,
+    Bill,
+    BillActionRelatedEntity,
+    VoteEvent,
+)
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id, search_bills

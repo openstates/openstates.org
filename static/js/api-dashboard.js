@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import randomColor from "randomcolor";
 
 const COLORS = {
   graphql: "#6c5bc1",
@@ -92,9 +93,14 @@ class KeyChart extends PureComponent {
     const lines = this.props.mostCommon
       .slice(0, 15)
       .map(k => (
-        <Line key={k[0]} type="monotone" dataKey={k[0]} activeDot={{ r: 8 }} />
+        <Line
+          key={k[0]}
+          type="monotone"
+          dataKey={k[0]}
+          activeDot={{ r: 8 }}
+          stroke={randomColor({ seed: k[0] })}
+        />
       ));
-    console.log(lines);
     return (
       <LineChart
         width={1000}
@@ -120,7 +126,6 @@ class KeyChart extends PureComponent {
 export default class APIDashboard extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
   }
 
   render() {
@@ -154,15 +159,19 @@ export default class APIDashboard extends React.Component {
                 <th colSpan={3}>v2 Limits</th>
               </tr>
             </thead>
-            {this.props.key_tiers.map(kobj => (<tr key={kobj.name}>
-            <td>{kobj.name}</td>
-            <td>{kobj.v1 ? kobj.v1[0] : 0}/day</td>
-            <td>{kobj.v1 ? kobj.v1[1] : 0}/sec</td>
-            <td>{kobj.v1 ? kobj.v1[2] : 0}/sec burst</td>
-            <td>{kobj.v2 ? kobj.v2[0] : 0}/day</td>
-            <td>{kobj.v2 ? kobj.v2[1] : 0}/sec</td>
-            <td>{kobj.v2 ? kobj.v2[2] : 0}/sec burst</td>
-            </tr>))}
+            <tbody>
+              {this.props.key_tiers.map(kobj => (
+                <tr key={kobj.name}>
+                  <td>{kobj.name}</td>
+                  <td>{kobj.v1 ? kobj.v1[0] : 0}/day</td>
+                  <td>{kobj.v1 ? kobj.v1[1] : 0}/sec</td>
+                  <td>{kobj.v1 ? kobj.v1[2] : 0}/sec burst</td>
+                  <td>{kobj.v2 ? kobj.v2[0] : 0}/day</td>
+                  <td>{kobj.v2 ? kobj.v2[1] : 0}/sec</td>
+                  <td>{kobj.v2 ? kobj.v2[2] : 0}/sec burst</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
 

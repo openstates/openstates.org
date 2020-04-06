@@ -1,6 +1,6 @@
 import pytest
 from graphapi.tests.utils import populate_db
-from opencivicdata.core.models import Organization, Person, Membership
+from openstates.data.models import Organization, Person, Membership
 from utils.common import pretty_url
 
 
