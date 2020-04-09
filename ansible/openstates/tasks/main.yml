@@ -72,8 +72,8 @@
   command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
 - name: add letsencrypt renewal crontab
   cron: job="letsencrypt renew" special_time="daily" name="renew certificate"
-- name: add update_materialized_views cron
-  cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="hourly" name="update materialized views"
+# - name: add update_materialized_views cron
+#   cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py update_materialized_views" special_time="hourly" name="update materialized views"
 - name: add process_subscriptions cron
   cron: job=". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py process_subscriptions >> /tmp/subscriptions.log" hour="12" minute="30" name="process subscriptions"
 - name: add aggregate usage cron
