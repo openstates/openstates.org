@@ -1,5 +1,4 @@
 from django.urls import path, re_path
-from django.views.generic import TemplateView
 from .views.other import styleguide, home, state, site_search
 from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
@@ -17,9 +16,6 @@ state_abbr_pattern = r"({})".format("|".join(state_abbrs))
 urlpatterns = [
     path("styleguide", styleguide, name="styleguide"),
     # flatpages
-    path("about/", TemplateView.as_view(template_name="flat/about.html")),
-    path("tos/", TemplateView.as_view(template_name="flat/tos.html")),
-    path("api/registered/", TemplateView.as_view(template_name="flat/registered.html")),
     path("donate/", donate),
     # top level views
     path("", home, name="home"),

@@ -59,6 +59,31 @@ input#donor-name {
     font-weight: 600;
 }
 
+// about/subscriptions/
+.subscriptions-howto {
+  display: grid;
+  grid-template-columns: auto;
+  grid-column-gap: 5em;
+  grid-row-gap: 2em;
+
+  @include breakpoint(large) {
+      grid-template-columns: auto auto;
+  }
+
+  img { 
+    border: 2px solid $color-primary;
+    transition: transform .5s;
+  }
+  img:hover {
+    @include breakpoint(large) {
+      transform: scale(2);
+    }
+  }
+  figcaption {
+    text-align: center;
+  }
+}
+
 // homepage
 .blog-date {
     color: $color-black;
