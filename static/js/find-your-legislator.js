@@ -281,6 +281,7 @@ export default class FindYourLegislator extends React.Component {
           </label>
           <input
             className="input-group-field"
+            type="search"
             id="fyl-address"
             name="address"
             value={this.state.address}
