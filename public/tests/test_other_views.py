@@ -64,17 +64,10 @@ def test_state_view_unicam(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_homepage(client, django_assert_num_queries):
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(0):
         resp = client.get("/")
     assert resp.status_code == 200
     assert len(resp.context["states"]) == 52
-    assert len(resp.context["recent_bills"])
-    assert len(resp.context["blog_updates"])
-
-    # everything from cache
-    with django_assert_num_queries(0):
-        resp = client.get("/")
-    assert len(resp.context["recent_bills"])
     assert len(resp.context["blog_updates"])
 
 
