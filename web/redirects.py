@@ -15,6 +15,10 @@ redirects = [
         "categorization/",
         "https://docs.openstates.org/en/latest/api/categorization.html",
     ),
+    (
+        "mailing-list/",
+        "https://cdn.forms-content.sg-form.com/b8d934d4-7b67-11ea-a680-1a7f462d56d4",
+    ),
     # old flatpages
     ("funding/", "/donate/"),
     ("contact/", "/about/"),
