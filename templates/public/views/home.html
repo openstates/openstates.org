@@ -36,12 +36,18 @@
             <h2 class="heading--medium">Find Your Legislators</h2>
             <img src="{% static "images/nounproject/people_2911761.svg" %}">
             <form action="/find_your_legislator/">
+              <div class="fyl-row">
                 <div class="input-group">
                     <input class="input-group-field" type="search" placeholder="Enter Address" name="address">
                     <div class="input-group-button">
                         <input type="submit" class="button button--primary" value="Search">
                     </div>
                 </div>
+
+                <div class="fyl-locate">
+                  <input type="submit" id="locate" class="button button--primary" name="geolocate" value="Use Current Location">
+                </div>
+              </div>
             </form>
         </div>
 

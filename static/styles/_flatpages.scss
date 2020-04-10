@@ -112,6 +112,15 @@ input#donor-name {
   }
 }
 
+.fyl-row {
+  display: grid;
+  grid-template-columns: auto;
+
+  @include breakpoint(medium) {
+      grid-template-columns: auto auto;
+  }
+}
+
 .blog-date {
     color: $color-black;
     font-weight: bold;

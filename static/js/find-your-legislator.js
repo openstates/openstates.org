@@ -105,6 +105,8 @@ export default class FindYourLegislator extends React.Component {
     } else if (this.state.address) {
       // if we just got an address, geocode
       this.geocode();
+    } else if (queryParams.get("geolocate")) {
+      this.geolocate();
     }
   }
 
@@ -268,7 +270,7 @@ export default class FindYourLegislator extends React.Component {
     }
 
     if (this.state.error) {
-      error = <div class="fyl-error">{this.state.error}</div>;
+      error = <div className="fyl-error">{this.state.error}</div>;
     }
 
     return (
