@@ -56,6 +56,15 @@ server {
         expires 2h;
     }
 
+      # no caching for accounts
+      location /accounts {
+          uwsgi_pass uwsgi://django:9999;
+          include uwsgi_params;
+          add_header Strict-Transport-Security "max-age=31536000" always;
+          add_header X-Cache-Status $upstream_cache_status;
+          expires -1;
+      }
+
     # long cache time for static files
     location /static {
         uwsgi_pass unix:///home/openstates/uwsgi.sock;
