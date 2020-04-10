@@ -1,0 +1,101 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block title %}About Open States Subscriptions{% endblock %}
+{% block description %}Track legislation for free using Open States.{% endblock %}
+
+{% block content %}
+<div class="flatpage">
+<h1 class="heading--large">Subscribing to Bill Alerts</h1>
+
+<section>
+<p>
+  As of February 2020 bill tracking &amp; subscriptions are in open beta.  This power user feature lets you easily track all legislation that has been introduced on a given topic as well as subscribe to updates on existing bills.
+</p>
+<p>Here's a quick guide on how to get the most out of this powerful new feature:</p>
+
+<div class="subscriptions-howto">
+
+<div>
+  <h2 class="heading--small">Step 1) Create an Account</h2>
+  <p>
+    The first thing you need to do is <a href="/accounts/signup/">create an account</a> and verify your email.
+  </p>
+  <p> You can <a href="/accounts/signup/">create an account</a> using a username &amp; password, or any common social media provider (Twitter, Google, Facebook, GitHub).
+  </p>
+  <p><strong>Make sure to <a href="/accounts/profile/">verify your email address</a>, we can't send alerts until that's done.</strong></p>
+</div>
+<div>
+  <figure>
+    <img src="{% static 'images/subscriptions-preview/signup.png' %}" />
+    <figcaption>The sign up page.</figcaption>
+  </figure>
+</div>
+
+<div>
+  <h2 class="heading--small">Step 2) Search for Bills</h1>
+  <p>
+    We currently support two types of subscriptions: saved searches and individual bills.
+  </p>
+  <p>
+    Saved searches allow you to be notified any time a new piece of legislation that matches
+    your search criteria is introduced.
+  </p>
+  <p>To create a saved search navigate to your state's bills page (e.g. <a href="/nc/bills/">North Carolina Bills</a>)
+    and enter a search query.  After you see your results you can click the "Add Subscription" button, which will 
+    ensure you're updated any time new legislation is introduced matching your criteria.
+  </p>
+</div>
+
+<div>
+<div style="position: relative; padding-bottom: 95.74468085106382%; height: 0;"><iframe src="https://www.loom.com/embed/a4060d9acc3e4830837fc881c5540f06" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+</div>
+
+<div>
+  <h2 class="heading--small">...or Track Existing Legislation</h1>
+  <p>You may also find legislation that you wish to track changes to.  Let's say you're curious to see all updates to the <a href="/nc/bills/2019/SB315/">North Carolina Farm Act of 2019</a>.  You'd navigate to the bill, and click the "Follow Bill" button beneath the bill title at the top of the page.
+  </p>
+  <p>Once clicked, you'll receive emails any time the legislation is updated in any way.  This means if a new sponsor is added, action is taken, or text is changed- you'll be informed that a change took place.  Perfect for keeping tabs on the legislation you're most interested in.
+  </p>
+</div>
+
+<div>
+<div style="position: relative; padding-bottom: 65.57377049180329%; height: 0;"><iframe src="https://www.loom.com/embed/f4358a1e80b94472b0c2c4b496bdc21b" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+</div>
+<div>
+  <h2 class="heading--small">Step 3) Get Email Alerts</h1>
+  <p>
+    Now you can sit back &amp; wait.  We'll send emails when changes occur.  Our system updates each state at least once every 24 hours, so you can be sure you're up to date.
+  </p>
+</div>
+<div>
+  <figure>
+    <img src="{% static 'images/subscriptions-preview/email.png' %}" />
+    <figcaption>An example email alert.</figcaption>
+  </figure>
+</div>
+
+<div>
+<h2 class="heading--small">Step 4) Manage Your Subscriptions</h1>
+<p>
+  Visiting your <a href="/accounts/profile/">profile</a> will let you browse &amp; manage your subscriptions and email preferences.
+</p>
+<p>You can choose between daily &amp; weekly emails, and unsubscribe from any of your current subscriptions from this page.</p>
+</div>
+<div>
+</div>
+
+<div>
+<h2 class="heading--small">Step 5) Give Feedback</h1>
+<p>
+  This feature is still in beta, so if you notice anything weird or have any requests, please <a href="mailto:contact@openstates.org">get in touch</a>.
+</p>
+<p>And finally, if you're finding the feature useful please consider <a href="https://patreon.com/openstates">becoming a patron</a> or <a href="/donate/">donating to support our work</a>!<p>
+</div>
+
+</div>
+
+</section>
+
+</div>
+{% endblock %}

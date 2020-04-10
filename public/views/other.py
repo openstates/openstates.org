@@ -1,5 +1,3 @@
-import pytz
-import datetime
 import feedparser
 from collections import Counter
 from django.core.cache import cache
@@ -8,7 +6,7 @@ from django.db.models import Sum, F
 from django.http import Http404
 from django.shortcuts import render
 from openstates.data.models import Bill, Organization
-from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
+from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.bills import search_bills
 from ..models import PersonProxy
 
@@ -27,25 +25,6 @@ def _get_latest_updates():
     ][:3]
 
 
-def _get_random_bills():
-    bills = (
-        Bill.objects.all()
-        .filter(
-            updated_at__gte=pytz.utc.localize(
-                datetime.datetime.utcnow() - datetime.timedelta(days=3)
-            )
-        )
-        .select_related(
-            "legislative_session", "legislative_session__jurisdiction", "billstatus"
-        )
-        .prefetch_related("sponsorships")
-        .order_by("?")
-    )[:3]
-    for bill in bills:
-        bill.state = jid_to_abbr(bill.legislative_session.jurisdiction_id)
-    return bills
-
-
 def _preprocess_sponsors(bills):
     FIRST_SPONSORS_COUNT = 3
 
@@ -62,9 +41,8 @@ def home(request):
     # cache these to try to keep the homepage as cheap as possible
     cache_time = 60 * 60 * 24  # cache for a full day
     updates = cache.get_or_set("homepage-blog-updates", _get_latest_updates, cache_time)
-    recent_bills = cache.get_or_set("homepage-bills", _get_random_bills, cache_time)
 
-    context = {"states": states, "recent_bills": recent_bills, "blog_updates": updates}
+    context = {"states": states, "blog_updates": updates}
     return render(request, "public/views/home.html", context)
 
 

@@ -59,10 +59,79 @@ input#donor-name {
     font-weight: 600;
 }
 
+// about/subscriptions/
+.subscriptions-howto {
+  display: grid;
+  grid-template-columns: auto;
+  grid-column-gap: 5em;
+  grid-row-gap: 2em;
+
+  @include breakpoint(large) {
+      grid-template-columns: auto auto;
+  }
+
+  img { 
+    border: 2px solid $color-primary;
+    transition: transform .5s;
+  }
+  img:hover {
+    @include breakpoint(large) {
+      transform: scale(2);
+    }
+  }
+  figcaption {
+    text-align: center;
+  }
+}
+
 // homepage
+#homepage-section {
+  margin-top: 2rem;
+}
+.homepage-hero {
+  width: 100%;
+  text-align: center;
+
+}
+
+.site-alert {
+  color: $color-red;
+}
+
+.homepage-grid {
+  padding-top: 4rem;
+  display: grid;
+  grid-template-columns: auto;
+  grid-column-gap: 3rem;
+  @include breakpoint(medium) {
+      grid-template-columns: 1fr 1fr;
+  }
+
+  img {
+    height: 100px;
+  }
+}
+
+.fyl-row {
+  display: grid;
+  grid-template-columns: auto;
+
+  @include breakpoint(medium) {
+      grid-template-columns: auto auto;
+  }
+}
+
 .blog-date {
     color: $color-black;
     font-weight: bold;
+}
+
+.donation-banner {
+  width: 100%;
+  text-align: center;
+  background-color: $color-yellow;
+  font-weight: 600;
+  padding: 1em;
 }
 
 
