@@ -87,9 +87,10 @@ def state(request, state):
                 titles.append(legislator.current_role["role"])
 
         chamber.parties = dict(Counter(parties).most_common())
-        chamber.title = titles[0]
-        if chamber.seats - len(legislators) > 0:
-            chamber.parties["Vacancies"] = chamber.seats - len(legislators)
+        try:
+            chamber.title = titles[0]
+        except IndexError:
+            chamber.title = "Legislator"
 
         chamber.committee_count = committee_counts[chamber.classification]
 
