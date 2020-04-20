@@ -8,75 +8,72 @@
 
 {% block content %}
 
-<section class="section">
+<section class="section" id="homepage-section">
+    <div class="homepage-hero">
+        <h1 class="heading--large">Discover Politics In Your State</h1>
+        <p class="heading--small">Track bills, review upcoming legislation, and see how your local representatives are voting in your state.</p>
 
-    <div class="grid-x grid-margin-x">
-        <div class="cell medium-8">
-            <div class="u-measure--wide text-center">
-                <h1 class="heading--large">Discover Politics In Your State</h1>
-                <img width="150" src="{% static "images/nounproject/national_assembly.svg" %}">
-                <p class="heading--small">Track bills, review upcoming legislation, and see how your local representatives are voting in your state.</p>
-                {% for st in states %}
-                    <a class="label" href="/{{ st.abbr|lower }}">{{ st.name }}</a>
-                {% endfor %}
-            </div>
+        <div class="site-alert">
+          Many state sessions have been suspended as a result of the COVID-19 situation.   We are <a href="/covid19/">tracking legislation related to the Coronavirus response</a> where possible.
+        </div>
+    </div>
 
-            <div class="mt3">
-                <hr>
-                <h2 class="heading--medium">Latest Activity</h2>
-                {% for bill in recent_bills %}
-                    {% bill_card state bill %}
-                {% endfor %}
-            </div>
+    <div class="homepage-grid">
+        <div class="text-center">
+          <h2 class="heading--medium">Search &amp; Track Legislation</h2>
+          <img src="{% static "images/nounproject/political_2003975.svg" %}">
+          <form action="/search/">
+              <div class="input-group">
+                  <input class="input-group-field" type="search" placeholder="Coronavirus, Transportation, etc." name="query">
+                  <div class="input-group-button">
+                      <input type="submit" class="button button--primary" value="Search">
+                  </div>
+              </div>
+          </form>
         </div>
 
-        <div class="cell medium-4 text-center">
-            <div class="sidebar">
-                <div class="text-center">
-                    <h2 class="heading--medium">Find Your Legislators</h2>
-                    <div class="thumbnail thumbnail--placeholder mt1 mb1" style="display: inline-block;"></div>
-                    <form action="/find_your_legislator/">
-                        <div class="input-group">
-                            <input class="input-group-field" type="search" placeholder="Enter Address" name="address">
-                            <div class="input-group-button">
-                                <input type="submit" class="button button--primary" value="Search">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="mt3">
-                    <hr>
-                    <h2 class="heading--medium">Dig In To Our Data &amp; APIs</h2>
-                    <p>
-                        We make all of our data available for <a href="/data/">bulk download</a>
-                        and via our powerful <a href="https://docs.openstates.org/en/latest/api/v2/">API</a>.
-                        <br>
-                        <br>
-                        <a href="/accounts/profile/#apikey">Get an API key</a> to get started.
-                    </p>
-                </div>
-
-                <div class="mt3 text-center">
-                    <hr>
-                    <h2 class="heading--medium">Donate to Open States</h2>
-                    <p>
-                        Open States is a volunteer-driven project. Your donations help us keep the data fresh and this website free for everyone to use.
-                    </p>
-                    <a class="button button--primary" href="/donate/">Donate $25 Today</a>
-                </div>
-
-                <div class="mt3">
-                    <hr>
-                    <h2 class="heading--medium">Project Updates</h2>
-                    {% for update in blog_updates %}
-                    <div class="blog-update">
-                        <div class="blog-date">{{ update.date|fdate:"%B %-d, %Y" }}</div>
-                        <a href="{{ update.link }}">{{ update.title }}</a>
+        <div class="text-center">
+            <h2 class="heading--medium">Find Your Legislators</h2>
+            <img src="{% static "images/nounproject/people_2911761.svg" %}">
+            <form action="/find_your_legislator/">
+              <div class="fyl-row">
+                <div class="input-group">
+                    <input class="input-group-field" type="search" placeholder="Enter Address" name="address">
+                    <div class="input-group-button">
+                        <input type="submit" class="button button--primary" value="Search">
                     </div>
-                    {% endfor %}
                 </div>
+
+                <div class="fyl-locate">
+                  <input type="submit" id="locate" class="button button--primary" name="geolocate" value="Use Current Location">
+                </div>
+              </div>
+            </form>
+        </div>
+
+        <div class="text-center">
+            <hr>
+            <h2 class="heading--medium">Dig In To Our Data &amp; APIs</h2>
+            <img height="150" src="{% static "images/nounproject/data_2921737.svg" %}">
+            <p style="margin-top: 1rem">
+                We make all of our data available for <a href="/data/">bulk download</a>
+                and via our powerful <a href="https://docs.openstates.org/en/latest/api/v2/">API</a>.
+                <br>
+                <br>
+                <a href="/accounts/profile/#apikey">Get an API key</a> to get started.
+            </p>
+        </div>
+
+        <div class="text-center">
+            <hr>
+            <h2 class="heading--medium">Project Updates</h2>
+            <img height="150" src="{% static "images/nounproject/news_750649.svg" %}">
+            {% for update in blog_updates %}
+            <div class="blog-update">
+                <div class="blog-date">{{ update.date|fdate:"%B %-d, %Y" }}</div>
+                <a href="{{ update.link }}">{{ update.title }}</a>
             </div>
+            {% endfor %}
         </div>
     </div>
 

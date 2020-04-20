@@ -33,7 +33,8 @@ class Command(BaseCommand):
                 if re.match(regex, line["url"]):
                     break
             else:
-                raise ValueError("unknown v1 endpoint: " + line["url"])
+                print("unknown v1 endpoint: " + line["url"])
+                return
         self.count_by_day[day][(line["api_key"], endpoint)] += 1
         self.duration_by_day[day][line["api_key"]][endpoint] += line["duration"]
         self.lines += 1

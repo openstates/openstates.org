@@ -64,10 +64,10 @@ description = "The AWS SDK for Python"
 name = "boto3"
 optional = false
 python-versions = "*"
-version = "1.12.36"
+version = "1.12.39"
 
 [package.dependencies]
-botocore = ">=1.15.36,<1.16.0"
+botocore = ">=1.15.39,<1.16.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -77,7 +77,7 @@ description = "Low-level, data-driven core of boto 3."
 name = "botocore"
 optional = false
 python-versions = "*"
-version = "1.15.36"
+version = "1.15.39"
 
 [package.dependencies]
 docutils = ">=0.10,<0.16"
@@ -99,6 +99,7 @@ version = "2020.4.5.1"
 [[package]]
 category = "main"
 description = "Universal encoding detector for Python 2 and 3"
+marker = "python_version >= \"3.0\""
 name = "chardet"
 optional = false
 python-versions = "*"
@@ -299,7 +300,7 @@ description = "Graphene Django integration"
 name = "graphene-django"
 optional = false
 python-versions = "*"
-version = "2.9.0"
+version = "2.9.1"
 
 [package.dependencies]
 Django = ">=1.11"
@@ -310,7 +311,7 @@ singledispatch = ">=3.4.0.3"
 six = ">=1.10.0"
 
 [package.extras]
-dev = ["black (19.3b0)", "flake8 (3.7.7)", "flake8-black (0.1.0)", "flake8-bugbear (19.3.0)", "pytest (>=3.6.3)", "pytest-cov", "coveralls", "mock", "pytz", "pytest-django (>=3.3.2)", "djangorestframework (>=3.6.3)", "django-filter (<2)", "django-filter (>=2)"]
+dev = ["black (19.10b0)", "flake8 (3.7.9)", "flake8-black (0.1.1)", "flake8-bugbear (20.1.4)", "pytest (>=3.6.3)", "pytest-cov", "coveralls", "mock", "pytz", "pytest-django (>=3.3.2)", "djangorestframework (>=3.6.3)", "django-filter (<2)", "django-filter (>=2)"]
 rest_framework = ["djangorestframework (>=3.6.3)"]
 test = ["pytest (>=3.6.3)", "pytest-cov", "coveralls", "mock", "pytz", "pytest-django (>=3.3.2)", "djangorestframework (>=3.6.3)", "django-filter (<2)", "django-filter (>=2)"]
 
@@ -347,6 +348,7 @@ six = ">=1.12"
 [[package]]
 category = "main"
 description = "Internationalized Domain Names in Applications (IDNA)"
+marker = "python_version >= \"3.0\""
 name = "idna"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -413,15 +415,15 @@ category = "dev"
 description = "An autocompletion tool for Python that can be used for text editors."
 name = "jedi"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "0.16.0"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "0.17.0"
 
 [package.dependencies]
-parso = ">=0.5.2"
+parso = ">=0.7.0"
 
 [package.extras]
 qa = ["flake8 (3.7.9)"]
-testing = ["colorama (0.4.1)", "docopt", "pytest (>=3.9.0,<5.0.0)"]
+testing = ["colorama", "docopt", "pytest (>=3.9.0,<5.0.0)"]
 
 [[package]]
 category = "main"
@@ -512,13 +514,13 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "4.1.0"
+version = "4.1.1"
 
 [package.dependencies]
 Django = ">=2.2"
 dj_database_url = ">=0.5.0,<0.6.0"
 jsonschema = ">=3.2.0,<4.0.0"
-openstates-metadata = ">=2020.2.2,<2021.0.0"
+openstates-metadata = ">=2020.4.3,<2021.0.0"
 psycopg2-binary = ">=2.8.4,<3.0.0"
 pytz = ">=2019.3,<2020.0"
 scrapelib = ">=1.2.0,<2.0.0"
@@ -529,7 +531,7 @@ description = "metadata for the openstates project"
 name = "openstates-metadata"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "2020.4.2"
+version = "2020.4.3"
 
 [package.dependencies]
 attrs = ">=19.3,<20.0"
@@ -552,7 +554,7 @@ description = "A Python Parser"
 name = "parso"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "0.6.2"
+version = "0.7.0"
 
 [package.extras]
 testing = ["docopt", "pytest (>=3.0.7)"]
@@ -926,7 +928,7 @@ description = "Python bindings for the Stripe API"
 name = "stripe"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "2.44.0"
+version = "2.45.0"
 
 [package.dependencies]
 [package.dependencies.requests]
@@ -1060,12 +1062,12 @@ bleach = [
     {file = "bleach-3.1.4.tar.gz", hash = "sha256:e78e426105ac07026ba098f04de8abe9b6e3e98b5befbf89b51a5ef0a4292b03"},
 ]
 boto3 = [
-    {file = "boto3-1.12.36-py2.py3-none-any.whl", hash = "sha256:57397f9ad3e9afc17e6100a38c6e631b6545aabc7f8c38b86ff2c6f5931d0ebf"},
-    {file = "boto3-1.12.36.tar.gz", hash = "sha256:911994ef46595e8ab9f08eee6b666caea050937b96d54394292e958330cd7ad5"},
+    {file = "boto3-1.12.39-py2.py3-none-any.whl", hash = "sha256:cdd79a3a7bbe1f33a365f0acfcc75c4405b482b3eb9ce3f4e6b16c418e201ac3"},
+    {file = "boto3-1.12.39.tar.gz", hash = "sha256:970bd7b332e73d7b51077ed36772c634811b38c81b0cc6ed0f910e50d7ebadf8"},
 ]
 botocore = [
-    {file = "botocore-1.15.36-py2.py3-none-any.whl", hash = "sha256:d2233e19b6a60792185b15fe4cd8f92c5579298e5079daf17f66f6e639585e3a"},
-    {file = "botocore-1.15.36.tar.gz", hash = "sha256:5fc5e8629b5375d591a47d05baaff6ccdf5c3b617aad1e14286be458092c9e53"},
+    {file = "botocore-1.15.39-py2.py3-none-any.whl", hash = "sha256:e20ba56476b1031ce5ac8e22b59dabc75bd0e03231f124ed6b9ff99fe0b0c96b"},
+    {file = "botocore-1.15.39.tar.gz", hash = "sha256:94232b44e1540b7e043e220bd43f855400d0a243e926b26b3fb72994e971d518"},
 ]
 certifi = [
     {file = "certifi-2020.4.5.1-py2.py3-none-any.whl", hash = "sha256:1d987a998c75633c40847cc966fcf5904906c920a7f17ef374f5aa4282abd304"},
@@ -1143,8 +1145,8 @@ graphene = [
     {file = "graphene-2.1.8.tar.gz", hash = "sha256:2cbe6d4ef15cfc7b7805e0760a0e5b80747161ce1b0f990dfdc0d2cf497c12f9"},
 ]
 graphene-django = [
-    {file = "graphene-django-2.9.0.tar.gz", hash = "sha256:85420f93926f874c48b5dd119e4a0e231000a7501d7fc2218aa67f6deaf924d9"},
-    {file = "graphene_django-2.9.0-py2.py3-none-any.whl", hash = "sha256:2d1db0022740475bc76a7372f6d9637ab3dc3217f1b330c6090b1cca7f9538fd"},
+    {file = "graphene-django-2.9.1.tar.gz", hash = "sha256:9a95913e3c70e8013c4908b916c68ab1497e1a6cd1cdd1793010f79777978596"},
+    {file = "graphene_django-2.9.1-py2.py3-none-any.whl", hash = "sha256:33843f3f86b4d580a7cc69ccf5d2cff9e275597ae2c33c906627fa15e0c18590"},
 ]
 graphql-core = [
     {file = "graphql-core-2.3.1.tar.gz", hash = "sha256:74a8f509ae8c4a58271f5d6b46d5c75b4aed116821ab62dea252d8041bfe057a"},
@@ -1171,8 +1173,8 @@ ipython-genutils = [
     {file = "ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"},
 ]
 jedi = [
-    {file = "jedi-0.16.0-py2.py3-none-any.whl", hash = "sha256:b4f4052551025c6b0b0b193b29a6ff7bdb74c52450631206c262aef9f7159ad2"},
-    {file = "jedi-0.16.0.tar.gz", hash = "sha256:d5c871cb9360b414f981e7072c52c33258d598305280fef91c6cae34739d65d5"},
+    {file = "jedi-0.17.0-py2.py3-none-any.whl", hash = "sha256:cd60c93b71944d628ccac47df9a60fec53150de53d42dc10a7fc4b5ba6aae798"},
+    {file = "jedi-0.17.0.tar.gz", hash = "sha256:df40c97641cb943661d2db4c33c2e1ff75d491189423249e989bcea4464f3030"},
 ]
 jellyfish = [
     {file = "jellyfish-0.5.6-cp27-none-macosx_10_11_x86_64.whl", hash = "sha256:d0b22034df56d5faa34928457655722acf385d122da59c2cf7f4acd6bd49ea8b"},
@@ -1205,20 +1207,20 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-4.1.0-py3-none-any.whl", hash = "sha256:794c4c4f5f66ce0777634abec2839bdcc59288dd3e2d0073cd48f9c4711bbe72"},
-    {file = "openstates-4.1.0.tar.gz", hash = "sha256:18fc302acc70d2742afd4ea4c8fbc0f2b4f21cd16f345521b9b896a1e8137d93"},
+    {file = "openstates-4.1.1-py3-none-any.whl", hash = "sha256:c4d4dcd44076cb48869dfd7d131bcc104c4e88116c8a4a345444777e5873f1f9"},
+    {file = "openstates-4.1.1.tar.gz", hash = "sha256:0bbbbff5ccd66fce5366ea722c3de8cce3e36e3f9d615b61e1bc942a06f62a27"},
 ]
 openstates-metadata = [
-    {file = "openstates_metadata-2020.4.2-py3-none-any.whl", hash = "sha256:c935734d7bec60f9ce857496c685c76c5c768c68ea3ddf75fdcfa85e117dc4fb"},
-    {file = "openstates_metadata-2020.4.2.tar.gz", hash = "sha256:590c6bf1437befeace5b90cf61ae502b0ce54be55ffc74cd80c5433f980c8493"},
+    {file = "openstates_metadata-2020.4.3-py3-none-any.whl", hash = "sha256:0eded9a6d4d2e3cddbc3ede87f8cbfcc13cb6aeab06258867ca5c71665d38f57"},
+    {file = "openstates_metadata-2020.4.3.tar.gz", hash = "sha256:5ee38adb85ee920747c2311aea54252968e9a1432603d50d2790d12af807cb45"},
 ]
 packaging = [
     {file = "packaging-20.3-py2.py3-none-any.whl", hash = "sha256:82f77b9bee21c1bafbf35a84905d604d5d1223801d639cf3ed140bd651c08752"},
     {file = "packaging-20.3.tar.gz", hash = "sha256:3c292b474fda1671ec57d46d739d072bfd495a4f51ad01a055121d81e952b7a3"},
 ]
 parso = [
-    {file = "parso-0.6.2-py2.py3-none-any.whl", hash = "sha256:8515fc12cfca6ee3aa59138741fc5624d62340c97e401c74875769948d4f2995"},
-    {file = "parso-0.6.2.tar.gz", hash = "sha256:0c5659e0c6eba20636f99a04f469798dca8da279645ce5c387315b2c23912157"},
+    {file = "parso-0.7.0-py2.py3-none-any.whl", hash = "sha256:158c140fc04112dc45bca311633ae5033c2c2a7b732fa33d0955bad8152a8dd0"},
+    {file = "parso-0.7.0.tar.gz", hash = "sha256:908e9fae2144a076d72ae4e25539143d40b8e3eafbaeae03c1bfe226f4cdf12c"},
 ]
 pexpect = [
     {file = "pexpect-4.8.0-py2.py3-none-any.whl", hash = "sha256:0b48a55dcb3c05f3329815901ea4fc1537514d6ba867a152b581d69ae3710937"},
@@ -1369,8 +1371,8 @@ sqlparse = [
     {file = "sqlparse-0.3.1.tar.gz", hash = "sha256:e162203737712307dfe78860cc56c8da8a852ab2ee33750e33aeadf38d12c548"},
 ]
 stripe = [
-    {file = "stripe-2.44.0-py2.py3-none-any.whl", hash = "sha256:c16f92ae001e415340fffd73c97ec29b2e1f6591b905e8741c4ff02eab35e104"},
-    {file = "stripe-2.44.0.tar.gz", hash = "sha256:b15ce50cac5961ce63873906eac1492a12ed01a6ba3606aca831a1741b724a29"},
+    {file = "stripe-2.45.0-py2.py3-none-any.whl", hash = "sha256:2592aa78aa8fbd2c7b892edd9eb0b5dd987df60000e156b1fe395c44ac46f1c0"},
+    {file = "stripe-2.45.0.tar.gz", hash = "sha256:8382f1429487ba641e9d8348db32c1d7b235b7de9129f235a668eef2131147fa"},
 ]
 structlog = [
     {file = "structlog-20.1.0-py2.py3-none-any.whl", hash = "sha256:8a672be150547a93d90a7d74229a29e765be05bd156a35cdcc527ebf68e9af92"},

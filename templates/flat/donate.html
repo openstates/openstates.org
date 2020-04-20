@@ -9,7 +9,7 @@
 <h1 class="heading--large">Support Open States</h1>
 
 <div id="donate-success" style="display: none;">
-  Thank you for your donation!  You should receive an email receipt shortly, if you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
+  Thank you for your contribution!  You should receive an email receipt shortly, if you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
 </div>
 <div id="donate-failure" style="display: none;">
   Something went wrong!  This has been logged, If you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
@@ -21,10 +21,18 @@
         Open States serves millions of API calls and sees thousands of visitors daily without charging a dollar, we depend upon the generosity of donors to fund our work and expenses. 
         Donations to Open States will help us pay our server costs and allow the all-volunteer core team to continue to dedicate their time to maintaining and improving the project.
     </p>
+
     <p><strong>If you find Open States a valuable resource please consider donating today.</strong></p>
+
+    <p>You can support Open States by becoming a recurring donor to our Patreon. </p>
+    <p>
+  <a href="https://www.patreon.com/bePatron?u=4813054" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+    </p>
 </section>
 
 <section>
+    <p>You can also make a one-time or recurring donation here:</p>
+
     <div class="donor-form">
     <div>
         <label for="donor-name">Name:</label> <input id="donor-name" type="text" />
@@ -49,11 +57,11 @@
     <label for="reg-other">
         <input id="other-amount" type="text" placeholder="custom">
     </label>
-    <button data-amount="custom" class="btn-stripe button button--primary">Donate!</button>
+    <button data-amount="custom" class="btn-stripe button button--primary">Contribute!</button>
 
     <p>
         <br>
-        <strong>You can also sign up to give a recurring donation, allowing us to plan bigger &amp; better things:</strong>
+        <strong>You can also sign up to give a recurring contribution, allowing us to plan bigger &amp; better things:</strong>
     </p>
 
     <input type="radio" id="mo-500" value="mo-500" name="donation">
@@ -79,7 +87,7 @@
     <br>
     <br>
 
-    <button data-amount="custom" class="btn-stripe button button--primary">Donate!</button>
+    <button data-amount="custom" class="btn-stripe button button--primary">Contribute!</button>
 
     {% csrf_token %}
 </div>
