@@ -167,7 +167,7 @@ class PersonNode(OCDBaseNode):
     old_memberships = graphene.List(
         "graphapi.core.MembershipNode", classification=graphene.List(graphene.String)
     )
-    votes = graphene.List("graphapi.legislative.BillVoteNode")
+    votes = DjangoConnectionField("graphapi.legislative.BillVoteConnection")
 
     def resolve_identifiers(self, info):
         return self.identifiers.all()

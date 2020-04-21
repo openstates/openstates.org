@@ -259,6 +259,11 @@ class VoteConnection(graphene.relay.Connection):
         node = VoteEventNode
 
 
+class BillVoteConnection(graphene.relay.Connection):
+    class Meta:
+        node = BillVoteNode
+
+
 class SponsorInput(graphene.InputObjectType):
     name = graphene.String(required=False)
     primary = graphene.Boolean(required=False)
