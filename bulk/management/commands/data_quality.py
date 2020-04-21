@@ -29,8 +29,8 @@ from openstates.data.models import (
     VoteCount,
     VoteSource,
 )
-from ...models import DataExport
 from utils.common import abbr_to_jid
+from utils.orgs import get_chambers_from_abbr
 
 
 # Loads the global bill array with all bills from given state and session to use
@@ -39,17 +39,7 @@ def load_bills(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
-    bills = Bill.objects.filter(legislative_session=sobj).values(
-        "id",
-        "identifier",
-        "title",
-        "classification",
-        "subject",
-        session_identifier=F("legislative_session__identifier"),
-        jurisdiction=F("legislative_session__jurisdiction__name"),
-        organization_classification=F("from_organization__classification"),
-    )
-
+    bills = Bill.objects.filter(legislative_session=sobj)
     return bills
 
 
@@ -58,6 +48,15 @@ def get_available_sessions(state):
         s.identifier
         for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
     )
+
+def total_bills_per_session(bills, chambers):
+    total_bills_per_session = {}
+    for chamber in chambers:
+        total_bills = bills.filter(from_organization=chamber).count()
+        total_bills_per_session[chamber] = total_bills
+    return total_bills_per_session
+
+
 
 # Example command
 # docker-compose run --rm django poetry run ./manage.py data_quality Virginia
@@ -73,7 +72,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         state = options["state"]
         sessions = get_available_sessions(state)
+        chambers = get_chambers_from_abbr(state)
         for session in sessions:
             # Resets bills inbetween every session
             bills = load_bills(state, session)
-            print(f"Total bills for {state} {session}: {bills.count()}")
+            if bills.count() > 0:
+                bills_per_session = total_bills_per_session(bills, chambers)
