@@ -295,6 +295,7 @@ class CoreQuery:
         member_of=graphene.String(),
         ever_member_of=graphene.String(),
         district=graphene.String(),
+        division_id=graphene.String(),
         name=graphene.String(),
         updated_since=graphene.String(),
         latitude=graphene.Float(),
@@ -331,16 +332,23 @@ class CoreQuery:
         member_of=None,
         ever_member_of=None,
         district=None,
+        division_id=None,
         name=None,
         updated_since=None,
         latitude=None,
         longitude=None,
     ):
         qs = Person.objects.all()
+        today = datetime.date.today()
 
         if name:
             qs = qs.filter(
                 Q(name__icontains=name) | Q(other_names__name__icontains=name)
+            )
+        if division_id:
+            qs = qs.filter(
+                Q(memberships__post__division_id=division_id),
+                Q(memberships__end_date="") | Q(memberships__end_date__gt=today),
             )
         if member_of:
             qs = qs.member_of(member_of, post=district)
@@ -356,7 +364,6 @@ class CoreQuery:
 
         if latitude and longitude:
             try:
-                today = datetime.date.today()
                 qs = qs.filter(
                     Q(
                         memberships__post__division__geometries__boundary__shape__contains=(

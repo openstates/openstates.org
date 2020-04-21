@@ -276,6 +276,20 @@ def test_people_by_district():
 
 
 @pytest.mark.django_db
+def test_people_by_division_id():
+    # Note: uses a fake divisionId that has two reps (one retired), only one should be returned
+    result = schema.execute(
+        """ {
+        people(divisionId: "ocd-division/country:us/state:Alaska/district:B", first: 50) {
+            edges { node { name } }
+        }
+    }
+    """
+    )
+    assert len(result.data["people"]["edges"]) == 1
+
+
+@pytest.mark.django_db
 def test_people_by_name():
     result = schema.execute(
         """ {
