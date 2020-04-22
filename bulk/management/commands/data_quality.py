@@ -32,7 +32,7 @@ from openstates.data.models import (
 from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
 from collections import defaultdict
-from statistics import mean 
+from statistics import mean
 
 
 
@@ -44,26 +44,6 @@ def load_bills(state, session):
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
     bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts", "sources")
-    # for bill in Bill.objects.filter(legislative_session=sobj):
-    #     bills.add(bill.select_related(
-    #         "legislative_session",
-    #         "legislative_session__jurisdiction",
-    #         "from_organization",
-    #         "searchable",
-    #     ).prefetch_related(
-    #         "abstracts",
-    #         "other_titles",
-    #         "other_identifiers",
-    #         "actions",
-    #         "related_bills",
-    #         "sponsorships",
-    #         "documents",
-    #         "documents__links",
-    #         "versions",
-    #         "versions__links",
-    #         "sources",
-    #         "votes__votes",
-    #     ))
     return bills
 
 
@@ -145,6 +125,22 @@ def no_sources(bills, chambers):
     return no_sources_data
 
 
+def bill_subjects(bills, chambers):
+    bill_subjects_data = defaultdict(list)
+    for chamber in chambers:
+        chamber_name = chamber.name.lower()
+        overall_number_of_subjects = bills.distinct("subject").values_list("subject", flat=True).count()
+        number_of_subjects = bills.filter(from_organization=chamber).distinct("subject").values_list("subject", flat=True).count()
+        number_of_bills_without_subjects = bills.filter(from_organization=chamber, subject=None).count()
+        bill_subjects_data[chamber_name].append({
+            "chamber": chamber_name,
+            "overall_number_of_subjects": overall_number_of_subjects,
+            "number_of_subjects": number_of_subjects,
+            "number_of_bills_without_subjects": number_of_bills_without_subjects}
+        )
+    return bill_subjects_data
+
+
 # Example command
 # docker-compose run --rm django poetry run ./manage.py data_quality Virginia
 class Command(BaseCommand):
@@ -168,4 +164,5 @@ class Command(BaseCommand):
                 bills_per_session = total_bills_per_session(bills, chambers)
                 average_num_data = average_number_data(bills, chambers)
                 no_sources_data = no_sources(bills, chambers)
+                bill_subjects_data = bill_subjects(bills, chambers)
                 print("------")
