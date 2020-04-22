@@ -39,7 +39,7 @@
                 <td>
                     <div data-hook="legislator-image" data-image="{{ membership.member.image }}" data-person-id="{{ membership.person_id }}"> </div>
                 </td>
-                <td><a href="{{ membership.member.pretty_url }}">{{ membership.member.name }}</a></td>
+                <td><a href="{% canonical_url membership.member %}">{{ membership.member.name }}</a></td>
                 <td>{{ membership.member.current_role.party }}</td>
                 {% else %}
                 <td>

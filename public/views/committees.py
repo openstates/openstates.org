@@ -1,16 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, Count, F
+from openstates.data.models import Organization, Person
 from utils.common import decode_uuid, pretty_url
-from utils.orgs import get_chambers_from_abbr
-from ..models import OrganizationProxy, PersonProxy
+from utils.orgs import get_chambers_from_abbr, org_as_dict
 
 
 def committees(request, state):
     chambers = get_chambers_from_abbr(state)
 
     committees = [
-        c.as_dict()
-        for c in OrganizationProxy.objects.select_related("parent")
+        org_as_dict(c)
+        for c in Organization.objects.select_related("parent")
         .filter(Q(parent__in=chambers), classification="committee")
         .annotate(member_count=Count("memberships", filter=Q(memberships__end_date="")))
     ]
@@ -34,7 +34,7 @@ def _role_sort_key(membership):
 
 def committee(request, state, committee_id):
     ocd_org_id = decode_uuid(committee_id, "organization")
-    org = get_object_or_404(OrganizationProxy.objects.all(), pk=ocd_org_id)
+    org = get_object_or_404(Organization.objects.all(), pk=ocd_org_id)
 
     # canonicalize the URL
     canonical_url = pretty_url(org)
@@ -49,7 +49,7 @@ def committee(request, state, committee_id):
 
     members = {
         p.id: p
-        for p in PersonProxy.objects.filter(memberships__in=memberships)
+        for p in Person.objects.filter(memberships__in=memberships)
         .annotate(committee_role=F("memberships__role"))
         .prefetch_related(
             "memberships", "memberships__organization", "memberships__post"

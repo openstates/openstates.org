@@ -5,10 +5,10 @@ from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Sum, F
 from django.http import Http404
 from django.shortcuts import render
-from openstates.data.models import Bill, Organization
+from openstates.data.models import Bill, Organization, Person
 from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.bills import search_bills
-from ..models import PersonProxy
+from utils.people import person_as_dict
 
 
 def styleguide(request):
@@ -76,7 +76,7 @@ def state(request, state):
         chambers = [legislature]
 
     # legislators
-    legislators = PersonProxy.get_current_legislators_with_roles(chambers)
+    legislators = Person.objects.current_legislators_with_roles(chambers)
 
     for chamber in chambers:
         parties = []
@@ -158,7 +158,7 @@ def site_search(request):
             raise Http404()
 
         # people search
-        people = [p.as_dict() for p in PersonProxy.search_people(query, state=state)]
+        people = [person_as_dict(p) for p in Person.objects.search(query, state=state)]
 
     return render(
         request,

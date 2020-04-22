@@ -2,7 +2,7 @@ from collections import defaultdict
 import name_tools
 from . import static
 from utils.common import jid_to_abbr
-from utils.people import get_current_role
+
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -215,7 +215,7 @@ def convert_legislator(leg):
     district = None
     state = None
 
-    cr = get_current_role(leg)
+    cr = leg.current_role
     party = cr["party"]
     chamber = cr["chamber"]
     district = cr["district"]

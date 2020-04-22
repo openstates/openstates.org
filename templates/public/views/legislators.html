@@ -42,7 +42,7 @@
     <noscript>
         <ul>
         {% for leg in legislators %}
-        <li><a href="{{ leg.pretty_url }}">{{ leg.name }}</a></li>
+        <li><a href="{% canonical_url leg %}">{{ leg.name }}</a></li>
         {% endfor %}
         </ul>
     </noscript>
