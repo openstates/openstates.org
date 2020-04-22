@@ -43,7 +43,7 @@ def load_bills(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
-    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts")
+    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts", "sources")
     # for bill in Bill.objects.filter(legislative_session=sobj):
     #     bills.add(bill.select_related(
     #         "legislative_session",
@@ -62,8 +62,6 @@ def load_bills(state, session):
     #         "versions",
     #         "versions__links",
     #         "sources",
-    #         "votes",
-    #         "votes__counts",
     #         "votes__votes",
     #     ))
     return bills
@@ -130,9 +128,21 @@ def average_number_data(bills, chambers):
             "average_actions_per_bill": average_actions_per_bill,
             "average_votes_per_bill": average_votes_per_bill}
         )
-    print(average_num_data)
-
     return average_num_data
+
+
+def no_sources(bills, chambers):
+    no_sources_data = defaultdict(list)
+    for chamber in chambers:
+        chamber_name = chamber.name.lower()
+        total_bills_no_sources = bills.filter(from_organization=chamber, sources=None).count()
+        total_votes_no_sources = bills.filter(from_organization=chamber, votes__sources=None).count()
+        no_sources_data[chamber_name].append({
+            "chamber": chamber,
+            "total_bills_no_sources": total_bills_no_sources,
+            "total_votes_no_sources": total_votes_no_sources}
+        )
+    return no_sources_data
 
 
 # Example command
@@ -157,4 +167,5 @@ class Command(BaseCommand):
                 print(session)
                 bills_per_session = total_bills_per_session(bills, chambers)
                 average_num_data = average_number_data(bills, chambers)
+                no_sources_data = no_sources(bills, chambers)
                 print("------")
