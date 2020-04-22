@@ -8,7 +8,7 @@ import uuid
 import boto3
 import base62
 from django.core.management.base import BaseCommand
-from django.db.models import F
+from django.db.models import F, Count, Avg
 from openstates_metadata import STATES_BY_NAME
 from openstates.data.models import (
     LegislativeSession,
@@ -43,7 +43,7 @@ def load_bills(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
-    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships")
+    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts")
     # for bill in Bill.objects.filter(legislative_session=sobj):
     #     bills.add(bill.select_related(
     #         "legislative_session",
@@ -106,19 +106,31 @@ def average_number_data(bills, chambers):
     average_num_data = defaultdict(list)
 
     for chamber in chambers:
-        print(chamber)
-        # Average num sponsors per bill:
-        # total_sponsorships_per_bill = bills.filter(from_organization=chamber)
+        chamber_name = chamber.name.lower()
         total_sponsorships_per_bill = []
+        total_actions_per_bill = []
+        total_votes_per_bill = []
+
+        average_sponsors_per_bill = 0
+        average_actions_per_bill = 0
+        average_votes_per_bill = 0
+
         for bill in bills.filter(from_organization=chamber):
-            total_sponsors = bill.sponsorships.count()
-            total_sponsorships_per_bill.append(total_sponsors)
-        if total_sponsorships_per_bill:
-            print(round(mean(total_sponsorships_per_bill)))
+            total_sponsorships_per_bill.append(bill.sponsorships.count())
+            total_actions_per_bill.append(bill.actions.count())
+            total_votes_per_bill.append(bill.votes.count())
 
-        # Average num actions per bill:
+        average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
+        average_actions_per_bill = round(mean(total_actions_per_bill))
+        average_votes_per_bill = round(mean(total_votes_per_bill))
 
-        # Average num votes per bill:
+        average_num_data[chamber_name].append({
+            "chamber": chamber_name,
+            "average_sponsors_per_bill": average_sponsors_per_bill,
+            "average_actions_per_bill": average_actions_per_bill,
+            "average_votes_per_bill": average_votes_per_bill}
+        )
+    print(average_num_data)
 
     return average_num_data
 
