@@ -32,6 +32,8 @@ from openstates.data.models import (
 from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
 from collections import defaultdict
+from statistics import mean 
+
 
 
 
@@ -41,7 +43,7 @@ def load_bills(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
-    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions")
+    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships")
     # for bill in Bill.objects.filter(legislative_session=sobj):
     #     bills.add(bill.select_related(
     #         "legislative_session",
@@ -83,13 +85,12 @@ def total_bills_per_session(bills, chambers):
         latest_action = ""
         bill_with_latest_action = ""
 
-        print("-------")
         if total_bills > 0:
             latest_bill = bills.filter(from_organization=chamber).latest("created_at").created_at
             bill_with_latest_action = bills.filter(from_organization=chamber).latest("actions__date")
+            # In case bills don't have actions
             if bill_with_latest_action.actions.count() > 0:
                 latest_action = bill_with_latest_action.actions.latest("date")
-                print(latest_action.date + " -- " + latest_action.description)
 
         total_bills_per_session[chamber_name].append({
             "chamber": chamber,
@@ -100,6 +101,26 @@ def total_bills_per_session(bills, chambers):
         )
     return total_bills_per_session
 
+
+def average_number_data(bills, chambers):
+    average_num_data = defaultdict(list)
+
+    for chamber in chambers:
+        print(chamber)
+        # Average num sponsors per bill:
+        # total_sponsorships_per_bill = bills.filter(from_organization=chamber)
+        total_sponsorships_per_bill = []
+        for bill in bills.filter(from_organization=chamber):
+            total_sponsors = bill.sponsorships.count()
+            total_sponsorships_per_bill.append(total_sponsors)
+        if total_sponsorships_per_bill:
+            print(round(mean(total_sponsorships_per_bill)))
+
+        # Average num actions per bill:
+
+        # Average num votes per bill:
+
+    return average_num_data
 
 
 # Example command
@@ -121,4 +142,7 @@ class Command(BaseCommand):
             # Resets bills inbetween every session
             bills = load_bills(state, session)
             if bills.count() > 0:
+                print(session)
                 bills_per_session = total_bills_per_session(bills, chambers)
+                average_num_data = average_number_data(bills, chambers)
+                print("------")
