@@ -121,7 +121,11 @@ def legislator_list(request, geo=False):
     chamber = request.GET.get("chamber")
     district = request.GET.get("district")
 
-    filter_params = []
+    today = datetime.date.today().isoformat()
+    filter_params = [
+        Q(memberships__start_date="") | Q(memberships__start_date__lte=today),
+        Q(memberships__end_date="") | Q(memberships__end_date__gte=today),
+    ]
 
     if geo:
         latitude = request.GET.get("lat")
@@ -158,7 +162,7 @@ def legislator_list(request, geo=False):
     if district:
         filter_params.append(Q(memberships__post__label=district))
 
-    people = person_qs().active().filter(*filter_params)
+    people = person_qs().filter(*filter_params).distinct()
 
     return JsonResponse([convert_legislator(l) for l in people], safe=False)
 

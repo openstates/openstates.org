@@ -270,14 +270,14 @@ def test_legislator_detail(client, django_assert_num_queries):
             "email": None,
             "party": "Republican",
             "chamber": "lower",
-            "district": "1",
+            "district": 1,
             "state": "ak",
             "sources": [],
             "active": True,
             "roles": [
                 {
                     "term": "30",
-                    "district": "1",
+                    "district": 1,
                     "chamber": "lower",
                     "state": "ak",
                     "party": "Republican",
