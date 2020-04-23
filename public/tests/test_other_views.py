@@ -1,14 +1,12 @@
 import stripe
 from unittest import mock
 import pytest
-from django.core.management import call_command
 from graphapi.tests.utils import populate_db, populate_unicam
 
 
 @pytest.mark.django_db
 def setup():
     populate_db()
-    call_command("update_materialized_views")
 
 
 @pytest.mark.django_db
