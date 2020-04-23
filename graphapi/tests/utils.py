@@ -53,6 +53,9 @@ def make_person(name, state, chamber, district, party):
         state = "ak"
     elif state == "Wyoming":
         state = "wy"
+    elif state == "Nebraska":
+        state = "ne"
+        chamber = "upper"
     div, _ = Division.objects.get_or_create(
         id="ocd-division/country:us/state:{}/sld{}:{}".format(
             state, chamber[0], district.lower()
@@ -61,7 +64,7 @@ def make_person(name, state, chamber, district, party):
     )
     post = org.posts.create(label=district, division=div)
     p = Person.objects.create(
-        name=name, primary_party=party, current_role_division_id=div.id
+        name=name, primary_party=party.name, current_role_division_id=div.id
     )
     p.memberships.create(post=post, organization=org)
     p.memberships.create(organization=party)
@@ -115,6 +118,8 @@ def populate_db():
     for m in rhonda.memberships.all():
         m.end_date = "2017-01-01"
         m.save()
+    rhonda.current_role_division_id = ""
+    rhonda.save()
 
     # WY House (multi-member districts)
     make_person("Greta Gonzalez", "Wyoming", "lower", "1", "Democratic")

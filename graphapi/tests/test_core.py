@@ -280,7 +280,7 @@ def test_people_by_division_id():
     # Note: uses a fake divisionId that has two reps (one retired), only one should be returned
     result = schema.execute(
         """ {
-        people(divisionId: "ocd-division/country:us/state:Alaska/district:B", first: 50) {
+        people(divisionId: "ocd-division/country:us/state:ak/sldu:b, first: 50) {
             edges { node { name } }
         }
     }
@@ -483,7 +483,7 @@ def test_person_by_id(django_assert_num_queries):
         if membership["post"]:
             division = membership["post"]["division"]
             break
-    assert division["id"] == "ocd-division/country:us/state:Alaska/district:2"
+    assert division["id"] == "ocd-division/country:us/state:ak/sldu:2"
 
 
 @pytest.mark.django_db

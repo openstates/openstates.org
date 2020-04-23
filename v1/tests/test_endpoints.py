@@ -333,8 +333,8 @@ def test_districts_list(client, django_assert_num_queries):
         assert resp.status_code == 200
         assert len(resp.json()) == 8
         expected = {
-            "division_id": "ocd-division/country:us/state:Alaska/district:B",
-            "boundary_id": "ocd-division/country:us/state:Alaska/district:B",
+            "division_id": "ocd-division/country:us/state:ak/sldu:b",
+            "boundary_id": "ocd-division/country:us/state:ak/sldu:b",
             "name": "B",
             "chamber": "upper",
             "abbr": "ak",
