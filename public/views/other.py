@@ -98,22 +98,20 @@ def state(request, state):
     # bills
     bills = (
         Bill.objects.all()
-        .select_related(
-            "legislative_session", "legislative_session__jurisdiction", "billstatus"
-        )
+        .select_related("legislative_session", "legislative_session__jurisdiction")
         .filter(from_organization__in=chambers)
         .prefetch_related("sponsorships", "sponsorships__person")
     )
 
     recently_introduced_bills = list(
-        bills.filter(billstatus__first_action_date__isnull=False).order_by(
-            "-billstatus__first_action_date"
-        )[:RECENTLY_INTRODUCED_BILLS_TO_SHOW]
+        bills.filter(first_action_date__isnull=False).order_by("-first_action_date")[
+            :RECENTLY_INTRODUCED_BILLS_TO_SHOW
+        ]
     )
 
     recently_passed_bills = list(
-        bills.filter(billstatus__latest_passage_date__isnull=False).order_by(
-            "-billstatus__latest_passage_date"
+        bills.filter(latest_passage_date__isnull=False).order_by(
+            "-latest_passage_date"
         )[:RECENTLY_PASSED_BILLS_TO_SHOW]
     )
 
@@ -146,9 +144,7 @@ def site_search(request):
     people = []
     if query:
         bills = search_bills(state=state, query=query)
-        bills = bills.order_by(
-            F("billstatus__latest_action_date").desc(nulls_last=True)
-        )
+        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
         # pagination
         page_num = int(request.GET.get("page", 1))

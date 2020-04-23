@@ -75,9 +75,7 @@ class BillList(View):
             subjects=q_subjects,
             status=status,
         )
-        bills = bills.order_by(
-            F("billstatus__latest_action_date").desc(nulls_last=True)
-        )
+        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
         return bills, form
 
@@ -143,12 +141,9 @@ class BillListFeed(BillList):
         )
         for item in bills[:100]:
             link = "https://{}{}".format(host, pretty_url(item))
-            try:
-                description = f"""{item.title}<br />
-                          Latest Action: {item.billstatus.latest_action_description}
-                          <i>{item.billstatus.latest_action_date}</i>"""
-            except Bill.billstatus.RelatedObjectDoesNotExist:
-                description = item.title
+            description = f"""{item.title}<br />
+                      Latest Action: {item.latest_action_description}
+                      <i>{item.latest_action_date}</i>"""
 
             feed.add_item(
                 title=item.identifier,
