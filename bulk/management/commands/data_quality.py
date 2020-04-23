@@ -34,9 +34,6 @@ from utils.orgs import get_chambers_from_abbr
 from collections import defaultdict
 from statistics import mean
 
-
-
-
 # Loads the global bill array with all bills from given state and session to use
 #   when creating the json
 def load_bills(state, session):
@@ -149,6 +146,9 @@ def bill_subjects(bills, chambers):
         )
     return bill_subjects_data
 
+def write_json_to_file(filename, data):
+    with open(filename, "w") as file:
+        file.write(data)
 
 # Example command
 # docker-compose run --rm django poetry run ./manage.py data_quality Virginia
@@ -180,4 +180,5 @@ class Command(BaseCommand):
                     "no_sources_data": dict(no_sources_data),
                     "bill_subjects_data": dict(bill_subjects_data)
                 })
-
+                filename = f"{state}_{session}_data_quality.json"
+                write_json_to_file(filename, overall_json_data)
