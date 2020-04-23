@@ -115,6 +115,15 @@ def average_number_data(bills, chambers):
         average_actions_per_bill = 0
         average_votes_per_bill = 0
 
+        min_sponsors_per_bill = 0
+        max_sponsors_per_bill = 0
+
+        min_actions_per_bill = 0
+        max_actions_per_bill = 0
+
+        min_votes_per_bill = 0
+        max_votes_per_bill = 0
+
         for bill in bills.filter(from_organization=chamber):
             total_sponsorships_per_bill.append(bill.sponsorships.count())
             total_actions_per_bill.append(bill.actions.count())
@@ -124,11 +133,26 @@ def average_number_data(bills, chambers):
         average_actions_per_bill = round(mean(total_actions_per_bill))
         average_votes_per_bill = round(mean(total_votes_per_bill))
 
+        min_sponsors_per_bill = round(min(total_actions_per_bill))
+        max_sponsors_per_bill = round(max(total_actions_per_bill))
+
+        min_actions_per_bill = round(min(total_actions_per_bill))
+        max_actions_per_bill = round(max(total_actions_per_bill))
+
+        min_votes_per_bill = round(min(total_votes_per_bill))
+        max_votes_per_bill = round(max(total_votes_per_bill))
+
         average_num_data[chamber_name].append({
             "chamber": chamber_name,
             "average_sponsors_per_bill": average_sponsors_per_bill,
             "average_actions_per_bill": average_actions_per_bill,
-            "average_votes_per_bill": average_votes_per_bill}
+            "average_votes_per_bill": average_votes_per_bill,
+            "min_sponsors_per_bill": min_sponsors_per_bill,
+            "max_sponsors_per_bill": max_sponsors_per_bill,
+            "min_actions_per_bill": min_actions_per_bill,
+            "max_actions_per_bill": max_actions_per_bill,
+            "min_votes_per_bill": min_votes_per_bill,
+            "max_votes_per_bill": max_votes_per_bill}
         )
     return average_num_data
 
