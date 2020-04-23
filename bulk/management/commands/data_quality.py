@@ -59,23 +59,32 @@ def total_bills_per_session(bills, chambers):
         chamber_name = chamber.name.lower()
         total_bills = bills.filter(from_organization=chamber).count()
         # Set variables to empty strings in case any info is blank
-        latest_bill = ""
-        latest_action = ""
-        bill_with_latest_action = ""
+        latest_bill_created_id = ""
+        latest_bill_created_date = ""
+        bill_with_latest_action_id = ""
+        latest_action_date = ""
+        latest_action_description = ""
 
         if total_bills > 0:
-            latest_bill = bills.filter(from_organization=chamber).latest("created_at").created_at
+            latest_bill = bills.filter(from_organization=chamber).latest("created_at")
+            latest_bill_created_id = latest_bill.identifier
+            latest_bill_created_date = latest_bill.created_at.strftime("%Y-%m-%d")
             bill_with_latest_action = bills.filter(from_organization=chamber).latest("actions__date")
             # In case bills don't have actions
             if bill_with_latest_action.actions.count() > 0:
+                bill_with_latest_action_id = bill_with_latest_action.identifier
                 latest_action = bill_with_latest_action.actions.latest("date")
+                latest_action_date = latest_action.date
+                latest_action_description = latest_action.description
 
         total_bills_per_session[chamber_name].append({
-            "chamber": chamber,
+            "chamber": chamber_name,
             "total_bills": total_bills,
-            "latest_bill": latest_bill,
-            "bill_with_latest_action": bill_with_latest_action,
-            "latest_action": latest_action}
+            "latest_bill_created_id": latest_bill_created_id,
+            "latest_bill_created_date": latest_bill_created_date,
+            "bill_id_with_latest_action": bill_with_latest_action_id,
+            "latest_action_date": latest_action_date,
+            "latest_action_description": latest_action_description}
         )
     return total_bills_per_session
 
@@ -118,7 +127,7 @@ def no_sources(bills, chambers):
         total_bills_no_sources = bills.filter(from_organization=chamber, sources=None).count()
         total_votes_no_sources = bills.filter(from_organization=chamber, votes__sources=None).count()
         no_sources_data[chamber_name].append({
-            "chamber": chamber,
+            "chamber": chamber_name,
             "total_bills_no_sources": total_bills_no_sources,
             "total_votes_no_sources": total_votes_no_sources}
         )
@@ -160,9 +169,15 @@ class Command(BaseCommand):
             # Resets bills inbetween every session
             bills = load_bills(state, session)
             if bills.count() > 0:
-                print(session)
-                bills_per_session = total_bills_per_session(bills, chambers)
+                bills_per_session_data = total_bills_per_session(bills, chambers)
                 average_num_data = average_number_data(bills, chambers)
                 no_sources_data = no_sources(bills, chambers)
                 bill_subjects_data = bill_subjects(bills, chambers)
-                print("------")
+
+                overall_json_data = json.dumps({
+                    "bills_per_session_data": dict(bills_per_session_data),
+                    "average_num_data": dict(average_num_data),
+                    "no_sources_data": dict(no_sources_data),
+                    "bill_subjects_data": dict(bill_subjects_data)
+                })
+
