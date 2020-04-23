@@ -233,6 +233,12 @@ def populate_db():
     for x in range(14):
         make_random_bill("Wyoming")
 
+    # populate bill computed data
+    for bill in Bill.objects.all():
+        from openstates.cli.update_computed import update_bill_fields
+
+        update_bill_fields(bill)
+
 
 def populate_unicam():
     d = Division.objects.create(id="ocd-division/country:us/state:ne", name="Nebraska")

@@ -1,6 +1,6 @@
 import graphene
 import re
-from django.db.models import Prefetch, Max
+from django.db.models import Prefetch
 from openstates.data.models import Bill, BillActionRelatedEntity, PersonVote
 from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
 from .core import (
@@ -326,7 +326,6 @@ class LegislativeQuery:
         if updated_since:
             bills = bills.filter(updated_at__gte=updated_since)
         if action_since:
-            bills = bills.annotate(latest_action_date=Max("actions__date"))
             bills = bills.filter(latest_action_date__gte=action_since)
         if sponsor:
             sponsor_args = {}
