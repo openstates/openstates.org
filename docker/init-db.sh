@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -ex
+unset DATABASE_URL
 
 # stop database and remove volume
 docker-compose down 
