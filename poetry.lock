@@ -99,7 +99,6 @@ version = "2020.4.5.1"
 [[package]]
 category = "main"
 description = "Universal encoding detector for Python 2 and 3"
-marker = "python_version >= \"3.0\""
 name = "chardet"
 optional = false
 python-versions = "*"
@@ -348,7 +347,6 @@ six = ">=1.12"
 [[package]]
 category = "main"
 description = "Internationalized Domain Names in Applications (IDNA)"
-marker = "python_version >= \"3.0\""
 name = "idna"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -514,7 +512,7 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "4.2.0"
+version = "4.3.0"
 
 [package.dependencies]
 Django = ">=2.2"
@@ -1207,8 +1205,8 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-4.2.0-py3-none-any.whl", hash = "sha256:6afeaba53ef9ab3fb1fa5355071124762c8b64de939762b983633e7202492e35"},
-    {file = "openstates-4.2.0.tar.gz", hash = "sha256:107d22bcd21a3673b0121bffbcf2ba0719c069275afeffb2705775e4814d32e6"},
+    {file = "openstates-4.3.0-py3-none-any.whl", hash = "sha256:c0f03040c7b36d4c1e61b2b74790763786f0b168ad30038d9b265ac23d71c024"},
+    {file = "openstates-4.3.0.tar.gz", hash = "sha256:4341e0c595b656acc3e332be4ebcffb2787203dc756ff7e97fea25ec31a31eea"},
 ]
 openstates-metadata = [
     {file = "openstates_metadata-2020.4.4-py3-none-any.whl", hash = "sha256:39ae26ff31859c80d11dda2bd010f97f8c628b1004c2707bf20db13de2618a3e"},
