@@ -23,7 +23,7 @@ def test_legislators_view(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_person_view(client, django_assert_num_queries):
     p = Person.objects.get(name="Amanda Adams")
-    with django_assert_num_queries(10):
+    with django_assert_num_queries(9):
         resp = client.get(pretty_url(p))
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
