@@ -529,7 +529,7 @@ description = "metadata for the openstates project"
 name = "openstates-metadata"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "2020.4.4"
+version = "2020.4.6"
 
 [package.dependencies]
 attrs = ">=19.3,<20.0"
@@ -1031,7 +1031,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "e2a3d5af44d23b3adb3fd45b083bb5a4fc482cc00f0b949e28d6f68ba3e29bf9"
+content-hash = "021480a95e7f34a416e1636c1b59ebfea9c8f1aad8e8b9b5661af285e79fbbfb"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1209,8 +1209,8 @@ openstates = [
     {file = "openstates-4.3.1.tar.gz", hash = "sha256:6c96c7728299db28c2ad72c601b0580833039a7ef37a23911666ab013591f9b6"},
 ]
 openstates-metadata = [
-    {file = "openstates_metadata-2020.4.4-py3-none-any.whl", hash = "sha256:39ae26ff31859c80d11dda2bd010f97f8c628b1004c2707bf20db13de2618a3e"},
-    {file = "openstates_metadata-2020.4.4.tar.gz", hash = "sha256:f12add35f71e1cb8e2cefc234219880c647c695eb984dc246d25edc16e6dd1f2"},
+    {file = "openstates_metadata-2020.4.6-py3-none-any.whl", hash = "sha256:fbe39e068c6f3947cd9b095233ce597f2517ce963293386f2d867ecb7f038b16"},
+    {file = "openstates_metadata-2020.4.6.tar.gz", hash = "sha256:3270c80049d320a08ee79a9916c477794531f2234cd949ccda6b7dba77fddd96"},
 ]
 packaging = [
     {file = "packaging-20.3-py2.py3-none-any.whl", hash = "sha256:82f77b9bee21c1bafbf35a84905d604d5d1223801d639cf3ed140bd651c08752"},
