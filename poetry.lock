@@ -512,7 +512,7 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "4.3.0"
+version = "4.3.1"
 
 [package.dependencies]
 Django = ">=2.2"
@@ -1031,7 +1031,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "9e922d3836cc13abfd29e942a34d704d4ee30bf563c829324f382d6239a6b6dd"
+content-hash = "e2a3d5af44d23b3adb3fd45b083bb5a4fc482cc00f0b949e28d6f68ba3e29bf9"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1205,8 +1205,8 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-4.3.0-py3-none-any.whl", hash = "sha256:c0f03040c7b36d4c1e61b2b74790763786f0b168ad30038d9b265ac23d71c024"},
-    {file = "openstates-4.3.0.tar.gz", hash = "sha256:4341e0c595b656acc3e332be4ebcffb2787203dc756ff7e97fea25ec31a31eea"},
+    {file = "openstates-4.3.1-py3-none-any.whl", hash = "sha256:dcaf28517aebd6ee807ff2e7d4d03b42f64d1570400a3198edcf870a41bbc441"},
+    {file = "openstates-4.3.1.tar.gz", hash = "sha256:6c96c7728299db28c2ad72c601b0580833039a7ef37a23911666ab013591f9b6"},
 ]
 openstates-metadata = [
     {file = "openstates_metadata-2020.4.4-py3-none-any.whl", hash = "sha256:39ae26ff31859c80d11dda2bd010f97f8c628b1004c2707bf20db13de2618a3e"},
