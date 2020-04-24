@@ -276,6 +276,20 @@ def test_people_by_district():
 
 
 @pytest.mark.django_db
+def test_people_by_division_id():
+    # Note: uses a fake divisionId that has two reps (one retired), only one should be returned
+    result = schema.execute(
+        """ {
+        people(divisionId: "ocd-division/country:us/state:ak/sldu:b", first: 50) {
+            edges { node { name } }
+        }
+    }
+    """
+    )
+    assert len(result.data["people"]["edges"]) == 1
+
+
+@pytest.mark.django_db
 def test_people_by_name():
     result = schema.execute(
         """ {
@@ -469,7 +483,7 @@ def test_person_by_id(django_assert_num_queries):
         if membership["post"]:
             division = membership["post"]["division"]
             break
-    assert division["id"] == "ocd-division/country:us/state:Alaska/district:2"
+    assert division["id"] == "ocd-division/country:us/state:ak/sldl:2"
 
 
 @pytest.mark.django_db
@@ -480,9 +494,9 @@ def test_organization_by_id(django_assert_num_queries):
     )
     sen = Organization.objects.get(jurisdiction__name="Wyoming", classification="upper")
 
-    # 1 query for legislature, 1 query each for children, identifier, names, links, sources
+    # 1 query for legislature, 1 query each for children, links, sources
     # 1 query for senate w/ parent
-    with django_assert_num_queries(8):
+    with django_assert_num_queries(6):
         result = schema.execute(
             """ {
             leg: organization(id: "%s") {
@@ -491,8 +505,6 @@ def test_organization_by_id(django_assert_num_queries):
                 children(classification: "upper", first: 50) {
                     edges { node { classification } }
                 }
-                identifiers { identifier }
-                otherNames { name }
                 links { url }
                 sources { url }
             }

@@ -29,7 +29,7 @@ def search_bills(
 ):
     if bills is None:
         bills = Bill.objects.all().select_related(
-            "legislative_session", "legislative_session__jurisdiction", "billstatus"
+            "legislative_session", "legislative_session__jurisdiction",
         )
     if state:
         jid = abbr_to_jid(state.lower())

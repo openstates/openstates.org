@@ -29,11 +29,11 @@
                                 <br>
                                 <span>{{ bill.title|titlecase_caps }}</span>
                             </td>
-                            <td>{{ bill.billstatus.first_action_date|fdate:"%b %d %Y" }}</td>
+                            <td>{{ bill.first_action_date|fdate:"%b %d %Y" }}</td>
                             <td>
-                                <span>{{ bill.billstatus.latest_action_description|title }}</span>
+                                <span>{{ bill.latest_action_description|title }}</span>
                                 <br>
-                                <span class="u-color--gray">{{ bill.billstatus.latest_action_date|fdate:"%b %d %Y" }}</span>
+                                <span class="u-color--gray">{{ bill.latest_action_date|fdate:"%b %d %Y" }}</span>
                             </td>
                         </tr>
                     {% endfor %}

@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from graphapi.schema import schema
+from openstates.data.models import Person, Bill
 from utils.common import decode_uuid, jid_to_abbr, pretty_url
 from utils.orgs import get_chambers_from_abbr
-from ..models import PersonProxy, Bill
+from utils.people import person_as_dict
 
 
 def _people_from_lat_lon(lat, lon):
@@ -68,7 +69,8 @@ def legislators(request, state):
     chambers = get_chambers_from_abbr(state)
 
     legislators = [
-        p.as_dict() for p in PersonProxy.get_current_legislators_with_roles(chambers)
+        person_as_dict(p)
+        for p in Person.objects.current_legislators_with_roles(chambers)
     ]
 
     chambers = {c.classification: c.name for c in chambers}
@@ -96,15 +98,14 @@ def person(request, person_id):
             person_id  # will be invalid and raise 404, but useful in logging later
         )
     person = get_object_or_404(
-        PersonProxy.objects.prefetch_related("memberships__organization"),
-        pk=ocd_person_id,
+        Person.objects.prefetch_related("memberships__organization"), pk=ocd_person_id,
     )
 
     # to display district in front of district name, or not?
     district_maybe = ""
 
     # canonicalize the URL
-    canonical_url = person.pretty_url()
+    canonical_url = pretty_url(person)
     if request.path != canonical_url:
         return redirect(canonical_url, permanent=True)
 
@@ -124,12 +125,14 @@ def person(request, person_id):
 
     person.sponsored_bills = list(
         Bill.objects.all()
-        .select_related(
-            "legislative_session", "legislative_session__jurisdiction", "billstatus"
-        )
+        .select_related("legislative_session", "legislative_session__jurisdiction",)
         .filter(sponsorships__person=person)
         .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
     )
+
+    person.committee_memberships = person.memberships.filter(
+        organization__classification="committee"
+    ).all()
 
     votes = person.votes.all().select_related("vote_event", "vote_event__bill")[
         :RECENT_VOTES_TO_SHOW
