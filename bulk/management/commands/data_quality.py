@@ -40,7 +40,7 @@ def load_bills(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
-    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts", "sources", "documents", "versions")
+    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts", "sources", "documents", "versions", "votes__votes")
     return bills
 
 
@@ -228,6 +228,72 @@ def bills_versions(bills, chambers):
 
     return bill_version_data
 
+def vote_data(bills, chambers):
+    bill_vote_data = defaultdict(list)
+    for chamber in chambers:
+        chamber_name = chamber.name.lower()
+        # votes without any voters
+        total_votes_without_voters = bills.filter(from_organization=chamber, votes__votes=None).values_list("votes").count()
+        # votes (which do have voters, as to not include above category)
+        #   but where yes/no count do not match actual voters
+        total_votes_where_votes_dont_match_voters = 0
+        bills_with_votes_with_voters = bills.filter(from_organization=chamber).exclude(votes__votes=None)
+        for b in bills_with_votes_with_voters:
+            for vote_object in b.votes.all():
+                total_yes = 0
+                total_no = 0
+                total_absent = 0
+                total_excused = 0
+                total_not_voting = 0
+
+                voter_count_yes = 0
+                voter_count_no = 0
+                voter_count_absent = 0
+                voter_count_excused = 0
+                voter_not_voting = 0
+
+                vote_counts = vote_object.counts.all()
+                votes = vote_object.votes.all()
+                # Parsing through vote_counts
+                for count in vote_counts:
+                    if "yes" == count.option:
+                        total_yes = count.value
+                    elif "no" == count.option:
+                        total_no = count.value
+                    elif "absent" == count.option:
+                        total_absent = count.value
+                    elif "excused" == count.option:
+                        total_excused = count.value
+                    elif "not voting" == count.option:
+                        total_not_voting = count.value
+                    else:
+                        print("Other option found in vote_counts: ", count)
+                        print(count.__dict__)
+                # Parsing through voters and adding up their votes
+                for voter in votes:
+                    if voter.option == "yes":
+                        voter_count_yes += 1
+                    elif voter.option == "no":
+                        voter_count_no += 1
+                    elif voter.option == "absent":
+                        voter_count_absent += 1
+                    elif voter.option == "excused":
+                        voter_count_excused += 1
+                    elif voter.option == "abstain":
+                        voter_not_voting += 1
+                    else:
+                        print(voter.option)
+                # Checking to see if votes and vote counts match
+                if (voter_count_yes != total_yes) or (voter_count_no != total_no) or (voter_count_absent != total_absent) or (voter_count_excused != total_excused) or (total_not_voting != voter_not_voting):
+                    total_votes_where_votes_dont_match_voters += 1
+        bill_vote_data[chamber_name].append({
+            "total_votes_without_voters": total_votes_without_voters,
+            "total_votes_where_votes_dont_match_voters": total_votes_where_votes_dont_match_voters}
+        )
+
+
+    return bill_vote_data
+
 
 def write_json_to_file(filename, data):
     with open(filename, "w") as file:
@@ -257,12 +323,14 @@ class Command(BaseCommand):
                 bill_version_data = bills_versions(bills, chambers)
                 no_sources_data = no_sources(bills, chambers)
                 bill_subjects_data = bill_subjects(bills, chambers)
+                bill_vote_data = vote_data(bills, chambers)
 
                 overall_json_data = json.dumps({
                     "bills_per_session_data": dict(bills_per_session_data),
                     "average_num_data": dict(average_num_data),
                     "bill_version_data": dict(bill_version_data),
                     "no_sources_data": dict(no_sources_data),
+                    "bill_vote_data": dict(bill_vote_data),
                     "bill_subjects_data": dict(bill_subjects_data)
                 })
                 filename = f"{state}_{session}_data_quality.json"
