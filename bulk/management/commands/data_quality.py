@@ -216,6 +216,19 @@ def bill_subjects(bills, chambers):
         )
     return bill_subjects_data
 
+def bills_versions(bills, chambers):
+    bill_version_data = defaultdict(list)
+    for chamber in chambers:
+        chamber_name = chamber.name.lower()
+        bills_without_versions = bills.filter(from_organization=chamber, versions=None).count()
+        bill_version_data[chamber_name].append({
+            "chamber": chamber_name,
+            "total_bills_without_versions": bills_without_versions}
+        )
+
+    return bill_version_data
+
+
 def write_json_to_file(filename, data):
     with open(filename, "w") as file:
         file.write(data)
@@ -241,12 +254,14 @@ class Command(BaseCommand):
             if bills.count() > 0:
                 bills_per_session_data = total_bills_per_session(bills, chambers)
                 average_num_data = average_number_data(bills, chambers)
+                bill_version_data = bills_versions(bills, chambers)
                 no_sources_data = no_sources(bills, chambers)
                 bill_subjects_data = bill_subjects(bills, chambers)
 
                 overall_json_data = json.dumps({
                     "bills_per_session_data": dict(bills_per_session_data),
                     "average_num_data": dict(average_num_data),
+                    "bill_version_data": dict(bill_version_data),
                     "no_sources_data": dict(no_sources_data),
                     "bill_subjects_data": dict(bill_subjects_data)
                 })
