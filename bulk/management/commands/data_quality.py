@@ -40,7 +40,7 @@ def load_bills(state, session):
     sobj = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(state), identifier=session
     )
-    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts", "sources")
+    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts", "sources", "documents", "versions")
     return bills
 
 
@@ -110,10 +110,14 @@ def average_number_data(bills, chambers):
         total_sponsorships_per_bill = []
         total_actions_per_bill = []
         total_votes_per_bill = []
+        total_documents_per_bill = []
+        total_versions_per_bill = []
 
         average_sponsors_per_bill = 0
         average_actions_per_bill = 0
         average_votes_per_bill = 0
+        average_documents_per_bill = 0
+        average_versions_per_bill = 0
 
         min_sponsors_per_bill = 0
         max_sponsors_per_bill = 0
@@ -124,14 +128,24 @@ def average_number_data(bills, chambers):
         min_votes_per_bill = 0
         max_votes_per_bill = 0
 
+        min_documents_per_bill = 0
+        max_documents_per_bill = 0
+
+        min_versions_per_bill = 0
+        max_versions_per_bill = 0
+
         for bill in bills.filter(from_organization=chamber):
             total_sponsorships_per_bill.append(bill.sponsorships.count())
             total_actions_per_bill.append(bill.actions.count())
             total_votes_per_bill.append(bill.votes.count())
+            total_documents_per_bill.append(bill.documents.count())
+            total_versions_per_bill.append(bill.versions.count())
 
         average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
         average_actions_per_bill = round(mean(total_actions_per_bill))
         average_votes_per_bill = round(mean(total_votes_per_bill))
+        average_documents_per_bill = round(mean(total_documents_per_bill))
+        average_versions_per_bill = round(mean(total_versions_per_bill))
 
         min_sponsors_per_bill = round(min(total_actions_per_bill))
         max_sponsors_per_bill = round(max(total_actions_per_bill))
@@ -142,17 +156,33 @@ def average_number_data(bills, chambers):
         min_votes_per_bill = round(min(total_votes_per_bill))
         max_votes_per_bill = round(max(total_votes_per_bill))
 
+        min_documents_per_bill = round(min(total_documents_per_bill))
+        max_documents_per_bill = round(max(total_documents_per_bill))
+
+        min_versions_per_bill = round(min(total_versions_per_bill))
+        max_versions_per_bill = round(max(total_versions_per_bill))
+
         average_num_data[chamber_name].append({
             "chamber": chamber_name,
             "average_sponsors_per_bill": average_sponsors_per_bill,
-            "average_actions_per_bill": average_actions_per_bill,
-            "average_votes_per_bill": average_votes_per_bill,
             "min_sponsors_per_bill": min_sponsors_per_bill,
             "max_sponsors_per_bill": max_sponsors_per_bill,
+
+            "average_actions_per_bill": average_actions_per_bill,
             "min_actions_per_bill": min_actions_per_bill,
             "max_actions_per_bill": max_actions_per_bill,
+
+            "average_votes_per_bill": average_votes_per_bill,
             "min_votes_per_bill": min_votes_per_bill,
-            "max_votes_per_bill": max_votes_per_bill}
+            "max_votes_per_bill": max_votes_per_bill,
+
+            "average_documents_per_bill": average_documents_per_bill,
+            "min_documents_per_bill": min_documents_per_bill,
+            "max_documents_per_bill": max_documents_per_bill,
+
+            "average_versions_per_bill": average_versions_per_bill,
+            "min_versions_per_bill": min_versions_per_bill,
+            "max_versions_per_bill": max_versions_per_bill}
         )
     return average_num_data
 
