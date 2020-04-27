@@ -245,12 +245,14 @@ def vote_data(bills, chambers):
                 total_absent = 0
                 total_excused = 0
                 total_not_voting = 0
+                total_other = 0
 
                 voter_count_yes = 0
                 voter_count_no = 0
                 voter_count_absent = 0
                 voter_count_excused = 0
                 voter_not_voting = 0
+                voter_count_other = 0
 
                 vote_counts = vote_object.counts.all()
                 votes = vote_object.votes.all()
@@ -266,6 +268,8 @@ def vote_data(bills, chambers):
                         total_excused = count.value
                     elif "not voting" == count.option:
                         total_not_voting = count.value
+                    elif "other" == count.option:
+                        total_other = count.value
                     else:
                         print("Other option found in vote_counts: ", count)
                         print(count.__dict__)
@@ -281,10 +285,12 @@ def vote_data(bills, chambers):
                         voter_count_excused += 1
                     elif voter.option == "abstain":
                         voter_not_voting += 1
+                    elif voter.option == "other":
+                        voter_count_other += 1
                     else:
                         print(voter.option)
                 # Checking to see if votes and vote counts match
-                if (voter_count_yes != total_yes) or (voter_count_no != total_no) or (voter_count_absent != total_absent) or (voter_count_excused != total_excused) or (total_not_voting != voter_not_voting):
+                if (voter_count_yes != total_yes) or (voter_count_no != total_no) or (voter_count_absent != total_absent) or (voter_count_excused != total_excused) or (total_not_voting != voter_not_voting) or (total_other != voter_count_other):
                     total_votes_where_votes_dont_match_voters += 1
         bill_vote_data[chamber_name].append({
             "total_votes_without_voters": total_votes_without_voters,
