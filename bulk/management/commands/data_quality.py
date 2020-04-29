@@ -51,7 +51,7 @@ def get_available_sessions(state):
 def total_bills_per_session(bills, chambers):
     total_bills_per_session = defaultdict(list)
     for chamber in chambers:
-        chamber_name = chamber.name.lower()
+        chamber_name = chamber.classification
         total_bills = bills.filter(from_organization=chamber).count()
         # Set variables to empty strings in case any info is blank
         latest_bill_created_id = ""
@@ -104,7 +104,7 @@ def average_number_data(bills, chambers):
     average_num_data = defaultdict(list)
 
     for chamber in chambers:
-        chamber_name = chamber.name.lower()
+        chamber_name = chamber.classification
         total_sponsorships_per_bill = []
         total_actions_per_bill = []
         total_votes_per_bill = []
@@ -188,7 +188,7 @@ def average_number_data(bills, chambers):
 def no_sources(bills, chambers):
     no_sources_data = defaultdict(list)
     for chamber in chambers:
-        chamber_name = chamber.name.lower()
+        chamber_name = chamber.classification
         total_bills_no_sources = bills.filter(from_organization=chamber, sources=None).count()
         total_votes_no_sources = bills.filter(from_organization=chamber, votes__sources=None).count()
         no_sources_data[chamber_name].append({
@@ -202,7 +202,7 @@ def no_sources(bills, chambers):
 def bill_subjects(bills, chambers):
     bill_subjects_data = defaultdict(list)
     for chamber in chambers:
-        chamber_name = chamber.name.lower()
+        chamber_name = chamber.classification
         overall_number_of_subjects = bills.distinct("subject").values_list("subject", flat=True).count()
         number_of_subjects = bills.filter(from_organization=chamber).distinct("subject").values_list("subject", flat=True).count()
         number_of_bills_without_subjects = bills.filter(from_organization=chamber, subject=None).count()
@@ -217,7 +217,7 @@ def bill_subjects(bills, chambers):
 def bills_versions(bills, chambers):
     bill_version_data = defaultdict(list)
     for chamber in chambers:
-        chamber_name = chamber.name.lower()
+        chamber_name = chamber.classification
         bills_without_versions = bills.filter(from_organization=chamber, versions=None).count()
         bill_version_data[chamber_name].append({
             "chamber": chamber_name,
@@ -229,7 +229,7 @@ def bills_versions(bills, chambers):
 def vote_data(bills, chambers):
     bill_vote_data = defaultdict(list)
     for chamber in chambers:
-        chamber_name = chamber.name.lower()
+        chamber_name = chamber.classification
         # votes without any voters
         total_votes_without_voters = bills.filter(from_organization=chamber, votes__votes=None).values_list("votes").count()
         # votes (which do have voters, as to not include above category)
