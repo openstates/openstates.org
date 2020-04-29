@@ -235,7 +235,7 @@ def populate_db():
 
     # populate bill computed data
     for bill in Bill.objects.all():
-        from openstates.cli.update_computed import update_bill_fields
+        from openstates.importers.computed_fields import update_bill_fields
 
         update_bill_fields(bill)
 
