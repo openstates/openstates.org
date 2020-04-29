@@ -37,10 +37,8 @@ from statistics import mean
 # Loads the global bill array with all bills from given state and session to use
 #   when creating the json
 def load_bills(state, session):
-    sobj = LegislativeSession.objects.get(
-        jurisdiction_id=abbr_to_jid(state), identifier=session
-    )
-    bills = Bill.objects.filter(legislative_session=sobj).prefetch_related("actions", "sponsorships", "votes", "votes__counts", "sources", "documents", "versions", "votes__votes")
+    bills = Bill.objects.filter(legislative_session__jurisdiction_id=abbr_to_jid(state), legislative_session__identifier=session).prefetch_related("actions",
+        "sponsorships", "votes", "votes__counts", "sources", "documents", "versions", "votes__votes")
     return bills
 
 
