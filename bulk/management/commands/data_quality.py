@@ -290,7 +290,7 @@ def vote_data(bills, chambers):
                     else:
                         print(voter.option)
                 # Checking to see if votes and vote counts match
-                if (voter_count_yes != total_yes) or (voter_count_no != total_no) or (voter_count_absent != total_absent) or (voter_count_excused != total_excused) or (total_not_voting != voter_not_voting) or (total_other != voter_count_other):
+                if (voter_count_yes != 0 and voter_count_yes != total_yes) or (voter_count_no != 0 and voter_count_no != total_no):
                     total_votes_where_votes_dont_match_voters += 1
         bill_vote_data[chamber_name].append({
             "total_votes_without_voters": total_votes_without_voters,
