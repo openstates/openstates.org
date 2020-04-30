@@ -77,7 +77,7 @@ def test_search(client, django_assert_num_queries):
     assert len(resp.context["bills"]) == 1
     assert len(resp.context["people"]) == 0
 
-    with django_assert_num_queries(5):
+    with django_assert_num_queries(2):
         resp = client.get("/search/?query=amanda")
     assert len(resp.context["bills"]) == 0
     assert len(resp.context["people"]) == 1
