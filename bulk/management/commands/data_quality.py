@@ -54,19 +54,12 @@ def total_bills_per_session(bills, chambers):
         chamber_name = chamber.classification
         total_bills = bills.filter(from_organization=chamber).count()
         # Set variables to empty strings in case any info is blank
-        latest_bill_created_id = ""
         latest_bill_created_date = ""
-        bill_with_latest_action_id = ""
         latest_action_date = ""
-        latest_action_description = ""
-
-        bill_with_earliest_action_id = ""
         earliest_action_date = ""
-        earliest_action_description = ""
 
         if total_bills > 0:
             latest_bill = bills.filter(from_organization=chamber).latest("created_at")
-            latest_bill_created_id = latest_bill.identifier
             latest_bill_created_date = latest_bill.created_at.strftime("%Y-%m-%d")
             bill_with_latest_action = bills.filter(from_organization=chamber).latest("actions__date")
             # In case bills don't have actions
@@ -74,7 +67,6 @@ def total_bills_per_session(bills, chambers):
                 bill_with_latest_action_id = bill_with_latest_action.identifier
                 latest_action = bill_with_latest_action.actions.latest("date")
                 latest_action_date = latest_action.date
-                latest_action_description = latest_action.description
 
             # Earliest Action
             bill_with_earliest_action = bills.filter(from_organization=chamber).earliest("actions__date")
@@ -83,19 +75,13 @@ def total_bills_per_session(bills, chambers):
                 bill_with_earliest_action_id = bill_with_earliest_action.identifier
                 earliest_action = bill_with_earliest_action.actions.earliest("date")
                 earliest_action_date = earliest_action.date
-                earliest_action_description = earliest_action.description
 
         total_bills_per_session[chamber_name].append({
             "chamber": chamber_name,
             "total_bills": total_bills,
-            "latest_bill_created_id": latest_bill_created_id,
             "latest_bill_created_date": latest_bill_created_date,
-            "bill_id_with_latest_action": bill_with_latest_action_id,
             "latest_action_date": latest_action_date,
-            "latest_action_description": latest_action_description,
-            "bill_id_with_earliest_action": bill_with_earliest_action_id,
-            "earliest_action_date": earliest_action_date,
-            "earliest_action_description": earliest_action_description}
+            "earliest_action_date": earliest_action_date}
         )
     return total_bills_per_session
 
