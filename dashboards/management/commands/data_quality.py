@@ -31,6 +31,7 @@ from openstates.data.models import (
 )
 from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
+import pytz
 from collections import defaultdict
 from statistics import mean
 from dashboards.models import DataQualityDashboard
@@ -57,16 +58,17 @@ def total_bills_per_session(bills, chamber):
     latest_bill_created_date = ""
     latest_action_date = ""
     earliest_action_date = ""
-
+    utc = pytz.utc
     if total_bills > 0:
         latest_bill = bills.filter(from_organization=chamber).latest("created_at")
-        latest_bill_created_date = latest_bill.created_at.strftime("%Y-%m-%d")
+        latest_bill_created_date = latest_bill.created_at#.strftime("%Y-%m-%d")
         bill_with_latest_action = bills.filter(from_organization=chamber).latest("actions__date")
         # In case bills don't have actions
         if bill_with_latest_action.actions.count() > 0:
             bill_with_latest_action_id = bill_with_latest_action.identifier
             latest_action = bill_with_latest_action.actions.latest("date")
-            latest_action_date = latest_action.date
+            latest_action_date = datetime.datetime.strptime(latest_action.date, "%Y-%m-%d")
+            latest_action_date = pytz.UTC.localize(latest_action_date)
 
         # Earliest Action
         bill_with_earliest_action = bills.filter(from_organization=chamber).earliest("actions__date")
@@ -74,7 +76,8 @@ def total_bills_per_session(bills, chamber):
         if bill_with_earliest_action.actions.count() > 0:
             bill_with_earliest_action_id = bill_with_earliest_action.identifier
             earliest_action = bill_with_earliest_action.actions.earliest("date")
-            earliest_action_date = earliest_action.date
+            earliest_action_date = datetime.datetime.strptime(earliest_action.date, "%Y-%m-%d")
+            earliest_action_date = pytz.UTC.localize(earliest_action_date)
 
     total_bills_per_session = {
         "total_bills": total_bills,
@@ -303,16 +306,16 @@ class Command(BaseCommand):
                     bill_subjects_data = bill_subjects(bills, chamber)
                     bill_vote_data = vote_data(bills, chamber)
 
-                    overall_json_data = json.dumps({
-                        "chamber_name": chamber.classification,
-                        "bills_per_session_data": dict(bills_per_session_data),
-                        "average_num_data": dict(average_num_data),
-                        "bill_version_data": dict(bill_version_data),
-                        "no_sources_data": dict(no_sources_data),
-                        "bill_vote_data": dict(bill_vote_data),
-                        "bill_subjects_data": dict(bill_subjects_data)
-                    })
-                    filename = f"{state}_{session}_{chamber.classification}_data_quality.json"
+                    # overall_json_data = json.dumps({
+                    #     "chamber_name": chamber.classification,
+                    #     "bills_per_session_data": dict(bills_per_session_data),
+                    #     "average_num_data": dict(average_num_data),
+                    #     "bill_version_data": dict(bill_version_data),
+                    #     "no_sources_data": dict(no_sources_data),
+                    #     "bill_vote_data": dict(bill_vote_data),
+                    #     "bill_subjects_data": dict(bill_subjects_data)
+                    # })
+                    # filename = f"{state}_{session}_{chamber.classification}_data_quality.json"
                     test = DataQualityDashboard.objects.get_or_create(
                         state=state,
                         session=session,
