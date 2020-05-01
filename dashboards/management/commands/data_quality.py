@@ -316,43 +316,45 @@ class Command(BaseCommand):
                     #     "bill_subjects_data": dict(bill_subjects_data)
                     # })
                     # filename = f"{state}_{session}_{chamber.classification}_data_quality.json"
-                    test = DataQualityDashboard.objects.get_or_create(
+                    test = DataQualityDashboard.objects.update_or_create(
                         state=state,
                         session=session,
                         chamber=chamber.classification,
 
-                        total_bills=bills_per_session_data["total_bills"],
-                        latest_bill_created_date = bills_per_session_data["latest_bill_created_date"],
-                        latest_action_date=bills_per_session_data["latest_action_date"],
-                        earliest_action_date=bills_per_session_data["earliest_action_date"],
+                        defaults={
+                            "total_bills":bills_per_session_data["total_bills"],
+                            "latest_bill_created_date": bills_per_session_data["latest_bill_created_date"],
+                            "latest_action_date": bills_per_session_data["latest_action_date"],
+                            "earliest_action_date": bills_per_session_data["earliest_action_date"],
 
-                        average_sponsors_per_bill=average_num_data["average_sponsors_per_bill"],
-                        min_sponsors_per_bill=average_num_data["min_sponsors_per_bill"],
-                        max_sponsors_per_bill=average_num_data["max_sponsors_per_bill"],
-                        average_actions_per_bill=average_num_data["average_actions_per_bill"],
-                        min_actions_per_bill=average_num_data["min_actions_per_bill"],
-                        max_actions_per_bill=average_num_data["max_actions_per_bill"],
-                        average_votes_per_bill=average_num_data["average_votes_per_bill"],
-                        min_votes_per_bill=average_num_data["min_votes_per_bill"],
-                        max_votes_per_bill=average_num_data["max_votes_per_bill"],
-                        average_documents_per_bill=average_num_data["average_documents_per_bill"],
-                        min_documents_per_bill=average_num_data["min_documents_per_bill"],
-                        max_documents_per_bill=average_num_data["max_documents_per_bill"],
-                        average_versions_per_bill=average_num_data["average_versions_per_bill"],
-                        min_versions_per_bill=average_num_data["min_versions_per_bill"],
-                        max_versions_per_bill=average_num_data["max_versions_per_bill"],
+                            "average_sponsors_per_bill": average_num_data["average_sponsors_per_bill"],
+                            "min_sponsors_per_bill": average_num_data["min_sponsors_per_bill"],
+                            "max_sponsors_per_bill": average_num_data["max_sponsors_per_bill"],
+                            "average_actions_per_bill": average_num_data["average_actions_per_bill"],
+                            "min_actions_per_bill": average_num_data["min_actions_per_bill"],
+                            "max_actions_per_bill": average_num_data["max_actions_per_bill"],
+                            "average_votes_per_bill": average_num_data["average_votes_per_bill"],
+                            "min_votes_per_bill": average_num_data["min_votes_per_bill"],
+                            "max_votes_per_bill": average_num_data["max_votes_per_bill"],
+                            "average_documents_per_bill": average_num_data["average_documents_per_bill"],
+                            "min_documents_per_bill": average_num_data["min_documents_per_bill"],
+                            "max_documents_per_bill": average_num_data["max_documents_per_bill"],
+                            "average_versions_per_bill": average_num_data["average_versions_per_bill"],
+                            "min_versions_per_bill": average_num_data["min_versions_per_bill"],
+                            "max_versions_per_bill": average_num_data["max_versions_per_bill"],
 
-                        total_bills_without_versions=bill_version_data["total_bills_without_versions"],
+                            "total_bills_without_versions": bill_version_data["total_bills_without_versions"],
 
-                        total_bills_no_sources=no_sources_data["total_bills_no_sources"],
-                        total_votes_no_sources=no_sources_data["total_votes_no_sources"],
+                            "total_bills_no_sources": no_sources_data["total_bills_no_sources"],
+                            "total_votes_no_sources": no_sources_data["total_votes_no_sources"],
 
-                        total_votes_without_voters=bill_vote_data["total_votes_without_voters"],
-                        total_votes_where_votes_dont_match_voters=bill_vote_data["total_votes_where_votes_dont_match_voters"],
+                            "total_votes_without_voters": bill_vote_data["total_votes_without_voters"],
+                            "total_votes_where_votes_dont_match_voters": bill_vote_data["total_votes_where_votes_dont_match_voters"],
 
-                        overall_number_of_subjects=bill_subjects_data["overall_number_of_subjects"],
-                        number_of_subjects_in_chamber=bill_subjects_data["number_of_subjects"],
-                        number_of_bills_without_subjects=bill_subjects_data["number_of_bills_without_subjects"]
+                            "overall_number_of_subjects": bill_subjects_data["overall_number_of_subjects"],
+                            "number_of_subjects_in_chamber": bill_subjects_data["number_of_subjects"],
+                            "number_of_bills_without_subjects": bill_subjects_data["number_of_bills_without_subjects"]
+                        }
                     )
                     # test.save()
                     # write_json_to_file(filename, overall_json_data)
