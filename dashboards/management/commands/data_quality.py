@@ -319,7 +319,7 @@ class Command(BaseCommand):
                     test = DataQualityDashboard.objects.get_or_create(
                         state=state,
                         session=session,
-                        chamber="lower",
+                        chamber=chamber.classification,
 
                         total_bills=bills_per_session_data["total_bills"],
                         latest_bill_created_date = bills_per_session_data["latest_bill_created_date"],
