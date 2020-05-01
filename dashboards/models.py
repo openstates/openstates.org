@@ -1,6 +1,5 @@
 from django.db import models
-# from data.models import Jurisdiction, LegislativeSession
-# from django.contrib.contenttypes.fields import GenericForeignKey
+from openstates.data.models import LegislativeSession
 
 
 class DataQualityDashboard(models.Model):
@@ -45,7 +44,3 @@ class DataQualityDashboard(models.Model):
 
     total_votes_without_voters = models.PositiveIntegerField()
     total_votes_where_votes_dont_match_voters = models.PositiveIntegerField()
-
-
-    class Meta:
-        db_table = "dataqualitydashboard"
