@@ -37,7 +37,6 @@ from statistics import mean
 from dashboards.models import DataQualityDashboard
 
 # Loads the global bill array with all bills from given state and session to use
-#   when creating the json
 def load_bills(state, session):
     bills = Bill.objects.filter(legislative_session__jurisdiction_id=abbr_to_jid(state), legislative_session__identifier=session).prefetch_related("actions",
         "sponsorships", "votes", "votes__counts", "sources", "documents", "versions", "votes__votes")
@@ -51,7 +50,6 @@ def get_available_sessions(state):
     )
 
 def total_bills_per_session(bills, chamber):
-    # total_bills_per_session = defaultdict(list)
     chamber_name = chamber.classification
     total_bills = bills.filter(from_organization=chamber).count()
     # Set variables to empty strings in case any info is blank
@@ -280,7 +278,7 @@ def write_json_to_file(filename, data):
         file.write(data)
 
 # Example command
-# docker-compose run --rm django poetry run ./manage.py data_quality Virginia
+# docker-compose run --rm django poetry run ./manage.py data_quality VA
 class Command(BaseCommand):
     help = "export data quality as a json"
 
@@ -305,17 +303,6 @@ class Command(BaseCommand):
                     no_sources_data = no_sources(bills, chamber)
                     bill_subjects_data = bill_subjects(bills, chamber)
                     bill_vote_data = vote_data(bills, chamber)
-
-                    # overall_json_data = json.dumps({
-                    #     "chamber_name": chamber.classification,
-                    #     "bills_per_session_data": dict(bills_per_session_data),
-                    #     "average_num_data": dict(average_num_data),
-                    #     "bill_version_data": dict(bill_version_data),
-                    #     "no_sources_data": dict(no_sources_data),
-                    #     "bill_vote_data": dict(bill_vote_data),
-                    #     "bill_subjects_data": dict(bill_subjects_data)
-                    # })
-                    # filename = f"{state}_{session}_{chamber.classification}_data_quality.json"
 
                     # Grabbing the Legislative Session object
                     leg_session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=abbr_to_jid(state))
@@ -359,5 +346,3 @@ class Command(BaseCommand):
                             "number_of_bills_without_subjects": bill_subjects_data["number_of_bills_without_subjects"]
                         }
                     )
-                    # test.save()
-                    # write_json_to_file(filename, overall_json_data)
