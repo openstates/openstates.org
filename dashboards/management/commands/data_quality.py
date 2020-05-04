@@ -316,13 +316,16 @@ class Command(BaseCommand):
                     #     "bill_subjects_data": dict(bill_subjects_data)
                     # })
                     # filename = f"{state}_{session}_{chamber.classification}_data_quality.json"
+
+                    # Grabbing the Legislative Session object
+                    leg_session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=abbr_to_jid(state))
+
                     test = DataQualityDashboard.objects.update_or_create(
-                        state=state,
-                        session=session,
+                        session=leg_session,
                         chamber=chamber.classification,
 
                         defaults={
-                            "total_bills":bills_per_session_data["total_bills"],
+                            "total_bills": bills_per_session_data["total_bills"],
                             "latest_bill_created_date": bills_per_session_data["latest_bill_created_date"],
                             "latest_action_date": bills_per_session_data["latest_action_date"],
                             "earliest_action_date": bills_per_session_data["earliest_action_date"],
