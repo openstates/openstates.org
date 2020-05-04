@@ -1,33 +1,8 @@
-import os
-import csv
-import json
 import datetime
-import tempfile
-import zipfile
-import uuid
-import boto3
-import base62
 from django.core.management.base import BaseCommand
-from django.db.models import F, Count, Avg
-from openstates_metadata import STATES_BY_NAME
 from openstates.data.models import (
     LegislativeSession,
     Bill,
-    BillAbstract,
-    BillAction,
-    BillTitle,
-    BillIdentifier,
-    RelatedBill,
-    BillSponsorship,
-    BillDocument,
-    BillVersion,
-    BillDocumentLink,
-    BillVersionLink,
-    BillSource,
-    VoteEvent,
-    PersonVote,
-    VoteCount,
-    VoteSource,
 )
 from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
@@ -50,20 +25,17 @@ def get_available_sessions(state):
     )
 
 def total_bills_per_session(bills, chamber):
-    chamber_name = chamber.classification
     total_bills = bills.filter(from_organization=chamber).count()
     # Set variables to empty strings in case any info is blank
     latest_bill_created_date = ""
     latest_action_date = ""
     earliest_action_date = ""
-    utc = pytz.utc
     if total_bills > 0:
         latest_bill = bills.filter(from_organization=chamber).latest("created_at")
-        latest_bill_created_date = latest_bill.created_at#.strftime("%Y-%m-%d")
+        latest_bill_created_date = latest_bill.created_at
         bill_with_latest_action = bills.filter(from_organization=chamber).latest("actions__date")
         # In case bills don't have actions
         if bill_with_latest_action.actions.count() > 0:
-            bill_with_latest_action_id = bill_with_latest_action.identifier
             latest_action = bill_with_latest_action.actions.latest("date")
             latest_action_date = datetime.datetime.strptime(latest_action.date, "%Y-%m-%d")
             latest_action_date = pytz.UTC.localize(latest_action_date)
@@ -72,7 +44,6 @@ def total_bills_per_session(bills, chamber):
         bill_with_earliest_action = bills.filter(from_organization=chamber).earliest("actions__date")
         # In case bills don't have actions
         if bill_with_earliest_action.actions.count() > 0:
-            bill_with_earliest_action_id = bill_with_earliest_action.identifier
             earliest_action = bill_with_earliest_action.actions.earliest("date")
             earliest_action_date = datetime.datetime.strptime(earliest_action.date, "%Y-%m-%d")
             earliest_action_date = pytz.UTC.localize(earliest_action_date)
@@ -170,7 +141,6 @@ def average_number_data(bills, chamber):
 
 def no_sources(bills, chamber):
     no_sources_data = defaultdict(list)
-    chamber_name = chamber.classification
     total_bills_no_sources = bills.filter(from_organization=chamber, sources=None).count()
     total_votes_no_sources = bills.filter(from_organization=chamber, votes__sources=None).count()
     no_sources_data = {
@@ -182,7 +152,6 @@ def no_sources(bills, chamber):
 
 def bill_subjects(bills, chamber):
     bill_subjects_data = defaultdict(list)
-    chamber_name = chamber.classification
     overall_number_of_subjects = bills.distinct("subject").values_list("subject", flat=True).count()
     number_of_subjects = bills.filter(from_organization=chamber).distinct("subject").values_list("subject", flat=True).count()
     number_of_bills_without_subjects = bills.filter(from_organization=chamber, subject=None).count()
@@ -195,7 +164,6 @@ def bill_subjects(bills, chamber):
 
 def bills_versions(bills, chamber):
     bill_version_data = defaultdict(list)
-    chamber_name = chamber.classification
     bills_without_versions = bills.filter(from_organization=chamber, versions=None).count()
     bill_version_data = {
         "total_bills_without_versions": bills_without_versions
@@ -204,7 +172,6 @@ def bills_versions(bills, chamber):
 
 def vote_data(bills, chamber):
     bill_vote_data = defaultdict(list)
-    chamber_name = chamber.classification
     # votes without any voters
     total_votes_without_voters = bills.filter(from_organization=chamber, votes__votes=None).values_list("votes").count()
     # votes (which do have voters, as to not include above category)
@@ -215,10 +182,10 @@ def vote_data(bills, chamber):
         for vote_object in b.votes.all():
             total_yes = 0
             total_no = 0
-            total_absent = 0
-            total_excused = 0
-            total_not_voting = 0
-            total_other = 0
+            # total_absent = 0
+            # total_excused = 0
+            # total_not_voting = 0
+            # total_other = 0
 
             voter_count_yes = 0
             voter_count_no = 0
@@ -235,17 +202,17 @@ def vote_data(bills, chamber):
                     total_yes = count.value
                 elif "no" == count.option:
                     total_no = count.value
-                elif "absent" == count.option:
-                    total_absent = count.value
-                elif "excused" == count.option:
-                    total_excused = count.value
-                elif "not voting" == count.option:
-                    total_not_voting = count.value
-                elif "other" == count.option:
-                    total_other = count.value
-                else:
-                    print("Other option found in vote_counts: ", count)
-                    print(count.__dict__)
+                # elif "absent" == count.option:
+                #     total_absent = count.value
+                # elif "excused" == count.option:
+                #     total_excused = count.value
+                # elif "not voting" == count.option:
+                #     total_not_voting = count.value
+                # elif "other" == count.option:
+                #     total_other = count.value
+                # else:
+                #     print("Other option found in vote_counts: ", count)
+                #     print(count.__dict__)
             # Parsing through voters and adding up their votes
             for voter in votes:
                 if voter.option == "yes":
@@ -304,7 +271,7 @@ class Command(BaseCommand):
                     # Grabbing the Legislative Session object
                     leg_session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=abbr_to_jid(state))
 
-                    test = DataQualityDashboard.objects.update_or_create(
+                    DataQualityDashboard.objects.update_or_create(
                         session=leg_session,
                         chamber=chamber.classification,
 
