@@ -197,10 +197,6 @@ def vote_data(bills, chamber):
         for vote_object in b.votes.all():
             total_yes = 0
             total_no = 0
-            # total_absent = 0
-            # total_excused = 0
-            # total_not_voting = 0
-            # total_other = 0
 
             voter_count_yes = 0
             voter_count_no = 0
@@ -217,17 +213,7 @@ def vote_data(bills, chamber):
                     total_yes = count.value
                 elif "no" == count.option:
                     total_no = count.value
-                # elif "absent" == count.option:
-                #     total_absent = count.value
-                # elif "excused" == count.option:
-                #     total_excused = count.value
-                # elif "not voting" == count.option:
-                #     total_not_voting = count.value
-                # elif "other" == count.option:
-                #     total_other = count.value
-                # else:
-                #     print("Other option found in vote_counts: ", count)
-                #     print(count.__dict__)
+
             # Parsing through voters and adding up their votes
             for voter in votes:
                 if voter.option == "yes":
