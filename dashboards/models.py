@@ -42,4 +42,4 @@ class DataQualityDashboard(models.Model):
     total_bills_without_versions = models.PositiveIntegerField()
 
     total_votes_without_voters = models.PositiveIntegerField()
-    total_votes_where_votes_dont_match_voters = models.PositiveIntegerField()
+    total_votes_bad_counts = models.PositiveIntegerField()

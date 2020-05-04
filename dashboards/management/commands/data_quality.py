@@ -211,7 +211,7 @@ def vote_data(bills, chamber):
     total_votes_without_voters = bills.filter(from_organization=chamber, votes__votes=None).values_list("votes").count()
     # votes (which do have voters, as to not include above category)
     #   but where yes/no count do not match actual voters
-    total_votes_where_votes_dont_match_voters = 0
+    total_votes_bad_counts = 0
     bills_with_votes_with_voters = bills.filter(from_organization=chamber).exclude(votes__votes=None)
     for b in bills_with_votes_with_voters:
         for vote_object in b.votes.all():
@@ -266,10 +266,10 @@ def vote_data(bills, chamber):
                     print(voter.option)
             # Checking to see if votes and vote counts match
             if (voter_count_yes != 0 and voter_count_yes != total_yes) or (voter_count_no != 0 and voter_count_no != total_no):
-                total_votes_where_votes_dont_match_voters += 1
+                total_votes_bad_counts += 1
     bill_vote_data = {
         "total_votes_without_voters": total_votes_without_voters,
-        "total_votes_where_votes_dont_match_voters": total_votes_where_votes_dont_match_voters
+        "total_votes_bad_counts": total_votes_bad_counts
     }
 
     return bill_vote_data
@@ -352,7 +352,7 @@ class Command(BaseCommand):
                             "total_votes_no_sources": no_sources_data["total_votes_no_sources"],
 
                             "total_votes_without_voters": bill_vote_data["total_votes_without_voters"],
-                            "total_votes_where_votes_dont_match_voters": bill_vote_data["total_votes_where_votes_dont_match_voters"],
+                            "total_votes_bad_counts": bill_vote_data["total_votes_bad_counts"],
 
                             "overall_number_of_subjects": bill_subjects_data["overall_number_of_subjects"],
                             "number_of_subjects_in_chamber": bill_subjects_data["number_of_subjects"],
