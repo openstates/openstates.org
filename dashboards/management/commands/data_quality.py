@@ -280,13 +280,10 @@ def write_json_to_file(filename, data):
 # Example command
 # docker-compose run --rm django poetry run ./manage.py data_quality VA
 class Command(BaseCommand):
-    help = "export data quality as a json"
+    help = "create data quality objects for dashboards"
 
     def add_arguments(self, parser):
         parser.add_argument("state")
-        # parser.add_argument("sessions", nargs="*")
-        # parser.add_argument("--all-sessions", action="store_true")
-
 
     def handle(self, *args, **options):
         state = options["state"]
