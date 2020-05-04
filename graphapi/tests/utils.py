@@ -10,6 +10,7 @@ from openstates.data.models import (
     VoteEvent,
     SearchableBill,
 )
+from openstates.importers.computed_fields import update_bill_fields
 
 
 def make_random_bill(name):
@@ -235,8 +236,6 @@ def populate_db():
 
     # populate bill computed data
     for bill in Bill.objects.all():
-        from openstates.importers.computed_fields import update_bill_fields
-
         update_bill_fields(bill)
 
 
