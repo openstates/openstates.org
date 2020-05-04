@@ -11,10 +11,14 @@ from collections import defaultdict
 from statistics import mean
 from dashboards.models import DataQualityDashboard
 
+
 # Loads the global bill array with all bills from given state and session to use
 def load_bills(state, session):
-    bills = Bill.objects.filter(legislative_session__jurisdiction_id=abbr_to_jid(state), legislative_session__identifier=session).prefetch_related("actions",
-        "sponsorships", "votes", "votes__counts", "sources", "documents", "versions", "votes__votes")
+    bills = Bill.objects.filter(
+        legislative_session__jurisdiction_id=abbr_to_jid(state),
+        legislative_session__identifier=session).prefetch_related(
+            "actions", "sponsorships", "votes", "votes__counts",
+            "sources", "documents", "versions", "votes__votes")
     return bills
 
 
@@ -24,7 +28,9 @@ def get_available_sessions(state):
         for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
     )
 
+
 def total_bills_per_session(bills, chamber):
+
     total_bills = bills.filter(from_organization=chamber).count()
     # Set variables to empty strings in case any info is blank
     latest_bill_created_date = ""
@@ -41,7 +47,9 @@ def total_bills_per_session(bills, chamber):
             latest_action_date = pytz.UTC.localize(latest_action_date)
 
         # Earliest Action
-        bill_with_earliest_action = bills.filter(from_organization=chamber).earliest("actions__date")
+        bill_with_earliest_action = bills.filter(
+            from_organization=chamber
+        ).earliest("actions__date")
         # In case bills don't have actions
         if bill_with_earliest_action.actions.count() > 0:
             earliest_action = bill_with_earliest_action.actions.earliest("date")
@@ -152,15 +160,19 @@ def no_sources(bills, chamber):
 
 def bill_subjects(bills, chamber):
     bill_subjects_data = defaultdict(list)
-    overall_number_of_subjects = bills.distinct("subject").values_list("subject", flat=True).count()
-    number_of_subjects = bills.filter(from_organization=chamber).distinct("subject").values_list("subject", flat=True).count()
-    number_of_bills_without_subjects = bills.filter(from_organization=chamber, subject=None).count()
+    overall_number_of_subjects = bills.distinct("subject").values_list(
+        "subject", flat=True).count()
+    number_of_subjects_in_chamber = bills.filter(from_organization=chamber).distinct(
+        "subject").values_list("subject", flat=True).count()
+    number_of_bills_without_subjects = bills.filter(
+        from_organization=chamber, subject=None).count()
     bill_subjects_data = {
         "overall_number_of_subjects": overall_number_of_subjects,
-        "number_of_subjects": number_of_subjects,
+        "number_of_subjects_in_chamber": number_of_subjects_in_chamber,
         "number_of_bills_without_subjects": number_of_bills_without_subjects
     }
     return bill_subjects_data
+
 
 def bills_versions(bills, chamber):
     bill_version_data = defaultdict(list)
@@ -170,14 +182,17 @@ def bills_versions(bills, chamber):
     }
     return bill_version_data
 
+
 def vote_data(bills, chamber):
     bill_vote_data = defaultdict(list)
     # votes without any voters
-    total_votes_without_voters = bills.filter(from_organization=chamber, votes__votes=None).values_list("votes").count()
+    total_votes_without_voters = bills.filter(
+        from_organization=chamber, votes__votes=None).values_list("votes").count()
     # votes (which do have voters, as to not include above category)
     #   but where yes/no count do not match actual voters
     total_votes_bad_counts = 0
-    bills_with_votes_with_voters = bills.filter(from_organization=chamber).exclude(votes__votes=None)
+    bills_with_votes_with_voters = bills.filter(
+        from_organization=chamber).exclude(votes__votes=None)
     for b in bills_with_votes_with_voters:
         for vote_object in b.votes.all():
             total_yes = 0
@@ -244,6 +259,7 @@ def write_json_to_file(filename, data):
     with open(filename, "w") as file:
         file.write(data)
 
+
 # Example command
 # docker-compose run --rm django poetry run ./manage.py data_quality VA
 class Command(BaseCommand):
@@ -269,44 +285,18 @@ class Command(BaseCommand):
                     bill_vote_data = vote_data(bills, chamber)
 
                     # Grabbing the Legislative Session object
-                    leg_session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=abbr_to_jid(state))
+                    leg_session = LegislativeSession.objects.get(
+                        identifier=session, jurisdiction_id=abbr_to_jid(state))
 
                     DataQualityDashboard.objects.update_or_create(
                         session=leg_session,
                         chamber=chamber.classification,
-
                         defaults={
-                            "total_bills": bills_per_session_data["total_bills"],
-                            "latest_bill_created_date": bills_per_session_data["latest_bill_created_date"],
-                            "latest_action_date": bills_per_session_data["latest_action_date"],
-                            "earliest_action_date": bills_per_session_data["earliest_action_date"],
-
-                            "average_sponsors_per_bill": average_num_data["average_sponsors_per_bill"],
-                            "min_sponsors_per_bill": average_num_data["min_sponsors_per_bill"],
-                            "max_sponsors_per_bill": average_num_data["max_sponsors_per_bill"],
-                            "average_actions_per_bill": average_num_data["average_actions_per_bill"],
-                            "min_actions_per_bill": average_num_data["min_actions_per_bill"],
-                            "max_actions_per_bill": average_num_data["max_actions_per_bill"],
-                            "average_votes_per_bill": average_num_data["average_votes_per_bill"],
-                            "min_votes_per_bill": average_num_data["min_votes_per_bill"],
-                            "max_votes_per_bill": average_num_data["max_votes_per_bill"],
-                            "average_documents_per_bill": average_num_data["average_documents_per_bill"],
-                            "min_documents_per_bill": average_num_data["min_documents_per_bill"],
-                            "max_documents_per_bill": average_num_data["max_documents_per_bill"],
-                            "average_versions_per_bill": average_num_data["average_versions_per_bill"],
-                            "min_versions_per_bill": average_num_data["min_versions_per_bill"],
-                            "max_versions_per_bill": average_num_data["max_versions_per_bill"],
-
-                            "total_bills_without_versions": bill_version_data["total_bills_without_versions"],
-
-                            "total_bills_no_sources": no_sources_data["total_bills_no_sources"],
-                            "total_votes_no_sources": no_sources_data["total_votes_no_sources"],
-
-                            "total_votes_without_voters": bill_vote_data["total_votes_without_voters"],
-                            "total_votes_bad_counts": bill_vote_data["total_votes_bad_counts"],
-
-                            "overall_number_of_subjects": bill_subjects_data["overall_number_of_subjects"],
-                            "number_of_subjects_in_chamber": bill_subjects_data["number_of_subjects"],
-                            "number_of_bills_without_subjects": bill_subjects_data["number_of_bills_without_subjects"]
+                            **bills_per_session_data,
+                            **average_num_data,
+                            **bill_version_data,
+                            **no_sources_data,
+                            **bill_vote_data,
+                            **bill_subjects_data,
                         }
                     )
