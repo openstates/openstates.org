@@ -6,6 +6,9 @@ from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
 
+def dq_overview(request):
+    return render(request, "dashboards/newtemplate.html")
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def user_overview(request):
