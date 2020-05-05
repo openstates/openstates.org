@@ -65,10 +65,10 @@ description = "The AWS SDK for Python"
 name = "boto3"
 optional = false
 python-versions = "*"
-version = "1.12.49"
+version = "1.13.2"
 
 [package.dependencies]
-botocore = ">=1.15.49,<1.16.0"
+botocore = ">=1.16.2,<1.17.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -78,7 +78,7 @@ description = "Low-level, data-driven core of boto 3."
 name = "botocore"
 optional = false
 python-versions = "*"
-version = "1.15.49"
+version = "1.16.2"
 
 [package.dependencies]
 docutils = ">=0.10,<0.16"
@@ -385,7 +385,7 @@ description = "IPython: Productive Interactive Computing"
 name = "ipython"
 optional = false
 python-versions = ">=3.6"
-version = "7.13.0"
+version = "7.14.0"
 
 [package.dependencies]
 appnope = "*"
@@ -401,7 +401,7 @@ setuptools = ">=18.5"
 traitlets = ">=4.2"
 
 [package.extras]
-all = ["numpy (>=1.14)", "testpath", "notebook", "nose (>=0.10.1)", "nbconvert", "requests", "ipywidgets", "qtconsole", "ipyparallel", "Sphinx (>=1.3)", "pygments", "nbformat", "ipykernel"]
+all = ["nose (>=0.10.1)", "Sphinx (>=1.3)", "testpath", "nbformat", "ipywidgets", "qtconsole", "numpy (>=1.14)", "notebook", "ipyparallel", "ipykernel", "pygments", "requests", "nbconvert"]
 doc = ["Sphinx (>=1.3)"]
 kernel = ["ipykernel"]
 nbconvert = ["nbconvert"]
@@ -523,7 +523,7 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "4.4.1"
+version = "4.4.2"
 
 [package.dependencies]
 Django = ">=2.2"
@@ -1043,7 +1043,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "5c2078e425e0b851e42ffa80c6f0a065512f46db641dd7c23d3d3a9667822be3"
+content-hash = "d02fcbeabf0b0de818f51fe6b23c2e6169aa0c0d196b803efc2e7192498fd4ea"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1072,12 +1072,12 @@ bleach = [
     {file = "bleach-3.1.5.tar.gz", hash = "sha256:3c4c520fdb9db59ef139915a5db79f8b51bc2a7257ea0389f30c846883430a4b"},
 ]
 boto3 = [
-    {file = "boto3-1.12.49-py2.py3-none-any.whl", hash = "sha256:5a8c918c04015147f40e498994cd85c9442f6e00b4cf87ffb04f15d6a24135f4"},
-    {file = "boto3-1.12.49.tar.gz", hash = "sha256:7b82123d25100c834b71868d60e66fca37e0691edd444fb149d004ab00bea3b4"},
+    {file = "boto3-1.13.2-py2.py3-none-any.whl", hash = "sha256:fc8511eda662d7b4b10bce55153cf65b89c41d86b65162bc0d15b89547d3d837"},
+    {file = "boto3-1.13.2.tar.gz", hash = "sha256:91b34fac764c908f2e9553607fb0f2c56adc6b9df76e1f313dc190af512849c8"},
 ]
 botocore = [
-    {file = "botocore-1.15.49-py2.py3-none-any.whl", hash = "sha256:b805691b4dedcb2a252f52347479ff351429624a873f001b6a1c81aca03dccee"},
-    {file = "botocore-1.15.49.tar.gz", hash = "sha256:a474131ba7a7d700b91696a27e8cdcf1b473084addf92f90b269ebd8f5c3d3e0"},
+    {file = "botocore-1.16.2-py2.py3-none-any.whl", hash = "sha256:8ef5b178b76920f6f11169ad69ff30e297044aab4c34d1e92f26221faaa033ed"},
+    {file = "botocore-1.16.2.tar.gz", hash = "sha256:102534a1d98a70bf6ecacf51c3cef2ef09587039aef064ad076bd2e36dd4c441"},
 ]
 certifi = [
     {file = "certifi-2020.4.5.1-py2.py3-none-any.whl", hash = "sha256:1d987a998c75633c40847cc966fcf5904906c920a7f17ef374f5aa4282abd304"},
@@ -1179,8 +1179,8 @@ importlib-metadata = [
     {file = "importlib_metadata-1.6.0.tar.gz", hash = "sha256:34513a8a0c4962bc66d35b359558fd8a5e10cd472d37aec5f66858addef32c1e"},
 ]
 ipython = [
-    {file = "ipython-7.13.0-py3-none-any.whl", hash = "sha256:eb8d075de37f678424527b5ef6ea23f7b80240ca031c2dd6de5879d687a65333"},
-    {file = "ipython-7.13.0.tar.gz", hash = "sha256:ca478e52ae1f88da0102360e57e528b92f3ae4316aabac80a2cd7f7ab2efb48a"},
+    {file = "ipython-7.14.0-py3-none-any.whl", hash = "sha256:5b241b84bbf0eb085d43ae9d46adf38a13b45929ca7774a740990c2c242534bb"},
+    {file = "ipython-7.14.0.tar.gz", hash = "sha256:f0126781d0f959da852fb3089e170ed807388e986a8dd4e6ac44855845b0fb1c"},
 ]
 ipython-genutils = [
     {file = "ipython_genutils-0.2.0-py2.py3-none-any.whl", hash = "sha256:72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8"},
@@ -1221,8 +1221,8 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-4.4.1-py3-none-any.whl", hash = "sha256:ccd413edd13a188d87f756306995dd8b4be031b0cd3a1e34fb3cbd9c25ea5aea"},
-    {file = "openstates-4.4.1.tar.gz", hash = "sha256:2ffe00c4671d64620b7c02d8e197f1adaefb27bca2a8c27db1df86ec015592e8"},
+    {file = "openstates-4.4.2-py3-none-any.whl", hash = "sha256:cde905ed9a8d1133c8d1c6b9f1cb15a60b64a985eaaa26617441999168858724"},
+    {file = "openstates-4.4.2.tar.gz", hash = "sha256:6dd7b192b4543890ca5ea67cd910959fe19d55c21c7f2e964447a95fb6668eba"},
 ]
 openstates-metadata = [
     {file = "openstates_metadata-2020.4.7-py3-none-any.whl", hash = "sha256:cb9e6a2a55ac3ef4b552fcd1dc6d64eba4949bb8f8732ba1fcf288242535e591"},
