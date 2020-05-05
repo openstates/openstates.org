@@ -22,7 +22,7 @@ marker = "sys_platform == \"win32\""
 name = "atomicwrites"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.3.0"
+version = "1.4.0"
 
 [[package]]
 category = "main"
@@ -52,9 +52,10 @@ description = "An easy safelist-based HTML-sanitizing tool."
 name = "bleach"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "3.1.4"
+version = "3.1.5"
 
 [package.dependencies]
+packaging = "*"
 six = ">=1.9.0"
 webencodings = "*"
 
@@ -64,10 +65,10 @@ description = "The AWS SDK for Python"
 name = "boto3"
 optional = false
 python-versions = "*"
-version = "1.12.39"
+version = "1.12.49"
 
 [package.dependencies]
-botocore = ">=1.15.39,<1.16.0"
+botocore = ">=1.15.49,<1.16.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -77,7 +78,7 @@ description = "Low-level, data-driven core of boto 3."
 name = "botocore"
 optional = false
 python-versions = "*"
-version = "1.15.39"
+version = "1.15.49"
 
 [package.dependencies]
 docutils = ">=0.10,<0.16"
@@ -104,6 +105,14 @@ name = "chardet"
 optional = false
 python-versions = "*"
 version = "3.0.4"
+
+[[package]]
+category = "main"
+description = "Composable command line interface toolkit"
+name = "click"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "7.1.2"
 
 [[package]]
 category = "main"
@@ -206,7 +215,7 @@ description = "Redis Cache Backend for Django"
 name = "django-redis-cache"
 optional = false
 python-versions = "*"
-version = "2.1.0"
+version = "2.1.1"
 
 [package.dependencies]
 redis = "<4.0"
@@ -514,10 +523,11 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "4.1.1"
+version = "4.4.1"
 
 [package.dependencies]
 Django = ">=2.2"
+click = ">=7.1.1,<8.0.0"
 dj_database_url = ">=0.5.0,<0.6.0"
 jsonschema = ">=3.2.0,<4.0.0"
 openstates-metadata = ">=2020.4.3,<2021.0.0"
@@ -531,13 +541,13 @@ description = "metadata for the openstates project"
 name = "openstates-metadata"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "2020.4.3"
+version = "2020.4.7"
 
 [package.dependencies]
 attrs = ">=19.3,<20.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Core utilities for Python packages"
 name = "packaging"
 optional = false
@@ -678,7 +688,7 @@ python-versions = ">=3.5"
 version = "2.6.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Python parsing module"
 name = "pyparsing"
 optional = false
@@ -773,7 +783,7 @@ description = "Python client for Redis key-value store"
 name = "redis"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "3.4.1"
+version = "3.5.0"
 
 [package.extras]
 hiredis = ["hiredis (>=0.1.3)"]
@@ -928,7 +938,7 @@ description = "Python bindings for the Stripe API"
 name = "stripe"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "2.45.0"
+version = "2.47.0"
 
 [package.dependencies]
 [package.dependencies.requests]
@@ -974,11 +984,11 @@ description = "HTTP library with thread-safe connection pooling, file post, and 
 name = "urllib3"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
-version = "1.25.8"
+version = "1.25.9"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
-secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=0.14)", "ipaddress"]
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
 [[package]]
@@ -1033,7 +1043,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "84b6cbaa3e446538d17216515f108d15406fabdeef961b585c08e857fa57102e"
+content-hash = "5c2078e425e0b851e42ffa80c6f0a065512f46db641dd7c23d3d3a9667822be3"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1046,8 +1056,8 @@ appnope = [
     {file = "appnope-0.1.0.tar.gz", hash = "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"},
 ]
 atomicwrites = [
-    {file = "atomicwrites-1.3.0-py2.py3-none-any.whl", hash = "sha256:03472c30eb2c5d1ba9227e4c2ca66ab8287fbfbbda3888aa93dc2e28fc6811b4"},
-    {file = "atomicwrites-1.3.0.tar.gz", hash = "sha256:75a9445bac02d8d058d5e1fe689654ba5a6556a1dfd8ce6ec55a0ed79866cfa6"},
+    {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
+    {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
 ]
 attrs = [
     {file = "attrs-19.3.0-py2.py3-none-any.whl", hash = "sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c"},
@@ -1058,16 +1068,16 @@ backcall = [
     {file = "backcall-0.1.0.zip", hash = "sha256:bbbf4b1e5cd2bdb08f915895b51081c041bac22394fdfcfdfbe9f14b77c08bf2"},
 ]
 bleach = [
-    {file = "bleach-3.1.4-py2.py3-none-any.whl", hash = "sha256:cc8da25076a1fe56c3ac63671e2194458e0c4d9c7becfd52ca251650d517903c"},
-    {file = "bleach-3.1.4.tar.gz", hash = "sha256:e78e426105ac07026ba098f04de8abe9b6e3e98b5befbf89b51a5ef0a4292b03"},
+    {file = "bleach-3.1.5-py2.py3-none-any.whl", hash = "sha256:2bce3d8fab545a6528c8fa5d9f9ae8ebc85a56da365c7f85180bfe96a35ef22f"},
+    {file = "bleach-3.1.5.tar.gz", hash = "sha256:3c4c520fdb9db59ef139915a5db79f8b51bc2a7257ea0389f30c846883430a4b"},
 ]
 boto3 = [
-    {file = "boto3-1.12.39-py2.py3-none-any.whl", hash = "sha256:cdd79a3a7bbe1f33a365f0acfcc75c4405b482b3eb9ce3f4e6b16c418e201ac3"},
-    {file = "boto3-1.12.39.tar.gz", hash = "sha256:970bd7b332e73d7b51077ed36772c634811b38c81b0cc6ed0f910e50d7ebadf8"},
+    {file = "boto3-1.12.49-py2.py3-none-any.whl", hash = "sha256:5a8c918c04015147f40e498994cd85c9442f6e00b4cf87ffb04f15d6a24135f4"},
+    {file = "boto3-1.12.49.tar.gz", hash = "sha256:7b82123d25100c834b71868d60e66fca37e0691edd444fb149d004ab00bea3b4"},
 ]
 botocore = [
-    {file = "botocore-1.15.39-py2.py3-none-any.whl", hash = "sha256:e20ba56476b1031ce5ac8e22b59dabc75bd0e03231f124ed6b9ff99fe0b0c96b"},
-    {file = "botocore-1.15.39.tar.gz", hash = "sha256:94232b44e1540b7e043e220bd43f855400d0a243e926b26b3fb72994e971d518"},
+    {file = "botocore-1.15.49-py2.py3-none-any.whl", hash = "sha256:b805691b4dedcb2a252f52347479ff351429624a873f001b6a1c81aca03dccee"},
+    {file = "botocore-1.15.49.tar.gz", hash = "sha256:a474131ba7a7d700b91696a27e8cdcf1b473084addf92f90b269ebd8f5c3d3e0"},
 ]
 certifi = [
     {file = "certifi-2020.4.5.1-py2.py3-none-any.whl", hash = "sha256:1d987a998c75633c40847cc966fcf5904906c920a7f17ef374f5aa4282abd304"},
@@ -1076,6 +1086,10 @@ certifi = [
 chardet = [
     {file = "chardet-3.0.4-py2.py3-none-any.whl", hash = "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"},
     {file = "chardet-3.0.4.tar.gz", hash = "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"},
+]
+click = [
+    {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
+    {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
 ]
 colorama = [
     {file = "colorama-0.4.3-py2.py3-none-any.whl", hash = "sha256:7d73d2a99753107a36ac6b455ee49046802e59d9d076ef8e47b61499fa29afff"},
@@ -1112,8 +1126,8 @@ django-recaptcha = [
     {file = "django_recaptcha-2.0.6-py2.py3-none-any.whl", hash = "sha256:567784963fd5400feaf92e8951d8dbbbdb4b4c48a76e225d4baa63a2c9d2cd8c"},
 ]
 django-redis-cache = [
-    {file = "django-redis-cache-2.1.0.tar.gz", hash = "sha256:5c581743de5994e6b15abfd5b3dbcb8bf00e42d97658c96b7218bcb6a63f863b"},
-    {file = "django_redis_cache-2.1.0-py3-none-any.whl", hash = "sha256:bc0eaf20d275708e0437cbea28f9965e1922c15291f6206edbef3966c029836b"},
+    {file = "django-redis-cache-2.1.1.tar.gz", hash = "sha256:06d4e48545243883f88dc9263dda6c8a0012cb7d0cee2d8758d8917eca92cece"},
+    {file = "django_redis_cache-2.1.1-py3-none-any.whl", hash = "sha256:b19ee6654cc2f2c89078c99255e07e19dc2dba8792351d76ba7ea899d465fbb0"},
 ]
 django-webpack-loader = [
     {file = "django-webpack-loader-0.6.0.tar.gz", hash = "sha256:60bab6b9a037a5346fad12d2a70a6bc046afb33154cf75ed640b93d3ebd5f520"},
@@ -1207,12 +1221,12 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-4.1.1-py3-none-any.whl", hash = "sha256:c4d4dcd44076cb48869dfd7d131bcc104c4e88116c8a4a345444777e5873f1f9"},
-    {file = "openstates-4.1.1.tar.gz", hash = "sha256:0bbbbff5ccd66fce5366ea722c3de8cce3e36e3f9d615b61e1bc942a06f62a27"},
+    {file = "openstates-4.4.1-py3-none-any.whl", hash = "sha256:ccd413edd13a188d87f756306995dd8b4be031b0cd3a1e34fb3cbd9c25ea5aea"},
+    {file = "openstates-4.4.1.tar.gz", hash = "sha256:2ffe00c4671d64620b7c02d8e197f1adaefb27bca2a8c27db1df86ec015592e8"},
 ]
 openstates-metadata = [
-    {file = "openstates_metadata-2020.4.3-py3-none-any.whl", hash = "sha256:0eded9a6d4d2e3cddbc3ede87f8cbfcc13cb6aeab06258867ca5c71665d38f57"},
-    {file = "openstates_metadata-2020.4.3.tar.gz", hash = "sha256:5ee38adb85ee920747c2311aea54252968e9a1432603d50d2790d12af807cb45"},
+    {file = "openstates_metadata-2020.4.7-py3-none-any.whl", hash = "sha256:cb9e6a2a55ac3ef4b552fcd1dc6d64eba4949bb8f8732ba1fcf288242535e591"},
+    {file = "openstates_metadata-2020.4.7.tar.gz", hash = "sha256:29d0fbc8ef3117e5e6b8f7da274021e740b6c0c414f98ef722e9b9170274f950"},
 ]
 packaging = [
     {file = "packaging-20.3-py2.py3-none-any.whl", hash = "sha256:82f77b9bee21c1bafbf35a84905d604d5d1223801d639cf3ed140bd651c08752"},
@@ -1324,8 +1338,8 @@ pytz = [
     {file = "pytz-2019.3.tar.gz", hash = "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"},
 ]
 redis = [
-    {file = "redis-3.4.1-py2.py3-none-any.whl", hash = "sha256:b205cffd05ebfd0a468db74f0eedbff8df1a7bfc47521516ade4692991bb0833"},
-    {file = "redis-3.4.1.tar.gz", hash = "sha256:0dcfb335921b88a850d461dc255ff4708294943322bd55de6cfd68972490ca1f"},
+    {file = "redis-3.5.0-py2.py3-none-any.whl", hash = "sha256:174101a3ce04560d716616290bb40e0a2af45d5844c8bd474c23fc5c52e7a46a"},
+    {file = "redis-3.5.0.tar.gz", hash = "sha256:7378105cd8ea20c4edc49f028581e830c01ad5f00be851def0f4bc616a83cd89"},
 ]
 represent-boundaries = [
     {file = "represent-boundaries-0.9.4.tar.gz", hash = "sha256:dd78e6d42e15a3ba18d8ee70904f2be548b8e7dff00086450958e05214a35684"},
@@ -1371,8 +1385,8 @@ sqlparse = [
     {file = "sqlparse-0.3.1.tar.gz", hash = "sha256:e162203737712307dfe78860cc56c8da8a852ab2ee33750e33aeadf38d12c548"},
 ]
 stripe = [
-    {file = "stripe-2.45.0-py2.py3-none-any.whl", hash = "sha256:2592aa78aa8fbd2c7b892edd9eb0b5dd987df60000e156b1fe395c44ac46f1c0"},
-    {file = "stripe-2.45.0.tar.gz", hash = "sha256:8382f1429487ba641e9d8348db32c1d7b235b7de9129f235a668eef2131147fa"},
+    {file = "stripe-2.47.0-py2.py3-none-any.whl", hash = "sha256:195de9785811cdc3147b1bd35be109f5008845fbbf6c94d32e84808ae9f9b28b"},
+    {file = "stripe-2.47.0.tar.gz", hash = "sha256:54cd4a325f1bfb2f71a39ffbe6f68e6c62b9e25b407bcff62a825ae1726b5393"},
 ]
 structlog = [
     {file = "structlog-20.1.0-py2.py3-none-any.whl", hash = "sha256:8a672be150547a93d90a7d74229a29e765be05bd156a35cdcc527ebf68e9af92"},
@@ -1383,8 +1397,8 @@ traitlets = [
     {file = "traitlets-4.3.3.tar.gz", hash = "sha256:d023ee369ddd2763310e4c3eae1ff649689440d4ae59d7485eb4cfbbe3e359f7"},
 ]
 urllib3 = [
-    {file = "urllib3-1.25.8-py2.py3-none-any.whl", hash = "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"},
-    {file = "urllib3-1.25.8.tar.gz", hash = "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"},
+    {file = "urllib3-1.25.9-py2.py3-none-any.whl", hash = "sha256:88206b0eb87e6d677d424843ac5209e3fb9d0190d0ee169599165ec25e9d9115"},
+    {file = "urllib3-1.25.9.tar.gz", hash = "sha256:3018294ebefce6572a474f0604c2021e33b3fd8006ecd11d62107a5d2a963527"},
 ]
 us = [
     {file = "us-1.0.0.tar.gz", hash = "sha256:09dc9ba763e2e4399e6a042104f3e415a7de6bfa4df6f557b4f19e3ba9a22fda"},

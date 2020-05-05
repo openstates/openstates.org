@@ -10,6 +10,7 @@ from openstates.data.models import (
     VoteEvent,
     SearchableBill,
 )
+from openstates.importers.computed_fields import update_bill_fields
 
 
 def make_random_bill(name):
@@ -49,12 +50,23 @@ def make_random_bill(name):
 def make_person(name, state, chamber, district, party):
     org = Organization.objects.get(jurisdiction__name=state, classification=chamber)
     party, _ = Organization.objects.get_or_create(classification="party", name=party)
+    if state == "Alaska":
+        state = "ak"
+    elif state == "Wyoming":
+        state = "wy"
+    elif state == "Nebraska":
+        state = "ne"
+        chamber = "upper"
     div, _ = Division.objects.get_or_create(
-        id="ocd-division/country:us/state:{}/district:{}".format(state, district),
+        id="ocd-division/country:us/state:{}/sld{}:{}".format(
+            state, chamber[0], district.lower()
+        ),
         name="Division " + district,
     )
     post = org.posts.create(label=district, division=div)
-    p = Person.objects.create(name=name)
+    p = Person.objects.create(
+        name=name, primary_party=party.name, current_role_division_id=div.id
+    )
     p.memberships.create(post=post, organization=org)
     p.memberships.create(organization=party)
     return p
@@ -107,6 +119,8 @@ def populate_db():
     for m in rhonda.memberships.all():
         m.end_date = "2017-01-01"
         m.save()
+    rhonda.current_role_division_id = ""
+    rhonda.save()
 
     # WY House (multi-member districts)
     make_person("Greta Gonzalez", "Wyoming", "lower", "1", "Democratic")
@@ -219,6 +233,10 @@ def populate_db():
         make_random_bill("Alaska")
     for x in range(14):
         make_random_bill("Wyoming")
+
+    # populate bill computed data
+    for bill in Bill.objects.all():
+        update_bill_fields(bill)
 
 
 def populate_unicam():

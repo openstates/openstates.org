@@ -1,6 +1,7 @@
 import pytest
 from graphapi.tests.utils import populate_db
-from public.models import PersonProxy
+from openstates.data.models import Person
+from utils.common import pretty_url
 
 
 @pytest.mark.django_db
@@ -21,9 +22,9 @@ def test_legislators_view(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_person_view(client, django_assert_num_queries):
-    p = PersonProxy.objects.get(name="Amanda Adams")
-    with django_assert_num_queries(10):
-        resp = client.get(p.pretty_url())
+    p = Person.objects.get(name="Amanda Adams")
+    with django_assert_num_queries(9):
+        resp = client.get(pretty_url(p))
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "legislators"
@@ -32,9 +33,9 @@ def test_person_view(client, django_assert_num_queries):
     assert person.current_role == {
         "chamber": "lower",
         "district": 1,
-        "division_id": "ocd-division/country:us/state:Alaska/district:1",
+        "division_id": "ocd-division/country:us/state:ak/sldl:1",
         "state": "ak",
-        "role": "",
+        "role": "Representative",
         "party": "Republican",
     }
     assert len(person.sponsored_bills) == 2
@@ -44,10 +45,10 @@ def test_person_view(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_person_view_retired(client, django_assert_num_queries):
-    p = PersonProxy.objects.get(name="Rhonda Retired")
+    p = Person.objects.get(name="Rhonda Retired")
     # fewer views, we don't do the bill queries
     with django_assert_num_queries(9):
-        resp = client.get(p.pretty_url())
+        resp = client.get(pretty_url(p))
     assert resp.status_code == 200
     assert resp.context["state"] == "ak"
     assert resp.context["state_nav"] == "legislators"
@@ -58,21 +59,21 @@ def test_person_view_retired(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_person_view_invalid_uuid(client, django_assert_num_queries):
-    p = PersonProxy.objects.get(name="Rhonda Retired")
+    p = Person.objects.get(name="Rhonda Retired")
     resp = client.get(
-        p.pretty_url()[:-1] + "abcdefghij/"
+        pretty_url(p)[:-1] + "abcdefghij/"
     )  # this won't be a valid pretty UUID
     assert resp.status_code == 404
 
 
 @pytest.mark.django_db
 def test_canonicalize_person(client):
-    p = PersonProxy.objects.get(name="Amanda Adams")
-    url = p.pretty_url().replace("amanda", "xyz")
+    p = Person.objects.get(name="Amanda Adams")
+    url = pretty_url(p).replace("amanda", "xyz")
     assert "xyz" in url
     resp = client.get(url)
     assert resp.status_code == 301
-    assert resp.url == p.pretty_url()
+    assert resp.url == pretty_url(p)
 
 
 # TODO: test find_your_legislator

@@ -1,4 +1,4 @@
-from .common import abbr_to_jid
+from .common import abbr_to_jid, pretty_url
 from openstates.data.models import Organization
 
 
@@ -20,3 +20,13 @@ def get_legislature_from_abbr(abbr):
         classification="legislature", jurisdiction_id=abbr_to_jid(abbr)
     )
     return legislature
+
+
+def org_as_dict(org):
+    return {
+        "id": org.id,
+        "name": org.name,
+        "chamber": org.parent.classification,
+        "pretty_url": pretty_url(org),
+        "member_count": org.member_count,
+    }

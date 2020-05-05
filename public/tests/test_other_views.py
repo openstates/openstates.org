@@ -1,14 +1,12 @@
 import stripe
 from unittest import mock
 import pytest
-from django.core.management import call_command
 from graphapi.tests.utils import populate_db, populate_unicam
 
 
 @pytest.mark.django_db
 def setup():
     populate_db()
-    call_command("update_materialized_views")
 
 
 @pytest.mark.django_db
@@ -79,7 +77,7 @@ def test_search(client, django_assert_num_queries):
     assert len(resp.context["bills"]) == 1
     assert len(resp.context["people"]) == 0
 
-    with django_assert_num_queries(5):
+    with django_assert_num_queries(2):
         resp = client.get("/search/?query=amanda")
     assert len(resp.context["bills"]) == 0
     assert len(resp.context["people"]) == 1

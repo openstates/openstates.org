@@ -10,12 +10,12 @@ from openstates.data.models import (
     Bill,
     BillActionRelatedEntity,
     VoteEvent,
+    Person,
 )
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id, search_bills
 from .fallback import fallback
-from ..models import PersonProxy
 
 
 class Unnest(Func):
@@ -30,7 +30,7 @@ class BillList(View):
         chambers = get_chambers_from_abbr(state)
         options["chambers"] = {c.classification: c.name for c in chambers}
         options["sessions"] = sessions_with_bills(jid)
-        options["sponsors"] = PersonProxy.objects.filter(
+        options["sponsors"] = Person.objects.filter(
             memberships__organization__jurisdiction_id=jid
         ).distinct()
         options["classifications"] = sorted(
@@ -75,9 +75,7 @@ class BillList(View):
             subjects=q_subjects,
             status=status,
         )
-        bills = bills.order_by(
-            F("billstatus__latest_action_date").desc(nulls_last=True)
-        )
+        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
         return bills, form
 
@@ -143,12 +141,9 @@ class BillListFeed(BillList):
         )
         for item in bills[:100]:
             link = "https://{}{}".format(host, pretty_url(item))
-            try:
-                description = f"""{item.title}<br />
-                          Latest Action: {item.billstatus.latest_action_description}
-                          <i>{item.billstatus.latest_action_date}</i>"""
-            except Bill.billstatus.RelatedObjectDoesNotExist:
-                description = item.title
+            description = f"""{item.title}<br />
+                      Latest Action: {item.latest_action_description}
+                      <i>{item.latest_action_date}</i>"""
 
             feed.add_item(
                 title=item.identifier,
@@ -240,7 +235,7 @@ def bill(request, state, session, bill_id):
     sponsorships = list(bill.sponsorships.all())
     sponsor_people = {
         p.id: p
-        for p in PersonProxy.objects.filter(
+        for p in Person.objects.filter(
             id__in=[s.person_id for s in sponsorships if s.person_id]
         ).prefetch_related(
             "memberships", "memberships__organization", "memberships__post"

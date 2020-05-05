@@ -15,7 +15,6 @@ from openstates.data.models import (
 )
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
 from utils.common import jid_to_abbr, abbr_to_jid
-from utils.people import current_role_filters
 from utils.bills import search_bills
 from profiles.verifier import verify_request
 
@@ -122,7 +121,11 @@ def legislator_list(request, geo=False):
     chamber = request.GET.get("chamber")
     district = request.GET.get("district")
 
-    filter_params = current_role_filters()
+    today = datetime.date.today().isoformat()
+    filter_params = [
+        Q(memberships__start_date="") | Q(memberships__start_date__lte=today),
+        Q(memberships__end_date="") | Q(memberships__end_date__gte=today),
+    ]
 
     if geo:
         latitude = request.GET.get("lat")

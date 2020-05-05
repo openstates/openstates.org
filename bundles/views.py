@@ -8,9 +8,7 @@ def bundle_view(request, slug):
     bills_by_state = defaultdict(list)
     total_bills = 0
 
-    for bill in bundle.bills.all().select_related(
-        "legislative_session__jurisdiction", "billstatus"
-    ):
+    for bill in bundle.bills.all().select_related("legislative_session__jurisdiction",):
         bills_by_state[bill.legislative_session.jurisdiction.name].append(bill)
         total_bills += 1
 
