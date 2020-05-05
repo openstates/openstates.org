@@ -1,8 +1,14 @@
-from django.urls import path
+from django.urls import path, re_path
 from .views import user_overview, api_overview, dq_overview
+from utils.common import states
+
+# Only allow valid state abbreviations
+state_abbrs = [s.abbr.lower() for s in states]
+state_abbr_pattern = r"({})".format("|".join(state_abbrs))
 
 urlpatterns = [
     path("users/", user_overview),
     path("api/", api_overview),
-    path("dq_dashboard/", dq_overview),
+    # path("dq_dashboard/", dq_overview),
+    re_path(r"^dq_overview/(?P<state>{})/$".format(state_abbr_pattern), dq_overview),
 ]

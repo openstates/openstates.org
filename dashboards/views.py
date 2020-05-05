@@ -6,7 +6,7 @@ from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
 
-def dq_overview(request):
+def dq_overview(request, state):
     return render(request, "dashboards/newtemplate.html")
 
 
