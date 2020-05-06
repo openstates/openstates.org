@@ -25,7 +25,6 @@ def dq_overview(request, state):
         "session": session,
         "all_sessions": all_sessions,
         "dashboards": dashboards,
-        "total_dashboards": dashboards.count(),
     }
 
     return render(
@@ -49,7 +48,6 @@ def dq_overview_session(request, state, session):
         "session": session,
         "all_sessions": all_sessions,
         "dashboards": dashboards,
-        "total_dashboards": dashboards.count(),
     }
 
     return render(
