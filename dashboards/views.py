@@ -6,8 +6,37 @@ from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
 
+from utils.common import abbr_to_jid, sessions_with_bills
+from utils.orgs import get_chambers_from_abbr
+from dashboards.models import DataQualityDashboard
+from openstates.data.models import LegislativeSession
+
 def dq_overview(request, state):
-    return render(request, "dashboards/newtemplate.html")
+    jid = jid = abbr_to_jid(state)
+    all_sessions = sessions_with_bills(jid)
+    session = all_sessions[0]
+    print("\n\n\n")
+    print(session.identifier)
+
+    dashboards = DataQualityDashboard.objects.filter(session=session)
+
+    print("\n\n\n")
+    print(dashboards)
+
+    chambers = get_chambers_from_abbr(state)
+    context = {
+        "state": state,
+        "chambers": chambers,
+        "all_sessions": all_sessions,
+        "dashboards": dashboards,
+        "total_dashboards": dashboards.count(),
+    }
+
+    return render(
+        request,
+        "dashboards/newtemplate.html",
+        context
+    )
 
 
 @user_passes_test(lambda u: u.is_superuser)
