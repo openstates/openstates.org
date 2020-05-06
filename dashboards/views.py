@@ -8,7 +8,7 @@ from profiles.models import Subscription, Notification, UsageReport, Profile, KE
 
 from utils.common import abbr_to_jid, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from dashboards.models import DataQualityDashboard
+from dashboards.models import DataQualityReport
 from openstates.data.models import LegislativeSession
 
 def dq_overview(request, state):
@@ -16,7 +16,7 @@ def dq_overview(request, state):
     all_sessions = sessions_with_bills(jid)
     session = all_sessions[0]
 
-    dashboards = DataQualityDashboard.objects.filter(session=session)
+    dashboards = DataQualityReport.objects.filter(session=session)
 
     chambers = get_chambers_from_abbr(state)
     context = {
