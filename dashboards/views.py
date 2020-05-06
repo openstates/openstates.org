@@ -12,9 +12,33 @@ from dashboards.models import DataQualityReport
 from openstates.data.models import LegislativeSession
 
 def dq_overview(request, state):
-    jid = jid = abbr_to_jid(state)
+    jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
     session = all_sessions[0]
+
+    dashboards = DataQualityReport.objects.filter(session=session)
+
+    chambers = get_chambers_from_abbr(state)
+    context = {
+        "state": state,
+        "chambers": chambers,
+        "session": session,
+        "all_sessions": all_sessions,
+        "dashboards": dashboards,
+        "total_dashboards": dashboards.count(),
+    }
+
+    return render(
+        request,
+        "dashboards/newtemplate.html",
+        context
+    )
+
+def dq_overview_session(request, state, session):
+    jid = abbr_to_jid(state)
+    all_sessions = sessions_with_bills(jid)
+
+    session=LegislativeSession.objects.get(identifier=session, jurisdiction_id=jid)
 
     dashboards = DataQualityReport.objects.filter(session=session)
 

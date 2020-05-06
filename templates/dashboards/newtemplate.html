@@ -16,7 +16,7 @@
 		<section class="section">
 			<div class="grid-container full">	
 				<div class="medium-2">
-					<select id="session" name="session">
+					<select id="session" name="session" onchange="window.location.href = '/dashboard/dq_overview/{{ state }}/' + this.value">
 						<option value="">All Available Sessions</option>
 						{% for session in all_sessions %}
 							<option value="{{ session.identifier }}">{{ session.name }}</option>
