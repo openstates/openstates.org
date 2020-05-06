@@ -15,18 +15,14 @@ def dq_overview(request, state):
     jid = jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
     session = all_sessions[0]
-    print("\n\n\n")
-    print(session.identifier)
 
     dashboards = DataQualityDashboard.objects.filter(session=session)
-
-    print("\n\n\n")
-    print(dashboards)
 
     chambers = get_chambers_from_abbr(state)
     context = {
         "state": state,
         "chambers": chambers,
+        "session": session,
         "all_sessions": all_sessions,
         "dashboards": dashboards,
         "total_dashboards": dashboards.count(),
