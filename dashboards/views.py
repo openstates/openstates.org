@@ -6,10 +6,37 @@ from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
 
-from utils.common import abbr_to_jid, sessions_with_bills
+from utils.common import abbr_to_jid, sessions_with_bills, states
 from utils.orgs import get_chambers_from_abbr
 from dashboards.models import DataQualityReport
 from openstates.data.models import LegislativeSession
+
+
+def dqr_listing(request):
+    print("\n\n\n\n")
+    print(states[0].__dict__)
+
+    state_dqr_data = {}
+    for state in states:
+        jid = abbr_to_jid(state.abbr)
+        session = sessions_with_bills(jid)
+        total_dashboards = 0
+        if len(session) > 0:
+            total_dashboards = DataQualityReport.objects.filter(session=session[0]).count()
+        state_dqr_data[state.abbr] = {
+            "state": state.name,
+            "abbr": state.abbr,
+            "total_dashboards": total_dashboards,
+        }
+    context = {
+        "states": states,
+        "state_dqr_data": state_dqr_data,
+    }
+    return render(
+        request,
+        "dashboards/dqr_listing.html",
+        context
+    )
 
 def dq_overview(request, state):
     jid = abbr_to_jid(state)
