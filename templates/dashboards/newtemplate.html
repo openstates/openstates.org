@@ -36,10 +36,10 @@
 					<section class="section">
 						<h2 class="heading--medium">Bills Per Session:</h2>
 						<div class="grid-container full">
-							<p>Total Bills:</p>
-							<p>Latest Bill Created Date:</p>
-							<p>Latest Action Date:</p>
-							<p>Earliest Action Date:</p>
+							<p>Total Bills: {{ dashboard.total_bills }}</p>
+							<p>Latest Bill Created Date: {{ dashboard.latest_bill_created_date }}</p>
+							<p>Latest Action Date: {{ dashboard.latest_action_date }}</p>
+							<p>Earliest Action Date: {{ dashboard.earliest_action_date }}</p>
 						</div>
 					</section>
 
@@ -51,37 +51,37 @@
 									<div class="grid-x grid-margin-x medium-up-2">
 										<div class="cell">
 											<h3 class="heading--small">Sponsors Per Bill</h3>
-											<p>Average:</p>
-											<p>Min:</p>
-											<p>Max:</p>
+											<p>Average: {{ dashboard.average_sponsors_per_bill }}</p>
+											<p>Min: {{ dashboard.min_sponsors_per_bill }}</p>
+											<p>Max: {{ dashboard.max_sponsors_per_bill }}</p>
 										</div>
 
 										<div class="cell">
 											<h3 class="heading--small">Actions Per Bill</h3>
-											<p>Average:</p>
-											<p>Min:</p>
-											<p>Max:</p>
+											<p>Average: {{ dashboard.average_actions_per_bill }}</p>
+											<p>Min: {{ dashboard.min_actions_per_bill }}</p>
+											<p>Max: {{ dashboard.max_actions_per_bill }}</p>
 										</div>
 
 										<div class="cell">
 											<h3 class="heading--small">Votes Per Bill</h3>
-											<p>Average:</p>
-											<p>Min:</p>
-											<p>Max:</p>
+											<p>Average: {{ dashboard.average_votes_per_bill }}</p>
+											<p>Min: {{ dashboard.min_votes_per_bill }}</p>
+											<p>Max: {{ dashboard.max_votes_per_bill }}</p>
 										</div>
 
 										<div class="cell">
 											<h3 class="heading--small">Documents Per Bill</h3>
-											<p>Average:</p>
-											<p>Min:</p>
-											<p>Max:</p>
+											<p>Average: {{ dashboard.average_documents_per_bill }}</p>
+											<p>Min: {{ dashboard.min_documents_per_bill }}</p>
+											<p>Max: {{ dashboard.max_documents_per_bill }}</p>
 										</div>
 
 										<div class="cell">
 											<h3 class="heading--small">Versions Per Bill</h3>
-											<p>Average:</p>
-											<p>Min:</p>
-											<p>Max:</p>
+											<p>Average: {{ dashboard.average_versions_per_bill }}</p>
+											<p>Min: {{ dashboard.min_versions_per_bill }}</p>
+											<p>Max: {{ dashboard.max_versions_per_bill }}</p>
 										</div>
 									</div>
 							</div>
@@ -93,8 +93,8 @@
 					<section>
 						<h2 class="heading--medium">Source Data:</h2>
 						<div class="grid-container full">
-							<p>Total Bills No Sources:</p>
-							<p>Total Votes No Sources</p>
+							<p>Total Bills No Sources: {{ dashboard.total_bills_no_sources }}</p>
+							<p>Total Votes No Sources: {{ dashboard.total_votes_no_sources }}</p>
 						</div>
 					</section>
 
@@ -103,9 +103,9 @@
 					<section>
 						<h2 class="heading--medium">Bill Subjects:</h2>
 						<div class="grid-container full">
-							<p>Overall Number of Subjects:</p>
-							<p>Number of Subjects in Chamber:</p>
-							<p>Number of Bills Without Subjects:</p>
+							<p>Overall Number of Subjects: {{ dashboard.overall_number_of_subjects }}</p>
+							<p>Number of Subjects in Chamber: {{ dashboard.number_of_subjects_in_chamber }}</p>
+							<p>Number of Bills Without Subjects: {{ dashboard.number_of_bills_without_subjects }}</p>
 						</div>
 					</section>
 
@@ -114,7 +114,7 @@
 					<section>
 						<h2 class="heading--medium">Bill Versions:</h2>
 						<div class="grid-container full">
-							<p>Total Bills Without Versions:</p>
+							<p>Total Bills Without Versions: {{ dashboard.bills_without_versions }}</p>
 						</div>
 					</section>
 
@@ -123,8 +123,8 @@
 					<section>
 						<h2 class="heading--medium">Vote Data:</h2>
 						<div class="grid-container full">
-							<p>Total Votes Without Voters:</p>
-							<p>Total Votes Bad Counts:</p>
+							<p>Total Votes Without Voters: {{ dashboard.total_votes_without_voters }}</p>
+							<p>Total Votes Bad Counts: {{ dashboard.total_votes_bad_counts }}</p>
 						</div>
 					</section>
 
