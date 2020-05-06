@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     "bulk",
     "profiles.apps.ProfilesConfig",
     "bundles",
+    "dashboards",
 ]
 
 MIDDLEWARE = [
