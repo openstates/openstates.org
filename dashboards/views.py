@@ -16,15 +16,18 @@ def dqr_listing(request):
 
     state_dqr_data = {}
     for state in states:
-        jid = abbr_to_jid(state.abbr)
-        session = sessions_with_bills(jid)
+        session = sessions_with_bills(abbr_to_jid(state.abbr))
+        abbr = state.abbr.lower()
         total_dashboards = 0
+        dashboards = []
         if len(session) > 0:
-            total_dashboards = DataQualityReport.objects.filter(session=session[0]).count()
-        state_dqr_data[state.abbr.lower()] = {
+            dashboards = DataQualityReport.objects.filter(session=session[0])
+            total_dashboards = dashboards.count()
+        state_dqr_data[abbr] = {
             "state": state.name,
-            "abbr": state.abbr.lower(),
+            "abbr": abbr,
             "total_dashboards": total_dashboards,
+            "dashboards": dashboards,
         }
 
     context = {

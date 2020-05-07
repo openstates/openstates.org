@@ -19,6 +19,8 @@
                     <tr>
                     	<th>State</th>
                     	<th>Link to Data Quality Report</th>
+                    	<th>Total Bills Per Chamber</th>
+                    	<th>Total Bills Per Chamber</th>
                     	<th>Total Dashboards:</th>
                     </tr>
                 </thead>
@@ -27,6 +29,14 @@
 						<tr class="row--align-top">
 	                        <td>{{ dqr.state }}</td>
 	                        <td><a href="/dashboard/dq_overview/{{ state }}/">Link</a></td>
+	                        {% if dqr.dashboards %}
+	                        	{% for d in dqr.dashboards %}
+	                        		<td>{{ d.total_bills }}</td>
+	                        	{% endfor %}
+	                        {% else %}
+	                        	<td>N/A</td>
+	                        	<td>N/A</td>
+	                        {% endif %}
 	                        <td>{{ dqr.total_dashboards }}</td>
 	                    </tr>
 					{% endfor %}
