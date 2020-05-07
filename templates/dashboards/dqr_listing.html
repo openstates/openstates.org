@@ -19,15 +19,15 @@
                     <tr>
                     	<th>State</th>
                     	<th>Link to Data Quality Report</th>
-                    	<th></th>
+                    	<th>Total Dashboards:</th>
                     </tr>
                 </thead>
                 <tbody>
-					{% for state in states %}
+					{% for state, dqr in state_dqr_data.items %}
 						<tr class="row--align-top">
-	                        <td>{{ state }}</td>
-	                        <td><a href="/dashboard/dq_overview/{{ state.abbr }}/">Link</a></td>
-	                        <td></td>
+	                        <td>{{ dqr.state }}</td>
+	                        <td><a href="/dashboard/dq_overview/{{ state }}/">Link</a></td>
+	                        <td>{{ dqr.total_dashboards }}</td>
 	                    </tr>
 					{% endfor %}
 				</tbody>

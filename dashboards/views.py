@@ -13,8 +13,6 @@ from openstates.data.models import LegislativeSession
 
 
 def dqr_listing(request):
-    print("\n\n\n\n")
-    print(states[0].__dict__)
 
     state_dqr_data = {}
     for state in states:
@@ -23,11 +21,12 @@ def dqr_listing(request):
         total_dashboards = 0
         if len(session) > 0:
             total_dashboards = DataQualityReport.objects.filter(session=session[0]).count()
-        state_dqr_data[state.abbr] = {
+        state_dqr_data[state.abbr.lower()] = {
             "state": state.name,
-            "abbr": state.abbr,
+            "abbr": state.abbr.lower(),
             "total_dashboards": total_dashboards,
         }
+
     context = {
         "states": states,
         "state_dqr_data": state_dqr_data,
