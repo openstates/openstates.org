@@ -33,7 +33,7 @@ def process_query_sub(sub, since):
 
 def process_bill_sub(sub, since):
     """ given a bill subscription, return bill if it has had an action since then """
-    if sub.bill.latest_action_date > since:
+    if sub.bill.latest_action_date >= since.strftime("%Y-%m-%d"):
         return sub.bill
 
 
