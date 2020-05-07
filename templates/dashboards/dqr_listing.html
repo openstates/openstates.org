@@ -23,7 +23,8 @@
                     	<th>Total Bills Per Chamber (Upper)</th>
                     	<th>Latest Action (Lower)</th>
                     	<th>Latest Action (Upper)</th>
-                    	<th>Total Dashboards:</th>
+                    	<th># Bad Votes (Lower)</th>
+                    	<th># Bad Votes (Upper)</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -47,13 +48,22 @@
                         		{% else %}
                         			<td>{{ dqr.upper_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
                         		{% endif %}
+
+                        		<!-- Bad Vote Count -->
+                        		<td>{{ dqr.lower_dashboard.total_votes_bad_counts }}</td>
+                        		{% if state == "ne" %}
+                        			<td>N/A</td>
+                        		{% else %}
+                        			<td>{{ dqr.upper_dashboard.total_votes_bad_counts }}</td>
+                        		{% endif %}
 	                        {% else %}
 	                        	<td></td>
 	                        	<td></td>
 	                        	<td></td>
 	                        	<td></td>
+	                        	<td></td>
+	                        	<td></td>
 	                        {% endif %}
-	                        <td>{{ dqr.total_dashboards }}</td>
 	                    </tr>
 					{% endfor %}
 				</tbody>

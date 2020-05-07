@@ -24,11 +24,9 @@ def dqr_listing(request):
         upper_dashboard = []
         if len(session) > 0:
             dashboards = DataQualityReport.objects.filter(session=session[0])
-            total_dashboards = dashboards.count()
-            if total_dashboards > 0:
+            if dashboards.count() > 0:
+                # Nebraska only has one legislature
                 if state.abbr == "NE":
-                    print("\n\n\n\n")
-                    print(dashboards[0].__dict__)
                     lower_dashboard = DataQualityReport.objects.filter(session=session[0], chamber="legislature")[0]
                 else:
                     lower_dashboard = DataQualityReport.objects.filter(session=session[0], chamber="lower")[0]
@@ -37,7 +35,6 @@ def dqr_listing(request):
         state_dqr_data[abbr] = {
             "state": state.name,
             "abbr": abbr,
-            "total_dashboards": total_dashboards,
             "dashboards": dashboards,
             "lower_dashboard": lower_dashboard,
             "upper_dashboard": upper_dashboard,
