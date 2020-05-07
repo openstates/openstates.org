@@ -100,7 +100,6 @@ version = "2020.4.5.1"
 [[package]]
 category = "main"
 description = "Universal encoding detector for Python 2 and 3"
-marker = "python_version >= \"3.0\""
 name = "chardet"
 optional = false
 python-versions = "*"
@@ -357,7 +356,6 @@ six = ">=1.12"
 [[package]]
 category = "main"
 description = "Internationalized Domain Names in Applications (IDNA)"
-marker = "python_version >= \"3.0\""
 name = "idna"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -1062,7 +1060,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "5ec0446f980bdb1430c2713819ccd7bbe8ec0f7ac49e199e1a0d3250821000ff"
+content-hash = "42edada3b163dc014c417309484ecc3bcae1e58b90ee48c44fb4a803b012c323"
 python-versions = "^3.7"
 
 [metadata.files]
