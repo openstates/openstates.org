@@ -26,14 +26,14 @@ def process_query_sub(sub, since):
             status=sub.status,
         )
         .filter(created_at__gte=since)
-        .order_by("-updated_at")
+        .order_by("-latest_action_date")
     )
     return bills
 
 
 def process_bill_sub(sub, since):
-    """ given a bill subscription, return bill if it was updated since then """
-    if sub.bill.updated_at > since:
+    """ given a bill subscription, return bill if it has had an action since then """
+    if sub.bill.latest_action_date >= since.strftime("%Y-%m-%d"):
         return sub.bill
 
 

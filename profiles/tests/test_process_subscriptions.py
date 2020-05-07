@@ -41,6 +41,8 @@ def test_process_bill_sub(user):
 
     now = utcnow()
     yesterday = now - datetime.timedelta(days=1)
+    hb1.latest_action_date = yesterday.strftime("%Y-%m-%d")
+    hb1.save()
 
     # no changes since now
     assert process_bill_sub(sub, now) is None
@@ -67,6 +69,8 @@ def test_process_query_sub_simple(user):
 @pytest.mark.django_db
 def test_process_subs_for_user_simple(user):
     hb1 = Bill.objects.get(identifier="HB 1")
+    hb1.latest_action_date = datetime.date.today().strftime("%Y-%m-%d")
+    hb1.save()
     Subscription.objects.create(user=user, subjects=[], status=[], bill=hb1)
 
     # last check is more than a day ago
@@ -195,6 +199,8 @@ def test_send_email_simple_bill_no_updates(user, mailoutbox):
 @pytest.mark.django_db
 def test_send_email_simple_bill_no_email(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
+    hb1.latest_action_date = datetime.date.today().strftime("%Y-%m-%d")
+    hb1.save()
     sub = Subscription.objects.create(
         user=user, bill=hb1, subjects=[], status=[], query=""
     )
@@ -210,6 +216,8 @@ def test_send_email_simple_bill_no_email(user, mailoutbox):
 @pytest.mark.django_db
 def test_send_email_simple_dry_run(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
+    hb1.latest_action_date = datetime.date.today().strftime("%Y-%m-%d")
+    hb1.save()
     sub = Subscription.objects.create(user=user, subjects=[], status=[], query="moose")
     query_updates = [(sub, [hb1])]
     send_subscription_email(user, query_updates, [], dry_run=True)
