@@ -36,6 +36,13 @@ def get_available_sessions(state):
         for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
     )
 
+def format_long_date(date):
+    short_date = date[:10]
+    short_date = datetime.datetime.strptime(
+        short_date, "%Y-%m-%d"
+    )
+    short_date = pytz.UTC.localize(short_date)
+    return short_date
 
 def total_bills_per_session(bills, chamber):
 
@@ -53,10 +60,15 @@ def total_bills_per_session(bills, chamber):
         # In case bills don't have actions
         if bill_with_latest_action.actions.count() > 0:
             latest_action = bill_with_latest_action.actions.latest("date")
-            latest_action_date = datetime.datetime.strptime(
-                latest_action.date, "%Y-%m-%d"
-            )
-            latest_action_date = pytz.UTC.localize(latest_action_date)
+            # 2020-05-06
+            if len(latest_action.date) == 10:
+                latest_action_date = datetime.datetime.strptime(
+                    latest_action.date, "%Y-%m-%d"
+                )
+                latest_action_date = pytz.UTC.localize(latest_action_date)
+            # 2020-05-04T04:00:00+00:00
+            elif len(latest_action.date) == 25:
+                latest_action_date = format_long_date(latest_action.date)
 
         # Earliest Action
         bill_with_earliest_action = bills.filter(from_organization=chamber).earliest(
@@ -65,10 +77,14 @@ def total_bills_per_session(bills, chamber):
         # In case bills don't have actions
         if bill_with_earliest_action.actions.count() > 0:
             earliest_action = bill_with_earliest_action.actions.earliest("date")
-            earliest_action_date = datetime.datetime.strptime(
-                earliest_action.date, "%Y-%m-%d"
-            )
-            earliest_action_date = pytz.UTC.localize(earliest_action_date)
+            if len(earliest_action.date) == 10:
+                earliest_action_date = datetime.datetime.strptime(
+                    earliest_action.date, "%Y-%m-%d"
+                )
+                earliest_action_date = pytz.UTC.localize(earliest_action_date)
+            elif len(earliest_action.date) == 25:
+                earliest_action_date = format_long_date(earliest_action.date)
+
 
     total_bills_per_session = {
         "total_bills": total_bills,
