@@ -18,7 +18,6 @@
 				<thead>
                     <tr>
                     	<th>State</th>
-                    	<th>Link to Data Quality Report</th>
                     	<th>Total Bills Per Chamber (Lower)</th>
                     	<th>Total Bills Per Chamber (Upper)</th>
                     	<th>Latest Action (Lower)</th>
@@ -30,8 +29,7 @@
                 <tbody>
 					{% for state, dqr in state_dqr_data.items %}
 						<tr class="row--align-top">
-	                        <td>{{ dqr.state }}</td>
-	                        <td><a href="/dashboard/dq_overview/{{ state }}/">Link</a></td>
+	                        <td><a href="/dashboard/dq_overview/{{ state }}/">{{ dqr.state }}</a></td>
 	                        {% if dqr.dashboards %}
 	                        	<!-- Total Bills -->
                         		<td>{{ dqr.lower_dashboard.total_bills }}</td>
