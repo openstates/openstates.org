@@ -53,6 +53,7 @@ def dqr_listing(request):
         }
     )
 
+
 def dq_overview(request, state):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
@@ -75,11 +76,12 @@ def dq_overview(request, state):
         context
     )
 
+
 def dq_overview_session(request, state, session):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
 
-    session=LegislativeSession.objects.get(identifier=session, jurisdiction_id=jid)
+    session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=jid)
 
     dashboards = DataQualityReport.objects.filter(session=session)
 
