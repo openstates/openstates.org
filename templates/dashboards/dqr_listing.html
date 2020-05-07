@@ -32,6 +32,9 @@
 	                        {% if dqr.dashboards %}
 	                        	{% for d in dqr.dashboards %}
 	                        		<td>{{ d.total_bills }}</td>
+	                        		{% if state == "ne" %}
+	                        			<td>N/A</td>
+	                        		{% endif %}
 	                        	{% endfor %}
 	                        {% else %}
 	                        	<td>N/A</td>
