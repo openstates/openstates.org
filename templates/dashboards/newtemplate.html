@@ -10,25 +10,29 @@
 
 {% block content %}
 
-	<h1 class="heading--large">Data Quality Dashboard</h1>
-	<h2>{{ session }}</h2>
+	<!-- <h1 class="heading--large">Data Quality Dashboard</h1>
+	<h2>{{ session }}</h2> -->
 
 	<div class="grid-y grid-margin-y">
 	
 		<div class="section">
-			<div class="grid-x grid-margin-x medium-up-2 margin-bottom-2">
+			<div class="grid-x grid-margin-x medium-up-2" style="margin-bottom: 0%;">
 				<div class="cell medium-5">
+					<h1 class="heading--large">Data Quality Dashboard</h1>
+					<h2>{{ session }}</h2>
+				</div>
+				<div class="cell medium-5">
+					</br>
 					<select id="session" name="session" onchange="window.location.href = '/dashboard/dq_overview/{{ state }}/' + this.value">
 						<option value="">All Available Sessions</option>
 						{% for session in all_sessions %}
 							<option value="{{ session.identifier }}">{{ session.name }}</option>
 						{% endfor %}
 				    </select>
+				    <button type="button" class="button"><a href="/dashboard/dq_dashboard/">Back to Listing</a></button>
 				</div>
 			</div>
-			<button type="button" class="button"><a href="/dashboard/dq_dashboard/">Back to Listing</a></button>
 		</div>
-
 
 		<div class="grid-x grid-margin-x medium-up-2">
 			{% for dashboard in dashboards %}
