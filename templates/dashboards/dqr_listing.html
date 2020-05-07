@@ -21,6 +21,8 @@
                     	<th>Link to Data Quality Report</th>
                     	<th>Total Bills Per Chamber (Lower)</th>
                     	<th>Total Bills Per Chamber (Upper)</th>
+                    	<th>Latest Action (Lower)</th>
+                    	<th>Latest Action (Upper)</th>
                     	<th>Total Dashboards:</th>
                     </tr>
                 </thead>
@@ -30,15 +32,26 @@
 	                        <td>{{ dqr.state }}</td>
 	                        <td><a href="/dashboard/dq_overview/{{ state }}/">Link</a></td>
 	                        {% if dqr.dashboards %}
+	                        	<!-- Total Bills -->
                         		<td>{{ dqr.lower_dashboard.total_bills }}</td>
                         		{% if state == "ne" %}
                         			<td>N/A</td>
                         		{% else %}
                         			<td>{{ dqr.upper_dashboard.total_bills }}</td>
                         		{% endif %}
+
+                        		<!-- Action Date -->
+                        		<td>{{ dqr.lower_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
+                        		{% if state == "ne" %}
+                        			<td></td>
+                        		{% else %}
+                        			<td>{{ dqr.upper_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
+                        		{% endif %}
 	                        {% else %}
-	                        	<td>N/A</td>
-	                        	<td>N/A</td>
+	                        	<td></td>
+	                        	<td></td>
+	                        	<td></td>
+	                        	<td></td>
 	                        {% endif %}
 	                        <td>{{ dqr.total_dashboards }}</td>
 	                    </tr>
