@@ -15,3 +15,5 @@ DATABASE_URL=postgis://openstates:openstates@db/openstatesorg docker-compose run
 
 # add test data
 docker-compose run --rm -e PYTHONPATH=docker/ --entrypoint 'poetry run ./manage.py shell -c "import testdata"' django
+
+docker-compose run --rm --entrypoint 'poetry run ./manage.py shell -c "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain=\"openstates.org\", name=\"openstates.org\")" django
