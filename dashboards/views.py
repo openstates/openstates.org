@@ -72,7 +72,7 @@ def dq_overview(request, state):
 
     return render(
         request,
-        "dashboards/newtemplate.html",
+        "dashboards/dqr_page.html",
         context
     )
 
@@ -96,7 +96,7 @@ def dq_overview_session(request, state, session):
 
     return render(
         request,
-        "dashboards/newtemplate.html",
+        "dashboards/dqr_page.html",
         context
     )
 
