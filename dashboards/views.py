@@ -18,36 +18,39 @@ def dqr_listing(request):
     for state in states:
         session = sessions_with_bills(abbr_to_jid(state.abbr))
         abbr = state.abbr.lower()
-        total_dashboards = 0
-        dashboards = []
         lower_dashboard = []
         upper_dashboard = []
         if len(session) > 0:
             dashboards = DataQualityReport.objects.filter(session=session[0])
             if dashboards.count() > 0:
                 # Nebraska only has one legislature
-                if state.abbr == "NE":
-                    lower_dashboard = DataQualityReport.objects.filter(session=session[0], chamber="legislature")[0]
+                if abbr == "ne":
+                    lower_dashboard = dashboards.filter(
+                        session=session[0],
+                        chamber="legislature"
+                    )[0]
                 else:
-                    lower_dashboard = DataQualityReport.objects.filter(session=session[0], chamber="lower")[0]
-                    upper_dashboard = DataQualityReport.objects.filter(session=session[0], chamber="upper")[0]
+                    lower_dashboard = dashboards.filter(
+                        session=session[0],
+                        chamber="lower"
+                    )[0]
+                    upper_dashboard = dashboards.filter(
+                        session=session[0],
+                        chamber="upper"
+                    )[0]
 
         state_dqr_data[abbr] = {
             "state": state.name,
-            "abbr": abbr,
-            "dashboards": dashboards,
             "lower_dashboard": lower_dashboard,
             "upper_dashboard": upper_dashboard,
         }
 
-    context = {
-        "states": states,
-        "state_dqr_data": state_dqr_data,
-    }
     return render(
         request,
         "dashboards/dqr_listing.html",
-        context
+        {
+            "state_dqr_data": state_dqr_data,
+        }
     )
 
 def dq_overview(request, state):

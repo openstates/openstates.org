@@ -30,7 +30,7 @@
 					{% for state, dqr in state_dqr_data.items %}
 						<tr class="row--align-top">
 	                        <td><a href="/dashboard/dq_overview/{{ state }}/">{{ dqr.state }}</a></td>
-	                        {% if dqr.dashboards %}
+	                        {% if dqr.lower_dashboard %}
 	                        	<!-- Total Bills -->
                         		<td>{{ dqr.lower_dashboard.total_bills }}</td>
                         		{% if state == "ne" %}
