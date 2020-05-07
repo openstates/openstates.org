@@ -13,9 +13,9 @@
 	<h1 class="heading--large">Data Quality Dashboard - {{ session }}</h1>
 	<div class="grid-y grid-margin-y">
 	
-		<section class="section">
-			<div class="grid-container full">	
-				<div class="medium-2">
+		<div class="section">
+			<div class="grid-x grid-margin-x">
+				<div class="cell medium-5">
 					<select id="session" name="session" onchange="window.location.href = '/dashboard/dq_overview/{{ state }}/' + this.value">
 						<option value="">All Available Sessions</option>
 						{% for session in all_sessions %}
@@ -24,13 +24,15 @@
 				    </select>
 				</div>
 			</div>
-		</section>
-		
+			<button type="button" class="button"><a href="/dashboard/dq_dashboard/">Back to Listing</a></button>
+		</div>
+
+
 		<div class="grid-x grid-margin-x medium-up-2">
 			{% for dashboard in dashboards %}
 				<div class="cell">
 				
-					<h2 class="heading--medium">{{ dashboard.chamber }}</h2>
+					<h2 class="heading--medium">{{ dashboard.chamber|capfirst }}</h2>
 					<section class="section">
 						<h2 class="heading--medium">Bills Per Session:</h2>
 						<div class="grid-container full">
