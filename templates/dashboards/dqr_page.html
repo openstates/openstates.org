@@ -37,14 +37,23 @@
 		<div class="grid-x grid-margin-x medium-up-2">
 			{% for dashboard in dashboards %}
 				<div class="cell">
-				
+
 					<div class="section">
 						<h2 class="heading--medium">{{ dashboard.chamber|capfirst }}</h2>
+						<h2 class="heading--medium">Data Quality Checks:</h2>
+						<div class="grid-container full">
+							<p><strong {%if dashboard.total_bills_without_versions == 0 %}class="u-color--green"{% else %}class="u-color--red"{% endif %}>{{ dashboard.total_bills_without_versions }} </strong> bills without versions</p>
+							<p><strong {%if dashboard.number_of_bills_without_subjects == 0 %}class="u-color--green"{% else %}class="u-color--red"{% endif %}>{{ dashboard.number_of_bills_without_subjects }}</strong> bills without subjects</p>
+							<p><strong {%if dashboard.total_votes_bad_counts == 0 %}class="u-color--green"{% else %}class="u-color--red"{% endif %}>{{ dashboard.total_votes_bad_counts }}</strong> votes with bad counts</p>
+						</div>
+					</div>
+				
+					<div class="section">
 						<h2 class="heading--medium">Bills Per Session:</h2>
 						<div class="grid-container full">
-							<p>Total Bills: <strong class="u-color--black">{{ dashboard.total_bills }}</strong></p>
+							<p>Total Bills: <strong>{{ dashboard.total_bills }}</strong></p>
 							<p>Latest Bill Created Date: <strong>{{ dashboard.latest_bill_created_date|fdate:"%b %d %Y" }}</strong></p>
-							<p>Latest Action Date: <strong>{{ dashboard.latest_action_date|fdate:"%b %d %Y" }}</strong></p>
+							<p>Latest Action Date: <strong>{{ dashboard.latest_action_date|fdate:"%b %d, %Y" }}</strong></p>
 							<p>Earliest Action Date: <strong>{{ dashboard.earliest_action_date|fdate:"%b %d, %Y" }}</strong></p>
 						</div>
 					</div>
