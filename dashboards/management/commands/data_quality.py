@@ -58,7 +58,7 @@ def total_bills_per_session(bills, chamber):
             latest_action = bill_with_latest_action.actions.latest("date")
             latest_action_date = latest_action.date[:10]
             latest_action_date = datetime.datetime.strptime(
-                latest_action.date, "%Y-%m-%d"
+                latest_action_date, "%Y-%m-%d"
             )
             latest_action_date = pytz.UTC.localize(latest_action_date)
 
@@ -74,7 +74,7 @@ def total_bills_per_session(bills, chamber):
             earliest_action = bill_with_earliest_action.actions.earliest("date")
             earliest_action_date = earliest_action.date[:10]
             earliest_action_date = datetime.datetime.strptime(
-                earliest_action.date, "%Y-%m-%d"
+                earliest_action_date, "%Y-%m-%d"
             )
             earliest_action_date = pytz.UTC.localize(earliest_action_date)
 
