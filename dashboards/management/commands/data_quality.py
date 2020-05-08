@@ -54,12 +54,17 @@ def total_bills_per_session(bills, chamber):
     if total_bills > 0:
         latest_bill = bills.filter(from_organization=chamber).latest("created_at")
         latest_bill_created_date = latest_bill.created_at
-        bill_with_latest_action = bills.filter(from_organization=chamber).latest(
+        bill_with_latest_action = bills.filter(
+            from_organization=chamber,
+            actions__date__isnull=False
+        ).latest(
             "actions__date"
         )
         # In case bills don't have actions
         if bill_with_latest_action.actions.count() > 0:
             latest_action = bill_with_latest_action.actions.latest("date")
+            latest_action_date = latest_action.date[:10]
+            print(latest_action_date)
             # 2020-05-06
             if len(latest_action.date) == 10:
                 latest_action_date = datetime.datetime.strptime(
@@ -71,7 +76,10 @@ def total_bills_per_session(bills, chamber):
                 latest_action_date = format_long_date(latest_action.date)
 
         # Earliest Action
-        bill_with_earliest_action = bills.filter(from_organization=chamber).earliest(
+        bill_with_earliest_action = bills.filter(
+            from_organization=chamber,
+            actions__date__isnull=False
+        ).earliest(
             "actions__date"
         )
         # In case bills don't have actions
@@ -265,6 +273,8 @@ def vote_data(bills, chamber):
                 elif voter.option == "excused":
                     voter_count_excused += 1
                 elif voter.option == "abstain":
+                    voter_not_voting += 1
+                elif voter.option == "not voting":
                     voter_not_voting += 1
                 elif voter.option == "other":
                     voter_count_other += 1
