@@ -33,7 +33,7 @@
 	                        {% if dqr.lower_dashboard %}
 	                        	<!-- Total Bills -->
                         		<td>{{ dqr.lower_dashboard.total_bills }}</td>
-                        		{% if state == "ne" %}
+                        		{% if state == "ne" or state == "dc" %}
                         			<td>N/A</td>
                         		{% else %}
                         			<td>{{ dqr.upper_dashboard.total_bills }}</td>
@@ -41,15 +41,15 @@
 
                         		<!-- Action Date -->
                         		<td>{{ dqr.lower_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
-                        		{% if state == "ne" %}
-                        			<td></td>
+                        		{% if state == "ne" or state == "dc" %}
+                        			<td>N/A</td>
                         		{% else %}
                         			<td>{{ dqr.upper_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
                         		{% endif %}
 
                         		<!-- Bad Vote Count -->
                         		<td>{{ dqr.lower_dashboard.total_votes_bad_counts }}</td>
-                        		{% if state == "ne" %}
+                        		{% if state == "ne" or state == "dc" %}
                         			<td>N/A</td>
                         		{% else %}
                         			<td>{{ dqr.upper_dashboard.total_votes_bad_counts }}</td>
