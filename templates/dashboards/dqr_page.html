@@ -42,9 +42,10 @@
 						<h2 class="heading--medium">{{ dashboard.chamber|capfirst }}</h2>
 						<h2 class="heading--medium">Data Quality Checks:</h2>
 						<div class="grid-container full">
-							<p><strong {%if dashboard.total_bills_without_versions == 0 %}class="u-color--green"{% else %}class="u-color--red"{% endif %}>{{ dashboard.total_bills_without_versions }} </strong> bills without versions</p>
-							<p><strong {%if dashboard.number_of_bills_without_subjects == 0 %}class="u-color--green"{% else %}class="u-color--red"{% endif %}>{{ dashboard.number_of_bills_without_subjects }}</strong> bills without subjects</p>
-							<p><strong {%if dashboard.total_votes_bad_counts == 0 %}class="u-color--green"{% else %}class="u-color--red"{% endif %}>{{ dashboard.total_votes_bad_counts }}</strong> votes with bad counts</p>
+							<p><strong class="heading--small u-color--{%if dashboard.total_bills_without_versions == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_bills_without_versions }} </strong> bills without versions</p>
+							<p><strong class="heading--small u-color--{%if dashboard.number_of_bills_without_subjects == 0 %}green{% else %}red{% endif %}">{{ dashboard.number_of_bills_without_subjects }}</strong> bills without subjects</p>
+							<p><strong class="heading--small u-color--{%if dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_votes_bad_counts }}</strong> votes with bad counts</p>
+							<p><strong class="heading--small u-color--{%if dashboard.total_votes_without_voters == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_votes_without_voters }}</strong> votes without voters</p>
 						</div>
 					</div>
 				
