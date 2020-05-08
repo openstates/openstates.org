@@ -59,6 +59,45 @@
 						</div>
 					</div>
 
+					<section>
+						<h2 class="heading--medium">Source Data:</h2>
+						<div class="grid-container full">
+							<p>Total Bills No Sources: <strong class="heading--small u-color--{%if dashboard.total_bills_no_sources == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_bills_no_sources }}</strong></p>
+							<p>Total Votes No Sources: <strong class="heading--small u-color--{%if dashboard.total_votes_no_sources == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_votes_no_sources }}</strong></p>
+						</div>
+					</section>
+
+					</br>
+
+					<section>
+						<h2 class="heading--medium">Bill Subjects:</h2>
+						<div class="grid-container full">
+							<p>Overall Number of Subjects: <strong>{{ dashboard.overall_number_of_subjects }}</strong></p>
+							<p>Number of Subjects in Chamber: <strong>{{ dashboard.number_of_subjects_in_chamber }}</strong></p>
+							<p>Number of Bills Without Subjects: <strong>{{ dashboard.number_of_bills_without_subjects }}</strong></p>
+						</div>
+					</section>
+
+					</br>
+
+					<section>
+						<h2 class="heading--medium">Bill Versions:</h2>
+						<div class="grid-container full">
+							<p>Total Bills Without Versions: <strong class="heading--small u-color--{%if dashboard.total_bills_without_versions == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_bills_without_versions }}</strong></p>
+						</div>
+					</section>
+
+					</br>
+
+					<section>
+						<h2 class="heading--medium">Vote Data:</h2>
+						<div class="grid-container full">
+							<p>Total Votes Without Voters: <strong>{{ dashboard.total_votes_without_voters }}</strong></p>
+							<p>Total Votes Bad Counts: <strong>{{ dashboard.total_votes_bad_counts }}</strong></p>
+						</div>
+					</section>
+
+					</br>
 
 					<section>
 						<h2 class="heading--medium">Average Number Data:</h2>
@@ -101,46 +140,6 @@
 										</div>
 									</div>
 							</div>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Source Data:</h2>
-						<div class="grid-container full">
-							<p>Total Bills No Sources: <strong>{{ dashboard.total_bills_no_sources }}</strong></p>
-							<p>Total Votes No Sources: <strong>{{ dashboard.total_votes_no_sources }}</strong></p>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Bill Subjects:</h2>
-						<div class="grid-container full">
-							<p>Overall Number of Subjects: <strong>{{ dashboard.overall_number_of_subjects }}</strong></p>
-							<p>Number of Subjects in Chamber: <strong>{{ dashboard.number_of_subjects_in_chamber }}</strong></p>
-							<p>Number of Bills Without Subjects: <strong>{{ dashboard.number_of_bills_without_subjects }}</strong></p>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Bill Versions:</h2>
-						<div class="grid-container full">
-							<p>Total Bills Without Versions: <strong>{{ dashboard.total_bills_without_versions }}</strong></p>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Vote Data:</h2>
-						<div class="grid-container full">
-							<p>Total Votes Without Voters: <strong>{{ dashboard.total_votes_without_voters }}</strong></p>
-							<p>Total Votes Bad Counts: <strong>{{ dashboard.total_votes_bad_counts }}</strong></p>
 						</div>
 					</section>
 
