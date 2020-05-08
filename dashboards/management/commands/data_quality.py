@@ -64,7 +64,6 @@ def total_bills_per_session(bills, chamber):
         if bill_with_latest_action.actions.count() > 0:
             latest_action = bill_with_latest_action.actions.latest("date")
             latest_action_date = latest_action.date[:10]
-            print(latest_action_date)
             # 2020-05-06
             if len(latest_action.date) == 10:
                 latest_action_date = datetime.datetime.strptime(
@@ -278,8 +277,6 @@ def vote_data(bills, chamber):
                     voter_not_voting += 1
                 elif voter.option == "other":
                     voter_count_other += 1
-                else:
-                    print(voter.option)
             # Checking to see if votes and vote counts match
             if (voter_count_yes != 0 and voter_count_yes != total_yes) or (
                 voter_count_no != 0 and voter_count_no != total_no
