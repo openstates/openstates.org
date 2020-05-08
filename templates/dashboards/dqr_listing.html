@@ -48,11 +48,11 @@
                         		{% endif %}
 
                         		<!-- Bad Vote Count -->
-                        		<td>{{ dqr.lower_dashboard.total_votes_bad_counts }}</td>
+                        		<td class="u-color--{%if dqr.lower_dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dqr.lower_dashboard.total_votes_bad_counts }}</td>
                         		{% if state == "ne" or state == "dc" %}
                         			<td>N/A</td>
                         		{% else %}
-                        			<td>{{ dqr.upper_dashboard.total_votes_bad_counts }}</td>
+                        			<td class="u-color--{%if dqr.upper_dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dqr.upper_dashboard.total_votes_bad_counts }}</td>
                         		{% endif %}
 	                        {% else %}
 	                        	<td></td>
