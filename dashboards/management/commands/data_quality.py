@@ -124,26 +124,30 @@ def average_number_data(bills, chamber):
         total_documents_per_bill.append(bill.documents.count())
         total_versions_per_bill.append(bill.versions.count())
 
-    average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
-    average_actions_per_bill = round(mean(total_actions_per_bill))
-    average_votes_per_bill = round(mean(total_votes_per_bill))
-    average_documents_per_bill = round(mean(total_documents_per_bill))
-    average_versions_per_bill = round(mean(total_versions_per_bill))
+    if total_sponsorships_per_bill:
+        average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
+        min_sponsors_per_bill = round(min(total_actions_per_bill))
+        max_sponsors_per_bill = round(max(total_actions_per_bill))
 
-    min_sponsors_per_bill = round(min(total_actions_per_bill))
-    max_sponsors_per_bill = round(max(total_actions_per_bill))
+    if total_actions_per_bill:
+        average_actions_per_bill = round(mean(total_actions_per_bill))
+        min_actions_per_bill = round(min(total_actions_per_bill))
+        max_actions_per_bill = round(max(total_actions_per_bill))
 
-    min_actions_per_bill = round(min(total_actions_per_bill))
-    max_actions_per_bill = round(max(total_actions_per_bill))
+    if total_votes_per_bill:
+        average_votes_per_bill = round(mean(total_votes_per_bill))
+        min_votes_per_bill = round(min(total_votes_per_bill))
+        max_votes_per_bill = round(max(total_votes_per_bill))
 
-    min_votes_per_bill = round(min(total_votes_per_bill))
-    max_votes_per_bill = round(max(total_votes_per_bill))
+    if total_documents_per_bill:
+        average_documents_per_bill = round(mean(total_documents_per_bill))
+        min_documents_per_bill = round(min(total_documents_per_bill))
+        max_documents_per_bill = round(max(total_documents_per_bill))
 
-    min_documents_per_bill = round(min(total_documents_per_bill))
-    max_documents_per_bill = round(max(total_documents_per_bill))
-
-    min_versions_per_bill = round(min(total_versions_per_bill))
-    max_versions_per_bill = round(max(total_versions_per_bill))
+    if total_versions_per_bill:
+        average_versions_per_bill = round(mean(total_versions_per_bill))
+        min_versions_per_bill = round(min(total_versions_per_bill))
+        max_versions_per_bill = round(max(total_versions_per_bill))
 
     average_num_data = {
         "average_sponsors_per_bill": average_sponsors_per_bill,
@@ -296,8 +300,10 @@ class Command(BaseCommand):
             # Resets bills inbetween every session
             bills = load_bills(state, session)
             for chamber in chambers:
-                if bills.count() > 0:
+                if bills.filter(from_organization=chamber).count() > 0:
                     bills_per_session_data = total_bills_per_session(bills, chamber)
+                    # if not bills_per_session_data:
+                    #     pass
                     average_num_data = average_number_data(bills, chamber)
                     bill_version_data = bills_versions(bills, chamber)
                     no_sources_data = no_sources(bills, chamber)

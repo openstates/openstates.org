@@ -34,10 +34,14 @@ def dqr_listing(request):
                         session=session[0],
                         chamber="lower"
                     )[0]
-                    upper_dashboard = dashboards.filter(
+                    if dashboards.filter(
                         session=session[0],
                         chamber="upper"
-                    )[0]
+                    ).count() > 0:
+                        upper_dashboard = dashboards.filter(
+                            session=session[0],
+                            chamber="upper"
+                        )[0]
 
         state_dqr_data[abbr] = {
             "state": state.name,

@@ -35,8 +35,10 @@
                         		<td>{{ dqr.lower_dashboard.total_bills }}</td>
                         		{% if state == "ne" or state == "dc" %}
                         			<td>N/A</td>
-                        		{% else %}
+                        		{% elif dqr.upper_dashboard%}
                         			<td>{{ dqr.upper_dashboard.total_bills }}</td>
+                        		{% else %}
+                        			<td class="u-fill--red u-color--yellow"><span class="u-color--white">Bills Not Scraped<span></td>
                         		{% endif %}
 
                         		<!-- Action Date -->
