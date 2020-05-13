@@ -325,13 +325,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         state = options["state"]
-        if state == "all":
+        # 'all' grabs the first session from every state
+        # 'all_sessions' grabs every session from every state
+        if state == "all" or state == "all_sessions":
+            scrape_state = state
             for state in states:
                 sessions = sessions_with_bills(abbr_to_jid(state.abbr))
                 if len(sessions) > 0:
-                    session = sessions[0].identifier
                     state = state.abbr.lower()
-                    create_dqr(state, session)
+                    if scrape_state == "all_sessions":
+                        for session in sessions:
+                            session = session.identifier
+                            create_dqr(state, session)
+                    else:
+                        session = sessions[0].identifier
+                        create_dqr(state, session)
         else:
             sessions = get_available_sessions(state)
             for session in sessions:
