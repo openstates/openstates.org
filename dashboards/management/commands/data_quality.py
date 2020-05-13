@@ -4,7 +4,7 @@ from openstates.data.models import (
     LegislativeSession,
     Bill,
 )
-from utils.common import abbr_to_jid
+from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 import pytz
 from collections import defaultdict
@@ -284,6 +284,37 @@ def write_json_to_file(filename, data):
         file.write(data)
 
 
+def create_dqr(state, session):
+    bills = load_bills(state, session)
+    chambers = get_chambers_from_abbr(state)
+    for chamber in chambers:
+        if bills.filter(from_organization=chamber).count() > 0:
+            bills_per_session_data = total_bills_per_session(bills, chamber)
+
+            average_num_data = average_number_data(bills, chamber)
+            bill_version_data = bills_versions(bills, chamber)
+            no_sources_data = no_sources(bills, chamber)
+            bill_subjects_data = bill_subjects(bills, chamber)
+            bill_vote_data = vote_data(bills, chamber)
+
+            # Grabbing the Legislative Session object
+            leg_session = LegislativeSession.objects.get(
+                identifier=session, jurisdiction_id=abbr_to_jid(state)
+            )
+            DataQualityReport.objects.update_or_create(
+                session=leg_session,
+                chamber=chamber.classification,
+                defaults={
+                    **bills_per_session_data,
+                    **average_num_data,
+                    **bill_version_data,
+                    **no_sources_data,
+                    **bill_vote_data,
+                    **bill_subjects_data,
+                },
+            )
+
+
 # Example command
 # docker-compose run --rm django poetry run ./manage.py data_quality VA
 class Command(BaseCommand):
@@ -294,36 +325,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         state = options["state"]
-        sessions = get_available_sessions(state)
-        chambers = get_chambers_from_abbr(state)
-        for session in sessions:
-            # Resets bills inbetween every session
-            bills = load_bills(state, session)
-            for chamber in chambers:
-                if bills.filter(from_organization=chamber).count() > 0:
-                    bills_per_session_data = total_bills_per_session(bills, chamber)
-                    # if not bills_per_session_data:
-                    #     pass
-                    average_num_data = average_number_data(bills, chamber)
-                    bill_version_data = bills_versions(bills, chamber)
-                    no_sources_data = no_sources(bills, chamber)
-                    bill_subjects_data = bill_subjects(bills, chamber)
-                    bill_vote_data = vote_data(bills, chamber)
-
-                    # Grabbing the Legislative Session object
-                    leg_session = LegislativeSession.objects.get(
-                        identifier=session, jurisdiction_id=abbr_to_jid(state)
-                    )
-
-                    DataQualityReport.objects.update_or_create(
-                        session=leg_session,
-                        chamber=chamber.classification,
-                        defaults={
-                            **bills_per_session_data,
-                            **average_num_data,
-                            **bill_version_data,
-                            **no_sources_data,
-                            **bill_vote_data,
-                            **bill_subjects_data,
-                        },
-                    )
+        if state == "all":
+            for state in states:
+                sessions = sessions_with_bills(abbr_to_jid(state.abbr))
+                if len(sessions) > 0:
+                    session = sessions[0].identifier
+                    state = state.abbr.lower()
+                    create_dqr(state, session)
+        else:
+            sessions = get_available_sessions(state)
+            for session in sessions:
+                create_dqr(state, session)
