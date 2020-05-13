@@ -61,9 +61,11 @@ def dqr_listing(request):
 def dq_overview(request, state):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
-    session = all_sessions[0]
-
-    dashboards = DataQualityReport.objects.filter(session=session)
+    dashboards = []
+    session = "Dashboards Not Generated Yet"
+    if all_sessions:
+        session = all_sessions[0]
+        dashboards = DataQualityReport.objects.filter(session=session)
 
     chambers = get_chambers_from_abbr(state)
     context = {
