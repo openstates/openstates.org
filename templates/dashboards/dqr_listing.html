@@ -18,6 +18,7 @@
 				<thead>
                     <tr>
                     	<th>State</th>
+                    	<th>Session Name</th>
                     	<th>Total Bills Per Chamber (Lower)</th>
                     	<th>Total Bills Per Chamber (Upper)</th>
                     	<th>Latest Action (Lower)</th>
@@ -30,6 +31,7 @@
 					{% for state, dqr in state_dqr_data.items %}
 						<tr class="row--align-top">
 	                        <td><a href="/dashboard/dq_overview/{{ state }}/">{{ dqr.state }}</a></td>
+	                        <td>{{ dqr.session_name }}</td>
 	                        {% if dqr.lower_dashboard %}
 	                        	<!-- Total Bills -->
                         		<td>{{ dqr.lower_dashboard.total_bills }}</td>
