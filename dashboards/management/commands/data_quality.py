@@ -4,7 +4,7 @@ from openstates.data.models import (
     LegislativeSession,
     Bill,
 )
-from utils.common import abbr_to_jid
+from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 import pytz
 from collections import defaultdict
@@ -47,26 +47,34 @@ def total_bills_per_session(bills, chamber):
     if total_bills > 0:
         latest_bill = bills.filter(from_organization=chamber).latest("created_at")
         latest_bill_created_date = latest_bill.created_at
-        bill_with_latest_action = bills.filter(from_organization=chamber).latest(
+        bill_with_latest_action = bills.filter(
+            from_organization=chamber,
+            actions__date__isnull=False
+        ).latest(
             "actions__date"
         )
         # In case bills don't have actions
         if bill_with_latest_action.actions.count() > 0:
             latest_action = bill_with_latest_action.actions.latest("date")
+            latest_action_date = latest_action.date[:10]
             latest_action_date = datetime.datetime.strptime(
-                latest_action.date, "%Y-%m-%d"
+                latest_action_date, "%Y-%m-%d"
             )
             latest_action_date = pytz.UTC.localize(latest_action_date)
 
         # Earliest Action
-        bill_with_earliest_action = bills.filter(from_organization=chamber).earliest(
+        bill_with_earliest_action = bills.filter(
+            from_organization=chamber,
+            actions__date__isnull=False
+        ).earliest(
             "actions__date"
         )
         # In case bills don't have actions
         if bill_with_earliest_action.actions.count() > 0:
             earliest_action = bill_with_earliest_action.actions.earliest("date")
+            earliest_action_date = earliest_action.date[:10]
             earliest_action_date = datetime.datetime.strptime(
-                earliest_action.date, "%Y-%m-%d"
+                earliest_action_date, "%Y-%m-%d"
             )
             earliest_action_date = pytz.UTC.localize(earliest_action_date)
 
@@ -116,26 +124,30 @@ def average_number_data(bills, chamber):
         total_documents_per_bill.append(bill.documents.count())
         total_versions_per_bill.append(bill.versions.count())
 
-    average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
-    average_actions_per_bill = round(mean(total_actions_per_bill))
-    average_votes_per_bill = round(mean(total_votes_per_bill))
-    average_documents_per_bill = round(mean(total_documents_per_bill))
-    average_versions_per_bill = round(mean(total_versions_per_bill))
+    if total_sponsorships_per_bill:
+        average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
+        min_sponsors_per_bill = round(min(total_actions_per_bill))
+        max_sponsors_per_bill = round(max(total_actions_per_bill))
 
-    min_sponsors_per_bill = round(min(total_actions_per_bill))
-    max_sponsors_per_bill = round(max(total_actions_per_bill))
+    if total_actions_per_bill:
+        average_actions_per_bill = round(mean(total_actions_per_bill))
+        min_actions_per_bill = round(min(total_actions_per_bill))
+        max_actions_per_bill = round(max(total_actions_per_bill))
 
-    min_actions_per_bill = round(min(total_actions_per_bill))
-    max_actions_per_bill = round(max(total_actions_per_bill))
+    if total_votes_per_bill:
+        average_votes_per_bill = round(mean(total_votes_per_bill))
+        min_votes_per_bill = round(min(total_votes_per_bill))
+        max_votes_per_bill = round(max(total_votes_per_bill))
 
-    min_votes_per_bill = round(min(total_votes_per_bill))
-    max_votes_per_bill = round(max(total_votes_per_bill))
+    if total_documents_per_bill:
+        average_documents_per_bill = round(mean(total_documents_per_bill))
+        min_documents_per_bill = round(min(total_documents_per_bill))
+        max_documents_per_bill = round(max(total_documents_per_bill))
 
-    min_documents_per_bill = round(min(total_documents_per_bill))
-    max_documents_per_bill = round(max(total_documents_per_bill))
-
-    min_versions_per_bill = round(min(total_versions_per_bill))
-    max_versions_per_bill = round(max(total_versions_per_bill))
+    if total_versions_per_bill:
+        average_versions_per_bill = round(mean(total_versions_per_bill))
+        min_versions_per_bill = round(min(total_versions_per_bill))
+        max_versions_per_bill = round(max(total_versions_per_bill))
 
     average_num_data = {
         "average_sponsors_per_bill": average_sponsors_per_bill,
@@ -250,10 +262,10 @@ def vote_data(bills, chamber):
                     voter_count_excused += 1
                 elif voter.option == "abstain":
                     voter_not_voting += 1
+                elif voter.option == "not voting":
+                    voter_not_voting += 1
                 elif voter.option == "other":
                     voter_count_other += 1
-                else:
-                    print(voter.option)
             # Checking to see if votes and vote counts match
             if (voter_count_yes != 0 and voter_count_yes != total_yes) or (
                 voter_count_no != 0 and voter_count_no != total_no
@@ -272,6 +284,37 @@ def write_json_to_file(filename, data):
         file.write(data)
 
 
+def create_dqr(state, session):
+    bills = load_bills(state, session)
+    chambers = get_chambers_from_abbr(state)
+    for chamber in chambers:
+        if bills.filter(from_organization=chamber).count() > 0:
+            bills_per_session_data = total_bills_per_session(bills, chamber)
+
+            average_num_data = average_number_data(bills, chamber)
+            bill_version_data = bills_versions(bills, chamber)
+            no_sources_data = no_sources(bills, chamber)
+            bill_subjects_data = bill_subjects(bills, chamber)
+            bill_vote_data = vote_data(bills, chamber)
+
+            # Grabbing the Legislative Session object
+            leg_session = LegislativeSession.objects.get(
+                identifier=session, jurisdiction_id=abbr_to_jid(state)
+            )
+            DataQualityReport.objects.update_or_create(
+                session=leg_session,
+                chamber=chamber.classification,
+                defaults={
+                    **bills_per_session_data,
+                    **average_num_data,
+                    **bill_version_data,
+                    **no_sources_data,
+                    **bill_vote_data,
+                    **bill_subjects_data,
+                },
+            )
+
+
 # Example command
 # docker-compose run --rm django poetry run ./manage.py data_quality VA
 class Command(BaseCommand):
@@ -282,34 +325,22 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         state = options["state"]
-        sessions = get_available_sessions(state)
-        chambers = get_chambers_from_abbr(state)
-        for session in sessions:
-            # Resets bills inbetween every session
-            bills = load_bills(state, session)
-            for chamber in chambers:
-                if bills.count() > 0:
-                    bills_per_session_data = total_bills_per_session(bills, chamber)
-                    average_num_data = average_number_data(bills, chamber)
-                    bill_version_data = bills_versions(bills, chamber)
-                    no_sources_data = no_sources(bills, chamber)
-                    bill_subjects_data = bill_subjects(bills, chamber)
-                    bill_vote_data = vote_data(bills, chamber)
-
-                    # Grabbing the Legislative Session object
-                    leg_session = LegislativeSession.objects.get(
-                        identifier=session, jurisdiction_id=abbr_to_jid(state)
-                    )
-
-                    DataQualityReport.objects.update_or_create(
-                        session=leg_session,
-                        chamber=chamber.classification,
-                        defaults={
-                            **bills_per_session_data,
-                            **average_num_data,
-                            **bill_version_data,
-                            **no_sources_data,
-                            **bill_vote_data,
-                            **bill_subjects_data,
-                        },
-                    )
+        # 'all' grabs the first session from every state
+        # 'all_sessions' grabs every session from every state
+        if state == "all" or state == "all_sessions":
+            scrape_state = state
+            for state in states:
+                sessions = sessions_with_bills(abbr_to_jid(state.abbr))
+                if len(sessions) > 0:
+                    state = state.abbr.lower()
+                    if scrape_state == "all_sessions":
+                        for session in sessions:
+                            session = session.identifier
+                            create_dqr(state, session)
+                    else:
+                        session = sessions[0].identifier
+                        create_dqr(state, session)
+        else:
+            sessions = get_available_sessions(state)
+            for session in sessions:
+                create_dqr(state, session)

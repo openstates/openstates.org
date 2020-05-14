@@ -1,0 +1,76 @@
+{% extends "public/components/base.html" %}
+{% load render_bundle from webpack_loader %}
+{% load custom_tags %}
+{% block scripts %}
+    {% render_bundle 'dashboards' 'js' %}
+{% endblock %}
+{% block styles %}
+    {% render_bundle 'dashboards' 'css' %}
+{% endblock %}
+
+{% block content %}
+
+	<section class="section">
+		<h1>Data Quality Reports</h1>
+
+		<div class="grid-x grid-margin-x">
+			<table class="hover">
+				<thead>
+                    <tr>
+                    	<th>State</th>
+                    	<th>Session Name</th>
+                    	<th>Total Bills Per Chamber (Lower)</th>
+                    	<th>Total Bills Per Chamber (Upper)</th>
+                    	<th>Latest Action (Lower)</th>
+                    	<th>Latest Action (Upper)</th>
+                    	<th># Bad Votes (Lower)</th>
+                    	<th># Bad Votes (Upper)</th> 
+                    </tr>
+                </thead>
+                <tbody>
+					{% for state, dqr in state_dqr_data.items %}
+						<tr class="row--align-top">
+	                        <td><a href="/dashboard/dq_overview/{{ state }}/">{{ dqr.state }}</a></td>
+	                        <td>{{ dqr.session_name }}</td>
+	                        {% if dqr.lower_dashboard %}
+	                        	<!-- Total Bills -->
+                        		<td>{{ dqr.lower_dashboard.total_bills }}</td>
+                        		{% if state == "ne" or state == "dc" %}
+                        			<td>N/A</td>
+                        		{% elif dqr.upper_dashboard%}
+                        			<td>{{ dqr.upper_dashboard.total_bills }}</td>
+                        		{% else %}
+                        			<td class="u-fill--red u-color--yellow"><span class="u-color--white">Bills Not Scraped<span></td>
+                        		{% endif %}
+
+                        		<!-- Action Date -->
+                        		<td>{{ dqr.lower_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
+                        		{% if state == "ne" or state == "dc" %}
+                        			<td>N/A</td>
+                        		{% else %}
+                        			<td>{{ dqr.upper_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
+                        		{% endif %}
+
+                        		<!-- Bad Vote Count -->
+                        		<td class="u-color--{%if dqr.lower_dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dqr.lower_dashboard.total_votes_bad_counts }}</td>
+                        		{% if state == "ne" or state == "dc" %}
+                        			<td>N/A</td>
+                        		{% else %}
+                        			<td class="u-color--{%if dqr.upper_dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dqr.upper_dashboard.total_votes_bad_counts }}</td>
+                        		{% endif %}
+	                        {% else %}
+	                        	<td></td>
+	                        	<td></td>
+	                        	<td></td>
+	                        	<td></td>
+	                        	<td></td>
+	                        	<td></td>
+	                        {% endif %}
+	                    </tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+{% endblock %}

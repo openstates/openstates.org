@@ -6,6 +6,109 @@ from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
 
+from utils.common import abbr_to_jid, sessions_with_bills, states
+from utils.orgs import get_chambers_from_abbr
+from dashboards.models import DataQualityReport
+from openstates.data.models import LegislativeSession
+
+
+def dqr_listing(request):
+
+    state_dqr_data = {}
+    for state in states:
+        session = sessions_with_bills(abbr_to_jid(state.abbr))
+        abbr = state.abbr.lower()
+        lower_dashboard = []
+        upper_dashboard = []
+        session_name = ""
+        if len(session) > 0:
+            dashboards = DataQualityReport.objects.filter(session=session[0])
+            if dashboards.count() > 0:
+                session_name = session[0].name
+                # Nebraska only has one legislature
+                if abbr == "ne" or abbr == "dc":
+                    lower_dashboard = dashboards.filter(
+                        session=session[0],
+                        chamber="legislature"
+                    )[0]
+                else:
+                    lower_dashboard = dashboards.filter(
+                        session=session[0],
+                        chamber="lower"
+                    )[0]
+                    if dashboards.filter(
+                        session=session[0],
+                        chamber="upper"
+                    ).count() > 0:
+                        upper_dashboard = dashboards.filter(
+                            session=session[0],
+                            chamber="upper"
+                        )[0]
+
+        state_dqr_data[abbr] = {
+            "state": state.name,
+            "session_name": session_name,
+            "lower_dashboard": lower_dashboard,
+            "upper_dashboard": upper_dashboard,
+        }
+
+    return render(
+        request,
+        "dashboards/dqr_listing.html",
+        {
+            "state_dqr_data": state_dqr_data,
+        }
+    )
+
+
+def dq_overview(request, state):
+    jid = abbr_to_jid(state)
+    all_sessions = sessions_with_bills(jid)
+    dashboards = []
+    session = "Dashboards Not Generated Yet"
+    if all_sessions:
+        session = all_sessions[0]
+        dashboards = DataQualityReport.objects.filter(session=session)
+
+    chambers = get_chambers_from_abbr(state)
+    context = {
+        "state": state,
+        "chambers": chambers,
+        "session": session,
+        "all_sessions": all_sessions,
+        "dashboards": dashboards,
+    }
+
+    return render(
+        request,
+        "dashboards/dqr_page.html",
+        context
+    )
+
+
+def dq_overview_session(request, state, session):
+    jid = abbr_to_jid(state)
+    all_sessions = sessions_with_bills(jid)
+
+    session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=jid)
+
+    dashboards = DataQualityReport.objects.filter(session=session)
+
+    chambers = get_chambers_from_abbr(state)
+    context = {
+        "state": state,
+        "chambers": chambers,
+        "session": session,
+        "all_sessions": all_sessions,
+        "dashboards": dashboards,
+    }
+
+    return render(
+        request,
+        "dashboards/dqr_page.html",
+        context
+    )
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def user_overview(request):
