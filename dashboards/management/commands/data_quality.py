@@ -48,11 +48,8 @@ def total_bills_per_session(bills, chamber):
         latest_bill = bills.filter(from_organization=chamber).latest("created_at")
         latest_bill_created_date = latest_bill.created_at
         bill_with_latest_action = bills.filter(
-            from_organization=chamber,
-            actions__date__isnull=False
-        ).latest(
-            "actions__date"
-        )
+            from_organization=chamber, actions__date__isnull=False
+        ).latest("actions__date")
         # In case bills don't have actions
         if bill_with_latest_action.actions.count() > 0:
             latest_action = bill_with_latest_action.actions.latest("date")
@@ -64,11 +61,8 @@ def total_bills_per_session(bills, chamber):
 
         # Earliest Action
         bill_with_earliest_action = bills.filter(
-            from_organization=chamber,
-            actions__date__isnull=False
-        ).earliest(
-            "actions__date"
-        )
+            from_organization=chamber, actions__date__isnull=False
+        ).earliest("actions__date")
         # In case bills don't have actions
         if bill_with_earliest_action.actions.count() > 0:
             earliest_action = bill_with_earliest_action.actions.earliest("date")
@@ -230,7 +224,7 @@ def vote_data(bills, chamber):
         votes__votes=None
     )
     for b in bills_with_votes_with_voters:
-        for vote_object in b.votes.all():
+        for vote_object in b.votes.all().prefetch_related("counts", "votes"):
             total_yes = 0
             total_no = 0
 
@@ -285,6 +279,7 @@ def write_json_to_file(filename, data):
 
 
 def create_dqr(state, session):
+    print(f"creating report for {state} {session}")
     bills = load_bills(state, session)
     chambers = get_chambers_from_abbr(state)
     for chamber in chambers:
