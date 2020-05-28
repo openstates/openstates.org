@@ -39,6 +39,7 @@ def get_available_sessions(state):
 
 def total_bills_per_session(bills, chamber):
 
+    print("Generating bills per session")
     total_bills = bills.filter(from_organization=chamber).count()
     # Set variables to empty strings in case any info is blank
     latest_bill_created_date = ""
@@ -82,6 +83,7 @@ def total_bills_per_session(bills, chamber):
 
 
 def average_number_data(bills, chamber):
+    print("Generating average num data")
     average_num_data = defaultdict(list)
 
     total_sponsorships_per_bill = []
@@ -164,6 +166,7 @@ def average_number_data(bills, chamber):
 
 
 def no_sources(bills, chamber):
+    print("Generating no source data")
     no_sources_data = defaultdict(list)
     total_bills_no_sources = bills.filter(
         from_organization=chamber, sources=None
@@ -179,6 +182,7 @@ def no_sources(bills, chamber):
 
 
 def bill_subjects(bills, chamber):
+    print("Generating bill subject data")
     bill_subjects_data = defaultdict(list)
     overall_number_of_subjects = (
         bills.distinct("subject").values_list("subject", flat=True).count()
@@ -201,6 +205,7 @@ def bill_subjects(bills, chamber):
 
 
 def bills_versions(bills, chamber):
+    print("Generating bills version data")
     bill_version_data = defaultdict(list)
     bills_without_versions = bills.filter(
         from_organization=chamber, versions=None
@@ -210,6 +215,7 @@ def bills_versions(bills, chamber):
 
 
 def vote_data(bills, chamber):
+    print("Generating vote data")
     bill_vote_data = defaultdict(list)
     # votes without any voters
     total_votes_without_voters = (
@@ -279,10 +285,10 @@ def write_json_to_file(filename, data):
 
 
 def create_dqr(state, session):
-    print(f"creating report for {state} {session}")
     bills = load_bills(state, session)
     chambers = get_chambers_from_abbr(state)
     for chamber in chambers:
+        print("\n\n", f"creating report for {chamber} in {state} {session}")
         if bills.filter(from_organization=chamber).count() > 0:
             bills_per_session_data = total_bills_per_session(bills, chamber)
 
