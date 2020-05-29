@@ -58,7 +58,7 @@ def total_bills_per_session(bills, chamber):
         latest_action_date = bill_queries["test_latest_action_date"]
         earliest_action_date = bill_queries["test_earliest_action_date"]
 
-        # latest_bill_created_date = latest_action_date[:10]
+        latest_bill_created_date = latest_action_date[:10]
         latest_bill_created_date = datetime.datetime.strptime(
             latest_bill_created_date, "%Y-%m-%d"
         )
