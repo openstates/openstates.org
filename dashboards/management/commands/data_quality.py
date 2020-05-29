@@ -255,34 +255,20 @@ def vote_data(bills, chamber):
         votes__votes=None
     )
     for b in bills_with_votes_with_voters:
-        for vote_object in b.votes.all().prefetch_related("counts", "votes"):
+        for vote_object in b.votes.all():
             total_yes = 0
             total_no = 0
 
             voter_count_yes = 0
             voter_count_no = 0
-            voter_count_absent = 0
-            voter_count_excused = 0
-            voter_not_voting = 0
-            voter_count_other = 0
 
-            vote_counts = vote_object.counts.all()
-            # votes = vote_object.votes.all()
+            voter_count_query = vote_object.counts.aggregate(
+                total_yes=Sum('value', filter=Q(option="yes")),
+                total_no=Sum('value', filter=Q(option="no")),
+            )
 
-            # voter_count_query = vote_object.counts.aggregate(
-            #     total_yes=Sum('value', filter=Q(option="yes")),
-            #     total_no=Sum('value', filter=Q(option="no")),
-            # )
-
-            # total_yes = voter_count_query["total_yes"]
-            # total_no = voter_count_query["total_no"]
-
-            # Parsing through vote_counts
-            for count in vote_counts:
-                if "yes" == count.option:
-                    total_yes = count.value
-                elif "no" == count.option:
-                    total_no = count.value
+            total_yes = voter_count_query["total_yes"]
+            total_no = voter_count_query["total_no"]
 
             voter_query = vote_object.votes.aggregate(
                 voter_count_yes=Count("pk", filter=Q(option="yes")),
@@ -292,23 +278,6 @@ def vote_data(bills, chamber):
             voter_count_yes = voter_query["voter_count_yes"]
             voter_count_no = voter_query["voter_count_no"]
 
-
-            # Parsing through voters and adding up their votes
-            # for voter in votes:
-                # if voter.option == "yes":
-                #     voter_count_yes += 1
-                # elif voter.option == "no":
-                #     voter_count_no += 1
-                # elif voter.option == "absent":
-                #     voter_count_absent += 1
-                # elif voter.option == "excused":
-                #     voter_count_excused += 1
-                # elif voter.option == "abstain":
-                #     voter_not_voting += 1
-                # elif voter.option == "not voting":
-                #     voter_not_voting += 1
-                # elif voter.option == "other":
-                #     voter_count_other += 1
             # Checking to see if votes and vote counts match
             if (voter_count_yes != 0 and voter_count_yes != total_yes) or (
                 voter_count_no != 0 and voter_count_no != total_no
