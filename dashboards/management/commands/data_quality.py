@@ -47,32 +47,16 @@ def total_bills_per_session(bills, chamber):
     latest_action_date = ""
     earliest_action_date = ""
     if total_bills > 0:
-        latest_bill = bills.filter(from_organization=chamber).latest("created_at")
-        latest_bill_created_date = latest_bill.created_at
-        bill_with_latest_action = bills.filter(
-            from_organization=chamber, actions__date__isnull=False
-        ).latest("actions__date")
-        # In case bills don't have actions
-        if bill_with_latest_action.actions.count() > 0:
-            latest_action = bill_with_latest_action.actions.latest("date")
-            latest_action_date = latest_action.date[:10]
-            latest_action_date = datetime.datetime.strptime(
-                latest_action_date, "%Y-%m-%d"
-            )
-            latest_action_date = pytz.UTC.localize(latest_action_date)
 
-        # Earliest Action
-        bill_with_earliest_action = bills.filter(
-            from_organization=chamber, actions__date__isnull=False
-        ).earliest("actions__date")
-        # In case bills don't have actions
-        if bill_with_earliest_action.actions.count() > 0:
-            earliest_action = bill_with_earliest_action.actions.earliest("date")
-            earliest_action_date = earliest_action.date[:10]
-            earliest_action_date = datetime.datetime.strptime(
-                earliest_action_date, "%Y-%m-%d"
-            )
-            earliest_action_date = pytz.UTC.localize(earliest_action_date)
+        bill_queries = bills.filter(from_organization=chamber).aggregate(
+            test_latest_bill_created=Min("created_at"),
+            test_latest_action_date=Max("actions__date"),
+            test_earliest_action_date=Min("actions__date"),
+        )
+
+        latest_bill_created_date = bill_queries["test_earliest_action_date"]
+        latest_action_date = bill_queries["test_latest_action_date"]
+        earliest_action_date = bill_queries["test_earliest_action_date"]
 
     total_bills_per_session = {
         "total_bills": total_bills,
