@@ -98,29 +98,29 @@ def average_number_data(bills, chamber):
     min_versions_per_bill = 0
     max_versions_per_bill = 0
 
-    test = bills.aggregate(Count("sponsorships"))
+    # test = bills.aggregate(Count("sponsorships"))
     # test_max = round(max(test))
-    test_bills = bills.filter(from_organization=chamber).annotate(
-        tot_sponsorships=Count("sponsorships"),
-        tot_actions=Count("actions"),
-        tot_documents=Count("documents"),
-        tot_versions=Count("versions"),
-        tot_votes=Count("votes"),
-    )
+    # test_bills = bills.filter(from_organization=chamber).annotate(
+    #     tot_sponsorships=Count("sponsorships"),
+    #     tot_actions=Count("actions"),
+    #     tot_documents=Count("documents"),
+    #     tot_versions=Count("versions"),
+    #     tot_votes=Count("votes"),
+    # )
 
-    # for bill in bills.filter(from_organization=chamber):
-    #     total_sponsorships_per_bill.append(bill.sponsorships.count())
-    #     total_actions_per_bill.append(bill.actions.count())
-    #     total_votes_per_bill.append(bill.votes.count())
-    #     total_documents_per_bill.append(bill.documents.count())
-    #     total_versions_per_bill.append(bill.versions.count())
+    for bill in bills.filter(from_organization=chamber):
+        total_sponsorships_per_bill.append(bill.sponsorships.count())
+        total_actions_per_bill.append(bill.actions.count())
+        total_votes_per_bill.append(bill.votes.count())
+        total_documents_per_bill.append(bill.documents.count())
+        total_versions_per_bill.append(bill.versions.count())
 
-    for bill in test_bills:
-        total_sponsorships_per_bill.append(bill.tot_sponsorships)
-        total_actions_per_bill.append(bill.tot_actions)
-        total_votes_per_bill.append(bill.tot_votes)
-        total_documents_per_bill.append(bill.tot_documents)
-        total_versions_per_bill.append(bill.tot_versions)
+    # for bill in test_bills:
+    #     total_sponsorships_per_bill.append(bill.tot_sponsorships)
+    #     total_actions_per_bill.append(bill.tot_actions)
+    #     total_votes_per_bill.append(bill.tot_votes)
+    #     total_documents_per_bill.append(bill.tot_documents)
+    #     total_versions_per_bill.append(bill.tot_versions)
 
     if total_sponsorships_per_bill:
         average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
