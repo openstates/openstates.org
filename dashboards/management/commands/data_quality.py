@@ -10,7 +10,7 @@ import pytz
 from collections import defaultdict
 from statistics import mean
 from dashboards.models import DataQualityReport
-from django.db.models import Avg, Max, Min, Count
+from django.db.models import Avg, Max, Min, Count, Sum, Q
 
 
 # Loads the global bill array with all bills from given state and session to use
@@ -57,6 +57,25 @@ def total_bills_per_session(bills, chamber):
         latest_bill_created_date = bill_queries["test_earliest_action_date"]
         latest_action_date = bill_queries["test_latest_action_date"]
         earliest_action_date = bill_queries["test_earliest_action_date"]
+
+        # latest_bill_created_date = latest_action_date[:10]
+        latest_bill_created_date = datetime.datetime.strptime(
+            latest_bill_created_date, "%Y-%m-%d"
+        )
+        latest_bill_created_date = pytz.UTC.localize(latest_bill_created_date)
+
+        if latest_action_date:
+            latest_action_date = latest_action_date[:10]
+            latest_action_date = datetime.datetime.strptime(
+                latest_action_date, "%Y-%m-%d"
+            )
+            latest_action_date = pytz.UTC.localize(latest_action_date)
+        if earliest_action_date:
+            earliest_action_date = earliest_action_date[:10]
+            earliest_action_date = datetime.datetime.strptime(
+                earliest_action_date, "%Y-%m-%d"
+            )
+            earliest_action_date = pytz.UTC.localize(earliest_action_date)
 
     total_bills_per_session = {
         "total_bills": total_bills,
@@ -249,12 +268,23 @@ def vote_data(bills, chamber):
 
             vote_counts = vote_object.counts.all()
             votes = vote_object.votes.all()
+
+            # voter_count_query = vote_object.counts.aggregate(
+            #     total_yes=Sum('value', filter=Q(option="yes")),
+            #     total_no=Sum('value', filter=Q(option="no")),
+            # )
+
+            # total_yes = voter_count_query["total_yes"]
+            # total_no = voter_count_query["total_no"]
+
             # Parsing through vote_counts
             for count in vote_counts:
                 if "yes" == count.option:
                     total_yes = count.value
                 elif "no" == count.option:
                     total_no = count.value
+
+            # voter_query = votes.aggregate(voter_count_yes=Count())
 
             # Parsing through voters and adding up their votes
             for voter in votes:
