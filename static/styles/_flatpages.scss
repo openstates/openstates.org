@@ -132,8 +132,20 @@ input#donor-name {
   background-color: $color-yellow;
   font-weight: 600;
   padding: 1em;
+  display: none;
 }
-
+.blm-banner {
+  width: 100%;
+  text-align: center;
+  background-color: black;
+  color: white;
+  font-weight: 600;
+  padding: 1em 8em 1em 8em;
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+}
 
 .notification-banner {
   text-align: center;
