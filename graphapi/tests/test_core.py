@@ -456,6 +456,7 @@ def test_person_by_id(django_assert_num_queries):
         person(id:"%s") {
             name
             image
+            primaryParty
             identifiers { identifier }
             otherNames { name }
             links { url }
@@ -476,6 +477,7 @@ def test_person_by_id(django_assert_num_queries):
         )
     assert result.errors is None
     assert result.data["person"]["name"] == "Bob Birch"
+    assert result.data["person"]["primaryParty"] == "Republican"
     assert len(result.data["person"]["currentMemberships"]) == 2
 
     division = None
