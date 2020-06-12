@@ -4,7 +4,6 @@ from openstates.data.models import LegislativeSession, Bill
 from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 import pytz
-from collections import defaultdict
 from statistics import mean
 from dashboards.models import DataQualityReport
 from django.db.models import Max, Min, Count, Q
@@ -33,7 +32,6 @@ def clean_date(action_date):
 
 
 def total_bills_per_session(bills, chamber):
-    print("Generating bills per session")
     total_bills = bills.filter(from_organization=chamber).count()
     # Set variables to empty strings in case any info is blank
     latest_bill_created_date = ""
@@ -60,8 +58,6 @@ def total_bills_per_session(bills, chamber):
 
 
 def average_number_data(bills, chamber):
-    print("Generating average num data")
-
     total_sponsorships_per_bill = []
     total_actions_per_bill = []
     total_votes_per_bill = []
@@ -150,41 +146,32 @@ def average_number_data(bills, chamber):
 
 
 def no_sources(bills, chamber):
-    print("Generating no source data")
     qs = bills.filter(from_organization=chamber).aggregate(
         total_bills_no_sources=Count("pk", filter=Q(sources=None)),
-        total_votes_no_sources=Count("pk", filter=Q(votes__sources=None)),
+        total_votes_no_sources=Count(
+            "pk", filter=~Q(votes=None) & Q(votes__sources=None)
+        ),
     )
-    print(qs)
     return qs
 
 
 def bill_subjects(bills, chamber):
-    print("Generating bill subject data")
-    bill_subjects_data = defaultdict(list)
-    overall_number_of_subjects = (
-        bills.distinct("subject").values_list("subject", flat=True).count()
-    )
-    number_of_subjects_in_chamber = (
-        bills.filter(from_organization=chamber)
-        .distinct("subject")
-        .values_list("subject", flat=True)
-        .count()
-    )
+    all_subjs = set()
+    for subject in bills.filter(from_organization=chamber).values_list(
+        "subject", flat=True
+    ):
+        all_subjs.update(subject)
     number_of_bills_without_subjects = bills.filter(
-        from_organization=chamber, subject=None
+        from_organization=chamber, subject=[]
     ).count()
     bill_subjects_data = {
-        "overall_number_of_subjects": overall_number_of_subjects,
-        "number_of_subjects_in_chamber": number_of_subjects_in_chamber,
+        "number_of_subjects_in_chamber": len(all_subjs),
         "number_of_bills_without_subjects": number_of_bills_without_subjects,
     }
     return bill_subjects_data
 
 
 def bills_versions(bills, chamber):
-    print("Generating bills version data")
-    bill_version_data = defaultdict(list)
     bills_without_versions = bills.filter(
         from_organization=chamber, versions=None
     ).count()
@@ -193,8 +180,6 @@ def bills_versions(bills, chamber):
 
 
 def vote_data(bills, chamber):
-    print("Generating vote data")
-    bill_vote_data = defaultdict(list)
     # votes without any voters
     total_votes_without_voters = (
         bills.filter(from_organization=chamber, votes__votes=None)
@@ -257,7 +242,7 @@ def create_dqr(state, session):
     bills = load_bills(state, session)
     chambers = get_chambers_from_abbr(state)
     for chamber in chambers:
-        print("\n\n", f"creating report for {chamber} in {state} {session}")
+        print(f"creating report for {chamber} in {state} {session}")
         if bills.filter(from_organization=chamber).count() > 0:
             bills_per_session_data = total_bills_per_session(bills, chamber)
             average_num_data = average_number_data(bills, chamber)

@@ -2,7 +2,6 @@ import random
 import datetime
 import pytest
 from django.core.management import call_command
-from utils.orgs import get_chambers_from_abbr
 from openstates.data.models import (
     Division,
     Jurisdiction,
@@ -55,7 +54,8 @@ def create_bill(
     votes=0,
     versions=0,
     documents=0,
-    sources=0
+    sources=0,
+    subjects=None
 ):
     chamber = Organization.objects.get(classification=chamber)
     session = LegislativeSession.objects.get(identifier=session)
@@ -64,11 +64,14 @@ def create_bill(
         title="Random Bill",
         legislative_session=session,
         from_organization=chamber,
+        subject=subjects or [],
     )
     for n in range(sponsors):
         b.sponsorships.create(name="Someone")
     for n in range(actions):
-        b.actions.create(description="Something", order=n, organization=chamber)
+        b.actions.create(
+            description="Something", order=n, organization=chamber, date="2020-06-01"
+        )
     for n in range(votes):
         b.votes.create(
             identifier="A Vote Occurred",
@@ -151,38 +154,63 @@ def test_bills_per_session(django_assert_num_queries, kansas):
 
 @pytest.mark.django_db
 def test_no_sources(django_assert_num_queries, kansas):
-    create_bill("2020", "upper")
-    create_bill("2020", "upper", sources=1)
+    create_bill("2020", "upper", votes=1)
+    create_bill("2020", "upper", sources=1, votes=5)
 
     upper = kansas.organizations.get(classification="upper")
     bills = load_bills("KS", "2020")
 
     with django_assert_num_queries(1):
         data = no_sources(bills, upper)
-    assert data == {}
+    assert data == {"total_bills_no_sources": 1, "total_votes_no_sources": 6}
 
 
 @pytest.mark.django_db
-def test_bill_subjects_queries(django_assert_num_queries):
-    state = "AK"
-    session = "2018"
-    bills = load_bills(state, session)
-    chamber = get_chambers_from_abbr(state)[0]
-    with django_assert_num_queries(3):
-        bill_subjects(bills, chamber)
+def test_bill_subjects(django_assert_num_queries, kansas):
+    create_bill("2020", "upper", subjects=["A", "B", "C"])
+    create_bill("2020", "upper", subjects=["A", "B"])
+    create_bill("2020", "upper", subjects=[])
+
+    upper = kansas.organizations.get(classification="upper")
+    bills = load_bills("KS", "2020")
+
+    with django_assert_num_queries(2):
+        data = bill_subjects(bills, upper)
+    assert data == {
+        "number_of_bills_without_subjects": 1,
+        "number_of_subjects_in_chamber": 3,
+    }
 
 
 @pytest.mark.django_db
-def test_bill_versions_queries(django_assert_num_queries):
-    state = "AK"
-    session = "2018"
-    bills = load_bills(state, session)
-    chamber = get_chambers_from_abbr(state)[0]
+def test_bill_versions(django_assert_num_queries, kansas):
+    create_bill("2020", "upper", versions=1)
+    create_bill("2020", "upper", versions=4)
+    create_bill("2020", "upper")
+    create_bill("2020", "upper")
+
+    upper = kansas.organizations.get(classification="upper")
+    bills = load_bills("KS", "2020")
     with django_assert_num_queries(1):
-        bills_versions(bills, chamber)
+        data = bills_versions(bills, upper)
+    assert data == {"total_bills_without_versions": 2}
 
 
 @pytest.mark.django_db
-def test_total_queries(django_assert_num_queries):
+def test_total_queries(django_assert_num_queries, kansas):
+    for session in ("2019", "2020"):
+        for chamber in ("upper", "lower"):
+            create_bill(
+                session,
+                chamber,
+                sponsors=10,
+                versions=10,
+                actions=10,
+                votes=10,
+                documents=10,
+            )
+            for n in range(10):
+                create_bill(session, chamber)
+
     with django_assert_num_queries(176):
-        call_command("data_quality", "AK")
+        call_command("data_quality", "KS")
