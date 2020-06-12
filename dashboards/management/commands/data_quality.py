@@ -7,7 +7,7 @@ import pytz
 from collections import defaultdict
 from statistics import mean
 from dashboards.models import DataQualityReport
-from django.db.models import Max, Min, Count
+from django.db.models import Max, Min, Count, Q
 
 
 def load_bills(state, session):
@@ -28,7 +28,8 @@ def get_available_sessions(state):
 def clean_date(action_date):
     if isinstance(action_date, str):
         action_date = datetime.datetime.strptime(action_date[:10], "%Y-%m-%d")
-    return pytz.UTC.localize(action_date)
+    if isinstance(action_date, datetime.datetime):
+        return pytz.UTC.localize(action_date)
 
 
 def total_bills_per_session(bills, chamber):
@@ -60,7 +61,6 @@ def total_bills_per_session(bills, chamber):
 
 def average_number_data(bills, chamber):
     print("Generating average num data")
-    average_num_data = defaultdict(list)
 
     total_sponsorships_per_bill = []
     total_actions_per_bill = []
@@ -90,11 +90,11 @@ def average_number_data(bills, chamber):
     max_versions_per_bill = 0
 
     test_bills = bills.filter(from_organization=chamber).annotate(
-        tot_sponsorships=Count("sponsorships"),
-        tot_actions=Count("actions"),
-        tot_documents=Count("documents"),
-        tot_versions=Count("versions"),
-        tot_votes=Count("votes"),
+        tot_sponsorships=Count("sponsorships", distinct=True),
+        tot_actions=Count("actions", distinct=True),
+        tot_documents=Count("documents", distinct=True),
+        tot_versions=Count("versions", distinct=True),
+        tot_votes=Count("votes", distinct=True),
     )
 
     for bill in test_bills:
@@ -151,18 +151,12 @@ def average_number_data(bills, chamber):
 
 def no_sources(bills, chamber):
     print("Generating no source data")
-    no_sources_data = defaultdict(list)
-    total_bills_no_sources = bills.filter(
-        from_organization=chamber, sources=None
-    ).count()
-    total_votes_no_sources = bills.filter(
-        from_organization=chamber, votes__sources=None
-    ).count()
-    no_sources_data = {
-        "total_bills_no_sources": total_bills_no_sources,
-        "total_votes_no_sources": total_votes_no_sources,
-    }
-    return no_sources_data
+    qs = bills.filter(from_organization=chamber).aggregate(
+        total_bills_no_sources=Count("pk", filter=Q(sources=None)),
+        total_votes_no_sources=Count("pk", filter=Q(votes__sources=None)),
+    )
+    print(qs)
+    return qs
 
 
 def bill_subjects(bills, chamber):
