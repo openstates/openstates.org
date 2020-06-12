@@ -35,7 +35,6 @@ class DataQualityReport(models.Model):
     total_bills_no_sources = models.PositiveIntegerField()
     total_votes_no_sources = models.PositiveIntegerField()
 
-    overall_number_of_subjects = models.PositiveIntegerField()
     number_of_subjects_in_chamber = models.PositiveIntegerField()
     number_of_bills_without_subjects = models.PositiveIntegerField()
 
