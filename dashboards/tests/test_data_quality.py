@@ -87,6 +87,20 @@ def create_bill(
     return b
 
 
+def create_test_vote(bill, *, yes_count=0, no_count=0, yes_votes=None, no_votes=None):
+    vote = bill.votes.create(
+        identifier="test vote",
+        organization=bill.from_organization,
+        legislative_session=bill.legislative_session,
+    )
+    vote.counts.create(option="yes", value=yes_count)
+    vote.counts.create(option="no", value=no_count)
+    for name in yes_votes or []:
+        vote.votes.create(option="yes", voter_name=name)
+    for name in no_votes or []:
+        vote.votes.create(option="no", voter_name=name)
+
+
 @pytest.mark.django_db
 def test_avg_number_data(django_assert_num_queries, kansas):
     # one bill with 0 of everything, another with 10 of everything
@@ -119,13 +133,18 @@ def test_avg_number_data(django_assert_num_queries, kansas):
 @pytest.mark.django_db
 def test_vote_data(django_assert_num_queries, kansas):
     # two bills without votesr
-    create_bill("2020", "upper")
-    create_bill("2020", "upper")
+    b = create_bill("2020", "upper")
+    create_test_vote(b, yes_count=1)  # without voter
+    create_test_vote(b, yes_count=1, yes_votes=["A", "B"])  # bad count
+    b = create_bill("2020", "upper")
+    create_test_vote(b, yes_count=1)  # without voters
+    create_test_vote(b, yes_count=1, yes_votes=["A", "B"])  # bad count
+    create_test_vote(b, yes_count=2, yes_votes=["A", "B"])  # good count
+    create_test_vote(b, no_count=2, no_votes=["A"])  # bad count
     upper = kansas.organizations.get(classification="upper")
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(4):
         data = vote_data("KS", "2020", upper)
-    # TODO: restore bad counts check
-    assert data == {"total_votes_bad_counts": 0, "total_votes_without_voters": 2}
+    assert data == {"total_votes_bad_counts": 3, "total_votes_without_voters": 2}
 
 
 @pytest.mark.django_db
@@ -207,9 +226,9 @@ def test_full_command(django_assert_num_queries, kansas):
                 create_bill(session, chamber)
 
     # Unsure about the exact query count here, as lots of these queries are checkpoints, etc.
-    # but 67 for 2 sessions & 2 chambers seems OK and was stable with changing number of bills
+    # but 71 for 2 sessions & 2 chambers seems OK and was stable with changing number of bills
     # and votes
-    with django_assert_num_queries(67):
+    with django_assert_num_queries(71):
         call_command("data_quality", "KS")
 
     assert DataQualityReport.objects.count() == 4

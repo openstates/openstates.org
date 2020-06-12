@@ -1,6 +1,6 @@
 import datetime
 from django.core.management.base import BaseCommand
-from openstates.data.models import LegislativeSession, Bill
+from openstates.data.models import LegislativeSession, Bill, VoteEvent
 from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 import pytz
@@ -16,6 +16,14 @@ def bill_qs(state, session, chamber):
         from_organization=chamber,
     )
     return bills
+
+
+def vote_qs(state, session, chamber):
+    return VoteEvent.objects.filter(
+        legislative_session__jurisdiction_id=abbr_to_jid(state),
+        legislative_session__identifier=session,
+        organization=chamber,
+    )
 
 
 def get_available_sessions(state):
@@ -40,7 +48,7 @@ def total_bills_per_session(state, session, chamber):
     latest_action_date = ""
     earliest_action_date = ""
     if total_bills > 0:
-        bill_queries = bills.filter(from_organization=chamber).aggregate(
+        bill_queries = bills.aggregate(
             latest_bill_created=Min("created_at"),
             latest_action_date=Max("actions__date"),
             earliest_action_date=Min("actions__date"),
@@ -180,49 +188,27 @@ def bills_versions(state, session, chamber):
 
 
 def vote_data(state, session, chamber):
-    bills = bill_qs(state, session, chamber)
+    votes = vote_qs(state, session, chamber)
     # votes without any voters
-    total_votes_without_voters = (
-        bills.filter(votes__votes=None).values_list("votes").count()
-    )
+    total_votes_without_voters = votes.filter(votes=None).count()
     # votes (which do have voters, as to not include above category)
     #   but where yes/no count do not match actual voters
     total_votes_bad_counts = 0
 
-    # bills_with_votes_with_voters = (
-    #     bills.filter(from_organization=chamber)
-    #     .exclude(votes__votes=None)
-    #     .prefetch_related("votes", "votes__votes", "votes__counts")
-    # )
-    # for b in bills_with_votes_with_voters:
-    #     for vote_object in b.votes.all():
-    #         total_yes = 0
-    #         total_no = 0
-
-    #         voter_count_yes = 0
-    #         voter_count_no = 0
-
-    #         voter_count_query = vote_object.counts.aggregate(
-    #             total_yes=Sum('value', filter=Q(option="yes")),
-    #             total_no=Sum('value', filter=Q(option="no")),
-    #         )
-
-    #         total_yes = voter_count_query["total_yes"]
-    #         total_no = voter_count_query["total_no"]
-
-    #         voter_query = vote_object.votes.aggregate(
-    #             voter_count_yes=Count("pk", filter=Q(option="yes")),
-    #             voter_count_no=Count("pk", filter=Q(option="no"))
-    #         )
-
-    #         voter_count_yes = voter_query["voter_count_yes"]
-    #         voter_count_no = voter_query["voter_count_no"]
-
-    #         # Checking to see if votes and vote counts match
-    #         if (voter_count_yes != 0 and voter_count_yes != total_yes) or (
-    #             voter_count_no != 0 and voter_count_no != total_no
-    #         ):
-    #             total_votes_bad_counts += 1
+    votes = votes.exclude(votes=None).prefetch_related("counts", "votes")
+    for vote in votes:
+        yes_count = 0
+        no_count = 0
+        for pv in vote.votes.all():
+            if pv.option == "yes":
+                yes_count += 1
+            elif pv.option == "no":
+                no_count += 1
+        for pv in vote.counts.all():
+            if (pv.option == "yes" and pv.value != yes_count) or (
+                pv.option == "no" and pv.value != no_count
+            ):
+                total_votes_bad_counts += 1
 
     bill_vote_data = {
         "total_votes_without_voters": total_votes_without_voters,
