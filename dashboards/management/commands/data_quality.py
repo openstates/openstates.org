@@ -1,32 +1,19 @@
 import datetime
 from django.core.management.base import BaseCommand
-from openstates.data.models import (
-    LegislativeSession,
-    Bill,
-)
+from openstates.data.models import LegislativeSession, Bill
 from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
 import pytz
 from collections import defaultdict
 from statistics import mean
 from dashboards.models import DataQualityReport
-from django.db.models import Avg, Max, Min, Count, Sum, Q
+from django.db.models import Max, Min, Count
 
 
-# Loads the global bill array with all bills from given state and session to use
 def load_bills(state, session):
     bills = Bill.objects.filter(
         legislative_session__jurisdiction_id=abbr_to_jid(state),
         legislative_session__identifier=session,
-    ).prefetch_related(
-        "actions",
-        "sponsorships",
-        "votes",
-        "votes__counts",
-        "sources",
-        "documents",
-        "versions",
-        "votes__votes",
     )
     return bills
 
@@ -38,8 +25,13 @@ def get_available_sessions(state):
     )
 
 
-def total_bills_per_session(bills, chamber):
+def clean_date(action_date):
+    if isinstance(action_date, str):
+        action_date = datetime.datetime.strptime(action_date[:10], "%Y-%m-%d")
+    return pytz.UTC.localize(action_date)
 
+
+def total_bills_per_session(bills, chamber):
     print("Generating bills per session")
     total_bills = bills.filter(from_organization=chamber).count()
     # Set variables to empty strings in case any info is blank
@@ -47,35 +39,15 @@ def total_bills_per_session(bills, chamber):
     latest_action_date = ""
     earliest_action_date = ""
     if total_bills > 0:
-
         bill_queries = bills.filter(from_organization=chamber).aggregate(
-            test_latest_bill_created=Min("created_at"),
-            test_latest_action_date=Max("actions__date"),
-            test_earliest_action_date=Min("actions__date"),
+            latest_bill_created=Min("created_at"),
+            latest_action_date=Max("actions__date"),
+            earliest_action_date=Min("actions__date"),
         )
 
-        latest_bill_created_date = bill_queries["test_earliest_action_date"]
-        latest_action_date = bill_queries["test_latest_action_date"]
-        earliest_action_date = bill_queries["test_earliest_action_date"]
-
-        latest_bill_created_date = latest_action_date[:10]
-        latest_bill_created_date = datetime.datetime.strptime(
-            latest_bill_created_date, "%Y-%m-%d"
-        )
-        latest_bill_created_date = pytz.UTC.localize(latest_bill_created_date)
-
-        if latest_action_date:
-            latest_action_date = latest_action_date[:10]
-            latest_action_date = datetime.datetime.strptime(
-                latest_action_date, "%Y-%m-%d"
-            )
-            latest_action_date = pytz.UTC.localize(latest_action_date)
-        if earliest_action_date:
-            earliest_action_date = earliest_action_date[:10]
-            earliest_action_date = datetime.datetime.strptime(
-                earliest_action_date, "%Y-%m-%d"
-            )
-            earliest_action_date = pytz.UTC.localize(earliest_action_date)
+        latest_bill_created_date = bill_queries["latest_bill_created"]
+        latest_action_date = clean_date(bill_queries["latest_action_date"])
+        earliest_action_date = clean_date(bill_queries["earliest_action_date"])
 
     total_bills_per_session = {
         "total_bills": total_bills,
@@ -117,34 +89,25 @@ def average_number_data(bills, chamber):
     min_versions_per_bill = 0
     max_versions_per_bill = 0
 
-    # test = bills.aggregate(Count("sponsorships"))
-    # test_max = round(max(test))
-    # test_bills = bills.filter(from_organization=chamber).annotate(
-    #     tot_sponsorships=Count("sponsorships"),
-    #     tot_actions=Count("actions"),
-    #     tot_documents=Count("documents"),
-    #     tot_versions=Count("versions"),
-    #     tot_votes=Count("votes"),
-    # )
+    test_bills = bills.filter(from_organization=chamber).annotate(
+        tot_sponsorships=Count("sponsorships"),
+        tot_actions=Count("actions"),
+        tot_documents=Count("documents"),
+        tot_versions=Count("versions"),
+        tot_votes=Count("votes"),
+    )
 
-    for bill in bills.filter(from_organization=chamber):
-        total_sponsorships_per_bill.append(bill.sponsorships.count())
-        total_actions_per_bill.append(bill.actions.count())
-        total_votes_per_bill.append(bill.votes.count())
-        total_documents_per_bill.append(bill.documents.count())
-        total_versions_per_bill.append(bill.versions.count())
-
-    # for bill in test_bills:
-    #     total_sponsorships_per_bill.append(bill.tot_sponsorships)
-    #     total_actions_per_bill.append(bill.tot_actions)
-    #     total_votes_per_bill.append(bill.tot_votes)
-    #     total_documents_per_bill.append(bill.tot_documents)
-    #     total_versions_per_bill.append(bill.tot_versions)
+    for bill in test_bills:
+        total_sponsorships_per_bill.append(bill.tot_sponsorships)
+        total_actions_per_bill.append(bill.tot_actions)
+        total_votes_per_bill.append(bill.tot_votes)
+        total_documents_per_bill.append(bill.tot_documents)
+        total_versions_per_bill.append(bill.tot_versions)
 
     if total_sponsorships_per_bill:
         average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
-        min_sponsors_per_bill = round(min(total_actions_per_bill))
-        max_sponsors_per_bill = round(max(total_actions_per_bill))
+        min_sponsors_per_bill = round(min(total_sponsorships_per_bill))
+        max_sponsors_per_bill = round(max(total_sponsorships_per_bill))
 
     if total_actions_per_bill:
         average_actions_per_bill = round(mean(total_actions_per_bill))
@@ -170,19 +133,15 @@ def average_number_data(bills, chamber):
         "average_sponsors_per_bill": average_sponsors_per_bill,
         "min_sponsors_per_bill": min_sponsors_per_bill,
         "max_sponsors_per_bill": max_sponsors_per_bill,
-
         "average_actions_per_bill": average_actions_per_bill,
         "min_actions_per_bill": min_actions_per_bill,
         "max_actions_per_bill": max_actions_per_bill,
-
         "average_votes_per_bill": average_votes_per_bill,
         "min_votes_per_bill": min_votes_per_bill,
         "max_votes_per_bill": max_votes_per_bill,
-
         "average_documents_per_bill": average_documents_per_bill,
         "min_documents_per_bill": min_documents_per_bill,
         "max_documents_per_bill": max_documents_per_bill,
-
         "average_versions_per_bill": average_versions_per_bill,
         "min_versions_per_bill": min_versions_per_bill,
         "max_versions_per_bill": max_versions_per_bill,
@@ -251,38 +210,42 @@ def vote_data(bills, chamber):
     # votes (which do have voters, as to not include above category)
     #   but where yes/no count do not match actual voters
     total_votes_bad_counts = 0
-    bills_with_votes_with_voters = bills.filter(from_organization=chamber).exclude(
-        votes__votes=None
-    )
-    for b in bills_with_votes_with_voters:
-        for vote_object in b.votes.all():
-            total_yes = 0
-            total_no = 0
 
-            voter_count_yes = 0
-            voter_count_no = 0
+    # bills_with_votes_with_voters = (
+    #     bills.filter(from_organization=chamber)
+    #     .exclude(votes__votes=None)
+    #     .prefetch_related("votes", "votes__votes", "votes__counts")
+    # )
+    # for b in bills_with_votes_with_voters:
+    #     for vote_object in b.votes.all():
+    #         total_yes = 0
+    #         total_no = 0
 
-            voter_count_query = vote_object.counts.aggregate(
-                total_yes=Sum('value', filter=Q(option="yes")),
-                total_no=Sum('value', filter=Q(option="no")),
-            )
+    #         voter_count_yes = 0
+    #         voter_count_no = 0
 
-            total_yes = voter_count_query["total_yes"]
-            total_no = voter_count_query["total_no"]
+    #         voter_count_query = vote_object.counts.aggregate(
+    #             total_yes=Sum('value', filter=Q(option="yes")),
+    #             total_no=Sum('value', filter=Q(option="no")),
+    #         )
 
-            voter_query = vote_object.votes.aggregate(
-                voter_count_yes=Count("pk", filter=Q(option="yes")),
-                voter_count_no=Count("pk", filter=Q(option="no"))
-            )
+    #         total_yes = voter_count_query["total_yes"]
+    #         total_no = voter_count_query["total_no"]
 
-            voter_count_yes = voter_query["voter_count_yes"]
-            voter_count_no = voter_query["voter_count_no"]
+    #         voter_query = vote_object.votes.aggregate(
+    #             voter_count_yes=Count("pk", filter=Q(option="yes")),
+    #             voter_count_no=Count("pk", filter=Q(option="no"))
+    #         )
 
-            # Checking to see if votes and vote counts match
-            if (voter_count_yes != 0 and voter_count_yes != total_yes) or (
-                voter_count_no != 0 and voter_count_no != total_no
-            ):
-                total_votes_bad_counts += 1
+    #         voter_count_yes = voter_query["voter_count_yes"]
+    #         voter_count_no = voter_query["voter_count_no"]
+
+    #         # Checking to see if votes and vote counts match
+    #         if (voter_count_yes != 0 and voter_count_yes != total_yes) or (
+    #             voter_count_no != 0 and voter_count_no != total_no
+    #         ):
+    #             total_votes_bad_counts += 1
+
     bill_vote_data = {
         "total_votes_without_voters": total_votes_without_voters,
         "total_votes_bad_counts": total_votes_bad_counts,
@@ -303,7 +266,6 @@ def create_dqr(state, session):
         print("\n\n", f"creating report for {chamber} in {state} {session}")
         if bills.filter(from_organization=chamber).count() > 0:
             bills_per_session_data = total_bills_per_session(bills, chamber)
-
             average_num_data = average_number_data(bills, chamber)
             bill_version_data = bills_versions(bills, chamber)
             no_sources_data = no_sources(bills, chamber)
