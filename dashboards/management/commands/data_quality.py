@@ -9,10 +9,11 @@ from dashboards.models import DataQualityReport
 from django.db.models import Max, Min, Count, Q
 
 
-def load_bills(state, session):
+def bill_qs(state, session, chamber):
     bills = Bill.objects.filter(
         legislative_session__jurisdiction_id=abbr_to_jid(state),
         legislative_session__identifier=session,
+        from_organization=chamber,
     )
     return bills
 
@@ -31,8 +32,9 @@ def clean_date(action_date):
         return pytz.UTC.localize(action_date)
 
 
-def total_bills_per_session(bills, chamber):
-    total_bills = bills.filter(from_organization=chamber).count()
+def total_bills_per_session(state, session, chamber):
+    bills = bill_qs(state, session, chamber)
+    total_bills = bills.count()
     # Set variables to empty strings in case any info is blank
     latest_bill_created_date = ""
     latest_action_date = ""
@@ -57,7 +59,8 @@ def total_bills_per_session(bills, chamber):
     return total_bills_per_session
 
 
-def average_number_data(bills, chamber):
+def average_number_data(state, session, chamber):
+    bills = bill_qs(state, session, chamber)
     total_sponsorships_per_bill = []
     total_actions_per_bill = []
     total_votes_per_bill = []
@@ -85,7 +88,7 @@ def average_number_data(bills, chamber):
     min_versions_per_bill = 0
     max_versions_per_bill = 0
 
-    test_bills = bills.filter(from_organization=chamber).annotate(
+    test_bills = bills.annotate(
         tot_sponsorships=Count("sponsorships", distinct=True),
         tot_actions=Count("actions", distinct=True),
         tot_documents=Count("documents", distinct=True),
@@ -145,8 +148,9 @@ def average_number_data(bills, chamber):
     return average_num_data
 
 
-def no_sources(bills, chamber):
-    qs = bills.filter(from_organization=chamber).aggregate(
+def no_sources(state, session, chamber):
+    bills = bill_qs(state, session, chamber)
+    qs = bills.aggregate(
         total_bills_no_sources=Count("pk", filter=Q(sources=None)),
         total_votes_no_sources=Count(
             "pk", filter=~Q(votes=None) & Q(votes__sources=None)
@@ -155,15 +159,12 @@ def no_sources(bills, chamber):
     return qs
 
 
-def bill_subjects(bills, chamber):
+def bill_subjects(state, session, chamber):
     all_subjs = set()
-    for subject in bills.filter(from_organization=chamber).values_list(
-        "subject", flat=True
-    ):
+    bills = bill_qs(state, session, chamber)
+    for subject in bills.values_list("subject", flat=True):
         all_subjs.update(subject)
-    number_of_bills_without_subjects = bills.filter(
-        from_organization=chamber, subject=[]
-    ).count()
+    number_of_bills_without_subjects = bills.filter(subject=[]).count()
     bill_subjects_data = {
         "number_of_subjects_in_chamber": len(all_subjs),
         "number_of_bills_without_subjects": number_of_bills_without_subjects,
@@ -171,20 +172,18 @@ def bill_subjects(bills, chamber):
     return bill_subjects_data
 
 
-def bills_versions(bills, chamber):
-    bills_without_versions = bills.filter(
-        from_organization=chamber, versions=None
-    ).count()
+def bills_versions(state, session, chamber):
+    bills = bill_qs(state, session, chamber)
+    bills_without_versions = bills.filter(versions=None).count()
     bill_version_data = {"total_bills_without_versions": bills_without_versions}
     return bill_version_data
 
 
-def vote_data(bills, chamber):
+def vote_data(state, session, chamber):
+    bills = bill_qs(state, session, chamber)
     # votes without any voters
     total_votes_without_voters = (
-        bills.filter(from_organization=chamber, votes__votes=None)
-        .values_list("votes")
-        .count()
+        bills.filter(votes__votes=None).values_list("votes").count()
     )
     # votes (which do have voters, as to not include above category)
     #   but where yes/no count do not match actual voters
@@ -233,25 +232,19 @@ def vote_data(bills, chamber):
     return bill_vote_data
 
 
-def write_json_to_file(filename, data):
-    with open(filename, "w") as file:
-        file.write(data)
-
-
 def create_dqr(state, session):
-    bills = load_bills(state, session)
     chambers = get_chambers_from_abbr(state)
     for chamber in chambers:
         print(f"creating report for {chamber} in {state} {session}")
-        if bills.filter(from_organization=chamber).count() > 0:
-            bills_per_session_data = total_bills_per_session(bills, chamber)
-            average_num_data = average_number_data(bills, chamber)
-            bill_version_data = bills_versions(bills, chamber)
-            no_sources_data = no_sources(bills, chamber)
-            bill_subjects_data = bill_subjects(bills, chamber)
-            bill_vote_data = vote_data(bills, chamber)
+        if bill_qs(state, session, chamber).count() > 0:
+            bills_per_session_data = total_bills_per_session(state, session, chamber)
+            average_num_data = average_number_data(state, session, chamber)
+            bill_version_data = bills_versions(state, session, chamber)
+            no_sources_data = no_sources(state, session, chamber)
+            bill_subjects_data = bill_subjects(state, session, chamber)
+            bill_vote_data = vote_data(state, session, chamber)
 
-            # Grabbing the Legislative Session object
+            # update or save the report
             leg_session = LegislativeSession.objects.get(
                 identifier=session, jurisdiction_id=abbr_to_jid(state)
             )

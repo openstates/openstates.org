@@ -10,13 +10,13 @@ from openstates.data.models import (
     Bill,
 )
 from dashboards.management.commands.data_quality import (
-    load_bills,
     average_number_data,
     vote_data,
     total_bills_per_session,
     no_sources,
     bill_subjects,
     bills_versions,
+    DataQualityReport,
 )
 
 
@@ -95,9 +95,8 @@ def test_avg_number_data(django_assert_num_queries, kansas):
         "2020", "upper", sponsors=10, versions=10, actions=10, votes=10, documents=10
     )
     upper = kansas.organizations.get(classification="upper")
-    bills = load_bills("KS", "2020")
     with django_assert_num_queries(1):
-        data = average_number_data(bills, upper)
+        data = average_number_data("KS", "2020", upper)
     assert data == {
         "average_actions_per_bill": 5,
         "average_documents_per_bill": 5,
@@ -122,10 +121,9 @@ def test_vote_data(django_assert_num_queries, kansas):
     # two bills without votesr
     create_bill("2020", "upper")
     create_bill("2020", "upper")
-    bills = load_bills("KS", "2020")
     upper = kansas.organizations.get(classification="upper")
     with django_assert_num_queries(1):
-        data = vote_data(bills, upper)
+        data = vote_data("KS", "2020", upper)
     # TODO: restore bad counts check
     assert data == {"total_votes_bad_counts": 0, "total_votes_without_voters": 2}
 
@@ -142,9 +140,8 @@ def test_bills_per_session(django_assert_num_queries, kansas):
         description="First", order=1, organization=upper, date="2020-11-01"
     )
 
-    bills = load_bills("KS", "2020")
     with django_assert_num_queries(2):
-        data = total_bills_per_session(bills, upper)
+        data = total_bills_per_session("KS", "2020", upper)
     assert len(data) == 4
     assert data["total_bills"] == 1
     assert data["earliest_action_date"].month == 1
@@ -158,10 +155,9 @@ def test_no_sources(django_assert_num_queries, kansas):
     create_bill("2020", "upper", sources=1, votes=5)
 
     upper = kansas.organizations.get(classification="upper")
-    bills = load_bills("KS", "2020")
 
     with django_assert_num_queries(1):
-        data = no_sources(bills, upper)
+        data = no_sources("KS", "2020", upper)
     assert data == {"total_bills_no_sources": 1, "total_votes_no_sources": 6}
 
 
@@ -172,10 +168,9 @@ def test_bill_subjects(django_assert_num_queries, kansas):
     create_bill("2020", "upper", subjects=[])
 
     upper = kansas.organizations.get(classification="upper")
-    bills = load_bills("KS", "2020")
 
     with django_assert_num_queries(2):
-        data = bill_subjects(bills, upper)
+        data = bill_subjects("KS", "2020", upper)
     assert data == {
         "number_of_bills_without_subjects": 1,
         "number_of_subjects_in_chamber": 3,
@@ -190,14 +185,13 @@ def test_bill_versions(django_assert_num_queries, kansas):
     create_bill("2020", "upper")
 
     upper = kansas.organizations.get(classification="upper")
-    bills = load_bills("KS", "2020")
     with django_assert_num_queries(1):
-        data = bills_versions(bills, upper)
+        data = bills_versions("KS", "2020", upper)
     assert data == {"total_bills_without_versions": 2}
 
 
 @pytest.mark.django_db
-def test_total_queries(django_assert_num_queries, kansas):
+def test_full_command(django_assert_num_queries, kansas):
     for session in ("2019", "2020"):
         for chamber in ("upper", "lower"):
             create_bill(
@@ -206,11 +200,16 @@ def test_total_queries(django_assert_num_queries, kansas):
                 sponsors=10,
                 versions=10,
                 actions=10,
-                votes=10,
+                votes=100,
                 documents=10,
             )
-            for n in range(10):
+            for n in range(100):
                 create_bill(session, chamber)
 
-    with django_assert_num_queries(176):
+    # Unsure about the exact query count here, as lots of these queries are checkpoints, etc.
+    # but 67 for 2 sessions & 2 chambers seems OK and was stable with changing number of bills
+    # and votes
+    with django_assert_num_queries(67):
         call_command("data_quality", "KS")
+
+    assert DataQualityReport.objects.count() == 4
