@@ -164,7 +164,7 @@ def legislator_list(request, geo=False):
 
     people = person_qs().filter(*filter_params).distinct()
 
-    return JsonResponse([convert_legislator(l) for l in people], safe=False)
+    return JsonResponse([convert_legislator(leg) for leg in people], safe=False)
 
 
 @api_method

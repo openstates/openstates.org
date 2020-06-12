@@ -8,9 +8,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ("data", "0009_auto_20200429_0913"),
-    ]
+    dependencies = [("data", "0009_auto_20200429_0913")]
 
     operations = [
         migrations.CreateModel(
@@ -61,5 +59,5 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-        ),
+        )
     ]
