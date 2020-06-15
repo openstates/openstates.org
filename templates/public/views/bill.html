@@ -99,8 +99,11 @@
                 <div class="grid-x grid-margin-x medium-up-2 large-up-3">
                     {% for sponsor in sponsorships|dictsortreversed:"primary" %}
                     <div class="cell">
-                        <div class="card card--profile">
-                            {% if sponsor.person %}
+
+
+                        {% if sponsor.person %}
+                          <a href="{% canonical_url sponsor.person %}">
+                              <div class="card card--profile">
 
                                 <div class="mr1" data-hook="legislator-image" data-image="{{ sponsor.person.image }}" data-person-id="{{ sponsor.person.id }}"> </div>
                                     <div>
@@ -117,7 +120,10 @@
                                         </ul>
                                         <div class="heading--xsmall">{{ sponsor.classification|title }}</div>
                                     </div>
+                              </div>
+                              </a>
                             {% else %}
+                              <div class="card card--profile">
                                 <div class="thumbnail thumbnail--placeholder thumbnail--small mr1"></div>
                                 <div>
                                     <h3 class="card__heading heading--small">{{ sponsor.name }}</h3>
@@ -126,8 +132,8 @@
                                     </ul>
                                     <div class="heading--xsmall">{{ sponsor.classification|title }}</div>
                                 </div>
+                              </div>
                             {% endif %}
-                        </div>
                     </div>
                     {% endfor %}
                     <!-- TODO: Paginate/hide lengthier lists of sponsors -->
