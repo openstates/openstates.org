@@ -15,17 +15,16 @@
     </p>
 {% endif %}
 
+<a href="{% canonical_url vote %}">
 <div class="card">
     <div>
         <div class="flex-container align-justify">
             <h3 class="heading--small">
-                <a href="{% canonical_url vote %}">
                     {% if vote.legislator_vote %}
                     {{ vote.bill.identifier }}
                     {% else %}
                     {{ vote.motion_text }}
                     {% endif %}
-                </a>
             </h3>
             <span class="label
                 {% if vote.result == 'pass' %}
@@ -47,3 +46,4 @@
         {% endif %}
     </div>
 </div>
+</a>
