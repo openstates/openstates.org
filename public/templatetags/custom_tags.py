@@ -96,7 +96,7 @@ def party_noun(party_name):
 
 @register.filter()
 def district_maybe(district):
-    if str(district)[0] in "0123456789":
+    if district and str(district)[0] in "0123456789":
         return "District"
     else:
         return ""
