@@ -1,6 +1,4 @@
 const path = require("path")
-const BundleTracker = require('webpack-bundle-tracker')
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const output_dir = 'static/bundles'
 
@@ -16,7 +14,12 @@ module.exports = {
   },
   output: {
     path: path.resolve(output_dir),
-    filename: "[name]-[hash].js",
+    publicPath: "/static/",
+    filename: "[name].js",
+    chunkFilename: "[id]-[chunkhash].js",
+  },
+  devServer: {
+    writeToDisk: true
   },
   module: {
     rules: [
@@ -52,8 +55,4 @@ module.exports = {
       }
     ],
   },
-  plugins: [
-    new BundleTracker({filename: './webpack-stats.json'}),
-    new CleanWebpackPlugin([output_dir], {watch: true})
-  ],
 }
