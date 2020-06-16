@@ -119,7 +119,9 @@ export default class LegislatorList extends React.Component {
               .map(b => (
                 <tr key={b.id}>
                   <td>
-                    <LegislatorImage id={b.id} image={b.image} party={b.current_role.party} />
+                    <a href={b.pretty_url}>
+                      <LegislatorImage id={b.id} image={b.image} party={b.current_role.party} />
+                    </a>
                   </td>
                   <td>
                     <a href={b.pretty_url}>{b.name}</a>
