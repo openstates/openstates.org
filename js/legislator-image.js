@@ -42,7 +42,7 @@ export default class LegislatorImage extends React.Component {
           alt="headshot for legislator"
           onError={() => component.setState({ url: null })}
         />
-      )
+      );
     }
     return (
       <div

@@ -14,9 +14,14 @@ div.about-openstates {
     }
 }
 div.partner-org {
-  display: grid;
-  a { justify-self: center; }
-  img { height: 150px; padding-bottom: 0.5rem; }
+    display: grid;
+    a {
+        justify-self: center;
+    }
+    img {
+        height: 150px;
+        padding-bottom: 0.5rem;
+    }
 }
 
 div.registration-field input {
@@ -61,64 +66,63 @@ input#donor-name {
 
 // about/subscriptions/
 .subscriptions-howto {
-  display: grid;
-  grid-template-columns: auto;
-  grid-column-gap: 5em;
-  grid-row-gap: 2em;
+    display: grid;
+    grid-template-columns: auto;
+    grid-column-gap: 5em;
+    grid-row-gap: 2em;
 
-  @include breakpoint(large) {
-      grid-template-columns: auto auto;
-  }
-
-  img { 
-    border: 2px solid $color-primary;
-    transition: transform .5s;
-  }
-  img:hover {
     @include breakpoint(large) {
-      transform: scale(2);
+        grid-template-columns: auto auto;
     }
-  }
-  figcaption {
-    text-align: center;
-  }
+
+    img {
+        border: 2px solid $color-primary;
+        transition: transform 0.5s;
+    }
+    img:hover {
+        @include breakpoint(large) {
+            transform: scale(2);
+        }
+    }
+    figcaption {
+        text-align: center;
+    }
 }
 
 // homepage
 #homepage-section {
-  margin-top: 2rem;
+    margin-top: 2rem;
 }
 .homepage-hero {
-  width: 100%;
-  text-align: center;
-
+    width: 100%;
+    text-align: center;
 }
 
 .site-alert {
-  color: $color-red;
+    color: $color-red;
 }
 
 .homepage-grid {
-  padding-top: 4rem;
-  display: grid;
-  grid-template-columns: auto;
-  grid-column-gap: 3rem;
-  @include breakpoint(medium) {
-      grid-template-columns: 1fr 1fr;
-  }
+    padding-top: 4rem;
+    display: grid;
+    grid-template-columns: auto;
+    grid-column-gap: 3rem;
+    @include breakpoint(medium) {
+        grid-template-columns: 1fr 1fr;
+    }
 
-  img {
-    height: 100px;
-  }
+    img {
+        height: 100px;
+    }
 }
 
 .fyl-row {
-  display: grid;
-  grid-template-columns: auto;
+    display: grid;
+    grid-template-columns: auto;
 
-  @include breakpoint(medium) {
-      grid-template-columns: auto auto;
-  }
+    @include breakpoint(medium) {
+        grid-template-columns: auto auto;
+    }
 }
 
 .blog-date {
@@ -127,45 +131,53 @@ input#donor-name {
 }
 
 .donation-banner {
-  width: 100%;
-  text-align: center;
-  background-color: $color-yellow;
-  font-weight: 600;
-  padding: 1em;
-  display: none;
+    width: 100%;
+    text-align: center;
+    background-color: $color-yellow;
+    font-weight: 600;
+    padding: 1em;
+    display: none;
 }
 .blm-banner {
-  width: 100%;
-  text-align: center;
-  background-color: black;
-  color: white;
-  font-weight: 600;
-  padding: 1em 8em 1em 8em;
-  a {
+    width: 100%;
+    text-align: center;
+    background-color: black;
     color: white;
-    text-decoration: underline;
-  }
+    font-weight: 600;
+    padding: 1em 8em 1em 8em;
+    a {
+        color: white;
+        text-decoration: underline;
+    }
 }
 
 .notification-banner {
-  text-align: center;
-  border-radius: 3px;
-  margin: 1em;
-  padding: 1em;
-  font-weight: 600;
+    text-align: center;
+    border-radius: 3px;
+    margin: 1em;
+    padding: 1em;
+    font-weight: 600;
 
-  li {
-    list-style: none;
-    padding: 0.3rem 0 0.3rem 0;
-  }
-  li.info { background-color: $color-gray; }
-  li.success { background-color: $color-green; }
-  li.warning { background-color: $color-yellow; }
-  li.error { background-color: $color-red; color: white; }
+    li {
+        list-style: none;
+        padding: 0.3rem 0 0.3rem 0;
+    }
+    li.info {
+        background-color: $color-gray;
+    }
+    li.success {
+        background-color: $color-green;
+    }
+    li.warning {
+        background-color: $color-yellow;
+    }
+    li.error {
+        background-color: $color-red;
+        color: white;
+    }
 }
 
-
-dd { 
-  padding-left: 1rem;
-  padding-bottom: 0.5rem;
+dd {
+    padding-left: 1rem;
+    padding-bottom: 0.5rem;
 }

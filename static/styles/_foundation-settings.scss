@@ -60,7 +60,7 @@
 //  55. Top Bar
 //  56. Xy Grid
 
-@import '~foundation-sites/scss/util/util';
+@import "~foundation-sites/scss/util/util";
 
 // 1. Global
 // ---------
@@ -69,11 +69,11 @@ $global-font-size: 100%;
 $global-width: rem-calc(1200);
 $global-lineheight: 1.5;
 $foundation-palette: (
-  primary: $color-primary,
-  secondary: $color-secondary,
-  success: #3adb76,
-  warning: #ffae00,
-  alert: #cc4b37,
+    primary: $color-primary,
+    secondary: $color-secondary,
+    success: #3adb76,
+    warning: #ffae00,
+    alert: #cc4b37,
 );
 $light-gray: $color-gray-light;
 $medium-gray: $color-gray;
@@ -82,7 +82,8 @@ $black: $color-black;
 $white: $color-white;
 $body-background: $white;
 $body-font-color: $black;
-$body-font-family: $source-sans-pro, 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
+$body-font-family: $source-sans-pro, "Helvetica Neue", Helvetica, Roboto, Arial,
+    sans-serif;
 $body-antialiased: true;
 $global-margin: 1rem;
 $global-padding: 1rem;
@@ -105,11 +106,11 @@ $print-transparent-backgrounds: true;
 // --------------
 
 $breakpoints: (
-  small: 0,
-  medium: 640px,
-  large: 1024px,
-  xlarge: 1200px,
-  xxlarge: 1440px,
+    small: 0,
+    medium: 640px,
+    large: 1024px,
+    xlarge: 1200px,
+    xxlarge: 1440px,
 );
 $print-breakpoint: large;
 $breakpoint-classes: (small medium large);
@@ -120,11 +121,11 @@ $breakpoint-classes: (small medium large);
 $grid-row-width: $global-width;
 $grid-column-count: 12;
 $grid-column-gutter: (
-  small: 20px,
-  medium: 30px,
+    small: 20px,
+    medium: 30px,
 );
 $grid-column-align-edge: true;
-$grid-column-alias: 'columns';
+$grid-column-alias: "columns";
 $block-grid-max: 8;
 
 // 4. Base Typography
@@ -133,27 +134,51 @@ $block-grid-max: 8;
 $header-font-family: $body-font-family;
 $header-font-weight: $global-weight-normal;
 $header-font-style: normal;
-$font-family-monospace: Consolas, 'Liberation Mono', Courier, monospace;
+$font-family-monospace: Consolas, "Liberation Mono", Courier, monospace;
 $header-color: inherit;
 $header-lineheight: 1.4;
 $header-margin-bottom: 0.5rem;
 $header-styles: (
-  small: (
-    'h1': ('font-size': 24),
-    'h2': ('font-size': 20),
-    'h3': ('font-size': 19),
-    'h4': ('font-size': 18),
-    'h5': ('font-size': 17),
-    'h6': ('font-size': 16),
-  ),
-  medium: (
-    'h1': ('font-size': 48),
-    'h2': ('font-size': 40),
-    'h3': ('font-size': 31),
-    'h4': ('font-size': 25),
-    'h5': ('font-size': 20),
-    'h6': ('font-size': 16),
-  ),
+    small: (
+        "h1": (
+            "font-size": 24,
+        ),
+        "h2": (
+            "font-size": 20,
+        ),
+        "h3": (
+            "font-size": 19,
+        ),
+        "h4": (
+            "font-size": 18,
+        ),
+        "h5": (
+            "font-size": 17,
+        ),
+        "h6": (
+            "font-size": 16,
+        ),
+    ),
+    medium: (
+        "h1": (
+            "font-size": 48,
+        ),
+        "h2": (
+            "font-size": 40,
+        ),
+        "h3": (
+            "font-size": 31,
+        ),
+        "h4": (
+            "font-size": 25,
+        ),
+        "h5": (
+            "font-size": 20,
+        ),
+        "h6": (
+            "font-size": 16,
+        ),
+    ),
 );
 $header-text-rendering: optimizeLegibility;
 $small-font-size: 80%;
@@ -188,7 +213,7 @@ $blockquote-padding: rem-calc(9 20 0 19);
 $blockquote-border: 1px solid $medium-gray;
 $cite-font-size: rem-calc(13);
 $cite-color: $dark-gray;
-$cite-pseudo-content: '\2014 \0020';
+$cite-pseudo-content: "\2014 \0020";
 $keystroke-font: $font-family-monospace;
 $keystroke-color: $black;
 $keystroke-background: $light-gray;
@@ -271,8 +296,8 @@ $breadcrumbs-item-color-disabled: $medium-gray;
 $breadcrumbs-item-margin: 0.75rem;
 $breadcrumbs-item-uppercase: true;
 $breadcrumbs-item-separator: true;
-$breadcrumbs-item-separator-item: '/';
-$breadcrumbs-item-separator-item-rtl: '\\';
+$breadcrumbs-item-separator-item: "/";
+$breadcrumbs-item-separator-item-rtl: "\\";
 $breadcrumbs-item-separator-color: $medium-gray;
 
 // 11. Button
@@ -289,10 +314,10 @@ $button-color-alt: $black;
 $button-radius: $global-radius;
 $button-hollow-border-width: $global-border-width;
 $button-sizes: (
-  tiny: 0.6rem,
-  small: 0.75rem,
-  default: 0.9rem,
-  large: 1.25rem,
+    tiny: 0.6rem,
+    small: 0.75rem,
+    default: 0.9rem,
+    large: 1.25rem,
 );
 $button-palette: $foundation-palette;
 $button-opacity-disabled: 0.25;
@@ -306,7 +331,7 @@ $button-responsive-expanded: false;
 
 $buttongroup-margin: 1rem;
 $buttongroup-spacing: -$global-border-width;
-$buttongroup-child-selector: '.button';
+$buttongroup-child-selector: ".button";
 $buttongroup-expand-max: 6;
 $buttongroup-radius-on-each: false;
 
@@ -340,16 +365,16 @@ $card-margin-bottom: $global-margin;
 
 $closebutton-position: right top;
 $closebutton-offset-horizontal: (
-  small: 0.66rem,
-  medium: 1rem,
+    small: 0.66rem,
+    medium: 1rem,
 );
 $closebutton-offset-vertical: (
-  small: 0.33em,
-  medium: 0.5rem,
+    small: 0.33em,
+    medium: 0.5rem,
 );
 $closebutton-size: (
-  small: 1.5em,
-  medium: 2em,
+    small: 1.5em,
+    medium: 2em,
 );
 $closebutton-lineheight: 1;
 $closebutton-color: $dark-gray;
@@ -378,9 +403,9 @@ $dropdown-font-size: 1rem;
 $dropdown-width: 300px;
 $dropdown-radius: $global-radius;
 $dropdown-sizes: (
-  tiny: 100px,
-  small: 200px,
-  large: 400px,
+    tiny: 100px,
+    small: 200px,
+    large: 400px,
 );
 
 // 18. Dropdown Menu
@@ -495,10 +520,10 @@ $meter-fill-bad: $alert-color;
 // --------------
 
 $offcanvas-sizes: (
-  small: 250px,
+    small: 250px,
 );
 $offcanvas-vertical-sizes: (
-  small: 250px,
+    small: 250px,
 );
 $offcanvas-background: $light-gray;
 $offcanvas-shadow: 0 0 10px rgba($black, 0.7);
@@ -512,7 +537,7 @@ $offcanvas-transition-length: 0.5s;
 $offcanvas-transition-timing: ease;
 $offcanvas-fixed-reveal: true;
 $offcanvas-exit-background: rgba($white, 0.25);
-$maincontent-class: 'off-canvas-content';
+$maincontent-class: "off-canvas-content";
 
 // 26. Orbit
 // ---------
@@ -559,12 +584,7 @@ $progress-radius: $global-radius;
 // 29. Prototype Arrow
 // -------------------
 
-$prototype-arrow-directions: (
-  down,
-  up,
-  right,
-  left
-);
+$prototype-arrow-directions: (down, up, right, left);
 $prototype-arrow-size: 0.4375rem;
 $prototype-arrow-color: $black;
 
@@ -590,13 +610,7 @@ $prototype-border-color: $medium-gray;
 // ---------------------
 
 $prototype-display-breakpoints: $global-prototype-breakpoints;
-$prototype-display: (
-  inline,
-  inline-block,
-  block,
-  table,
-  table-cell
-);
+$prototype-display: (inline, inline-block, block, table, table-cell);
 
 // 34. Prototype Font-Styling
 // --------------------------
@@ -610,41 +624,28 @@ $prototype-font-bold: $global-weight-bold;
 // -----------------------------
 
 $prototype-list-breakpoints: $global-prototype-breakpoints;
-$prototype-style-type-unordered: (
-  disc,
-  circle,
-  square
-);
+$prototype-style-type-unordered: (disc, circle, square);
 $prototype-style-type-ordered: (
-  decimal,
-  lower-alpha,
-  lower-latin,
-  lower-roman,
-  upper-alpha,
-  upper-latin,
-  upper-roman
+    decimal,
+    lower-alpha,
+    lower-latin,
+    lower-roman,
+    upper-alpha,
+    upper-latin,
+    upper-roman
 );
 
 // 36. Prototype Overflow
 // ----------------------
 
 $prototype-overflow-breakpoints: $global-prototype-breakpoints;
-$prototype-overflow: (
-  visible,
-  hidden,
-  scroll
-);
+$prototype-overflow: (visible, hidden, scroll);
 
 // 37. Prototype Position
 // ----------------------
 
 $prototype-position-breakpoints: $global-prototype-breakpoints;
-$prototype-position: (
-  static,
-  relative,
-  absolute,
-  fixed
-);
+$prototype-position: (static, relative, absolute, fixed);
 $prototype-position-z-index: 975;
 
 // 38. Prototype Rounded
@@ -667,22 +668,19 @@ $prototype-separator-margin-top: $global-margin;
 // --------------------
 
 $prototype-shadow-breakpoints: $global-prototype-breakpoints;
-$prototype-box-shadow: 0 2px 5px 0 rgba(0,0,0,.16),
-                       0 2px 10px 0 rgba(0,0,0,.12);
+$prototype-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+    0 2px 10px 0 rgba(0, 0, 0, 0.12);
 
 // 41. Prototype Sizing
 // --------------------
 
 $prototype-sizing-breakpoints: $global-prototype-breakpoints;
-$prototype-sizing: (
-  width,
-  height
-);
+$prototype-sizing: (width, height);
 $prototype-sizes: (
-  25: 25%,
-  50: 50%,
-  75: 75%,
-  100: 100%
+    25: 25%,
+    50: 50%,
+    75: 75%,
+    100: 100%,
 );
 
 // 42. Prototype Spacing
@@ -695,21 +693,13 @@ $prototype-spacers-count: 3;
 // -----------------------------
 
 $prototype-decoration-breakpoints: $global-prototype-breakpoints;
-$prototype-text-decoration: (
-  overline,
-  underline,
-  line-through,
-);
+$prototype-text-decoration: (overline, underline, line-through);
 
 // 44. Prototype Text-Transformation
 // ---------------------------------
 
 $prototype-transformation-breakpoints: $global-prototype-breakpoints;
-$prototype-text-transformation: (
-  lowercase,
-  uppercase,
-  capitalize
-);
+$prototype-text-transformation: (lowercase, uppercase, capitalize);
 
 // 45. Prototype Text-Utilities
 // ----------------------------
@@ -722,8 +712,8 @@ $prototype-text-overflow: ellipsis;
 
 $responsive-embed-margin-bottom: rem-calc(16);
 $responsive-embed-ratios: (
-  default: 4 by 3,
-  widescreen: 16 by 9,
+    default: 4 by 3,
+    widescreen: 16 by 9,
 );
 
 // 47. Reveal
@@ -777,7 +767,10 @@ $table-border: 0;
 $table-padding: rem-calc(8 10 10);
 $table-hover-scale: 2%;
 $table-row-hover: $color-gray-lighter;
-$table-row-stripe-hover: darken($table-background, $table-color-scale + $table-hover-scale);
+$table-row-stripe-hover: darken(
+    $table-background,
+    $table-color-scale + $table-hover-scale
+);
 $table-is-striped: false;
 $table-striped-background: smart-scale($table-background, $table-color-scale);
 $table-stripe: even;
@@ -860,11 +853,10 @@ $xy-grid: true;
 $grid-container: $global-width;
 $grid-columns: 12;
 $grid-margin-gutters: (
-  small: 20px,
-  medium: 30px
+    small: 20px,
+    medium: 30px,
 );
 $grid-padding-gutters: $grid-margin-gutters;
 $grid-container-padding: $grid-padding-gutters;
 $grid-container-max: $global-width;
 $xy-block-grid-max: 8;
-

@@ -1,7 +1,7 @@
 @import "fonts";
 @import "settings";
 @import "foundation-settings";
-@import '~foundation-sites/scss/foundation';
+@import "~foundation-sites/scss/foundation";
 @import "~mapbox-gl/dist/mapbox-gl.css";
 
 // Foundation Components
@@ -45,33 +45,32 @@
 @include foundation-flex-classes;
 
 // Components
-@import 'typography';
-@import 'components/buttons';
-@import 'components/labels';
-@import 'components/cards';
-@import 'components/overviews';
-@import 'components/timeline';
-@import 'components/header';
-@import 'components/footer';
-@import 'components/tables';
-@import 'components/thumbnails';
-@import 'components/meters';
-@import 'components/inputs';
-@import 'components/sidebar';
+@import "typography";
+@import "components/buttons";
+@import "components/labels";
+@import "components/cards";
+@import "components/overviews";
+@import "components/timeline";
+@import "components/header";
+@import "components/footer";
+@import "components/tables";
+@import "components/thumbnails";
+@import "components/meters";
+@import "components/inputs";
+@import "components/sidebar";
 
 // View-Specific
-@import 'accounts';
-@import 'stats';
-@import 'legislators';
-@import 'flatpages';
-@import 'state';
-@import 'votes';
+@import "accounts";
+@import "stats";
+@import "legislators";
+@import "flatpages";
+@import "state";
+@import "votes";
 
 // Utilities
-@import 'utilities/colors';
-@import 'utilities/measure';
-@import 'utilities/spacing';
-
+@import "utilities/colors";
+@import "utilities/measure";
+@import "utilities/spacing";
 
 // Styleguide
-@import 'styleguide';
+@import "styleguide";
