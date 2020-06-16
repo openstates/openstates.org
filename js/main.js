@@ -1,4 +1,4 @@
-import "../styles/app.scss";
+import "../static/styles/app.scss";
 
 // polyfills (IE 11)
 import "url-search-params-polyfill";
