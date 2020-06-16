@@ -5,9 +5,6 @@ import "url-search-params-polyfill";
 import "promise-polyfill/src/polyfill";
 import "whatwg-fetch";
 
-import React from "react";
-import ReactDOM from "react-dom";
-
 function addBanner(content) {
   var div = document.createElement("div");
   div.className = "notification-banner";
