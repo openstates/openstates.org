@@ -17,19 +17,28 @@ export default class LegislatorImage extends React.Component {
 
   render() {
     const component = this;
-    const modifier = this.props.size === "medium" ? "mr1" : "thumbnail--small";
+    const modifier = this.props.size === "medium" ? "" : "thumbnail--small";
+    const containerModifier = this.props.size === "medium" ? "--medium mr1" : "--small";
+    let containerColor = "#ffdd03f";
+    if(this.props.party === "Democratic") {
+      containerColor = "#00abff";
+    } else if (this.props.party == "Republican") {
+      containerColor = "#9e0e44";
+    }
     if (!this.state.url) {
       return (
         <div className={"thumbnail thumbnail--placeholder " + modifier}></div>
       );
     } else {
       return (
+        <div className={"thumbnail-container" + containerModifier } style={{backgroundColor: containerColor}}>
         <img
           className={"thumbnail " + modifier}
           src={this.state.url}
           alt="headshot for legislator"
           onError={() => component.setState({ url: null })}
         />
+        </div>
       );
     }
   }

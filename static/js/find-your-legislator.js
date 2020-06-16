@@ -222,7 +222,7 @@ export default class FindYourLegislator extends React.Component {
     const rows = this.state.legislators.map(leg => (
       <tr key={leg.name}>
         <td>
-          <LegislatorImage id={leg.id} image={leg.image} />
+          <LegislatorImage id={leg.id} image={leg.image} party={leg.party} />
         </td>
         <td>
           <a href={leg.pretty_url}>{leg.name}</a>

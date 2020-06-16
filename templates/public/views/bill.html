@@ -105,7 +105,7 @@
                           <a href="{% canonical_url sponsor.person %}">
                               <div class="card card--profile">
 
-                                <div class="mr1" data-hook="legislator-image" data-image="{{ sponsor.person.image }}" data-person-id="{{ sponsor.person.id }}"> </div>
+                                <div class="mr1" data-hook="legislator-image" data-image="{{ sponsor.person.image }}" data-person-id="{{ sponsor.person.id }}" data-party="{{sponsor.person.current_role.party }}"> </div>
                                     <div>
                                         <h3 class="card__heading heading--small">{{ sponsor.person.name }}</h3>
                                         <ul class="card__detail-group">

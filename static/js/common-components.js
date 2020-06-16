@@ -23,6 +23,7 @@ window.addEventListener("load", () => {
         image: img.getAttribute("data-image"),
         id: img.getAttribute("data-person-id"),
         size: img.getAttribute("data-size"),
+        party: img.getAttribute("data-party"),
       }),
       img
     );
