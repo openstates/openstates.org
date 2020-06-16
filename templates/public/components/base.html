@@ -1,6 +1,5 @@
 {% load custom_tags %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
 <html>
@@ -36,7 +35,6 @@
         <meta name="msapplication-config" content="{% static 'images/favicon/browserconfig.xml?v=20190106' %}">
         <meta name="theme-color" content="#ffffff">
 
-        {% render_bundle 'main' 'css' %}
         {% block styles %}
         {% endblock %}
     </head>
@@ -53,7 +51,7 @@
         </div>
 
         {% include "./footer.html" %}
-        {% render_bundle 'main' 'js' %}
+        <script src="{% static "bundles/main.js" %}"></script>
         {% block scripts %}
         {% endblock %}
     </body>

@@ -1,11 +1,9 @@
 {% extends "public/components/base.html" %}
-{% load render_bundle from webpack_loader %}
 {% load custom_tags %}
+{% load static %}
+
 {% block scripts %}
-    {% render_bundle 'dashboards' 'js' %}
-{% endblock %}
-{% block styles %}
-    {% render_bundle 'dashboards' 'css' %}
+  <script src="{% static "bundles/dashboards.js" %}"></script>
 {% endblock %}
 
 {% block content %}
