@@ -29,3 +29,7 @@ table {
 tr.row--align-top {
     vertical-align: top;
 }
+
+.td-link, .td-link:hover, .td-link:visited {
+  color: inherit;
+}

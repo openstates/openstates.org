@@ -101,7 +101,7 @@
     <tbody>
       {% for p in people %}
       <tr>
-        <td><div data-hook="legislator-image" data-image="{{ p.image }}" data-person-id="{{ p.id }}" data-size="small"> </div></td>
+        <td><a href="{% canonical_url p %}"><div data-hook="legislator-image" data-image="{{ p.image }}" data-person-id="{{ p.id }}" data-size="small" data-party="{{p.current_role.party}}"> </div></a></td>
         <td><a href="{% canonical_url p %}">{{ p.name }}</a></td>
         <td>{{ p.current_role.party }}</td>
         <td>{{ p.current_role.state|upper }}</td>

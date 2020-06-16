@@ -8,7 +8,6 @@
     transition: background-color 200ms ease-in-out,
                 top 150ms ease-in-out;
 
-
     &:hover {
         background-color: darken($color-gray-lighter, 2%);
         cursor: pointer;

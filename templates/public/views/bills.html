@@ -24,10 +24,14 @@
                     {% for bill in bills %}
                         <tr class="row--align-top">
                             <td>
-                                <strong><a href="{% canonical_url bill %}">{{ bill.identifier }}</a></strong>
-                                <span class="u-color--gray">({{ bill.legislative_session.name }})</span>
-                                <br>
-                                <span>{{ bill.title|titlecase_caps }}</span>
+                                <a href="{% canonical_url bill %}">
+                                <strong>{{ bill.identifier }}</strong>
+                                </a>
+                                <a href="{% canonical_url bill %}" class="td-link">
+                                  <span class="u-color--gray">({{ bill.legislative_session.name }})</span>
+                                  <br>
+                                  <span>{{ bill.title|titlecase_caps }}</span>
+                                </a>
                             </td>
                             <td>{{ bill.first_action_date|fdate:"%b %d %Y" }}</td>
                             <td>

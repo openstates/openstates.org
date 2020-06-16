@@ -109,14 +109,14 @@ def test_bills_view_classification(client, django_assert_num_queries):
 @pytest.mark.django_db
 def test_bills_view_subject(client, django_assert_num_queries):
     with django_assert_num_queries(BILLS_QUERY_COUNT):
-        assert len(client.get(f"/ak/bills/?subjects=nature").context["bills"]) == 2
+        assert len(client.get("/ak/bills/?subjects=nature").context["bills"]) == 2
 
 
 @pytest.mark.django_db
 def test_bills_view_status(client, django_assert_num_queries):
     with django_assert_num_queries(BILLS_QUERY_COUNT):
         assert (
-            len(client.get(f"/ak/bills/?status=passed-lower-chamber").context["bills"])
+            len(client.get("/ak/bills/?status=passed-lower-chamber").context["bills"])
             == 1
         )
 
@@ -178,5 +178,5 @@ def test_vote_view(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_bills_feed(client):
-    resp = client.get(f"/ak/bills/feed/")
+    resp = client.get("/ak/bills/feed/")
     assert resp.status_code == 200

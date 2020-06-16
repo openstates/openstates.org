@@ -28,21 +28,18 @@ def dqr_listing(request):
                 # Nebraska only has one legislature
                 if abbr == "ne" or abbr == "dc":
                     lower_dashboard = dashboards.filter(
-                        session=session[0],
-                        chamber="legislature"
+                        session=session[0], chamber="legislature"
                     )[0]
                 else:
                     lower_dashboard = dashboards.filter(
-                        session=session[0],
-                        chamber="lower"
+                        session=session[0], chamber="lower"
                     )[0]
-                    if dashboards.filter(
-                        session=session[0],
-                        chamber="upper"
-                    ).count() > 0:
+                    if (
+                        dashboards.filter(session=session[0], chamber="upper").count()
+                        > 0
+                    ):
                         upper_dashboard = dashboards.filter(
-                            session=session[0],
-                            chamber="upper"
+                            session=session[0], chamber="upper"
                         )[0]
 
         state_dqr_data[abbr] = {
@@ -53,11 +50,7 @@ def dqr_listing(request):
         }
 
     return render(
-        request,
-        "dashboards/dqr_listing.html",
-        {
-            "state_dqr_data": state_dqr_data,
-        }
+        request, "dashboards/dqr_listing.html", {"state_dqr_data": state_dqr_data}
     )
 
 
@@ -79,11 +72,7 @@ def dq_overview(request, state):
         "dashboards": dashboards,
     }
 
-    return render(
-        request,
-        "dashboards/dqr_page.html",
-        context
-    )
+    return render(request, "dashboards/dqr_page.html", context)
 
 
 def dq_overview_session(request, state, session):
@@ -103,11 +92,7 @@ def dq_overview_session(request, state, session):
         "dashboards": dashboards,
     }
 
-    return render(
-        request,
-        "dashboards/dqr_page.html",
-        context
-    )
+    return render(request, "dashboards/dqr_page.html", context)
 
 
 @user_passes_test(lambda u: u.is_superuser)

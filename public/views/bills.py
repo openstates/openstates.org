@@ -190,7 +190,9 @@ def compute_bill_stages(actions, first_chamber, second_chamber):
             elif action.organization.name == second_chamber:
                 stages[2]["date"] = action.date
                 stages[2]["text"] = f"Passed {second_chamber}"
-        elif "executive-signed" in action.classification and stages[3]["date"] is None:
+        elif (
+            "executive-signature" in action.classification and stages[3]["date"] is None
+        ):
             stages[3]["date"] = action.date
             stages[3]["text"] = "Signed by Governor"
         elif "became-law" in action.classification and stages[3]["date"] is None:

@@ -23,7 +23,7 @@
     <div class="overview">
         
         <div class="overview__header">
-            <div data-hook="legislator-image" data-image="{{ person.image }}" data-person-id="{{ person.id }}" data-size="medium"> </div>
+          <div data-hook="legislator-image" data-image="{{ person.image }}" data-person-id="{{ person.id }}" data-size="medium" data-party="{{ person.current_role.party }}"> </div>
             <div>
                 <h1 class="overview__heading">{{ person.name }}</h1>
                 <ul class="card__detail-group">
@@ -33,7 +33,7 @@
                     <li class="card__detail type--xsmall">{{ state|state_name }}</li>
                     <li class="card__detail type--xsmall">{{ person.current_role.role }}</li>
                     <li class="card__detail type--xsmall">{{ person.current_role.party|party_noun }}</li>
-                    <li class="card__detail type--xsmall">{{ district_maybe }} {{ person.current_role.district }}</a></li>
+                    <li class="card__detail type--xsmall">{{ person.current_role.district|district_maybe }} {{ person.current_role.district }}</a></li>
                     {% endif %}
                 </ul>
             </div>

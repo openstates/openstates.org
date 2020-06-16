@@ -152,6 +152,7 @@ class PersonNode(OCDBaseNode):
     # not used: gender, summary, national_identity, biography
     birth_date = graphene.String()
     death_date = graphene.String()
+    primary_party = graphene.String()
 
     # related objects
     identifiers = graphene.List(IdentifierNode)
