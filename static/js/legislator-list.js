@@ -79,6 +79,16 @@ export default class LegislatorList extends React.Component {
     history.pushState(null, "", relativePath);
   }
 
+  getSortArrowFor(field) {
+    // render an arrow for field if it is currently used to sort
+    // otherwise return nothing
+    console.log(field, this.state.orderBy, this.state.order);
+    if(field === this.state.orderBy) {
+      return this.state.order === "asc" ? "↓" : "↑";
+    }
+    return "";
+  }
+
   render() {
     return (
       <div>
@@ -91,16 +101,22 @@ export default class LegislatorList extends React.Component {
           <thead>
             <tr>
               <th></th>
-              <th onClick={() => this.setSortOrder("name")}>Name</th>
+              <th onClick={() => this.setSortOrder("name")}>
+                Name
+                  {this.getSortArrowFor("name")}
+              </th>
               <th onClick={() => this.setSortOrder("current_role.party")}>
                 Party
+                  {this.getSortArrowFor("current_role.party")}
               </th>
               <th onClick={() => this.setSortOrder("current_role.district")}>
                 District
+                  {this.getSortArrowFor("current_role.district")}
               </th>
               {this.props.chambers.lower && (
                 <th onClick={() => this.setSortOrder("current_role.chamber")}>
                   Chamber
+                  {this.getSortArrowFor("current_role.chamber")}
                 </th>
               )}
             </tr>
