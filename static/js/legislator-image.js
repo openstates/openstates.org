@@ -27,7 +27,9 @@ export default class LegislatorImage extends React.Component {
     }
     if (!this.state.url) {
       return (
-        <div className={"thumbnail thumbnail--placeholder " + modifier}></div>
+        <div className={"thumbnail-container" + containerModifier } style={{backgroundColor: containerColor}}>
+          <div className={"thumbnail thumbnail--placeholder " + modifier}></div>
+        </div>
       );
     } else {
       return (
