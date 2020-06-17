@@ -136,7 +136,6 @@ input#donor-name {
     background-color: $color-yellow;
     font-weight: 600;
     padding: 1em;
-    display: none;
 }
 .blm-banner {
     width: 100%;
@@ -144,7 +143,7 @@ input#donor-name {
     background-color: black;
     color: white;
     font-weight: 600;
-    padding: 1em 8em 1em 8em;
+    padding: 1em 2em 1em 2em;
     a {
         color: white;
         text-decoration: underline;
