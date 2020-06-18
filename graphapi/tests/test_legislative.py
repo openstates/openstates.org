@@ -647,3 +647,23 @@ def test_bill_fts():
     assert result.errors is None
     bills = [n["node"] for n in result.data["bills"]["edges"]]
     assert len(bills) == 1
+
+
+@pytest.mark.django_db
+def test_bills_order(django_assert_num_queries):
+    with django_assert_num_queries(2):
+        result = schema.execute(
+            """ {
+            ak: bills(jurisdiction:"Alaska", first: 50) {
+                edges { node { updatedAt } }
+            }
+        }"""
+        )
+    assert result.errors is None
+    assert len(result.data["ak"]["edges"]) == 12
+    # ensure updatedAt order is decreasing
+    for i in range(11):
+        assert (
+            result.data["ak"]["edges"][i]["node"]["updatedAt"]
+            > result.data["ak"]["edges"][i + 1]["node"]["updatedAt"]
+        )

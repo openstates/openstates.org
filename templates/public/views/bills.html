@@ -17,8 +17,16 @@
                 <thead>
                     <tr>
                         <th>Bill Title</th>
-                        <th width="100">Introduced</th>
-                        <th width="250">Latest Action</th>
+                        <th width="100">
+                          <a href="{{ first_action_sort_url }}">
+                            Introduced{{ first_action_arrow }}
+                          </a>
+                        </th>
+                        <th width="250">
+                          <a href="{{ latest_action_sort_url }}">
+                            Latest Action{{ latest_action_arrow }}
+                          </a>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
