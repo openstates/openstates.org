@@ -8,6 +8,7 @@
 {% block content %}
 <section class="section">
     <h1 class="heading--large">{{ state|state_name }} Bills</h1>
+    <h2 class="heading--small">{{ search_summary }} </h2>
 
     <div class="grid-x grid-margin-x">
         <div class="cell medium-9">
@@ -59,11 +60,11 @@
                     <label for="session">Session</label>
                     <select id="session" name="session">
                         <option value="">All Available Sessions</option>
-                        {% for session in sessions %}
-                        <option value="{{ session.identifier }}"
-                            {% if session.identifier == form.session %}selected{% endif %}
-                            {% if not session.identifier and forloop.first %}selected{% endif %}>
-                            {{ session.name }}
+                        {% for identifier, name in sessions.items %}
+                        <option value="{{ identifier }}"
+                            {% if identifier == form.session %}selected{% endif %}
+                            {% if not identifier and forloop.first %}selected{% endif %}>
+                            {{ name }}
                         </option>
                         {% endfor %}
                     </select>
@@ -129,9 +130,9 @@
                     <label for="sponsor">Sponsor</label>
                     <select id="sponsor" name="sponsor">
                         <option value="">Any sponsor</option>
-                        {% for sponsor in sponsors %}
-                        <option value="{{ sponsor.id }}" {% if sponsor.id == form.sponsor %} selected {% endif %}>
-                            {{ sponsor.name }}
+                        {% for sponsor_id, sponsor_name in sponsors.items %}
+                        <option value="{{ sponsor_id }}" {% if sponsor_id == form.sponsor %} selected {% endif %}>
+                            {{ sponsor_name }}
                         </option>
                         {% endfor %}
                     </select>

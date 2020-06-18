@@ -23,16 +23,55 @@ class Unnest(Func):
 
 
 class BillList(View):
+    def get_search_summary(self, form, sessions, chambers, sponsors):
+        summary = []
+
+        if form["classification"] and form["chamber"]:
+            summary.append(
+                f'{chambers[form["chamber"]]} {form["classification"].title()}s only'
+            )
+        elif form["classification"]:
+            summary.append(f'{form["classification"].title()}s only')
+        elif form["chamber"]:
+            summary.append(f'{chambers[form["chamber"]]} only')
+
+        if form["session"]:
+            summary.append("from " + sessions[form["session"]])
+        if form["query"]:
+            summary.append(f"matching term '{form['query']}'")
+        if form["sponsor"]:
+            summary.append(f"sponsored by {sponsors[form['sponsor']]}")
+        if form["subjects"]:
+            summary.append(f"including subjects {', '.join(form['subjects'])}")
+
+        status_text = []
+        if "passed-lower-chamber" in form["status"]:
+            status_text.append(f"passed in the {chambers['lower']}")
+        if "passed-upper-chamber" in form["status"]:
+            status_text.append(f"passed in the {chambers['upper']}")
+        if "signed" in form["status"]:
+            status_text.append("been signed into law")
+
+        if status_text:
+            summary.append("which have " + " and ".join(status_text))
+
+        return ", ".join(summary)
+
     def get_filter_options(self, state):
         options = {}
         jid = abbr_to_jid(state)
         bills = Bill.objects.all().filter(legislative_session__jurisdiction_id=jid)
         chambers = get_chambers_from_abbr(state)
         options["chambers"] = {c.classification: c.name for c in chambers}
-        options["sessions"] = sessions_with_bills(jid)
-        options["sponsors"] = Person.objects.filter(
-            memberships__organization__jurisdiction_id=jid
-        ).distinct()
+        options["sessions"] = {s.identifier: s.name for s in sessions_with_bills(jid)}
+        options["sponsors"] = {
+            p.id: p.name
+            for p in Person.objects.filter(
+                memberships__organization__jurisdiction_id=jid
+            )
+            .order_by("name")
+            .distinct()
+        }
         options["classifications"] = sorted(
             bills.annotate(type=Unnest("classification", distinct=True))
             .values_list("type", flat=True)
@@ -110,6 +149,12 @@ class BillList(View):
             "form": form,
         }
         context.update(self.get_filter_options(state))
+        context["search_summary"] = self.get_search_summary(
+            context["form"],
+            context["sessions"],
+            context["chambers"],
+            context["sponsors"],
+        )
 
         return render(request, "public/views/bills.html", context)
 
