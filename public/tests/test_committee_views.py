@@ -30,6 +30,7 @@ def setup():
         Membership.objects.create(person=p, organization=w)
 
 
+@pytest.mark.skip("committees view is disabled for now")
 @pytest.mark.django_db
 def test_committees_view(client, django_assert_num_queries):
     with django_assert_num_queries(3):

@@ -154,12 +154,11 @@ input#donor-name {
     text-align: center;
     border-radius: 3px;
     margin: 1em;
-    padding: 1em;
     font-weight: 600;
 
     li {
         list-style: none;
-        padding: 0.3rem 0 0.3rem 0;
+        padding: 0.3em 0 0.3em 0;
     }
     li.info {
         background-color: $color-gray;

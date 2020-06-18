@@ -5,6 +5,8 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views import View
+from django.utils.safestring import mark_safe
+from django.contrib import messages
 from openstates.data.models import (
     Membership,
     Bill,
@@ -193,6 +195,14 @@ class BillList(View):
             context["chambers"],
             context["sponsors"],
         )
+
+        if request.user.is_anonymous:
+            messages.success(
+                request,
+                mark_safe(
+                    '<a href="/accounts/signup/">Sign up</a> today to track legislation for free!'
+                ),
+            )
 
         return render(request, "public/views/bills.html", context)
 
