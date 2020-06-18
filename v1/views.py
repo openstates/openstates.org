@@ -2,7 +2,7 @@ import pytz
 import datetime
 import functools
 from django.http import JsonResponse
-from django.db.models import Max, Min, Q, Prefetch
+from django.db.models import Max, Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
 from openstates.data.models import (
@@ -54,21 +54,17 @@ def jurisdictions_qs():
 
 
 def bill_qs(include_votes):
-    qs = (
-        Bill.objects.annotate(
-            last_action=Max("actions__date"), first_action=Min("actions__date")
-        )
-        .select_related("legislative_session__jurisdiction", "from_organization")
-        .prefetch_related(
-            "documents__links",
-            "versions__links",
-            "actions__organization",
-            "abstracts",
-            "sources",
-            "sponsorships",
-            "other_titles",
-            "legacy_mapping",
-        )
+    qs = Bill.objects.select_related(
+        "legislative_session__jurisdiction", "from_organization"
+    ).prefetch_related(
+        "documents__links",
+        "versions__links",
+        "actions__organization",
+        "abstracts",
+        "sources",
+        "sponsorships",
+        "other_titles",
+        "legacy_mapping",
     )
     if include_votes:
         qs = qs.prefetch_related(
@@ -267,7 +263,7 @@ def bill_list(request):
     elif sort == "updated_at":
         bills = bills.order_by("-updated_at")
     else:
-        bills = bills.order_by("-last_action")
+        bills = bills.order_by("-latest_action_date")
 
     # pagination
     page = request.GET.get("page")
