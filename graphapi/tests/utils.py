@@ -235,7 +235,9 @@ def populate_db():
         make_random_bill("Wyoming")
 
     # populate bill computed data
-    for bill in Bill.objects.all():
+    for bill in Bill.objects.all().filter(
+        legislative_session__jurisdiction__name__in=["Alaska", "Wyoming"]
+    ):
         update_bill_fields(bill)
 
 

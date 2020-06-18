@@ -1,6 +1,6 @@
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Func, Prefetch, F
+from django.db.models import Func, Prefetch
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
@@ -16,6 +16,13 @@ from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bil
 from utils.orgs import get_chambers_from_abbr
 from utils.bills import fix_bill_id, search_bills
 from .fallback import fallback
+
+
+def replace_query_params(request, **params):
+    get = request.GET.copy()
+    for k, v in params.items():
+        get[k] = v
+    return request.path + "?" + get.urlencode()
 
 
 class Unnest(Func):
@@ -54,6 +61,7 @@ class BillList(View):
         classification = request.GET.get("classification")
         q_subjects = request.GET.getlist("subjects")
         status = request.GET.getlist("status")
+        sort = request.GET.get("sort", "-latest_action")
 
         form = {
             "query": query,
@@ -74,8 +82,8 @@ class BillList(View):
             classification=classification,
             subjects=q_subjects,
             status=status,
+            sort=sort,
         )
-        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
         return bills, form
 
@@ -103,11 +111,41 @@ class BillList(View):
         except EmptyPage:
             raise Http404()
 
+        # get sort urls & arrow
+        sort = request.GET.get("sort", "-latest_action")
+        latest_action_arrow = first_action_arrow = ""
+        if sort == "-latest_action":
+            latest_action_sort_url = replace_query_params(
+                request, sort="latest_action", page=1
+            )
+            latest_action_arrow = "\u2193"  # down
+        else:
+            latest_action_sort_url = replace_query_params(
+                request, sort="-latest_action", page=1
+            )
+            if sort == "latest_action":
+                latest_action_arrow = "\u2191"  # up
+        if sort == "-first_action":
+            first_action_sort_url = replace_query_params(
+                request, sort="first_action", page=1
+            )
+            first_action_arrow = "\u2193"  # down
+        else:
+            first_action_sort_url = replace_query_params(
+                request, sort="-first_action", page=1
+            )
+            if sort == "first_action":
+                first_action_arrow = "\u2191"  # up
+
         context = {
             "state": state,
             "state_nav": "bills",
             "bills": paginator.page(page_num),
             "form": form,
+            "latest_action_sort_url": latest_action_sort_url,
+            "first_action_sort_url": first_action_sort_url,
+            "latest_action_arrow": latest_action_arrow,
+            "first_action_arrow": first_action_arrow,
         }
         context.update(self.get_filter_options(state))
 

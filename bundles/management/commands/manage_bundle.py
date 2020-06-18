@@ -16,7 +16,7 @@ class Command(BaseCommand):
             slug=options["slug"], defaults=dict(name=options["name"])
         )
 
-        bills = list(search_bills(query=options["search"]))
+        bills = list(search_bills(query=options["search"], sort=None))
 
         for b in bills:
             bundle.bills.add(b)

@@ -2,7 +2,7 @@ import feedparser
 from collections import Counter
 from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Sum, F
+from django.db.models import Sum
 from django.http import Http404
 from django.shortcuts import render
 from openstates.data.models import Bill, Organization, Person
@@ -143,8 +143,7 @@ def site_search(request):
     bills = []
     people = []
     if query:
-        bills = search_bills(state=state, query=query)
-        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
+        bills = search_bills(state=state, query=query, sort="-latest_action")
 
         # pagination
         page_num = int(request.GET.get("page", 1))
