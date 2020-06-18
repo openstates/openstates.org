@@ -54,6 +54,7 @@ class BillList(View):
         classification = request.GET.get("classification")
         q_subjects = request.GET.getlist("subjects")
         status = request.GET.getlist("status")
+        sort = request.GET.get("sort", "-latest_action")
 
         form = {
             "query": query,
@@ -75,7 +76,15 @@ class BillList(View):
             subjects=q_subjects,
             status=status,
         )
-        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
+
+        if sort == "first_action":
+            bills = bills.order_by(F("first_action_date").asc(nulls_last=True))
+        elif sort == "-first_action":
+            bills = bills.order_by(F("first_action_date").desc(nulls_last=True))
+        elif sort == "latest_action":
+            bills = bills.order_by(F("latest_action_date").asc(nulls_last=True))
+        else:  # -latest_action, or not specified
+            bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
         return bills, form
 

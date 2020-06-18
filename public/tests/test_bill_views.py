@@ -1,11 +1,31 @@
 import pytest
 from graphapi.tests.utils import populate_db
 from openstates.data.models import Person, VoteEvent
+from testutils.factories import create_test_bill
 
 
 @pytest.mark.django_db
 def setup():
     populate_db()
+
+
+@pytest.fixture
+def sortable_bills(kansas):
+    # A's introduced first
+    # B's latest action is first
+    # C's introduced last
+    b = create_test_bill("2020", "upper", identifier="A")
+    b.first_action_date = "2020-01-01"
+    b.latest_action_date = "2020-08-01"
+    b.save()
+    b = create_test_bill("2020", "upper", identifier="B")
+    b.first_action_date = "2020-01-02"
+    b.latest_action_date = "2020-06-01"
+    b.save()
+    b = create_test_bill("2020", "upper", identifier="C")
+    b.first_action_date = "2020-07-01"
+    b.latest_action_date = "2020-07-01"
+    b.save()
 
 
 BILLS_QUERY_COUNT = 7
@@ -119,6 +139,58 @@ def test_bills_view_status(client, django_assert_num_queries):
             len(client.get("/ak/bills/?status=passed-lower-chamber").context["bills"])
             == 1
         )
+
+
+@pytest.mark.django_db
+def test_bills_view_sort_latest_action(
+    client, django_assert_num_queries, sortable_bills
+):
+    bills = client.get("/ks/bills/?sort=latest_action").context["bills"]
+    assert len(bills) == 3
+    assert bills[0].identifier == "B"
+    assert bills[1].identifier == "C"
+    assert bills[2].identifier == "A"
+    assert (
+        bills[0].last_action_date
+        < bills[1].last_action_date
+        < bills[2].last_action_date
+    )
+
+    # reverse
+    bills = client.get("/ks/bills/?sort=-latest_action").context["bills"]
+    assert bills[0].identifier == "A"
+    assert bills[1].identifier == "C"
+    assert bills[2].identifier == "B"
+
+    # no sort provided, same as -latest_action
+    bills = client.get("/ks/bills/?").context["bills"]
+    assert bills[0].identifier == "A"
+    assert bills[1].identifier == "C"
+    assert bills[2].identifier == "B"
+
+
+@pytest.mark.django_db
+def test_bills_view_sort_first_action(
+    client, django_assert_num_queries, sortable_bills
+):
+    bills = client.get("/ks/bills/?sort=first_action").context["bills"]
+    for b in bills:
+        print(b.identifier, b.first_action_date)
+    assert len(bills) == 3
+    assert bills[0].identifier == "A"
+    assert bills[1].identifier == "B"
+    assert bills[2].identifier == "C"
+    assert (
+        bills[0].first_action_date
+        < bills[1].first_action_date
+        < bills[2].first_action_date
+    )
+
+    # reverse
+    bills = client.get("/ks/bills/?sort=-first_action").context["bills"]
+    assert bills[0].identifier == "C"
+    assert bills[1].identifier == "B"
+    assert bills[2].identifier == "A"
 
 
 @pytest.mark.django_db
