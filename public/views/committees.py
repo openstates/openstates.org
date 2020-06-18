@@ -1,19 +1,21 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Q, Count, F
+from django.db.models import F
 from openstates.data.models import Organization, Person
 from utils.common import decode_uuid, pretty_url
-from utils.orgs import get_chambers_from_abbr, org_as_dict
+from utils.orgs import get_chambers_from_abbr
 
 
 def committees(request, state):
     chambers = get_chambers_from_abbr(state)
 
-    committees = [
-        org_as_dict(c)
-        for c in Organization.objects.select_related("parent")
-        .filter(Q(parent__in=chambers), classification="committee")
-        .annotate(member_count=Count("memberships", filter=Q(memberships__end_date="")))
-    ]
+    # disabling committee data so all com. pages ask for help, let's see what happens
+    committees = None
+    # [
+    # org_as_dict(c)
+    # for c in Organization.objects.select_related("parent")
+    # .filter(Q(parent__in=chambers), classification="committee")
+    # .annotate(member_count=Count("memberships", filter=Q(memberships__end_date="")))
+    # ]
     chambers = {c.classification: c.name for c in chambers}
 
     return render(
