@@ -73,6 +73,8 @@ def search_bills(
 
     if sort is None:
         pass
+    elif sort == "-updated":
+        bills = bills.order_by("-updated_at")
     elif sort == "first_action":
         bills = bills.order_by(F("first_action_date").asc(nulls_last=True))
     elif sort == "-first_action":
