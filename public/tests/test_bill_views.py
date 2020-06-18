@@ -151,9 +151,9 @@ def test_bills_view_sort_latest_action(
     assert bills[1].identifier == "C"
     assert bills[2].identifier == "A"
     assert (
-        bills[0].last_action_date
-        < bills[1].last_action_date
-        < bills[2].last_action_date
+        bills[0].latest_action_date
+        < bills[1].latest_action_date
+        < bills[2].latest_action_date
     )
 
     # reverse
