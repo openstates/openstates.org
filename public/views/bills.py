@@ -1,6 +1,6 @@
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Func, Prefetch, F
+from django.db.models import Func, Prefetch
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
@@ -75,16 +75,8 @@ class BillList(View):
             classification=classification,
             subjects=q_subjects,
             status=status,
+            sort=sort,
         )
-
-        if sort == "first_action":
-            bills = bills.order_by(F("first_action_date").asc(nulls_last=True))
-        elif sort == "-first_action":
-            bills = bills.order_by(F("first_action_date").desc(nulls_last=True))
-        elif sort == "latest_action":
-            bills = bills.order_by(F("latest_action_date").asc(nulls_last=True))
-        else:  # -latest_action, or not specified
-            bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
         return bills, form
 

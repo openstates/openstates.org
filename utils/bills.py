@@ -1,4 +1,5 @@
 import re
+from django.db.models import F
 from openstates.data.models import Bill
 from .websearchquery import WebSearchQuery as SearchQuery
 from .common import abbr_to_jid
@@ -17,6 +18,7 @@ def fix_bill_id(bill_id):
 
 def search_bills(
     *,
+    sort,
     bills=None,
     query=None,
     state=None,
@@ -25,7 +27,7 @@ def search_bills(
     sponsor=None,
     classification=None,
     subjects=None,
-    status=None
+    status=None,
 ):
     if bills is None:
         bills = Bill.objects.all().select_related(
@@ -68,5 +70,16 @@ def search_bills(
         )
     elif "signed" in status:
         bills = bills.filter(actions__classification__contains=["executive-signature"])
+
+    if sort is None:
+        pass
+    elif sort == "first_action":
+        bills = bills.order_by(F("first_action_date").asc(nulls_last=True))
+    elif sort == "-first_action":
+        bills = bills.order_by(F("first_action_date").desc(nulls_last=True))
+    elif sort == "latest_action":
+        bills = bills.order_by(F("latest_action_date").asc(nulls_last=True))
+    else:  # -latest_action, or not specified
+        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
     return bills
