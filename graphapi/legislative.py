@@ -322,6 +322,7 @@ class LegislativeQuery:
             session=session,
             classification=classification,
             subjects=subjects,
+            sort="-updated",
         )
         if updated_since:
             bills = bills.filter(updated_at__gte=updated_since)

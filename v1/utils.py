@@ -179,8 +179,8 @@ def convert_bill(b, include_votes):
         "alternate_titles": [alt.title for alt in b.other_titles.all()],
         "votes": votes,
         "action_dates": {
-            "first": expand_date(b.first_action),
-            "last": expand_date(b.last_action),
+            "first": expand_date(b.first_action_date),
+            "last": expand_date(b.latest_action_date),
             # TODO - needed?
             "passed_upper": None,
             "passed_lower": None,

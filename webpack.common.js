@@ -1,22 +1,25 @@
 const path = require("path")
-const BundleTracker = require('webpack-bundle-tracker')
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const output_dir = 'static/bundles'
 
 
 module.exports = {
   entry: {
-    main: ['babel-polyfill', './static/js/index'],
-    common_components: ['./static/js/common-components'],
-    fyl: ['./static/js/find-your-legislator'],
-    state_map: ['./static/js/state-map'],
-    district_map: ['./static/js/legislator-map'],
-    dashboards: ['./static/js/dashboards'],
+    main: ['babel-polyfill', './js/main'],
+    common_components: ['./js/common-components'],
+    fyl: ['./js/find-your-legislator'],
+    state_map: ['./js/state-map'],
+    district_map: ['./js/legislator-map'],
+    dashboards: ['./js/dashboards'],
   },
   output: {
     path: path.resolve(output_dir),
-    filename: "[name]-[hash].js",
+    publicPath: "/static/",
+    filename: "[name].js",
+    chunkFilename: "[id]-[chunkhash].js",
+  },
+  devServer: {
+    writeToDisk: true
   },
   module: {
     rules: [
@@ -52,8 +55,4 @@ module.exports = {
       }
     ],
   },
-  plugins: [
-    new BundleTracker({filename: './webpack-stats.json'}),
-    new CleanWebpackPlugin([output_dir], {watch: true})
-  ],
 }

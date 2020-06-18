@@ -1,16 +1,13 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
-{% load render_bundle from webpack_loader %}
+{% load static %}
 
 {% block title %}"{{ query }}" - Open States{% endblock %}
 {% block og_title %}{{ query }} - Open States{% endblock %}
 {% block description %}Search bills and people for {{ query }}.{% endblock %}
 
 {% block scripts %}
-    {% render_bundle 'common_components' 'js' %}
-{% endblock %}
-{% block styles %}
-    {% render_bundle 'common_components' 'css' %}
+  <script src="{% static "bundles/common_components.js" %}"></script>
 {% endblock %}
 
 {% block content %}

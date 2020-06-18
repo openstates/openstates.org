@@ -1,7 +1,6 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
 
 {% block title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.role }} - Open States{% endblock %}
 {% block og_title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.role }} - Open States{% endblock %}
@@ -9,12 +8,8 @@
 {% block og_image %}https://data.openstates.org/images/small/{{ person.id }}{% endblock %}
 
 {% block scripts %}
-    {% render_bundle 'district_map' 'js' %}
-    {% render_bundle 'common_components' 'js' %}
-{% endblock %}
-{% block styles %}
-    {% render_bundle 'district_map' 'css' %}
-    {% render_bundle 'common_components' 'css' %}
+  <script src="{% static "bundles/common_components.js" %}"></script>
+  <script src="{% static "bundles/district_map.js" %}"></script>
 {% endblock %}
 
 {% block content %}

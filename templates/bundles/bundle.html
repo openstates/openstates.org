@@ -1,18 +1,15 @@
 {% extends "public/components/base.html" %}
 {% load custom_tags %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
+
+{% block scripts %}
+  <script src="{% static "bundles/common_components.js" %}"></script>
+{% endblock %}
 
 {% block title %}{{ bundle.name }} - Open States{% endblock %}
 {% block og_title %}{{ bundle.name }} - Open States{% endblock %}
 {% block description %}{% endblock %}
 
-{% block scripts %}
-    {% render_bundle 'common_components' 'js' %}
-{% endblock %}
-{% block styles %}
-    {% render_bundle 'common_components' 'css' %}
-{% endblock %}
 
 {% block content %}
 <section class="section">

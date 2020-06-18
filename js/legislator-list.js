@@ -83,7 +83,7 @@ export default class LegislatorList extends React.Component {
     // render an arrow for field if it is currently used to sort
     // otherwise return nothing
     console.log(field, this.state.orderBy, this.state.order);
-    if(field === this.state.orderBy) {
+    if (field === this.state.orderBy) {
       return this.state.order === "asc" ? "↓" : "↑";
     }
     return "";
@@ -101,20 +101,32 @@ export default class LegislatorList extends React.Component {
           <thead>
             <tr>
               <th></th>
-              <th onClick={() => this.setSortOrder("name")} className="clickable">
+              <th
+                onClick={() => this.setSortOrder("name")}
+                className="clickable"
+              >
                 Name
-                  {this.getSortArrowFor("name")}
+                {this.getSortArrowFor("name")}
               </th>
-              <th onClick={() => this.setSortOrder("current_role.party")} className="clickable">
+              <th
+                onClick={() => this.setSortOrder("current_role.party")}
+                className="clickable"
+              >
                 Party
-                  {this.getSortArrowFor("current_role.party")}
+                {this.getSortArrowFor("current_role.party")}
               </th>
-              <th onClick={() => this.setSortOrder("current_role.district")} className="clickable">
+              <th
+                onClick={() => this.setSortOrder("current_role.district")}
+                className="clickable"
+              >
                 District
-                  {this.getSortArrowFor("current_role.district")}
+                {this.getSortArrowFor("current_role.district")}
               </th>
               {this.props.chambers.lower && (
-                <th onClick={() => this.setSortOrder("current_role.chamber")} className="clickable">
+                <th
+                  onClick={() => this.setSortOrder("current_role.chamber")}
+                  className="clickable"
+                >
                   Chamber
                   {this.getSortArrowFor("current_role.chamber")}
                 </th>
@@ -136,7 +148,11 @@ export default class LegislatorList extends React.Component {
                 <tr key={b.id}>
                   <td>
                     <a href={b.pretty_url}>
-                      <LegislatorImage id={b.id} image={b.image} party={b.current_role.party} />
+                      <LegislatorImage
+                        id={b.id}
+                        image={b.image}
+                        party={b.current_role.party}
+                      />
                     </a>
                   </td>
                   <td>

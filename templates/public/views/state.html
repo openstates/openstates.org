@@ -1,16 +1,13 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
-{% load render_bundle from webpack_loader %}
+{% load static %}
 
 {% block title %}{{ legislature.name }} - Open States{% endblock %}
 {% block og_title %}{{ legislature.name }} - Open States{% endblock %}
 {% block description %}Follow along with what is happening in the {{ legislature.name }} with Open States.{% endblock %}
 
 {% block scripts %}
-    {% render_bundle 'state_map' 'js' %}
-{% endblock %}
-{% block styles %}
-    {% render_bundle 'state_map' 'css' %}
+  <script src="{% static "bundles/state_map.js" %}"></script>
 {% endblock %}
 
 {% block content %}

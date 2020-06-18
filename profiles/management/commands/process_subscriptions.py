@@ -24,9 +24,8 @@ def process_query_sub(sub, since):
             sponsor=sub.sponsor,
             classification=sub.classification,
             status=sub.status,
-        )
-        .filter(created_at__gte=since)
-        .order_by("-latest_action_date")
+            sort="-latest_action",
+        ).filter(created_at__gte=since)
     )
     return bills
 

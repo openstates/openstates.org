@@ -1,6 +1,6 @@
 from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Func, Prefetch, F
+from django.db.models import Func, Prefetch
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.utils.feedgenerator import Rss201rev2Feed
@@ -18,21 +18,67 @@ from utils.bills import fix_bill_id, search_bills
 from .fallback import fallback
 
 
+def replace_query_params(request, **params):
+    get = request.GET.copy()
+    for k, v in params.items():
+        get[k] = v
+    return request.path + "?" + get.urlencode()
+
+
 class Unnest(Func):
     function = "UNNEST"
 
 
 class BillList(View):
+    def get_search_summary(self, form, sessions, chambers, sponsors):
+        summary = []
+
+        if form["classification"] and form["chamber"]:
+            summary.append(
+                f'{chambers[form["chamber"]]} {form["classification"].title()}s only'
+            )
+        elif form["classification"]:
+            summary.append(f'{form["classification"].title()}s only')
+        elif form["chamber"]:
+            summary.append(f'{chambers[form["chamber"]]} only')
+
+        if form["session"]:
+            summary.append("from " + sessions[form["session"]])
+        if form["query"]:
+            summary.append(f"matching term '{form['query']}'")
+        if form["sponsor"]:
+            summary.append(f"sponsored by {sponsors[form['sponsor']]}")
+        if form["subjects"]:
+            summary.append(f"including subjects {', '.join(form['subjects'])}")
+
+        status_text = []
+        if "passed-lower-chamber" in form["status"]:
+            status_text.append(f"passed in the {chambers['lower']}")
+        if "passed-upper-chamber" in form["status"]:
+            status_text.append(f"passed in the {chambers['upper']}")
+        if "signed" in form["status"]:
+            status_text.append("been signed into law")
+
+        if status_text:
+            summary.append("which have " + " and ".join(status_text))
+
+        return ", ".join(summary)
+
     def get_filter_options(self, state):
         options = {}
         jid = abbr_to_jid(state)
         bills = Bill.objects.all().filter(legislative_session__jurisdiction_id=jid)
         chambers = get_chambers_from_abbr(state)
         options["chambers"] = {c.classification: c.name for c in chambers}
-        options["sessions"] = sessions_with_bills(jid)
-        options["sponsors"] = Person.objects.filter(
-            memberships__organization__jurisdiction_id=jid
-        ).distinct()
+        options["sessions"] = {s.identifier: s.name for s in sessions_with_bills(jid)}
+        options["sponsors"] = {
+            p.id: p.name
+            for p in Person.objects.filter(
+                memberships__organization__jurisdiction_id=jid
+            )
+            .order_by("name")
+            .distinct()
+        }
         options["classifications"] = sorted(
             bills.annotate(type=Unnest("classification", distinct=True))
             .values_list("type", flat=True)
@@ -54,6 +100,7 @@ class BillList(View):
         classification = request.GET.get("classification")
         q_subjects = request.GET.getlist("subjects")
         status = request.GET.getlist("status")
+        sort = request.GET.get("sort", "-latest_action")
 
         form = {
             "query": query,
@@ -74,8 +121,8 @@ class BillList(View):
             classification=classification,
             subjects=q_subjects,
             status=status,
+            sort=sort,
         )
-        bills = bills.order_by(F("latest_action_date").desc(nulls_last=True))
 
         return bills, form
 
@@ -103,13 +150,49 @@ class BillList(View):
         except EmptyPage:
             raise Http404()
 
+        # get sort urls & arrow
+        sort = request.GET.get("sort", "-latest_action")
+        latest_action_arrow = first_action_arrow = ""
+        if sort == "-latest_action":
+            latest_action_sort_url = replace_query_params(
+                request, sort="latest_action", page=1
+            )
+            latest_action_arrow = "\u2193"  # down
+        else:
+            latest_action_sort_url = replace_query_params(
+                request, sort="-latest_action", page=1
+            )
+            if sort == "latest_action":
+                latest_action_arrow = "\u2191"  # up
+        if sort == "-first_action":
+            first_action_sort_url = replace_query_params(
+                request, sort="first_action", page=1
+            )
+            first_action_arrow = "\u2193"  # down
+        else:
+            first_action_sort_url = replace_query_params(
+                request, sort="-first_action", page=1
+            )
+            if sort == "first_action":
+                first_action_arrow = "\u2191"  # up
+
         context = {
             "state": state,
             "state_nav": "bills",
             "bills": paginator.page(page_num),
             "form": form,
+            "latest_action_sort_url": latest_action_sort_url,
+            "first_action_sort_url": first_action_sort_url,
+            "latest_action_arrow": latest_action_arrow,
+            "first_action_arrow": first_action_arrow,
         }
         context.update(self.get_filter_options(state))
+        context["search_summary"] = self.get_search_summary(
+            context["form"],
+            context["sessions"],
+            context["chambers"],
+            context["sponsors"],
+        )
 
         return render(request, "public/views/bills.html", context)
 

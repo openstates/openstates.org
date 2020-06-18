@@ -1,12 +1,9 @@
-import "../styles/app.scss";
+import "../static/styles/app.scss";
 
 // polyfills (IE 11)
 import "url-search-params-polyfill";
 import "promise-polyfill/src/polyfill";
 import "whatwg-fetch";
-
-import React from "react";
-import ReactDOM from "react-dom";
 
 function addBanner(content) {
   var div = document.createElement("div");

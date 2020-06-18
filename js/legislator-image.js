@@ -20,7 +20,7 @@ export default class LegislatorImage extends React.Component {
     const modifier = this.props.size === "medium" ? "" : "thumbnail--small";
     const containerModifier =
       this.props.size === "medium" ? "--medium mr1" : "--small";
-    let containerColor = "#ffdd03f";
+    let containerColor = "#ffdd03";
     if (this.props.party === "Democratic") {
       containerColor = "#00abff";
     } else if (this.props.party == "Republican") {
@@ -42,7 +42,7 @@ export default class LegislatorImage extends React.Component {
           alt="headshot for legislator"
           onError={() => component.setState({ url: null })}
         />
-      )
+      );
     }
     return (
       <div
