@@ -12,12 +12,13 @@ def create_test_bill(
     versions=0,
     documents=0,
     sources=0,
-    subjects=None
+    subjects=None,
+    identifier=None,
 ):
     chamber = Organization.objects.get(classification=chamber)
     session = LegislativeSession.objects.get(identifier=session)
     b = Bill.objects.create(
-        identifier="Bill " + str(random.randint(1000, 9000)),
+        identifier=identifier or ("Bill " + str(random.randint(1000, 9000))),
         title="Random Bill",
         legislative_session=session,
         from_organization=chamber,
