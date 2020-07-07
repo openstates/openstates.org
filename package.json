@@ -9,7 +9,7 @@
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.14",
     "mapbox-gl": "^1.6.0",
-    "npm": "^6.13.7",
+    "npm": "^6.14.6",
     "prettier": "^1.19.1",
     "promise-polyfill": "8.1.0",
     "randomcolor": "^0.5.4",
