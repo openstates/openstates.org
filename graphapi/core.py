@@ -2,7 +2,13 @@ import datetime
 import graphene
 from django.db.models import Q, Prefetch
 from django.contrib.gis.geos import Point
-from openstates.data.models import Jurisdiction, Organization, Person, Membership
+from openstates.data.models import (
+    Jurisdiction,
+    Organization,
+    Person,
+    Membership,
+    LegislativeSession,
+)
 from .common import (
     OCDBaseNode,
     IdentifierNode,
@@ -312,7 +318,17 @@ class CoreQuery:
         return optimize(
             qs,
             info,
-            [".legislativeSessions", ".organizations", ".organizations.children"],
+            [
+                (
+                    ".legislativeSessions",
+                    Prefetch(
+                        "legislative_sessions",
+                        LegislativeSession.objects.all().order_by("start_date"),
+                    ),
+                ),
+                ".organizations",
+                ".organizations.children",
+            ],
         )
 
     def resolve_jurisdiction(self, info, id=None, name=None):
