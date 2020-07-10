@@ -1,5 +1,6 @@
 import datetime
 from django.core.management.base import BaseCommand
+from django import db
 from openstates.data.models import LegislativeSession, Bill, VoteEvent
 from utils.common import abbr_to_jid, states, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
@@ -246,6 +247,8 @@ def create_dqr(state, session):
                     **bill_subjects_data,
                 },
             )
+    # keeping connection open this long was doing weird things, trying to close after each report
+    db.connections.close_all()
 
 
 # Example command
