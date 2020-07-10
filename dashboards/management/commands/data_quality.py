@@ -257,6 +257,10 @@ class Command(BaseCommand):
         parser.add_argument("state")
 
     def handle(self, *args, **options):
+
+        from django.conf import settings
+
+        print("DEBUG", settings.DEBUG)
         state = options["state"]
         # 'all' grabs the first session from every state
         # 'all_sessions' grabs every session from every state
