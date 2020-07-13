@@ -219,6 +219,7 @@ def vote_data(state, session, chamber):
     return bill_vote_data
 
 
+@db.transaction.atomic()
 def create_dqr(state, session):
     chambers = get_chambers_from_abbr(state)
     for chamber in chambers:
