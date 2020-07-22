@@ -248,8 +248,6 @@ def create_dqr(state, session):
                     **bill_subjects_data,
                 },
             )
-    # keeping connection open this long was doing weird things, trying to close after each report
-    db.connections.close_all()
 
 
 # Example command
