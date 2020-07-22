@@ -314,7 +314,8 @@ class CoreQuery:
     def resolve_jurisdictions(
         self, info, first=None, last=None, before=None, after=None
     ):
-        qs = Jurisdiction.objects.all()
+        # TODO: switch classification of jurisdictions to 'state'
+        qs = Jurisdiction.objects.exclude(classification="municipality")
         return optimize(
             qs,
             info,

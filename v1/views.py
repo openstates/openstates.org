@@ -38,7 +38,8 @@ def api_method(view_func):
 
 def jurisdictions_qs():
     return (
-        Jurisdiction.objects.all()
+        # TODO: switch state classifications to 'state'
+        Jurisdiction.objects.exclude(classification="municipality")
         .annotate(latest_run=Max("runs__start_time"))
         .prefetch_related(
             "legislative_sessions",
