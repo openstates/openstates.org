@@ -257,12 +257,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("state")
+        parser.add_argument("--session", default=None)
 
     def handle(self, *args, **options):
-
-        from django.conf import settings
-
-        print("DEBUG", settings.DEBUG)
         state = options["state"]
         # 'all' grabs the first session from every state
         # 'all_sessions' grabs every session from every state
@@ -279,6 +276,8 @@ class Command(BaseCommand):
                     else:
                         session = sessions[0].identifier
                         create_dqr(state, session)
+        elif options["session"]:
+            create_dqr(state, options["session"])
         else:
             sessions = get_available_sessions(state)
             for session in sessions:
