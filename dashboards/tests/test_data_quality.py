@@ -21,7 +21,7 @@ def test_avg_number_data(django_assert_num_queries, kansas):
         "2020", "upper", sponsors=10, versions=10, actions=10, votes=10, documents=10
     )
     upper = kansas.organizations.get(classification="upper")
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(5):
         data = average_number_data("KS", "2020", upper)
     assert data == {
         "average_actions_per_bill": 5,
