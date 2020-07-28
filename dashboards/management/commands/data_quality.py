@@ -97,20 +97,20 @@ def average_number_data(state, session, chamber):
     min_versions_per_bill = 0
     max_versions_per_bill = 0
 
-    test_bills = bills.annotate(
-        tot_sponsorships=Count("sponsorships", distinct=True),
-        tot_actions=Count("actions", distinct=True),
-        tot_documents=Count("documents", distinct=True),
-        tot_versions=Count("versions", distinct=True),
-        tot_votes=Count("votes", distinct=True),
-    )
+    sponsorships = bills.annotate(n=Count("sponsorships")).values_list("n", flat=True)
+    actions = bills.annotate(n=Count("actions")).values_list("n", flat=True)
+    documents = bills.annotate(n=Count("documents")).values_list("n", flat=True)
+    versions = bills.annotate(n=Count("versions")).values_list("n", flat=True)
+    votes = bills.annotate(n=Count("votes")).values_list("n", flat=True)
 
-    for bill in test_bills:
-        total_sponsorships_per_bill.append(bill.tot_sponsorships)
-        total_actions_per_bill.append(bill.tot_actions)
-        total_votes_per_bill.append(bill.tot_votes)
-        total_documents_per_bill.append(bill.tot_documents)
-        total_versions_per_bill.append(bill.tot_versions)
+    for n_sponsorships, n_actions, n_docs, n_versions, n_votes in zip(
+        sponsorships, actions, documents, versions, votes
+    ):
+        total_sponsorships_per_bill.append(n_sponsorships)
+        total_actions_per_bill.append(n_actions)
+        total_votes_per_bill.append(n_votes)
+        total_documents_per_bill.append(n_docs)
+        total_versions_per_bill.append(n_versions)
 
     if total_sponsorships_per_bill:
         average_sponsors_per_bill = round(mean(total_sponsorships_per_bill))
