@@ -138,9 +138,9 @@ def test_full_command(django_assert_num_queries, kansas):
                 create_test_bill(session, chamber)
 
     # Unsure about the exact query count here, as lots of these queries are checkpoints, etc.
-    # but 75 for 2 sessions & 2 chambers seems OK and was stable with changing number of bills
+    # but 91 for 2 sessions & 2 chambers seems OK and was stable with changing number of bills
     # and votes
-    with django_assert_num_queries(75):
+    with django_assert_num_queries(91):
         call_command("data_quality", "KS")
 
     assert DataQualityReport.objects.count() == 4
