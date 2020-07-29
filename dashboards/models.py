@@ -8,9 +8,9 @@ class DataQualityReport(models.Model):
     session = models.ForeignKey(LegislativeSession, on_delete=models.CASCADE)
 
     total_bills = models.PositiveIntegerField()
-    latest_bill_created_date = models.DateTimeField()
-    latest_action_date = models.DateTimeField()
-    earliest_action_date = models.DateTimeField()
+    latest_bill_created_date = models.DateTimeField(null=True)
+    latest_action_date = models.DateTimeField(null=True)
+    earliest_action_date = models.DateTimeField(null=True)
 
     average_sponsors_per_bill = models.PositiveIntegerField()
     min_sponsors_per_bill = models.PositiveIntegerField()
