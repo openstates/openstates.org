@@ -9,6 +9,7 @@ from openstates.data.models import (
     Membership,
     LegislativeSession,
 )
+from openstates.reports.models import RunPlan
 from .common import (
     OCDBaseNode,
     IdentifierNode,
@@ -263,6 +264,7 @@ class JurisdictionNode(graphene.ObjectType):
     name = graphene.String()
     url = graphene.String()
     feature_flags = graphene.List(graphene.String)
+    last_scraped_at = graphene.String()
 
     legislative_sessions = DjangoConnectionField(LegislativeSessionConnection)
     organizations = DjangoConnectionField(
@@ -278,6 +280,12 @@ class JurisdictionNode(graphene.ObjectType):
         self, info, first=None, last=None, before=None, after=None, classification=None
     ):
         return _resolve_suborganizations(self, "organizations", classification)
+
+    def resolve_last_scraped_at(self, info):
+        try:
+            return self.runs.filter(success=True).latest("end_time").end_time
+        except RunPlan.DoesNotExist:
+            return None
 
 
 class JurisdictionConnection(graphene.relay.Connection):
