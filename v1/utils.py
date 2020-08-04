@@ -216,7 +216,7 @@ def convert_legislator(leg):
     state = None
 
     cr = leg.current_role
-    party = cr["party"]
+    party = leg.primary_party
     chamber = cr["chamber"]
     district = cr["district"]
     state = cr["state"]

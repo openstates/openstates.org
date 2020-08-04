@@ -30,13 +30,13 @@ def test_person_view(client, django_assert_num_queries):
     assert resp.context["state_nav"] == "legislators"
     person = resp.context["person"]
     assert person.name == "Amanda Adams"
+    assert person.primary_party == "Republican"
     assert person.current_role == {
         "chamber": "lower",
         "district": 1,
         "division_id": "ocd-division/country:us/state:ak/sldl:1",
         "state": "ak",
         "role": "Representative",
-        "party": "Republican",
     }
     assert len(person.sponsored_bills) == 2
     assert len(person.vote_events) == 1

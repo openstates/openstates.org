@@ -84,7 +84,7 @@ def state(request, state):
         titles = []
         for legislator in legislators:
             if legislator.current_role["chamber"] == chamber.classification:
-                parties.append(legislator.current_role["party"])
+                parties.append(legislator.primary_party)
                 titles.append(legislator.current_role["role"])
 
         chamber.parties = dict(Counter(parties).most_common())
