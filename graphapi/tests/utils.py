@@ -77,7 +77,6 @@ def make_person(name, state, chamber, district, party):
     p = Person.objects.create(
         name=name,
         primary_party=party.name,
-        current_role_division_id=div.id,
         current_jurisdiction=jurisdiction,
         current_role={
             "org_classification": chamber,
@@ -138,7 +137,6 @@ def populate_db():
     for m in rhonda.memberships.all():
         m.end_date = "2017-01-01"
         m.save()
-    rhonda.current_role_division_id = ""
     rhonda.current_role = None
     rhonda.save()
 
