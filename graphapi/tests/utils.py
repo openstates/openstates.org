@@ -129,7 +129,7 @@ def populate_db():
     ellen = make_person("Ellen Evil", "Alaska", "upper", "A", "Independent")
     make_person("Frank Fur", "Alaska", "upper", "B", "Democratic")
     # Ellen used to be a house member
-    post = house.posts.create(label="5")
+    post = house.posts.create(label="5", role="Representative")
     ellen.memberships.create(post=post, organization=house, end_date="2017-01-01")
 
     # retired house member
