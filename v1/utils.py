@@ -215,8 +215,9 @@ def convert_legislator(leg):
     chamber = None
     district = None
 
-    chamber = leg.current_role["org_classification"]
-    district = leg.current_role["district"]
+    if leg.current_role:
+        chamber = leg.current_role["org_classification"]
+        district = leg.current_role["district"]
 
     email = None
     offices = defaultdict(dict)
