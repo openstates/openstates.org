@@ -123,11 +123,11 @@ export default class LegislatorList extends React.Component {
               </th>
               {this.props.chambers.lower && (
                 <th
-                  onClick={() => this.setSortOrder("current_role.chamber")}
+                  onClick={() => this.setSortOrder("current_role.org_classification")}
                   className="clickable"
                 >
                   Chamber
-                  {this.getSortArrowFor("current_role.chamber")}
+                  {this.getSortArrowFor("current_role.org_classification")}
                 </th>
               )}
             </tr>
@@ -141,7 +141,7 @@ export default class LegislatorList extends React.Component {
               .filter(
                 legislator =>
                   this.state.chamber === null ||
-                  legislator.current_role.chamber === this.state.chamber
+                  legislator.current_role.org_classification === this.state.chamber
               )
               .map(b => (
                 <tr key={b.id}>
@@ -160,7 +160,7 @@ export default class LegislatorList extends React.Component {
                   <td>{b.primary_party}</td>
                   <td>{b.current_role.district}</td>
                   {this.props.chambers.lower && (
-                    <td>{this.props.chambers[b.current_role.chamber]}</td>
+                    <td>{this.props.chambers[b.current_role.org_classification]}</td>
                   )}
                 </tr>
               ))}

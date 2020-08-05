@@ -2,8 +2,8 @@
 {% load custom_tags %}
 {% load static %}
 
-{% block title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.role }} - Open States{% endblock %}
-{% block og_title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.role }} - Open States{% endblock %}
+{% block title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.title }} - Open States{% endblock %}
+{% block og_title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.title }} - Open States{% endblock %}
 {% block description %}Contact information and legislative record for {{ person.name }} in  {{ state|state_name }}.{% endblock %}
 {% block og_image %}https://data.openstates.org/images/small/{{ person.id }}{% endblock %}
 
@@ -26,7 +26,7 @@
                     <li class="card__detail type--xsmall">Former {{ state|state_name }} Legislator</li>
                     {% else %}
                     <li class="card__detail type--xsmall">{{ state|state_name }}</li>
-                    <li class="card__detail type--xsmall">{{ person.current_role.role }}</li>
+                    <li class="card__detail type--xsmall">{{ person.current_role.title }}</li>
                     <li class="card__detail type--xsmall">{{ person.primary_party|party_noun }}</li>
                     <li class="card__detail type--xsmall">{{ person.current_role.district|district_maybe }} {{ person.current_role.district }}</a></li>
                     {% endif %}

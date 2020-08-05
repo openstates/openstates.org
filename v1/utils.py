@@ -210,16 +210,13 @@ def convert_legislator(leg):
     if not legacy_ids:
         legacy_ids = ["~not available~"]
 
-    party = None
+    party = leg.primary_party
+    state = jid_to_abbr(leg.current_jurisdiction_id)
     chamber = None
     district = None
-    state = None
 
-    cr = leg.current_role
-    party = leg.primary_party
-    chamber = cr["chamber"]
-    district = cr["district"]
-    state = cr["state"]
+    chamber = leg.current_role["org_classification"]
+    district = leg.current_role["district"]
 
     email = None
     offices = defaultdict(dict)

@@ -6,7 +6,7 @@ from django.db.models import Sum
 from django.http import Http404
 from django.shortcuts import render
 from openstates.data.models import Bill, Organization, Person
-from utils.common import abbr_to_jid, states, sessions_with_bills
+from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
 from utils.bills import search_bills
 from utils.people import person_as_dict
 
@@ -83,9 +83,9 @@ def state(request, state):
         parties = []
         titles = []
         for legislator in legislators:
-            if legislator.current_role["chamber"] == chamber.classification:
+            if legislator.current_role["org_classification"] == chamber.classification:
                 parties.append(legislator.primary_party)
-                titles.append(legislator.current_role["role"])
+                titles.append(legislator.current_role["title"])
 
         chamber.parties = dict(Counter(parties).most_common())
         try:
@@ -154,7 +154,11 @@ def site_search(request):
             raise Http404()
 
         # people search
-        people = [person_as_dict(p) for p in Person.objects.search(query, state=state)]
+        people = []
+        for p in Person.objects.search(query, state=state):
+            pd = person_as_dict(p)
+            pd["current_state"] = jid_to_abbr(p.current_jurisdiction_id).upper()
+            people.append(pd)
 
     return render(
         request,
