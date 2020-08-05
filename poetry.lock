@@ -509,7 +509,7 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "4.6.0"
+version = "4.7.0"
 
 [package.dependencies]
 Django = ">=2.2"
@@ -1239,8 +1239,8 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-4.6.0-py3-none-any.whl", hash = "sha256:b293c85f420fbbb96796275cd04bde0daa833a22bb8f8d9794e2555d3f50dbc3"},
-    {file = "openstates-4.6.0.tar.gz", hash = "sha256:c1ab4310ddc26381dc1460c6ed380bdfd88a22adf828235b350eaa2e9e9763fe"},
+    {file = "openstates-4.7.0-py3-none-any.whl", hash = "sha256:cf2ff7346bacec069d841b3b662087f86f5fde457d3c523e4485f3081904cba2"},
+    {file = "openstates-4.7.0.tar.gz", hash = "sha256:9975f48fc3afa86853c3b99299bc28c8749c7616804797a55ba3dfa30d255a2f"},
 ]
 openstates-metadata = [
     {file = "openstates_metadata-2020.4.7-py3-none-any.whl", hash = "sha256:cb9e6a2a55ac3ef4b552fcd1dc6d64eba4949bb8f8732ba1fcf288242535e591"},
