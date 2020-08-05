@@ -51,20 +51,25 @@ def make_person(name, state, chamber, district, party):
     org = Organization.objects.get(jurisdiction__name=state, classification=chamber)
     party, _ = Organization.objects.get_or_create(classification="party", name=party)
     jurisdiction = Jurisdiction.objects.get(name=state)
+    chamber_letter = chamber[0]
     if state == "Alaska":
         state = "ak"
     elif state == "Wyoming":
         state = "wy"
     elif state == "Nebraska":
         state = "ne"
-        chamber = "upper"
+        chamber_letter = "u"
     div, _ = Division.objects.get_or_create(
         id="ocd-division/country:us/state:{}/sld{}:{}".format(
-            state, chamber[0], district.lower()
+            state, chamber_letter, district.lower()
         ),
         name="Division " + district,
     )
-    post = org.posts.create(label=district, division=div)
+    post = org.posts.create(
+        label=district,
+        division=div,
+        role="Representative" if chamber == "lower" else "Senator",
+    )
     try:
         district = int(district)
     except ValueError:
@@ -134,6 +139,7 @@ def populate_db():
         m.end_date = "2017-01-01"
         m.save()
     rhonda.current_role_division_id = ""
+    rhonda.current_role = None
     rhonda.save()
 
     # WY House (multi-member districts)

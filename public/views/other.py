@@ -73,7 +73,6 @@ def state(request, state):
 
     # unicameral
     if not chambers:
-        legislature.classification = "unicameral"
         chambers = [legislature]
 
     # legislators
