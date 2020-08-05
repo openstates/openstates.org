@@ -41,8 +41,8 @@ def test_metadata_detail(client, django_assert_num_queries):
             "legislature_name": "Alaska Legislature",
             "legislature_url": "",
             "chambers": {
-                "upper": {"name": "Alaska Senate", "title": ""},
-                "lower": {"name": "Alaska House", "title": ""},
+                "upper": {"name": "Alaska Senate", "title": "Senator"},
+                "lower": {"name": "Alaska House", "title": "Representative"},
             },
             "session_details": {
                 "2018": {
