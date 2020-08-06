@@ -1,0 +1,103 @@
+{% extends "public/components/base.html" %}
+
+{% block title %}How To Help Open States{% endblock %}
+{% block description %}Open States strives to improve civic engagement at the state level by providing data and tools regarding state legislatures.{% endblock %}
+
+{% block content %}
+<div class="flatpage">
+<h1 class="heading--large">Helping Open States</h1>
+
+<section>
+<p>Open States strives to improve civic engagement at the state level by providing data and tools regarding state legislatures.  We aim to serve members of the public, activist groups, journalists, and researchers with better data on what is happening in their state capital, and to provide tools to reduce barriers to participation and increase engagement.
+</p>
+
+<p>
+Doing all of this takes a lot of work.  Open States provides daily updates from 102 legislative chambers, and information on over 7,000 elected officials.  We do so without charging users for use of the website, our bulk data, or basic API access.
+</p>
+
+<p>That's why we rely on a lot of help from the community, whether it is helping us become aware when a piece of data is out of date, writing code to maintain our scrapers, or helping us pay the bills, every bit of help we get is vital to Open States being what it is today.</p>
+
+<p>
+  <strong>If you'd like to help, the sections below will detail various ways to help us out!</strong>
+  <p>Several of the methods below mention using GitHub and some tools you may not be familiar with.  That's OK!  If you're interested in helping but lost, please reach out to <a href="mailto:contact@openstates.org">the team</a> and we'll be glad to work with you.</p>
+</p>
+
+</section>
+
+<div class="flatpage-twocol">
+
+<section>
+<h2 class="heading--medium">Help Improve Politician Data</h2>
+
+<p>All of Open States' politician data is curated in text files with the various attributes of a politican (<a href="https://github.com/openstates/people/blob/master/data/ak/executive/Mike-Dunleavy-80f0f5f8-976d-427b-b980-ce3a23a23e84.yml">example</a>), by contributing to these files you can help us add more contact methods or correct mistakes that may occur over time.</p>
+
+<p><strong>Skills:</strong> 
+Manual data gathering (searching the internet, filling out a document), and/or light web-scraping.
+</p>
+<p><strong>Potential ideas:</strong>
+Gathering social media accounts for a state, helping us correct an out-of-date legislator record.</p>
+<p><strong>Guide:</strong>
+<a href="https://docs.openstates.org/en/latest/contributing/people.html">Contributing People Data</a></p>
+<p><strong>Issues:</strong>
+<a href="https://github.com/openstates/issues/labels/component%3Apeople-data">People Data Issues</a></p>
+
+</section>
+
+<section>
+    <h2 class="heading--medium">Write Scrapers</h2>
+
+<p>All of Open States' bill &amp; vote data is gathered by automated scrapers that run daily, by contributing to these you can help us ensure we have timely and accurate data about everything happening in the state legislatures.<p>
+
+<p><strong>Skills:</strong> Python, Web scraping.  </p>
+<p><strong>Potential ideas:</strong> Gather additional data specific to your state that we're otherwise missing, help correct errors.
+<p><strong>Guide:</strong>
+<a href="https://docs.openstates.org/en/latest/contributing/scrapers.html">Contributing To Scrapers</a></p>
+<p><strong>Issues:</strong>
+<a href="https://github.com/openstates/issues/labels/component%3Abill-data">Bill Data Issues</a></p>
+
+</section>
+
+<div> <!-- group contribute to the site and provide feedback in left column -->
+<section>
+    <h2 class="heading--medium">Contribute to the Website</h2>
+<p>Open States' website and API are Open Source too!  If you've worked on websites before you can probably help us improve our offerings!</p>
+<p><strong>Skills:</strong> Python, Django, JavaScript, React, HTML &amp; CSS </p>
+<p><strong>Potential ideas:</strong> Help us improve the frontend, add flexibility to the API, or tackle an ambitious new feature.</p>
+<p><strong>Guide:</strong>
+<a href="https://docs.openstates.org/en/latest/contributing/running-the-site.html">Contributing To Scrapers</a></p>
+<p><strong>Issues:</strong>
+<a href="https://github.com/openstates/issues/labels/component%3Awebsite">Website Issues</a></p>
+
+</section>
+<section>
+    <h2 class="heading--medium">Provide Feedback / Promote Open States</h2>
+    <p>Even if you don't have the time or resources to commit to one of the above, you can still help by providing feedback to the Open States team.
+      Even if you just want to say hello, it means a lot to know that people benefit from the work we do, and testimonials from organizations using Open States' data can help us win grants and other support.
+    </p>
+    <p><a href="mailto:contact@openstates.org">Get in touch today</a> if you have feedback or anything to share!</p>
+</section>
+</div>
+
+<section>
+    <h2 class="heading--medium">Make a Donation / Sponsor Work</h2>
+    <p>
+      Open States' server bills are a few hundred dollars a month, paid entirely with donations.  Additionally, while some contributions are from volunteers, Open States' lead developer has made working on the project his day job.  You can support Open States by giving to the fund to pay the server bills, or by sponsoring the ongoing development work directly.
+    </p>
+    <p>We prefer to process recurring donations through GitHub (our lowest fee option):</p>
+
+    <iframe src="https://github.com/sponsors/openstates/card" title="Sponsor openstates" height="225" width="100%" style="border: 0;"></iframe>
+
+    <p>You can also support Open States development by becoming a recurring donor to our Patreon:</p>
+
+    <p><a href="https://www.patreon.com/bePatron?u=4813054" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script></p>
+
+    <p>Or donate directly with your credit card:</p>
+
+    <a class="button" href="/donate/">Support Open States Today</a>
+</section>
+
+
+</div>
+
+</div>
+{% endblock %}

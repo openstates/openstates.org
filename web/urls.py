@@ -29,6 +29,7 @@ urlpatterns = [
     path("covid19/", bundle_view, {"slug": "covid19"}),
     # flatpages
     path("about/", TemplateView.as_view(template_name="flat/about.html")),
+    path("helping/", TemplateView.as_view(template_name="flat/helping.html")),
     path(
         "about/subscriptions/",
         TemplateView.as_view(template_name="flat/subscriptions.html"),
