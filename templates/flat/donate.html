@@ -33,7 +33,9 @@
 <div>
     <p>You can also support Open States via Patreon: </p>
     <p>
+      <!--
   <a href="https://www.patreon.com/bePatron?u=4813054" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+      -->
     </p>
 </div>
 </div>
@@ -42,60 +44,55 @@
     <h4>Or you can make a one-time or recurring donation directly:</h4>
 
     <div class="donor-form">
-    <div>
-        <label for="donor-name">Name:</label> <input id="donor-name" type="text" />
-        <p>
-        </p>
-    </div>
 
     <p>
         <br>
         <strong>Give a one time donation to support our work:</strong>
     </p>
 
-    <input type="radio" id="reg-2500" value="reg-2500" name="donation">
-    <label for="reg-2500">$25</label>
-    <input type="radio" id="reg-5000" value="reg-5000" name="donation">
-    <label for="reg-5000">$50</label>
-    <input type="radio" id="reg-7500" value="reg-7500" name="donation">
-    <label for="reg-7500">$75</label>
-    <input type="radio" id="reg-10000" value="reg-10000" name="donation">
-    <label for="reg-10000">$100</label>
-    <input type="radio" id="reg-other" value="reg-other" name="donation">
+    <input type="radio" id="reg-10" value="10" name="donation">
+    <label for="reg-10">$10</label>
+    <input type="radio" id="reg-25" value="25" name="donation">
+    <label for="reg-25">$25</label>
+    <input type="radio" id="reg-50" value="50" name="donation">
+    <label for="reg-50">$50</label>
+    <input type="radio" id="reg-100" value="100" name="donation">
+    <label for="reg-100">$100</label>
+    <input type="radio" id="reg-other" value="other" name="donation">
     <label for="reg-other">
         <input id="other-amount" type="text" placeholder="custom">
     </label>
-    <button data-amount="custom" class="btn-stripe button button--primary">Contribute!</button>
+    <button data-amount="custom" class="btn-stripe button button--primary" id="donation-button">Give Now!</button>
 
     <p>
         <br>
         <strong>You can also sign up to give a recurring contribution, allowing us to plan bigger &amp; better things:</strong>
     </p>
 
-    <input type="radio" id="mo-500" value="mo-500" name="donation">
-    <label for="mo-500">$5/mo.</label>
-    <input type="radio" id="mo-1000" value="mo-1000" name="donation">
-    <label for="mo-1000">$10/mo.</label>
-    <input type="radio" id="mo-2000" value="mo-2000" name="donation">
-    <label for="mo-2000">$20/mo.</label>
-    <input type="radio" id="mo-5000" value="mo-5000" name="donation">
-    <label for="mo-5000">$50/mo.</label>
-    <input type="radio" id="mo-10000" value="mo-10000" name="donation">
-    <label for="mo-10000">$100/mo.</label>
+    <input type="radio" id="monthly5" value="monthly5" name="subscription">
+    <label for="monthly5">$5/mo.</label>
+    <input type="radio" id="monthly10" value="monthly10" name="subscription">
+    <label for="monthly10">$10/mo.</label>
+    <input type="radio" id="monthly20" value="monthly20" name="subscription">
+    <label for="monthly20">$20/mo.</label>
+    <input type="radio" id="monthly50" value="monthly50" name="subscription">
+    <label for="monthly50">$50/mo.</label>
+    <input type="radio" id="monthly100" value="monthly100" name="subscription">
+    <label for="monthly100">$100/mo.</label>
     <br>
     <br>
-    <input type="radio" id="yr-5000" value="yr-5000" name="donation">
-    <label for="yr-5000">$50/yr.</label>
-    <input type="radio" id="yr-10000" value="yr-10000" name="donation">
-    <label for="yr-10000">$100/yr.</label>
-    <input type="radio" id="yr-20000" value="yr-20000" name="donation">
-    <label for="yr-20000">$200/yr.</label>
-    <input type="radio" id="yr-50000" value="yr-50000" name="donation">
-    <label for="yr-50000">$500/yr.</label>
+    <input type="radio" id="yearly50" value="yearly50" name="subscription">
+    <label for="yearly50">$50/yr.</label>
+    <input type="radio" id="yearly100" value="yearly100" name="subscription">
+    <label for="yearly100">$100/yr.</label>
+    <input type="radio" id="yearly200" value="yearly200" name="subscription">
+    <label for="yearly200">$200/yr.</label>
+    <input type="radio" id="yearly500" value="yearly500" name="subscription">
+    <label for="yearly500">$500/yr.</label>
     <br>
     <br>
 
-    <button data-amount="custom" class="btn-stripe button button--primary">Contribute!</button>
+    <button class="btn-stripe button button--primary" id="subscription-button">Create Recurring Contribution</button>
 
     {% csrf_token %}
 </div>
@@ -108,123 +105,47 @@
     <p>If you'd like to discuss funding specific work or make a larger donation please get in touch at <a href="mailto:funding@openstates.org">funding@openstates.org</a>.</p>
 
     <p>
-        <a href="https://stripe.com"><img class="stripe-logo" src="{% static "images/powered_by_stripe.svg" %}" alt="powered by Stripe" /></a>
+      <a href="https://stripe.com"><img class="stripe-logo" src="{% static "images/powered_by_stripe.svg" %}" alt="powered by Stripe" /></a>
     </p>
     <p>
         Donation processing is powered by Stripe,
         none of your credit card information touches our servers.
     </p>
 </section>
-<script src="https://checkout.stripe.com/checkout.js"></script>
+<script src="https://js.stripe.com/v3"></script>
+
 <script>
-var amount = null;
+  var stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
 
-var handler = StripeCheckout.configure({
-    key: "{{ STRIPE_PUBLIC_KEY }}",
-    image: "{% static 'images/openstates_icon_white.png' %}",
-    name: "Open States",
-    locale: 'auto',
-    zipCode: true,
-    token: function(token, a) {
-        var name = document.querySelector('#donor-name').value;
-        var donation = document.querySelector('input[name=donation]:checked').id;
-        const subscriptions = {
-            'mo-500': 'monthly5',
-            'mo-1000': 'monthly10',
-            'mo-2000': 'monthly20',
-            'mo-5000': 'monthly50',
-            'mo-10000': 'monthly100',
-            'yr-5000': 'yearly50',
-            'yr-10000': 'yearly100',
-            'yr-20000': 'yearly200',
-            'yr-50000': 'yearly500',
-        };
-
-        var data = new URLSearchParams();
-        data.append("stripeToken", token.id);
-        data.append("email", token.email);
-        data.append("csrfmiddlewaretoken", document.querySelector('[name="csrfmiddlewaretoken"]').value);
-        if (subscriptions[donation]) {
-            data.append("plan", subscriptions[donation]);
-        } else {
-            data.append("amount", amount);
-        }
-        data.append("source", "funding-page");
-        data.append("donor_name", name);
-
-        fetch("/donate/", {
-            method: "POST",
-            cache: "no-cache",
-            body: data
-        })
-        .then(function(response) {
-            if (!response.ok) {
-                throw Error(response.statusText);
-            }
-            document.querySelector("#donate-success").style.display = "block";
-            window.scrollTo(0, 0);
-        })
-        .catch(function(e) {
-            document.querySelector("#donate-failure").style.display = "block";
-            window.scrollTo(0, 0);
-            console.error(e);
-        })
-    }
-});
-
-function submitStripe() {
-    var donation = document.querySelector('input[name=donation]:checked').id;
-    donation = donation.split('-');
-    type = donation[0];
-    amount = donation[1];
-
-    if (amount === 'other') {
-        amount = document.querySelector('#other-amount').value;
-        amount = amount.replace(/\$/g, '').replace(/\,/g, '')
-        amount = parseFloat(amount);
-
-        if (isNaN(amount)) {
-            return;
-        }
-        else if (amount < 5.0) {
-            alert("Due to merchant charges, we're currently not able to process donations smaller than $5.");
-            return;
-        } else {
-            amount = amount * 100;
-        }
-    } else {
-        amount = parseInt(amount);
-    }
-
-    var printamount = amount / 100;
-    var description;
-    var label;
-    if (type == 'mo') {
-        description = 'Recurring Donation of $' + printamount + '/mo.';
-        label = 'Recurring @';
-    } else if (type == 'yr') {
-        description = 'Recurring Donation of $' + printamount + '/yr.';
-        label = 'Recurring @';
-    } else {
-        description = 'Donate $' + printamount;
-        label = 'Donate';
-    }
-    handler.open({
-        description: description,
-        panelLabel: label,
-        amount: amount,
+  const subscriptionButton = document.querySelector('#subscription-button');
+  subscriptionButton.addEventListener('click', function () {
+    const subscription = document.querySelector('input[name=subscription]:checked').value;
+    stripe.redirectToCheckout({
+      lineItems: [{
+        price: subscription,
+        quantity: 1
+      }],
+      mode: 'subscription',
+      successUrl: 'https://openstates.org/donate/?success',
+      cancelUrl: 'https://openstates.org/donate/'
     });
-    return false;
-}
+  });
 
-var btnSelector = document.querySelectorAll(".btn-stripe");
-for(var i=0; i < btnSelector.length; i++) {
-    btnSelector[i].addEventListener("click", submitStripe);
-}
-
-// close checkout on page navigation:
-window.addEventListener('popstate', function() {
-  handler.close();
-});
+  const donationButton = document.querySelector('#donation-button');
+  donationButton.addEventListener('click', function () {
+    let donation = document.querySelector('input[name=donation]:checked').value;
+    if (donation === "other") {
+      donation = document.querySelector("#other-amount").value;
+    }
+    var data = new URLSearchParams();
+    data.append("dollars", donation);
+    data.append("csrfmiddlewaretoken", document.querySelector('[name="csrfmiddlewaretoken"]').value);
+    fetch('/custom_donation/', {'method': 'POST', 'body': data})
+      .then(function(response) { return response.json(); })
+      .then(function(responseJson) {
+        const sessionId = responseJson.session_id;
+          stripe.redirectToCheckout({sessionId: sessionId})
+      });
+  });
 </script>
 {% endblock %}

@@ -3,7 +3,7 @@ from .views.other import styleguide, home, state, site_search
 from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
 from .views.committees import committees, committee
-from .views.donations import donate
+from .views.donations import donate, custom_donation
 from .views.fallback import fallback, legislator_fallback
 from utils.common import states
 
@@ -17,6 +17,7 @@ urlpatterns = [
     path("styleguide", styleguide, name="styleguide"),
     # flatpages
     path("donate/", donate),
+    path("custom_donation/", custom_donation),
     # top level views
     path("", home, name="home"),
     path("find_your_legislator/", find_your_legislator, name="find_your_legislator"),
