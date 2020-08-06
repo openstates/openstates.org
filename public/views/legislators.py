@@ -111,9 +111,7 @@ def person(request, person_id):
 
     if not person.current_role:
         #  this breaks if they held office in two states, but we don't really worry about that
-        for m in person.memberships.all():
-            if m.organization.classification in ("upper", "lower", "legislature"):
-                state = jid_to_abbr(m.organization.jurisdiction_id)
+        state = jid_to_abbr(person.current_jurisdiction_id)
         retired = True
     else:
         state = jid_to_abbr(person.current_jurisdiction_id)
