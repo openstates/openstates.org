@@ -1,4 +1,3 @@
-import stripe
 from unittest import mock
 import pytest
 from graphapi.tests.utils import populate_db, populate_unicam
@@ -85,37 +84,36 @@ def test_search(client, django_assert_num_queries):
 
 @pytest.mark.django_db
 def test_donate_success(client):
-    with mock.patch("stripe.Charge.create") as charge:
-        with mock.patch("stripe.Customer.create") as customer:
-            customer.return_value = "~customer~"
-            resp = client.post(
-                "/donate/",
-                {"stripeToken": "abc", "email": "test@example.com", "amount": 100},
-            )
-            customer.assert_called_once_with(source="abc", email="test@example.com")
-            charge.assert_called_once_with(
-                customer="~customer~",
-                amount="100",
-                currency="usd",
-                description="Open States Donation",
-                metadata={"source": "", "donor_name": ""},
-                receipt_email="test@example.com",
-            )
-            assert resp.status_code == 200
-            assert resp.json() == {"success": "OK"}
+    class Retval:
+        id = "123"
+
+    with mock.patch("stripe.checkout.Session.create") as session:
+        session.return_value = Retval()
+        resp = client.post("/custom_donation/", {"dollars": 100})
+        session.assert_called_once_with(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "usd",
+                        "product_data": {"name": "One-Time Donation"},
+                        "unit_amount": 10000,
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url="https://openstates.org/donate?success",
+            cancel_url="https://openstates.org/donate/",
+        )
+
+        assert resp.status_code == 200
+        assert resp.json() == {"session_id": "123"}
 
 
 @pytest.mark.django_db
 def test_donate_error(client):
-    with mock.patch("stripe.Charge.create") as charge:
-        with mock.patch("stripe.Customer.create") as customer:
-            customer.side_effect = stripe.error.CardError("error", "error", "error")
-            resp = client.post(
-                "/donate/",
-                {"stripeToken": "abc", "email": "test@example.com", "amount": 100},
-            )
-            customer.assert_called_once_with(source="abc", email="test@example.com")
-            charge.assert_not_called()
-            assert resp.status_code == 200
-            messages = list(resp.context["messages"])
-            assert str(messages[0]) == "error"
+    resp = client.post("/custom_donation/", {"dollars": 1})
+    assert "error" in resp.json()
+    resp = client.post("/custom_donation/", {"dollars": "b"})
+    assert "error" in resp.json()
