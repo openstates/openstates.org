@@ -8,12 +8,11 @@
 {% block content %}
 <h1 class="heading--large">Support Open States</h1>
 
-<div id="donate-success" style="display: none;">
+{% if success %}
+<div id="donate-success">
   Thank you for your contribution!  You should receive an email receipt shortly, if you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
 </div>
-<div id="donate-failure" style="display: none;">
-  Something went wrong!  This has been logged, If you don't please email <a href="mailto:funding@openstates.org">funding@openstates.org</a>.
-</div>
+{% endif %}
 
 <section class="mt1">
     <p>
@@ -143,9 +142,18 @@
     fetch('/custom_donation/', {'method': 'POST', 'body': data})
       .then(function(response) { return response.json(); })
       .then(function(responseJson) {
-        const sessionId = responseJson.session_id;
+        if (responseJson.error) {
+          alert(responseJson.error);
+        } else {
+          const sessionId = responseJson.session_id;
           stripe.redirectToCheckout({sessionId: sessionId})
+        }
       });
+  });
+
+  const otherBox = document.querySelector("#other-amount");
+  otherBox.addEventListener('click', function() {
+    document.querySelector("#reg-other").click();
   });
 </script>
 {% endblock %}
