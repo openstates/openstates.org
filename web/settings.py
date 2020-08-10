@@ -120,8 +120,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "openstates.data",
     "openstates.reports",
-    "boundaries",
-    "geo",
     "graphene_django",
     "public",
     "graphapi",
