@@ -228,10 +228,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_FORM_CLASS = "profiles.forms.AllauthSignupForm"
 
-# Boundaries
-BOUNDARIES_SHAPEFILES_DIR = "shapefiles"
-
-
 # API
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r"^/(graphql|api/v1).*$"
