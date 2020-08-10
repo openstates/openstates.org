@@ -4,7 +4,6 @@ import functools
 from django.http import JsonResponse
 from django.db.models import Max, Q, Prefetch
 from django.shortcuts import get_object_or_404
-from django.contrib.gis.geos import Point
 from openstates.data.models import (
     Bill,
     LegislativeSession,
@@ -15,6 +14,7 @@ from openstates.data.models import (
 )
 from .utils import v1_metadata, convert_post, convert_legislator, convert_bill
 from utils.common import jid_to_abbr, abbr_to_jid
+from utils.geo import coords_to_divisions
 from utils.bills import search_bills
 from profiles.verifier import verify_request
 
@@ -138,18 +138,8 @@ def legislator_list(request, geo=False):
         except ValueError:
             return JsonResponse("Bad Request: invalid lat, lon", status=400, safe=False)
 
-        today = datetime.date.today().isoformat()
-        filter_params += [
-            Q(
-                memberships__post__division__geometries__boundary__shape__contains=(
-                    Point(longitude, latitude)
-                )
-            ),
-            Q(memberships__post__division__geometries__boundary__set__end_date=None)
-            | Q(
-                memberships__post__division__geometries__boundary__set__end_date__gt=today
-            ),
-        ]
+        divisions = coords_to_divisions(latitude, longitude)
+        filter_params.append(Q(memberships__post__division__id__in=divisions))
 
     if abbr:
         jid = abbr_to_jid(abbr)
