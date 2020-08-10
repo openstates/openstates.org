@@ -1,7 +1,6 @@
 import datetime
 import graphene
 from django.db.models import Q, Prefetch
-from django.contrib.gis.geos import Point
 from openstates.data.models import (
     Jurisdiction,
     Organization,
@@ -10,6 +9,7 @@ from openstates.data.models import (
     LegislativeSession,
 )
 from openstates.reports.models import RunPlan
+from utils.geo import coords_to_divisions
 from .common import (
     OCDBaseNode,
     IdentifierNode,
@@ -390,22 +390,17 @@ class CoreQuery:
 
         if latitude and longitude:
             try:
-                qs = qs.filter(
-                    Q(
-                        memberships__post__division__geometries__boundary__shape__contains=(
-                            Point(float(longitude), float(latitude))
-                        )
-                    ),
-                    Q(
-                        memberships__post__division__geometries__boundary__set__end_date=None
-                    )
-                    | Q(
-                        memberships__post__division__geometries__boundary__set__end_date__gt=today
-                    ),
-                    Q(memberships__end_date="") | Q(memberships__end_date__gt=today),
-                )
+                latitude = float(latitude)
+                longitude = float(longitude)
             except ValueError:
                 raise ValueError("invalid lat or lon")
+
+            divisions = coords_to_divisions(latitude, longitude)
+            qs = qs.filter(
+                Q(memberships__post__division__id__in=divisions),
+                Q(memberships__end_date="") | Q(memberships__end_date__gt=today),
+            )
+
         elif latitude or longitude:
             raise ValueError("must provide lat & lon together")
 
