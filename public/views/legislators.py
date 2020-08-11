@@ -109,7 +109,10 @@ def person(request, person_id):
     if request.path != canonical_url:
         return redirect(canonical_url, permanent=True)
 
-    if not person.current_role:
+    if not person.current_jurisdiction_id:
+        state = None
+        retired = True
+    elif not person.current_role:
         #  this breaks if they held office in two states, but we don't really worry about that
         state = jid_to_abbr(person.current_jurisdiction_id)
         retired = True
