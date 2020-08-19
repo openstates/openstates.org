@@ -31,9 +31,19 @@ class Command(BaseCommand):
                     }
                 )
 
-        print(f"adding {len(contacts)} contacts")
+        print(f"found {len(contacts)} contacts")
 
-        resp = sg.client.marketing.contacts.put(
-            request_body=dict(list_ids=[], contacts=contacts)
-        )
-        print(resp.status_code, resp.body)
+        CHUNK_SIZE = 800
+        start = 0
+        while start < len(contacts):
+            print(f"pushing {start} to {start+CHUNK_SIZE}")
+            try:
+                sg.client.marketing.contacts.put(
+                    request_body=dict(
+                        list_ids=[], contacts=contacts[start : start + CHUNK_SIZE]
+                    )
+                )
+            except Exception as e:
+                print(e.body)
+                raise
+            start += CHUNK_SIZE
