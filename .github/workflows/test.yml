@@ -38,7 +38,7 @@ jobs:
       uses: dschep/install-poetry-action@v1.3
     - name: cache Poetry virtualenv
       uses: actions/cache@v2
-      id: cache
+      id: poetry-cache
       with:
         path: ~/.virtualenvs/
         key: poetry-${{ hashFiles('**/poetry.lock') }}
@@ -56,7 +56,7 @@ jobs:
         node-version: '12'
     - name: cache node_modules
       uses: actions/cache@v2
-      id: cache
+      id: node-cache
       with:
         path: ./node_modules
         key: node-${{ hashFiles('**/package-lock.json') }}
