@@ -1,0 +1,63 @@
+name: Test Python & JavaScript
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DATABASE: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    # Python & dependency installation
+    - uses: actions/checkout@v2
+    - name: setup Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: setup Node 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+    - name: install Poetry
+      uses: dschep/install-poetry-action@v1.3
+    - name: cache Poetry virtualenv
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: ~/.virtualenvs/
+        key: poetry-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          poetry-${{ hashFiles('**/poetry.lock') }}
+    - name: set poetry config path
+      run: poetry config virtualenvs.path ~/.virtualenvs
+    - name: install dependencies
+      run: poetry install
+    - name: install node packages
+      run: |
+          npm install
+          npm run build
+    - name: lint with flake8
+      run: poetry run flake8 --show-source --statistics --ignore=E203,E501,W503
+    - name: pytest
+      run: poetry run pytest --ds=web.test_settings --reuse-db -v
+      env: 
+        DATABASE_URL: postgresql://test:test@localhost/test
