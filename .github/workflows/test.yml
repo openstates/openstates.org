@@ -27,16 +27,13 @@ jobs:
           - 5432:5432
 
     steps:
-    # Python & dependency installation
     - uses: actions/checkout@v2
+
+    # Python dependencies
     - name: setup Python 3.7
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-    - name: setup Node 12
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12'
     - name: install Poetry
       uses: dschep/install-poetry-action@v1.3
     - name: cache Poetry virtualenv
@@ -49,12 +46,27 @@ jobs:
           poetry-${{ hashFiles('**/poetry.lock') }}
     - name: set poetry config path
       run: poetry config virtualenvs.path ~/.virtualenvs
-    - name: install dependencies
+    - name: install python dependencies
       run: poetry install
+
+    # node dependencies
+    - name: setup Node 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+    - name: cache node_modules
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: ./node_modules
+        key: node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          node-${{ hashFiles('**/package-lock.json') }}
     - name: install node packages
       run: |
           npm install
           npm run build
+
     - name: lint with flake8
       run: poetry run flake8 --show-source --statistics --ignore=E203,E501,W503
     - name: pytest
