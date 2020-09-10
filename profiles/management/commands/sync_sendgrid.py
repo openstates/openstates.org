@@ -21,6 +21,10 @@ class Command(BaseCommand):
             )
             verified_email = verified_email[0] if verified_email else None
             is_suspended = user.profile.api_tier == "suspended"
+            # have to pass a string to sendgrid
+            is_api_user = str(user.profile.api_tier != "inactive")
+
+            IS_API_USER_FIELD_ID = "e4_T"
 
             if verified_email and not is_suspended:
                 contacts.append(
@@ -28,6 +32,7 @@ class Command(BaseCommand):
                         "email": verified_email.email,
                         "first_name": user.first_name,
                         "last_name": user.last_name,
+                        "custom_fields": {IS_API_USER_FIELD_ID: is_api_user},
                     }
                 )
 
