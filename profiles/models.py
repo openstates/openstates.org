@@ -65,6 +65,11 @@ class Profile(models.Model):
     def __str__(self):
         return f"Profile for {self.user}"
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["api_key"]),
+        ]
+
 
 class Subscription(models.Model):
     user = models.ForeignKey(
