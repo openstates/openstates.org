@@ -85,7 +85,7 @@
 
 # virtualenv
 - name: checkout project directories
-  git: repo=https://github.com/openstates/openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=master
+  git: repo=https://github.com/openstates/openstates.org.git dest=/home/openstates/src/openstates.org accept_hostkey=yes version=main
   become_user: "openstates"
   notify:
     - restart django-application
