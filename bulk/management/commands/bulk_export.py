@@ -9,7 +9,7 @@ import boto3
 import base62
 from django.core.management.base import BaseCommand
 from django.db.models import F
-from openstates_metadata import STATES_BY_NAME
+from openstates.metadata import STATES_BY_NAME
 from openstates.data.models import (
     LegislativeSession,
     Bill,

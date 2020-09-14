@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib import messages
-from openstates_metadata import STATES_BY_NAME
+from openstates.metadata import STATES_BY_NAME
 from .models import DataExport
 
 
