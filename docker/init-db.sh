@@ -5,9 +5,9 @@ unset DATABASE_URL
 
 # stop database and remove volume
 docker-compose down 
-docker volume rm openstates-postgres
+# docker volume rm openstates-postgres
 docker-compose up -d db
-sleep 1
+sleep 3
 
 # migrate and populate db
 docker-compose run --rm --entrypoint "poetry run ./manage.py migrate" django
