@@ -44,6 +44,8 @@
   become_user: "openstates"
 - name: copy robots.txt
   copy: src=files/robots.txt dest=/home/openstates/robots.txt mode=644
+- name: copy ads.txt
+  copy: src=files/ads.txt dest=/home/openstates/ads.txt mode=644
 
 # node
 - name: download nodesource script
