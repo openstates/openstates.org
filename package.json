@@ -1,0 +1,18 @@
+{
+  "name": "openstates-widgets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel watch widget.html -d build",
+    "build": "parcel build widget.html -d build",
+    "prettier": "prettier --write js/*"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "parcel": "^1.12.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
