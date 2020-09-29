@@ -1,11 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>OSW 1.0</title>
-</head>
-<body>
-  <div id="osw-c"></div>
-  <script src="./js/legislator-lookup.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>OSW 1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+    <style type="text/css">
+      :root {
+        --button-color: #002f5a;
+        --button-text: #ffffff;
+      }
+      .osw-legislator-lookup {
+        width: 400px;
+        font-size: 100%;
+        font-family: 'Roboto', sans-serif;
+      }
+      #osw-address {
+        font-size: 120%;
+        width: 100%;
+      }
+      .osw-legislator-lookup table {
+      }
+      .osw-button {
+        font-size: 120%;
+        width: 100%;
+        background: var(--button-color);
+        color: var(--button-text);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="osw-c"></div>
+    <script src="./js/legislator-lookup.js"></script>
+  </body>
 </html>

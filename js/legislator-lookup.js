@@ -6,15 +6,28 @@ function chamberColor() {
   return "blue";
 }
 
+function chamberDisplay(leg) {
+  const abbr = leg.jurisdiction.id.split("/")[2].split(":")[1].toUpperCase();
+  const classification = leg.current_role.org_classification;
+  let chamber = "";
+  if (classification === "upper") {
+    chamber = "Senate";
+  } else if (classification === "lower") {
+    chamber = "House";
+    // TODO: assembly
+  }
+  return abbr + " " + chamber;
+}
+
 function LegislatorRow(props) {
   return (
     <tr key={props.leg.name}>
       <td>
-        <a href={props.leg.url}>{props.leg.name}</a>
+        <a href={props.leg.openstates_url}>{props.leg.name}</a>
       </td>
       <td>{props.leg.party}</td>
-      <td>{props.leg.district}</td>
-      <td>{props.leg.chamber}</td>
+      <td>{props.leg.current_role.district}</td>
+      <td>{chamberDisplay(props.leg)}</td>
     </tr>
   );
 }
@@ -61,27 +74,64 @@ function LegislatorLookup() {
       });
   }
 
-  return (
-    <div className="osw-legislator-lookup">
-      <div>
-        <label htmlFor="osw-address" id="osw-address-label">
-          Enter Your Address:
-        </label>
+  if (legislators.length === 0) {
+    return (
+      <div className="osw-legislator-lookup">
+        <h2>Find Your State Representatives</h2>
+        <div>
+          <label htmlFor="osw-address" id="osw-address-label">
+            Enter Your Address (
+            <abbr title="Zip code alone isn't enough to uniquely identify legislative districts.">
+              ?
+            </abbr>
+            )
+          </label>
+          <input
+            type="search"
+            id="osw-address"
+            name="address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <input
+            type="submit"
+            className="osw-button"
+            value="Search"
+            onClick={geocode}
+          />
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="osw-legislator-lookup">
+        <h2>Your State Representatives</h2>
+        <div className="osw-results" >
+          <table className="osw-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Party</th>
+                <th>District</th>
+                <th>Chamber</th>
+              </tr>
+            </thead>
+            <tbody>
+              {legislators.map((leg) => (
+                <LegislatorRow leg={leg} key={leg.id} />
+              ))}
+            </tbody>
+          </table>
+        </div>
         <input
-          type="search"
-          id="osw-address"
-          name="address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          type="submit"
+          className="osw-button"
+          value="Back"
+          onClick={() => setLegislators([])}
         />
-        <input type="submit" id="osw-submit" value="Search" onClick={geocode} />
       </div>
-
-      <div>
-        <table>{legislators.map((leg) => <LegislatorRow leg={leg} />)}</table>
-      </div>
-    </div>
-  );
+    );
+  }
 }
 
 ReactDOM.render(
