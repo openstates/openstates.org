@@ -29,11 +29,51 @@
       Widgets are free-to-use for small sites, and we also offer some paid options if you'd like to customize or need to exceed our free limits.
     </p>
 
+    {% if your_widgets %}
     <div id="your-widgets">
     <h2>Your Widgets</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Created</th>
+          <th>Embed Code</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for widget in your_widgets %}
+      <tr>
+        <td>{{ widget.name }}</td>
+        <td>{{ widget.get_widget_type_display }}</td>
+        <td>{{ widget.created_at }}</td>
+        <td><pre>{{widget.url}}</pre></td>
+      </tr>
+    {% endfor %}
+      </tbody>
+      </table>
     </div>
+    {% endif %}
 
     <div id="available-widgets">
+      <h2>Available Widgets</h2>
+
+      <div class="widget-summary">
+        <h3>State Legislators Lookup</h3>
+        <p>A straightforward widget that prompts a user for their address and guides them to the Open States pages for their representatives.</p>
+        <p>Terms of Use: Free for up to 2,000 visits per month.  Customization &amp; higher-volume pricing available.</p>
+
+        <a href="mailto:contact@openstates.org">Contact Us</a>
+      </div>
+
+      <div class="widget-summary">
+        <h3>Bill Status</h3>
+        <p>A simple widget that displays the status of a particular bill.</p>
+        <p>Terms of Use: Free for up to 2,000 visits per month.  Customization &amp; higher-volume pricing available.</p>
+
+        <a href="mailto:contact@openstates.org">Contact Us</a>
+      </div>
+
     </div>
 
   </body>
