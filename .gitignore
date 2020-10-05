@@ -1,4 +1,6 @@
 node_modules/
 .cache/
 build/
+collected_static/
 *.pyc
+db.sqlite3
