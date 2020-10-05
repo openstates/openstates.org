@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel watch widget.html -d build",
-    "build": "parcel build widget.html -d build",
+    "start": "parcel watch js/legislator-lookup.js -d build",
+    "build": "parcel build js/legislator-lookup.js -d build",
     "prettier": "prettier --write js/*"
   },
   "author": "",
