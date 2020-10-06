@@ -1,24 +1,6 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Open States Widgets</title>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet"> 
-    <link href="{% static 'main.css' %}" rel="stylesheet">
-  </head>
-  <body>
-    <header class="header">
-      <div class="header__top grid-container">
-          <a href="/">
-            <img class="header__logo" width="250" src="{% static 'images/openstates_logo.png' %}" alt="OpenStates Logo">
-          </a>
-      </div>
-      <div class="bluebar"> </div>
-    </header>
-
-    <div class="grid-container">
-    <h1>Open States Widgets</h1>
+{% extends "base.html" %}
+{% block "body" %}
+<h1>Open States Widgets</h1>
     <p>
       We're providing pre-built pieces of functionality that you can use to embed Open States data on your site.
     </p>
@@ -61,6 +43,7 @@
         <p>A straightforward widget that prompts a user for their address and guides them to the Open States pages for their representatives.</p>
         <p>Terms of Use: Free for up to 2,000 visits per month.  Customization &amp; higher-volume pricing available.</p>
 
+        <a href="/configure/?new=SL">Create New Widget</a> 
         <a href="mailto:contact@openstates.org">Contact Us</a>
       </div>
 
@@ -69,11 +52,9 @@
         <p>A simple widget that displays the status of a particular bill.</p>
         <p>Terms of Use: Free for up to 2,000 visits per month.  Customization &amp; higher-volume pricing available.</p>
 
+        <a href="/configure/?new=BS">Create New Widget</a> 
         <a href="mailto:contact@openstates.org">Contact Us</a>
       </div>
 
     </div>
-    </div>
-
-  </body>
-</html>
+{% endblock %}

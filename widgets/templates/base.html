@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Open States Widgets</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="{% static 'main.css' %}" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header__top grid-container">
+        <a href="/">
+          <img
+            class="header__logo"
+            width="250"
+            src="{% static 'images/openstates_logo.png' %}"
+            alt="OpenStates Logo"
+          />
+        </a>
+      </div>
+      <div class="bluebar"></div>
+    </header>
+
+    <div class="grid-container">
+      {% block "body" %} {% endblock %}
+    </div>
+  </body>
+</html>
