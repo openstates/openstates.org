@@ -19,6 +19,7 @@
           <th>Type</th>
           <th>Created</th>
           <th>Embed Code</th>
+          <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -27,7 +28,8 @@
         <td>{{ widget.name }}</td>
         <td>{{ widget.get_widget_type_display }}</td>
         <td>{{ widget.created_at }}</td>
-        <td><pre>{{widget.url}}</pre></td>
+        <td><pre>https://widgets.openstates.org{{widget.url}}</pre></td>
+        <td><a href="{{widget.url}}">Preview</a></td>
       </tr>
     {% endfor %}
       </tbody>

@@ -142,7 +142,13 @@ LegislatorLookup.defaultProps = {
   fgColor: "#222222",
 };
 
-/* ReactDOM.render(
-  React.createElement(LegislatorLookup),
-  document.getElementById("osw-c")
-);*/
+const create_widget = () => {
+  const elem = document.getElementById("osw-c");
+  const widgetConfig = JSON.parse(
+    document.getElementById("config").textContent
+  );
+  if (elem) {
+    ReactDOM.render(React.createElement(LegislatorLookup, widgetConfig), elem);
+  }
+};
+create_widget();

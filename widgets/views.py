@@ -48,6 +48,6 @@ def widget_view(request, uuid):
     config = get_object_or_404(WidgetConfig, pk=uuid)
 
     if config.widget_type == WidgetType.STATE_LEGISLATORS:
-        return render(request, "state_legislators.html", {})
+        return render(request, "state_legislators.html", {"config": config.settings})
     else:
         return HttpResponseServerError("Invalid Widget Type")

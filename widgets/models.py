@@ -22,4 +22,4 @@ class WidgetConfig(models.Model):
         return f"{self.name}: {self.id}"
 
     def url(self):
-        return f"https://widgets.openstates.org/w/{self.id}"
+        return f"/w/{self.id}"
