@@ -44,3 +44,22 @@ thead {
 tr {
   border-bottom: 1px solid #dbe6f1;
 }
+
+/* legislator lookup */
+.osw-legislator-lookup {
+  width: 400px;
+}
+#osw-address {
+  font-size: 120%;
+  width: 100%;
+}
+.osw-button {
+  font-size: 120%;
+  width: 100%;
+}
+.osw-table td {
+  text-align: center;
+}
+.osw-table td:first-child {
+  text-align: left;
+}

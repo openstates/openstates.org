@@ -107,7 +107,9 @@ export default function LegislatorLookup(props) {
     );
   } else {
     return (
-      <div className="osw-legislator-lookup">
+      <div className="osw-legislator-lookup"
+        style={{ backgroundColor: props.bgColor, color: props.fgColor }}
+      >
         <h2>Your State Representatives</h2>
         <div className="osw-results">
           <table className="osw-table">
