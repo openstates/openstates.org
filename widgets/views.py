@@ -1,5 +1,6 @@
+import json
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseServerError
+from django.http import HttpResponseServerError, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import WidgetConfig, WidgetType
 
@@ -12,26 +13,35 @@ def index(request):
 
 @login_required
 def configure(request):
-    options = None
+    if request.method == "GET":
+        options = None
+        widget_type = request.GET.get("new")
 
-    widget_type = request.GET.get("new")
+        if widget_type == WidgetType.STATE_LEGISLATORS:
+            options = {"background_color": "color", "foreground_color": "color"}
+            widget_type_name = "State Legislator Lookup"
 
-    if widget_type == WidgetType.STATE_LEGISLATORS:
-        options = {"background_color": "color", "foreground_color": "color"}
-        widget_type_name = "State Legislator Lookup"
+        if not options:
+            return HttpResponseServerError("Invalid Widget Type")
 
-    if not options:
-        return HttpResponseServerError("Invalid Widget Type")
-
-    return render(
-        request,
-        "configure.html",
-        {
-            "widget_type": widget_type,
-            "widget_type_name": widget_type_name,
-            "options": options,
-        },
-    )
+        return render(
+            request,
+            "configure.html",
+            {
+                "widget_type": widget_type,
+                "widget_type_name": widget_type_name,
+                "options": options,
+            },
+        )
+    elif request.method == "POST":
+        body = json.loads(request.body)
+        name = body.pop("name")
+        widget_type = body.pop("widgetType")
+        wc = WidgetConfig(
+            owner=request.user, name=name, widget_type=widget_type, settings=body
+        )
+        wc.save()
+        return JsonResponse({"id": wc.id})
 
 
 def widget_view(request, uuid):

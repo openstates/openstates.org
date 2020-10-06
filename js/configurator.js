@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+import Cookies from 'js-cookie';
 import LegislatorLookup from "./legislator-lookup";
 
 function OptionInput(props) {
@@ -21,18 +22,17 @@ function OptionInput(props) {
 
 function getInitialState(options) {
   let state = {
-    "name": "My Widget",
+    name: "My Widget",
   };
 
-  for(let opt of options) {
+  for (let opt of options) {
     state[opt.name] = opt.default;
   }
   return state;
 }
 
-
 function Configurator(props) {
-  // TODO: get this from props widget type
+  // TODO: get this from props.widgetType
   const options = [
     { name: "bgColor", type: "color", default: "#ffffff" },
     { name: "fgColor", type: "color", default: "#222222" },
@@ -45,6 +45,18 @@ function Configurator(props) {
     let newConfig = Object.assign({}, config);
     newConfig[name] = value;
     setConfig(newConfig);
+  }
+
+  function saveForm() {
+    const csrftoken = Cookies.get("csrftoken");
+    fetch("/configure/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
+      body: JSON.stringify({...config, widgetType: props.widgetType}),
+    }).then(function() {
+      // redirect back to index!
+      document.location = "/";
+    });
   }
 
   return (
@@ -66,6 +78,7 @@ function Configurator(props) {
             setConfigValue={setConfigValue}
           />
         ))}
+        <input type="submit" value="Save Configuration" onClick={saveForm} />
       </div>
       <div>
         <PreviewElement {...config} />
@@ -75,6 +88,6 @@ function Configurator(props) {
 }
 
 ReactDOM.render(
-  React.createElement(Configurator),
+  React.createElement(Configurator, {widgetType: "SL"}),
   document.getElementById("configurator")
 );
