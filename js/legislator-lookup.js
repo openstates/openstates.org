@@ -32,7 +32,7 @@ function LegislatorRow(props) {
   );
 }
 
-function LegislatorLookup() {
+export default function LegislatorLookup() {
   const [address, setAddress] = useState("");
   const [location, setLocation] = useState({ lat: 0, lng: 0 });
   const [legislators, setLegislators] = useState([]);
@@ -134,7 +134,7 @@ function LegislatorLookup() {
   }
 }
 
-ReactDOM.render(
+/* ReactDOM.render(
   React.createElement(LegislatorLookup),
   document.getElementById("osw-c")
-);
+);*/

@@ -1,4 +1,13 @@
 {% extends "base.html" %}
 {% block "body" %}
+<style>
+.config-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+</style>
 <h1>Configure {{ widget_type_name }}</h1>
+
+<div id="configurator"></div>
+<script src="/static/configurator.js"></script>
 {% endblock %}
