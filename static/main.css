@@ -1,0 +1,46 @@
+/* Open States lite styling */
+body {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Roboto, Arial,
+    sans-serif;
+  line-height: 1.5;
+  color: #222;
+  font-weight: normal;
+  margin: 0;
+}
+.grid-container {
+  padding-right: 0.9375rem;
+  padding-left: 0.9375rem;
+  max-width: 75rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.header__top {
+  display: grid;
+  grid-template-columns: auto 200px;
+}
+.header__logo {
+  width: 250px;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.bluebar {
+  background-color: #002f5a;
+  height: 50px;
+  width: 100%;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+thead {
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid black;
+}
+tr {
+  border-bottom: 1px solid #dbe6f1;
+}

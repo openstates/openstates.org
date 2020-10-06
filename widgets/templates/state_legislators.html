@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>OSW 1.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet"> 
+    <link href="{% static 'main.css' %}" rel="stylesheet">
     <style type="text/css">
       :root {
         --button-color: #002f5a;
@@ -17,8 +19,6 @@
       #osw-address {
         font-size: 120%;
         width: 100%;
-      }
-      .osw-legislator-lookup table {
       }
       .osw-button {
         font-size: 120%;
