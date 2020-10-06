@@ -11,6 +11,7 @@ function OptionInput(props) {
       <input
         id={props.name}
         name={props.name}
+        type={props.type}
         value={props.value}
         onChange={(e) => props.setConfigValue(props.name, e.target.value)}
       />
@@ -33,8 +34,8 @@ function getInitialState(options) {
 function Configurator(props) {
   // TODO: get this from props widget type
   const options = [
-    { name: "bgColor", type: "color", default: "000000" },
-    { name: "fgColor", type: "color", default: "ffffff" },
+    { name: "bgColor", type: "color", default: "#ffffff" },
+    { name: "fgColor", type: "color", default: "#222222" },
   ];
 
   const [config, setConfig] = useState(getInitialState(options));
@@ -47,7 +48,7 @@ function Configurator(props) {
   }
 
   return (
-    <div class="config-grid">
+    <div className="config-grid">
       <div>
         <h2>Configuration</h2>
 
@@ -67,7 +68,7 @@ function Configurator(props) {
         ))}
       </div>
       <div>
-        <PreviewElement />
+        <PreviewElement {...config} />
       </div>
     </div>
   );

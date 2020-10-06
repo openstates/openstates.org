@@ -32,7 +32,7 @@ function LegislatorRow(props) {
   );
 }
 
-export default function LegislatorLookup() {
+export default function LegislatorLookup(props) {
   const [address, setAddress] = useState("");
   const [location, setLocation] = useState({ lat: 0, lng: 0 });
   const [legislators, setLegislators] = useState([]);
@@ -76,7 +76,10 @@ export default function LegislatorLookup() {
 
   if (legislators.length === 0) {
     return (
-      <div className="osw-legislator-lookup">
+      <div
+        className="osw-legislator-lookup"
+        style={{ backgroundColor: props.bgColor, color: props.fgColor }}
+      >
         <h2>Find Your State Representatives</h2>
         <div>
           <label htmlFor="osw-address" id="osw-address-label">
@@ -106,7 +109,7 @@ export default function LegislatorLookup() {
     return (
       <div className="osw-legislator-lookup">
         <h2>Your State Representatives</h2>
-        <div className="osw-results" >
+        <div className="osw-results">
           <table className="osw-table">
             <thead>
               <tr>
@@ -133,6 +136,11 @@ export default function LegislatorLookup() {
     );
   }
 }
+
+LegislatorLookup.defaultProps = {
+  bgColor: "#ffffff",
+  fgColor: "#222222",
+};
 
 /* ReactDOM.render(
   React.createElement(LegislatorLookup),
