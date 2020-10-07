@@ -2,6 +2,7 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseServerError, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from .models import WidgetConfig, WidgetType
 
 
@@ -29,10 +30,7 @@ def configure(request):
         return render(
             request,
             "configure.html",
-            {
-                "widget_type": widget_type,
-                "widget_type_name": widget_type_name,
-            },
+            {"widget_type": widget_type, "widget_type_name": widget_type_name,},
         )
     elif request.method == "POST":
         body = json.loads(request.body)
@@ -47,8 +45,13 @@ def configure(request):
 
 def widget_view(request, uuid):
     config = get_object_or_404(WidgetConfig, pk=uuid)
+    combined_config = dict(
+        **config.settings,
+        openstates_api_key=settings.OPENSTATES_API_KEY,
+        mapbox_access_token=settings.MAPBOX_ACCESS_TOKEN
+    )
 
     if config.widget_type == WidgetType.STATE_LEGISLATORS:
-        return render(request, "state_legislators.html", {"config": config.settings})
+        return render(request, "state_legislators.html", {"config": combined_config})
     else:
         return HttpResponseServerError("Invalid Widget Type")

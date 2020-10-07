@@ -42,6 +42,8 @@ if os.environ.get("DEBUG", "true").lower() == "false":
     ALLOWED_HOSTS = ["*"]
     ADMINS = [("James Turk", "james@openstates.org")]
     SECRET_KEY = os.environ["SECRET_KEY"]
+    OPENSTATES_API_KEY = os.environ["OPENSTATES_API_KEY"]
+    MAPBOX_ACCESS_TOKEN = os.environ["MAPBOX_ACCESS_TOKEN"]
 else:
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY", "non-secret-key")
@@ -53,6 +55,8 @@ else:
         "django.template.loaders.filesystem.Loader",
         "django.template.loaders.app_directories.Loader",
     ]
+    OPENSTATES_API_KEY = os.environ.get("OPENSTATES_API_KEY")
+    MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN")
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgis://openstates:openstates@db:5432/openstatesorg"

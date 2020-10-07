@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import config from "./config";
 
 function chamberColor() {
   return "blue";
@@ -42,7 +41,7 @@ export default function LegislatorLookup(props) {
     if (!loc.lat || !loc.lng) {
       setLegislators([]);
     } else {
-      const url = `https://v3.openstates.org/people.geo?lat=${loc.lat}&lng=${loc.lng}&apikey=${config.OPENSTATES_API_KEY}`;
+      const url = `https://v3.openstates.org/people.geo?lat=${loc.lat}&lng=${loc.lng}&apikey=${props.openstates_api_key}`;
       fetch(url)
         .then((response) => response.json())
         .then(function (json) {
@@ -54,7 +53,7 @@ export default function LegislatorLookup(props) {
   function geocode() {
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURI(
       address
-    )}.json?country=US&limit=1&access_token=${config.MAPBOX_ACCESS_TOKEN}`;
+    )}.json?country=US&limit=1&access_token=${props.mapbox_access_token}`;
 
     fetch(url)
       .then((response) => response.json())
