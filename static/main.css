@@ -50,6 +50,51 @@ tr {
   background-color: #002f5a;
   color: #ffffff;
 }
+
+/* index only */
+.widget-preview {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+.widget-preview img {
+  width: 300px;
+  border: dashed 2px #222;
+}
+.footer {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-top: 1px swolid #dbe6f1;
+  background-color: #edf3f8;
+  font-size: 0.875rem;
+}
+.footer h2 {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding-left: 20rem;
+}
+.footer ul {
+  list-style: none;
+  text-indent: 0;
+  padding-left: 20rem;
+}
+
+.create-new {
+  background-color: #2cceb0;
+  color: white;
+  font-size: 120%;
+  text-decoration: none;
+  padding: 2px 6px 2px 6px;
+}
+.contact-us {
+  background-color: #0039c1;
+  color: white;
+  font-size: 120%;
+  text-decoration: none;
+  padding: 2px 6px 2px 6px;
+}
+
 /* configurator */
 .config-grid {
   display: grid;
