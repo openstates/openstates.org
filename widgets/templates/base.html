@@ -21,6 +21,15 @@
             alt="OpenStates Logo"
           />
         </a>
+        <div id="header__login">
+         {% if user.is_authenticated %}
+         <a href="https://openstates.org/accounts/profile/">{{ user.username|default:"Profile" }}</a> |
+         <a href="https://openstates.org/accounts/logout/">Sign Out</a>
+         {% else %}
+         <a href="https://openstates.org/accounts/login/">Log In</a> /
+         <a href="https://openstates.org/accounts/signup/">Sign Up</a>
+         {% endif %}
+        </div>
       </div>
       <div class="bluebar"></div>
     </header>

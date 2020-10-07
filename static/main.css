@@ -23,6 +23,10 @@ body {
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
+#header__login {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
 .bluebar {
   background-color: #002f5a;
   height: 50px;
