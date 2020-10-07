@@ -7,7 +7,7 @@ function OptionInput(props) {
   // props.name, props.value, props.setConfigValue
 
   return (
-    <div>
+    <div className="option-input">
       <label htmlFor={props.name}>{props.name}</label>
       <input
         id={props.name}
@@ -36,6 +36,8 @@ function Configurator(props) {
   const options = [
     { name: "bgColor", type: "color", default: "#ffffff" },
     { name: "fgColor", type: "color", default: "#222222" },
+    { name: "buttonColor", type: "color", default: "#002f5a"},
+    { name: "buttonTextColor", type: "color", default: "#ffffff"},
   ];
 
   const [config, setConfig] = useState(getInitialState(options));
@@ -78,7 +80,7 @@ function Configurator(props) {
             setConfigValue={setConfigValue}
           />
         ))}
-        <input type="submit" value="Save Configuration" onClick={saveForm} />
+        <input type="submit" value="Save Configuration" onClick={saveForm} className="button" />
       </div>
       <div>
         <PreviewElement {...config} />

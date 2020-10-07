@@ -14,14 +14,13 @@ def index(request):
 @login_required
 def configure(request):
     if request.method == "GET":
-        options = None
+        widget_type_name = None
         widget_type = request.GET.get("new")
 
         if widget_type == WidgetType.STATE_LEGISLATORS:
-            options = {"background_color": "color", "foreground_color": "color"}
             widget_type_name = "State Legislator Lookup"
 
-        if not options:
+        if not widget_type_name:
             return HttpResponseServerError("Invalid Widget Type")
 
         return render(
@@ -30,7 +29,6 @@ def configure(request):
             {
                 "widget_type": widget_type,
                 "widget_type_name": widget_type_name,
-                "options": options,
             },
         )
     elif request.method == "POST":

@@ -44,16 +44,33 @@ thead {
 tr {
   border-bottom: 1px solid #dbe6f1;
 }
+.button {
+  font-size: 120%;
+  width: 100%;
+  background-color: #002f5a;
+  color: #ffffff;
+}
+/* configurator */
+.config-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  grid-column-gap: 2rem;
+}
+.option-input {
+  display: grid;
+  grid-template-columns: 15rem auto;
+  padding-right: 3rem;
+  padding-bottom: 0.5rem;
+}
+.option-input label {
+  font-weight: 700;
+}
 
 /* legislator lookup */
 .osw-legislator-lookup {
   width: 400px;
 }
 #osw-address {
-  font-size: 120%;
-  width: 100%;
-}
-.osw-button {
   font-size: 120%;
   width: 100%;
 }

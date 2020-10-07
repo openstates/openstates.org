@@ -98,7 +98,11 @@ export default function LegislatorLookup(props) {
           />
           <input
             type="submit"
-            className="osw-button"
+            className="button"
+            style={{
+              color: props.buttonTextColor,
+              backgroundColor: props.buttonColor,
+            }}
             value="Search"
             onClick={geocode}
           />
@@ -107,7 +111,8 @@ export default function LegislatorLookup(props) {
     );
   } else {
     return (
-      <div className="osw-legislator-lookup"
+      <div
+        className="osw-legislator-lookup"
         style={{ backgroundColor: props.bgColor, color: props.fgColor }}
       >
         <h2>Your State Representatives</h2>
@@ -130,7 +135,11 @@ export default function LegislatorLookup(props) {
         </div>
         <input
           type="submit"
-          className="osw-button"
+          className="button"
+          style={{
+            color: props.buttonTextColor,
+            backgroundColor: props.buttonColor,
+          }}
           value="Back"
           onClick={() => setLegislators([])}
         />
@@ -142,14 +151,16 @@ export default function LegislatorLookup(props) {
 LegislatorLookup.defaultProps = {
   bgColor: "#ffffff",
   fgColor: "#222222",
+  buttonColor: "#002f5a",
+  buttonTextColor: "#ffffff",
 };
 
 const create_widget = () => {
   const elem = document.getElementById("osw-c");
-  const widgetConfig = JSON.parse(
-    document.getElementById("config").textContent
-  );
   if (elem) {
+    const widgetConfig = JSON.parse(
+      document.getElementById("config").textContent
+    );
     ReactDOM.render(React.createElement(LegislatorLookup, widgetConfig), elem);
   }
 };
