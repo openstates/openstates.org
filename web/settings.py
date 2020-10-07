@@ -59,7 +59,7 @@ else:
     MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN")
 
 DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgis://openstates:openstates@db:5432/openstatesorg"
+    "DATABASE_URL", "postgresql://openstates:openstates@db:5432/openstatesorg"
 )
 DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
