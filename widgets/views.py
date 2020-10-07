@@ -6,7 +6,10 @@ from .models import WidgetConfig, WidgetType
 
 
 def index(request):
-    your_widgets = list(WidgetConfig.objects.filter(owner=request.user))
+    if request.user.is_authenticated:
+        your_widgets = list(WidgetConfig.objects.filter(owner=request.user))
+    else:
+        your_widgets = []
 
     return render(request, "index.html", {"your_widgets": your_widgets})
 

@@ -1,13 +1,64 @@
+import os
+import dj_database_url
 from pathlib import Path
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+if "SENTRY_DSN" in os.environ:
+    sentry_sdk.init(dsn=os.environ["SENTRY_DSN"], integrations=[DjangoIntegration()])
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = "_bo2aceb8c!7z+(yhq6x@af8f@t#$5q%uk=pu^tj63n$w6kp^1"
-DEBUG = True
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+            "loaders": [
+                (
+                    "django.template.loaders.cached.Loader",
+                    [
+                        "django.template.loaders.filesystem.Loader",
+                        "django.template.loaders.app_directories.Loader",
+                    ],
+                )
+            ],
+        },
+    }
+]
 
-ALLOWED_HOSTS = []
+
+if os.environ.get("DEBUG", "true").lower() == "false":
+    # non-debug settings
+    DEBUG = False
+    ALLOWED_HOSTS = ["*"]
+    ADMINS = [("James Turk", "james@openstates.org")]
+    SECRET_KEY = os.environ["SECRET_KEY"]
+else:
+    DEBUG = True
+    SECRET_KEY = os.environ.get("SECRET_KEY", "non-secret-key")
+    ALLOWED_HOSTS = ["*"]
+    INTERNAL_IPS = ["127.0.0.1"]
+    DOMAIN = "http://localhost:8000"
+    # disable template caching
+    TEMPLATES[0]["OPTIONS"]["loaders"] = [
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ]
+
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL", "postgis://openstates:openstates@db:5432/openstatesorg"
+)
+DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
+CONN_MAX_AGE = 60
 
 
 INSTALLED_APPS = [
@@ -32,34 +83,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "web.urls"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
-
 WSGI_APPLICATION = "web.wsgi.application"
-
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -68,14 +92,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
-
-
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = False
 USE_L10N = False
 USE_TZ = True
-
 
 # Static files
 STATIC_URL = "/static/"
