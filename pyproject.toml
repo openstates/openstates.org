@@ -11,6 +11,7 @@ whitenoise = "^5.2.0"
 sentry-sdk = "^0.18.0"
 dj-database-url = "^0.5.0"
 psycopg2-binary = "^2.8.6"
+django-allauth = "^0.42.0"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
