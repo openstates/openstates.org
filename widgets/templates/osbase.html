@@ -26,8 +26,8 @@
          <a href="https://openstates.org/accounts/profile/">{{ user.username|default:"Profile" }}</a> |
          <a href="https://openstates.org/accounts/logout/">Sign Out</a>
          {% else %}
-         <a href="https://openstates.org/accounts/login/">Log In</a> /
-         <a href="https://openstates.org/accounts/signup/">Sign Up</a>
+         <a href="https://openstates.org/accounts/login/?next=/widgets">Log In</a> /
+         <a href="https://openstates.org/accounts/signup/?next=/widgets">Sign Up</a>
          {% endif %}
         </div>
       </div>
