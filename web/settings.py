@@ -58,6 +58,17 @@ else:
     OPENSTATES_API_KEY = os.environ.get("OPENSTATES_API_KEY")
     MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN")
 
+# Login Notes
+#  This site has an unorthodox setup where the login is handled by openstates.org
+#  This has a few components:
+#   1) openstates.org has to set a SESSION_COOKIE_DOMAIN that is permissive enough that the
+#       cookie will be sent to widgets.openstates.org
+#   2) This site has to know enough about allauth that when it gets the session key it looks
+#       things up in the correct database tables.
+#   3) Both sites have to share a SECRET_KEY setting, any changes would require redeployment
+#       of both.
+#  See notes in rest of file tagged LOGIN for places where this is done.
+
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgresql://openstates:openstates@db:5432/openstatesorg"
 )
@@ -73,6 +84,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    # LOGIN: these are needed so that when the session is passed
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -90,7 +102,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# allauth backends
+# LOGIN: allauth backends
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
