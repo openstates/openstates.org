@@ -55,7 +55,7 @@ export default function LegislatorLookup(props) {
       address
     )}.json?country=US&limit=1&access_token=${props.mapbox_access_token}`;
 
-    fetch(url)
+    fetch(url, {referrerPolicy: "origin"})
       .then((response) => response.json())
       .then(function (json) {
         const newLocation = {
