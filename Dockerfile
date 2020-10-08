@@ -16,3 +16,4 @@ COPY pyproject.toml poetry.lock package.json package-lock.json /app/
 RUN poetry install --no-root --no-dev
 RUN npm install
 COPY . /app
+RUN npm run build
