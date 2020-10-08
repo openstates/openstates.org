@@ -59,7 +59,6 @@ elif os.environ.get("DEBUG", "true").lower() == "false":
     RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
     RECAPTCHA_USE_SSL = True
-    SESSION_COOKIE_DOMAIN = "openstates.org"
     # enable once SSL is ready
     # SECURE_HSTS_SECONDS = 3600
     # SECURE_SSL_REDIRECT = True
