@@ -25,9 +25,11 @@ redirects = [
     ("bulk/csv/", "/data/session-csv/"),
     ("csv_downloads/", "/data/session-csv/"),
     ("downloads/", "/data/"),
+    # bounce to widgets
+    ("widgets/", "https://widgets.openstates.org"),
 ]
 
 urlpatterns = [
-    path(from_url, RedirectView.as_view(url=to_url, permanent=True))
+    path(from_url, RedirectView.as_view(url=to_url, permanent=False))
     for from_url, to_url in redirects
 ]
