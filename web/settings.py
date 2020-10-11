@@ -121,6 +121,7 @@ INSTALLED_APPS = [
     "openstates.data",
     "openstates.reports",
     "graphene_django",
+    "graphene_graphiql_explorer",
     "public",
     "graphapi",
     "v1",

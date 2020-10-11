@@ -1,6 +1,8 @@
 from graphene_django.views import GraphQLView
 from profiles.verifier import verify_request
 
+GraphQLView.graphiql_template = "graphene_graphiql_explorer/graphiql.html"
+
 
 class KeyedGraphQLView(GraphQLView):
     def get_response(self, request, data, show_graphiql=False):
