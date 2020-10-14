@@ -83,6 +83,7 @@ function Configurator(props) {
         <input type="submit" value="Save Configuration" onClick={saveForm} className="button" />
       </div>
       <div>
+        <h2>Preview of Widget (non-functional)</h2>
         <PreviewElement {...config} />
       </div>
     </div>
