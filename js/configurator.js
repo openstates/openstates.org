@@ -55,9 +55,13 @@ function Configurator(props) {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
       body: JSON.stringify({...config, widgetType: props.widgetType}),
-    }).then(function() {
-      // redirect back to index!
-      document.location = "/";
+    }).then(function(response) {
+      if(response.ok) {
+        // redirect back to index!
+        document.location = "/";
+      } else {
+        console.log("could not configure new widget");
+      }
     });
   }
 
