@@ -1,0 +1,24 @@
+{% extends "osbase.html" %} {% block "body" %}
+<h1>Usage for '{{ config.name }}'</h1>
+
+<p>Created at {{ config.created_at }}</p>
+<p>Maximum Daily Calls: {{ daily_limit }}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Day</th>
+      <th>Calls</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in usage reversed %}
+    <tr>
+      <td>{{u.date}}</td>
+      <td>{{u.calls}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

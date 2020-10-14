@@ -1,4 +1,5 @@
 import json
+import datetime
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -9,9 +10,7 @@ from rrl import RateLimiter, Tier, RateLimitExceeded
 
 limiter = RateLimiter(
     prefix="widgets",
-    tiers=[
-        Tier("default", 120, 0, 2000),
-    ],
+    tiers=[Tier("default", 120, 0, 2000)],
     use_redis_time=False,
     track_daily_usage=True,
 )
@@ -36,7 +35,7 @@ def configure(request):
             widget_type_name = "State Legislator Lookup"
 
         if not widget_type_name:
-            return HttpResponseServerError("Invalid Widget Type")
+            return HttpResponse("Invalid Widget Type", status=500)
 
         return render(
             request,
@@ -52,6 +51,17 @@ def configure(request):
         )
         wc.save()
         return JsonResponse({"id": wc.id})
+
+
+@login_required
+def usage(request, uuid):
+    config = get_object_or_404(WidgetConfig, pk=uuid)
+    if request.user != config.owner:
+        return HttpResponse("Permission Denied", status=403)
+    usage = limiter.get_usage_since("widgets", uuid, config.created_at.date())
+    return render(
+        request, "usage.html", {"config": config, "usage": usage, "daily_limit": 2000}
+    )
 
 
 def widget_view(request, uuid):
