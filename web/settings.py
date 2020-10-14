@@ -75,7 +75,7 @@ DATABASE_URL = os.environ.get(
 DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
 
-
+SITE_ID = 1
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -83,11 +83,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",
-    # LOGIN: these are needed so that when the session is passed
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
+    # LOGIN: these are needed so that when the session is passed it has something to look up
+    # "django.contrib.sites",
+    # "allauth",
+    # "allauth.account",
+    # "allauth.socialaccount",
     "widgets",
 ]
 
@@ -103,13 +103,12 @@ MIDDLEWARE = [
 ]
 
 # LOGIN: allauth backends
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
-
-
-SESSION_COOKIE_DOMAIN = "openstates.org"
+if not DEBUG:
+    AUTHENTICATION_BACKENDS = (
+        "django.contrib.auth.backends.ModelBackend",
+        "allauth.account.auth_backends.AuthenticationBackend",
+    )
+    SESSION_COOKIE_DOMAIN = "openstates.org"
 
 ROOT_URLCONF = "web.urls"
 WSGI_APPLICATION = "web.wsgi.application"
