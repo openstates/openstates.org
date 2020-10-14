@@ -1,9 +1,20 @@
 import json
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseServerError, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from .models import WidgetConfig, WidgetType
+from rrl import RateLimiter, Tier, RateLimitExceeded
+
+
+limiter = RateLimiter(
+    prefix="widgets",
+    tiers=[
+        Tier("default", 120, 0, 2000),
+    ],
+    use_redis_time=False,
+    track_daily_usage=True,
+)
 
 
 def index(request):
@@ -45,6 +56,10 @@ def configure(request):
 
 def widget_view(request, uuid):
     config = get_object_or_404(WidgetConfig, pk=uuid)
+    try:
+        limiter.check_limit("widgets", uuid, "default")
+    except RateLimitExceeded as e:
+        return HttpResponse(str(e), status=429)
     combined_config = dict(
         **config.settings,
         openstates_api_key=settings.OPENSTATES_API_KEY,
@@ -54,4 +69,4 @@ def widget_view(request, uuid):
     if config.widget_type == WidgetType.STATE_LEGISLATORS:
         return render(request, "state_legislators.html", {"config": combined_config})
     else:
-        return HttpResponseServerError("Invalid Widget Type")
+        return HttpResponse("Invalid Widget Type", status=500)
