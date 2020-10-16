@@ -84,10 +84,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # LOGIN: these are needed so that when the session is passed it has something to look up
-    # "django.contrib.sites",
-    # "allauth",
-    # "allauth.account",
-    # "allauth.socialaccount",
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "widgets",
 ]
 

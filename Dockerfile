@@ -17,3 +17,4 @@ RUN poetry install --no-root --no-dev
 RUN npm install
 COPY . /app
 RUN npm run build
+RUN poetry run ./manage.py collectstatic
