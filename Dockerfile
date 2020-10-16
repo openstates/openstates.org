@@ -10,7 +10,7 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 
-ENV APP_MODULE=web.wsgi:application
+ENV APP_MODULE=web.asgi:application
 
 COPY pyproject.toml poetry.lock package.json package-lock.json /app/
 RUN poetry install --no-root --no-dev
