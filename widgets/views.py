@@ -1,9 +1,9 @@
 import json
-import datetime
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import WidgetConfig, WidgetType
 from rrl import RateLimiter, Tier, RateLimitExceeded
 
@@ -24,7 +24,7 @@ def index(request):
 
     return render(request, "index.html", {"your_widgets": your_widgets})
 
-
+@ensure_csrf_cookie
 @login_required
 def configure(request):
     if request.method == "GET":
