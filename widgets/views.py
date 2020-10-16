@@ -24,6 +24,7 @@ def index(request):
 
     return render(request, "index.html", {"your_widgets": your_widgets})
 
+
 @ensure_csrf_cookie
 @login_required
 def configure(request):

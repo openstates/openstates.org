@@ -23,3 +23,6 @@ class WidgetConfig(models.Model):
 
     def url(self):
         return f"/w/{self.id}"
+
+    def iframe_code(self):
+        return '<iframe src="https://widgets.openstates.org/w/{self.id}" title="Open States Widget" height="225" width="600" style="border: 0;"></iframe>'
