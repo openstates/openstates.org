@@ -5,6 +5,7 @@ from openstates.data.models import (
     Jurisdiction,
     Organization,
     Person,
+    PersonContactDetail,
     Membership,
     LegislativeSession,
 )
@@ -191,7 +192,15 @@ class PersonNode(OCDBaseNode):
         return self.sources.all()
 
     def resolve_contact_details(self, info):
-        return self.contact_details.all()
+        contact_details = list(self.contact_details.all())
+        # email shim for backwards compatibility
+        if self.email:
+            contact_details.append(
+                PersonContactDetail(
+                    value=self.email, type="email", note="Capitol Office"
+                )
+            )
+        return contact_details
 
     def resolve_current_memberships(self, info, classification=None):
         if hasattr(self, "current_memberships"):

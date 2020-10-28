@@ -490,6 +490,32 @@ def test_person_by_id(django_assert_num_queries):
 
 
 @pytest.mark.django_db
+def test_person_email_shim(django_assert_num_queries):
+    # email used to be available in contact_details, make sure they can still find it there
+    person = Person.objects.get(name="Bob Birch")
+    person.email = "bob@example.com"
+    person.save()
+    result = schema.execute(
+        """ {
+    person(id:"%s") {
+        name
+        email
+        contactDetails { value note type }
+    }
+    }"""
+        % person.id
+    )
+    assert result.errors is None
+    assert result.data["person"]["name"] == "Bob Birch"
+    assert result.data["person"]["email"] == "bob@example.com"
+    assert result.data["person"]["contactDetails"][0] == {
+        "value": "bob@example.com",
+        "type": "email",
+        "note": "Capitol Office",
+    }
+
+
+@pytest.mark.django_db
 def test_organization_by_id(django_assert_num_queries):
     # get targets
     leg = Organization.objects.get(
