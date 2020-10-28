@@ -457,6 +457,7 @@ def test_person_by_id(django_assert_num_queries):
             name
             image
             primaryParty
+            email
             identifiers { identifier }
             otherNames { name }
             links { url }
