@@ -489,7 +489,7 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "5.1.0"
+version = "5.2.0"
 
 [package.dependencies]
 Django = ">=2.2"
@@ -1019,7 +1019,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [metadata]
-content-hash = "595af2afd2023a65d8745c49d687b4042c218d9a83551decbd981abb66ee556b"
+content-hash = "7b95d619bcc139e4c5463459b0efc184810f9fc1b03acb14e8bd40a214093838"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1180,8 +1180,8 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-5.1.0-py3-none-any.whl", hash = "sha256:756154dc1f105bc35e0ebd612eb44db032c0c4996df19c762c1f1bedcefaef4f"},
-    {file = "openstates-5.1.0.tar.gz", hash = "sha256:6193b774d742bd08a4deb1a78ea8500f4eea4f4935da79440f53e8086e40dfeb"},
+    {file = "openstates-5.2.0-py3-none-any.whl", hash = "sha256:c036a5ce9a361bf9d6ee30d72fde79be7a20ba6dbb9b43aa421e1a455d8f8aba"},
+    {file = "openstates-5.2.0.tar.gz", hash = "sha256:02413b87da9c5aef2b3408a036f9e6a6ed20cda40d5b9febd573093a96cdf9b4"},
 ]
 packaging = [
     {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
@@ -1241,6 +1241,7 @@ psycopg2-binary = [
     {file = "psycopg2_binary-2.8.6-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:2dac98e85565d5688e8ab7bdea5446674a83a3945a8f416ad0110018d1501b94"},
     {file = "psycopg2_binary-2.8.6-cp38-cp38-win32.whl", hash = "sha256:bd1be66dde2b82f80afb9459fc618216753f67109b859a361cf7def5c7968729"},
     {file = "psycopg2_binary-2.8.6-cp38-cp38-win_amd64.whl", hash = "sha256:8cd0fb36c7412996859cb4606a35969dd01f4ea34d9812a141cd920c3b18be77"},
+    {file = "psycopg2_binary-2.8.6-cp39-cp39-macosx_10_9_x86_64.macosx_10_9_intel.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:89705f45ce07b2dfa806ee84439ec67c5d9a0ef20154e0e475e2b2ed392a5b83"},
     {file = "psycopg2_binary-2.8.6-cp39-cp39-manylinux1_i686.whl", hash = "sha256:42ec1035841b389e8cc3692277a0bd81cdfe0b65d575a2c8862cec7a80e62e52"},
     {file = "psycopg2_binary-2.8.6-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:7312e931b90fe14f925729cde58022f5d034241918a5c4f9797cac62f6b3a9dd"},
 ]
