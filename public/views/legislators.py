@@ -123,6 +123,7 @@ def person(request, person_id):
         if str(person.current_role["district"])[0] in "0123456789":
             district_maybe = "District"
     person.all_contact_details = person.contact_details.order_by("note")
+    person.all_links = list(person.links.all())
 
     person.sponsored_bills = list(
         Bill.objects.all()

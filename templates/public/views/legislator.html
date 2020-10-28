@@ -35,6 +35,24 @@
         </div>
 
         <div class="overview__section overview__section--parent">
+            {% if person.email or person.all_links %}
+            <div class="overview__subsection">
+              <h3 class="heading--small">Online</h3>
+              {% if person.email %}
+              <p>
+                <span class="contact__label">Email</span>
+                <a href="mailto:{{ person.email }}">{{ person.email }}</a>
+              </p>
+              {% endif %}
+              {% if person.all_links %}
+              <span class="contact__label">Website</span>
+              {% for link in person.all_links %}
+                <a href="{{ link.url }}">{{ link.url }} {{ link.note }}</a>
+              {% endfor %}
+              {% endif %}
+
+            </div>
+            {% endif %}
             {% if person.all_contact_details %}
                 {% regroup person.all_contact_details by note as contact_details %}
                 {% for note, cd_list in contact_details %}
