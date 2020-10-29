@@ -2,7 +2,6 @@ from django.urls import path, re_path
 from .views.other import styleguide, home, state, site_search
 from .views.legislators import legislators, person, find_your_legislator
 from .views.bills import BillList, BillListFeed, bill, vote
-from .views.committees import committees, committee
 from .views.donations import donate, custom_donation
 from .views.fallback import fallback, legislator_fallback
 from utils.common import states
@@ -50,19 +49,6 @@ urlpatterns = [
         name="bill",
     ),
     re_path(r"^vote/(?P<vote_id>[-0-9a-f]+)/$", vote, name="vote-detail"),
-    # committees
-    re_path(
-        r"^(?P<state>{})/committees/$".format(state_abbr_pattern),
-        committees,
-        name="committees",
-    ),
-    re_path(
-        r"^(?P<state>{})/committees/.*\-(?P<committee_id>[0-9A-Za-z]+)/$".format(
-            state_abbr_pattern
-        ),
-        committee,
-        name="committee-detail",
-    ),
     # fallbacks
     path("reportcard/", fallback),
     re_path(r"[a-z]{2}/votes/[A-Z]{2}V\d{8}/$", fallback),

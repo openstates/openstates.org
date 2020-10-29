@@ -54,7 +54,6 @@ def state(request, state):
 
     # we need basically all of the orgs, so let's just do one big query for them
     legislature = None
-    committee_counts = Counter()
     chambers = []
 
     organizations = (
@@ -68,8 +67,6 @@ def state(request, state):
             legislature = org
         elif org.classification in ("upper", "lower"):
             chambers.append(org)
-        elif org.classification == "committee":
-            committee_counts[org.parent.classification] += 1
 
     # unicameral
     if not chambers:
@@ -91,8 +88,6 @@ def state(request, state):
             chamber.title = titles[0]
         except IndexError:
             chamber.title = "Legislator"
-
-        chamber.committee_count = committee_counts[chamber.classification]
 
     # bills
     bills = (

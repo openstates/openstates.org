@@ -132,10 +132,6 @@ def person(request, person_id):
         .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
     )
 
-    person.committee_memberships = person.memberships.filter(
-        organization__classification="committee"
-    ).all()
-
     votes = person.votes.all().select_related("vote_event", "vote_event__bill")[
         :RECENT_VOTES_TO_SHOW
     ]

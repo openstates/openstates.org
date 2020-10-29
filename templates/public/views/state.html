@@ -34,27 +34,6 @@
                 {% endfor %}
         </div>
 
-        <div class="state-overview-chambers">
-            {% for chamber in chambers %}
-                <div class="state-overview-chamber">
-                    <a href="{% url 'committees' state %}{% if chambers|length > 1 %}?chamber={{ chamber.classification }}{% endif %}">
-                        <span class="heading--large">{{ chamber.committee_count }}</span>
-                    </a>
-                    <span class="heading--xsmall state-overview-title">
-                        {% if chambers|length > 1 %}{{ chamber.name }} {% endif %}Committees
-                    </span>
-                </div>
-            {% endfor %}
-            {% comment %}
-            {% if legislature.committee_count and chambers|length > 1 %}
-                <div>
-                    <span>{{ legislature.committee_count }}</span>
-                    <span>Joint Committees</span>
-                </div>
-            {% endif %}
-            {% endcomment %}
-        </div>
-
     </section>
 
     <section class="section">

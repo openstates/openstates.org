@@ -29,10 +29,8 @@ def test_state_view(client, django_assert_max_num_queries):
         lower, upper = ch1, ch2
     assert lower.parties == {"Democratic": 1, "Republican": 3}
     assert lower.seats == 5
-    assert lower.committee_count == 0
     assert upper.parties == {"Democratic": 1, "Independent": 1}
     assert upper.seats == 3
-    assert upper.committee_count == 0
 
     # bills
     assert len(resp.context["recently_introduced_bills"]) == 4

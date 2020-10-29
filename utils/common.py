@@ -3,7 +3,7 @@ import uuid
 import base62
 from django.utils.text import slugify
 from django.db.models import Count
-from openstates.data.models import Person, Organization
+from openstates.data.models import Person
 from openstates.data.models import Bill, VoteEvent, LegislativeSession
 
 # Metadata for states that are available in the platform
@@ -40,9 +40,6 @@ def pretty_url(obj):
         return f"/person/{slugify(obj.name)}-{encode_uuid(obj.id)}/"
     elif isinstance(obj, dict) and obj["id"].startswith("ocd-person"):
         return f"/person/{slugify(obj['name'])}-{encode_uuid(obj['id'])}/"
-    elif isinstance(obj, Organization):
-        state = jid_to_abbr(obj.jurisdiction_id)
-        return f"/{state}/committees/{slugify(obj.name)}-{encode_uuid(obj.id)}/"
     elif isinstance(obj, Bill):
         state = jid_to_abbr(obj.legislative_session.jurisdiction_id)
         identifier = obj.identifier.replace(" ", "")
