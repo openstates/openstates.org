@@ -24,7 +24,7 @@
             <a href="{% canonical_url sponsorship.person %}">{{ sponsorship.person }}</a>{% if not forloop.last or bill.extra_sponsors %},{% endif %} 
 
             {% elif sponsorship.organization %}
-            <a href="{% url 'committee' state sponsorship.organization_id %}">{{ sponsorship.organization }}</a>{% if not forloop.last or bill.extra_sponsors %},{% endif %}
+                {{ sponsorship.organization }} {% if not forloop.last or bill.extra_sponsors %},{% endif %}
 
             {% else %}
                 {{ sponsorship.name|title }}{% if not forloop.last or bill.extra_sponsors %},{% endif %}

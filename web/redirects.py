@@ -6,7 +6,6 @@ redirects = [
     ("api/", "https://docs.openstates.org/en/latest/api/index.html"),
     ("api/metadata/", "https://docs.openstates.org/en/latest/api/metadata.html"),
     ("api/bills/", "https://docs.openstates.org/en/latest/api/bills.html"),
-    ("api/committees/", "https://docs.openstates.org/en/latest/api/committees.html"),
     ("api/legislators/", "https://docs.openstates.org/en/latest/api/legislators.html"),
     ("api/districts/", "https://docs.openstates.org/en/latest/api/districts.html"),
     ("contributing/", "https://docs.openstates.org/en/latest/contributing/index.html"),
