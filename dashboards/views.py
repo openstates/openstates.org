@@ -16,35 +16,27 @@ def dqr_listing(request):
     state_dqr_data = {}
 
     for state in states:
-        session = sessions_with_bills(abbr_to_jid(state.abbr))
-        abbr = state.abbr.lower()
-        lower_dashboard = None
-        upper_dashboard = None
-        session_name = ""
-        if len(session) > 0:
-            dashboards = DataQualityReport.objects.filter(session=session[0])
-            if dashboards.count() > 0:
-                session_name = session[0].name
-                # Nebraska only has one legislature
-                if abbr == "ne" or abbr == "dc":
-                    upper_dashboard = dashboards.get(
-                        session=session[0], chamber="legislature"
-                    )
-                else:
-                    try:
-                        lower_dashboard = dashboards.get(
-                            session=session[0], chamber="lower"
-                        )
-                    except DataQualityReport.DoesNotExist:
-                        pass
-                    try:
-                        upper_dashboard = dashboards.get(
-                            session=session[0], chamber="upper"
-                        )
-                    except DataQualityReport.DoesNotExist:
-                        pass
+        try:
+            session = sessions_with_bills(abbr_to_jid(state.abbr))[0]
+        except KeyError:
+            continue
 
-        state_dqr_data[abbr] = {
+        dashboards = list(
+            DataQualityReport.objects.filter(session=session).order_by("chamber")
+        )
+        session_name = session.name
+        # if there are two, lower is first (b/c of ordering above), otherwise figure it out
+        if len(dashboards) == 2:
+            lower_dashboard, upper_dashboard = dashboards
+        elif len(dashboards) == 1:
+            if dashboards[0].chamber == "lower":
+                lower_dashboard = dashboards[0]
+                upper_dashboard = None
+            else:
+                upper_dashboard = dashboards[0]
+                lower_dashboard = None
+
+        state_dqr_data[state.abbr.lower()] = {
             "state": state.name,
             "session_name": session_name,
             "lower_dashboard": lower_dashboard,
