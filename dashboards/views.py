@@ -1,3 +1,4 @@
+import datetime
 from collections import defaultdict, Counter
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Count, F
@@ -174,26 +175,40 @@ def api_overview(request):
     endpoint_usage = defaultdict(lambda: defaultdict(int))
     key_usage = defaultdict(lambda: defaultdict(int))
     key_totals = Counter()
+    v1_key_totals = Counter()
+    v2_key_totals = Counter()
     all_keys = set()
 
-    reports = list(UsageReport.objects.all().select_related("profile__user"))
+    days = int(request.GET.get("days", 60))
+    since = datetime.datetime.today() - datetime.timedelta(days=days)
+
+    reports = list(
+        UsageReport.objects.filter(date__gte=since).select_related("profile__user")
+    )
     for report in reports:
         date = str(report.date)
         key = f"{report.profile.api_key} - {report.profile.user.email}"
         endpoint_usage[date][report.endpoint] += report.calls
         key_usage[date][key] += report.calls
         key_totals[key] += report.calls
+        if report.endpoint == "graphql":
+            v2_key_totals[key] += report.calls
+        else:
+            v1_key_totals[key] += report.calls
         all_keys.add(key)
 
     context = {
         "endpoint_usage": _counter_to_chartdata(endpoint_usage),
         "key_usage": _counter_to_chartdata(key_usage),
         "most_common": key_totals.most_common(),
+        "v1_totals": v1_key_totals,
+        "v2_totals": v2_key_totals,
         "key_tiers": list(KEY_TIERS.values()),
         "total_keys": Profile.objects.exclude(
             api_tier__in=("inactive", "suspended")
         ).count(),
         "active_keys": len(all_keys),
+        "days": days,
     }
 
     return render(request, "dashboards/api.html", {"context": context})

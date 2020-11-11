@@ -133,6 +133,8 @@ export default class APIDashboard extends React.Component {
       <tr>
         <td>{k[0]}</td>
         <td>{k[1]}</td>
+        <td>{this.props.v1_totals[k[0]]}</td>
+        <td>{this.props.v2_totals[k[0]]}</td>
       </tr>
     ));
 
@@ -146,6 +148,10 @@ export default class APIDashboard extends React.Component {
           <div>
             <span>{this.props.active_keys}</span>
             <span>Active Keys</span>
+          </div>
+          <div>
+            <span>{this.props.days}</span>
+            <span>Days Included</span>
           </div>
         </div>
 
@@ -194,7 +200,9 @@ export default class APIDashboard extends React.Component {
             <thead>
               <tr>
                 <th>Key</th>
-                <th>Calls</th>
+                <th>All Calls</th>
+                <th>v1</th>
+                <th>v2</th>
               </tr>
             </thead>
             <tbody>{rows}</tbody>
