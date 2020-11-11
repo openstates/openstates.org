@@ -1,3 +1,4 @@
+import datetime
 from collections import defaultdict, Counter
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Count, F
@@ -13,36 +14,30 @@ from openstates.data.models import LegislativeSession
 
 
 def dqr_listing(request):
-
     state_dqr_data = {}
-    for state in states:
-        session = sessions_with_bills(abbr_to_jid(state.abbr))
-        abbr = state.abbr.lower()
-        lower_dashboard = []
-        upper_dashboard = []
-        session_name = ""
-        if len(session) > 0:
-            dashboards = DataQualityReport.objects.filter(session=session[0])
-            if dashboards.count() > 0:
-                session_name = session[0].name
-                # Nebraska only has one legislature
-                if abbr == "ne" or abbr == "dc":
-                    lower_dashboard = dashboards.filter(
-                        session=session[0], chamber="legislature"
-                    )[0]
-                else:
-                    lower_dashboard = dashboards.filter(
-                        session=session[0], chamber="lower"
-                    )[0]
-                    if (
-                        dashboards.filter(session=session[0], chamber="upper").count()
-                        > 0
-                    ):
-                        upper_dashboard = dashboards.filter(
-                            session=session[0], chamber="upper"
-                        )[0]
 
-        state_dqr_data[abbr] = {
+    for state in states:
+        try:
+            session = sessions_with_bills(abbr_to_jid(state.abbr))[0]
+        except KeyError:
+            continue
+
+        dashboards = list(
+            DataQualityReport.objects.filter(session=session).order_by("chamber")
+        )
+        session_name = session.name
+        # if there are two, lower is first (b/c of ordering above), otherwise figure it out
+        if len(dashboards) == 2:
+            lower_dashboard, upper_dashboard = dashboards
+        elif len(dashboards) == 1:
+            if dashboards[0].chamber == "lower":
+                lower_dashboard = dashboards[0]
+                upper_dashboard = None
+            else:
+                upper_dashboard = dashboards[0]
+                lower_dashboard = None
+
+        state_dqr_data[state.abbr.lower()] = {
             "state": state.name,
             "session_name": session_name,
             "lower_dashboard": lower_dashboard,
@@ -180,26 +175,40 @@ def api_overview(request):
     endpoint_usage = defaultdict(lambda: defaultdict(int))
     key_usage = defaultdict(lambda: defaultdict(int))
     key_totals = Counter()
+    v1_key_totals = Counter()
+    v2_key_totals = Counter()
     all_keys = set()
 
-    reports = list(UsageReport.objects.all().select_related("profile__user"))
+    days = int(request.GET.get("days", 60))
+    since = datetime.datetime.today() - datetime.timedelta(days=days)
+
+    reports = list(
+        UsageReport.objects.filter(date__gte=since).select_related("profile__user")
+    )
     for report in reports:
         date = str(report.date)
         key = f"{report.profile.api_key} - {report.profile.user.email}"
         endpoint_usage[date][report.endpoint] += report.calls
         key_usage[date][key] += report.calls
         key_totals[key] += report.calls
+        if report.endpoint == "graphql":
+            v2_key_totals[key] += report.calls
+        else:
+            v1_key_totals[key] += report.calls
         all_keys.add(key)
 
     context = {
         "endpoint_usage": _counter_to_chartdata(endpoint_usage),
         "key_usage": _counter_to_chartdata(key_usage),
         "most_common": key_totals.most_common(),
+        "v1_totals": v1_key_totals,
+        "v2_totals": v2_key_totals,
         "key_tiers": list(KEY_TIERS.values()),
         "total_keys": Profile.objects.exclude(
             api_tier__in=("inactive", "suspended")
         ).count(),
         "active_keys": len(all_keys),
+        "days": days,
     }
 
     return render(request, "dashboards/api.html", {"context": context})
