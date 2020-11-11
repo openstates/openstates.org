@@ -13,13 +13,13 @@ from openstates.data.models import LegislativeSession
 
 
 def dqr_listing(request):
-
     state_dqr_data = {}
+
     for state in states:
         session = sessions_with_bills(abbr_to_jid(state.abbr))
         abbr = state.abbr.lower()
-        lower_dashboard = []
-        upper_dashboard = []
+        lower_dashboard = None
+        upper_dashboard = None
         session_name = ""
         if len(session) > 0:
             dashboards = DataQualityReport.objects.filter(session=session[0])
@@ -27,20 +27,22 @@ def dqr_listing(request):
                 session_name = session[0].name
                 # Nebraska only has one legislature
                 if abbr == "ne" or abbr == "dc":
-                    lower_dashboard = dashboards.filter(
+                    upper_dashboard = dashboards.get(
                         session=session[0], chamber="legislature"
-                    )[0]
+                    )
                 else:
-                    lower_dashboard = dashboards.filter(
-                        session=session[0], chamber="lower"
-                    )[0]
-                    if (
-                        dashboards.filter(session=session[0], chamber="upper").count()
-                        > 0
-                    ):
-                        upper_dashboard = dashboards.filter(
+                    try:
+                        lower_dashboard = dashboards.get(
+                            session=session[0], chamber="lower"
+                        )
+                    except DataQualityReport.DoesNotExist:
+                        pass
+                    try:
+                        upper_dashboard = dashboards.get(
                             session=session[0], chamber="upper"
-                        )[0]
+                        )
+                    except DataQualityReport.DoesNotExist:
+                        pass
 
         state_dqr_data[abbr] = {
             "state": state.name,
