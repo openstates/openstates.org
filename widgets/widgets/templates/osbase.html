@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Open States Widgets</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="{% static 'main.css' %}" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header__top grid-container">
+        <a href="/">
+          <img
+            class="header__logo"
+            width="250"
+            src="{% static 'images/openstates_logo.png' %}"
+            alt="OpenStates Logo"
+          />
+        </a>
+        <div id="header__login">
+         {% if user.is_authenticated %}
+         <a href="https://openstates.org/accounts/profile/">{{ user.username|default:"Profile" }}</a> |
+         <a href="https://openstates.org/accounts/logout/">Sign Out</a>
+         {% else %}
+         <a href="https://openstates.org/accounts/login/?next=/widgets">Log In</a> /
+         <a href="https://openstates.org/accounts/signup/?next=/widgets">Sign Up</a>
+         {% endif %}
+        </div>
+      </div>
+      <div class="bluebar"></div>
+    </header>
+
+    <div class="grid-container">
+      {% block "body" %} {% endblock %}
+    </div>
+
+<footer class="footer">
+    <h2>About</h2>
+    <ul class="no-bullet">
+        <li><a href="https://openstates.org/about/">About Open States</a></li>
+        <li><a href="https://openstates.org/donate/">Support Open States</a></li>
+        <li><a href="https://openstates.org/tos/">Terms of Use &amp; Privacy</a></li>
+    </ul>
+</footer>
+
+
+  </body>
+</html>

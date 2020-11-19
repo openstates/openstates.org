@@ -1,0 +1,89 @@
+{% extends "osbase.html" %}
+{% block "body" %}
+<script>
+function toClipboard(id) {
+    const elem = document.getElementById(id);
+    elem.select();
+    elem.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+}
+</script>
+
+<h1>Open States Widgets</h1>
+    <p>
+      We're providing pre-built pieces of functionality that you can use to embed Open States data on your site.
+    </p>
+
+    <p>
+      Widgets are free-to-use for small sites, and we also offer some paid options if you'd like to customize or need to exceed our free limits.  Right now as we work out pricing options, we're asking that you get in touch, but we're hoping to come up with fair &amp; easy to use tiers by 2021.  Your input now will help with that process.
+    </p>
+
+    {% if your_widgets %}
+    <div id="your-widgets">
+    <h2>Your Widgets</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Created</th>
+          <th>Embed Code</th>
+          <th>&nbsp;</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for widget in your_widgets %}
+      <tr>
+        <td>{{ widget.name }}</td>
+        <td>{{ widget.get_widget_type_display }}</td>
+        <td>{{ widget.created_at }}</td>
+        <td><input type="text" readonly value="{{widget.iframe_code}}" id="wi{{forloop.counter}}" /> 
+            <input type="button" value="Copy" onclick="toClipboard('wi{{forloop.counter}}')" />
+        </td>
+        <td><a href="{{widget.url}}">Preview</a></td>
+        <td><a href="/usage/{{widget.id}}">Usage</a></td>
+      </tr>
+    {% endfor %}
+      </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <div id="available-widgets">
+      <h2>Available Widgets</h2>
+
+      <div class="widget-summary">
+        <h3>State Legislators Lookup</h3>
+
+        <div class="widget-preview">
+            <img src="/static/images/sl-widget-preview.png" alt="preview of widget" />
+            <div>
+                <p>A straightforward widget that prompts a user for their address and guides them to the Open States pages for their representatives.</p>
+                <p>Terms of Use: Free for up to 2,000 visits per month.  Customization &amp; higher-volume pricing available.</p>
+
+                {% if user.is_authenticated %}
+                <a class="create-new" href="/configure/?new=SL">Create New Widget</a> 
+                {% else %}
+                <a class="create-new" href="https://openstates.org/accounts/login/?next=/widgets">Login To Create Widgets</a> 
+                {% endif %}
+                <a class="contact-us" href="mailto:contact@openstates.org">Contact Us</a>
+            </div>
+        </div>
+      </div>
+
+      <!--
+      <div class="widget-summary">
+        <h3>Bill Status</h3>
+        <p>A simple widget that displays the status of a particular bill.</p>
+        <p>Terms of Use: Free for up to 2,000 visits per month.  Customization &amp; higher-volume pricing available.</p>
+
+        <a href="/configure/?new=BS">Create New Widget</a> 
+        <a href="mailto:contact@openstates.org">Contact Us</a>
+      </div>
+      -->
+
+    </div>
+
+
+{% endblock %}

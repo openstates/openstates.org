@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>OSW 1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet"> 
+    <link href="{% static 'main.css' %}" rel="stylesheet">
+  </head>
+  <body>
+    <div id="osw-c"></div>
+    {{ config|json_script:"config" }}
+    <script src="/static/legislator-lookup.js"></script>
+  </body>
+</html>
