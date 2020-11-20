@@ -1,5 +1,6 @@
 import re
 import json
+import datetime
 from collections import defaultdict, Counter
 from django.core.management.base import BaseCommand
 from rrl import RateLimiter
@@ -76,7 +77,9 @@ class Command(BaseCommand):
         )
 
         for key in keys:
-            usage = limiter.get_usage_since(key, oldest_day)
+            usage = limiter.get_usage_since(
+                key, datetime.date.today() - datetime.timedelta(days=7)
+            )
             for daily_usage in usage:
                 UsageReport.objects.update_or_create(
                     profile=keys[key],
