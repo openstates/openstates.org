@@ -83,7 +83,7 @@ class Command(BaseCommand):
             for daily_usage in usage:
                 UsageReport.objects.update_or_create(
                     profile=keys[key],
-                    date=daily_usage.day,
+                    date=daily_usage.date,
                     endpoint="v3",
                     defaults=dict(calls=daily_usage.calls, total_duration_seconds=0),
                 )
