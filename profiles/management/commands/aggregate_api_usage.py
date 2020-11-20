@@ -2,6 +2,7 @@ import re
 import json
 from collections import defaultdict, Counter
 from django.core.management.base import BaseCommand
+from rrl import RateLimiter
 from ...models import UsageReport, Profile
 
 v1_endpoint_mapping = [
@@ -70,12 +71,26 @@ class Command(BaseCommand):
 
         keys = {key.api_key: key for key in Profile.objects.all()}
 
+        limiter = RateLimiter(
+            prefix="v3", tiers=[], use_redis_time=False, track_daily_usage=True
+        )
+
+        for key in keys:
+            usage = limiter.get_usage_since(key, oldest_day)
+            for daily_usage in usage:
+                UsageReport.objects.update_or_create(
+                    profile=keys[key],
+                    date=daily_usage.day,
+                    endpoint="v3",
+                    defaults=dict(calls=daily_usage.calls, total_duration_seconds=0),
+                )
+
         for day, counter in self.count_by_day.items():
             # skip oldest day
             if day == oldest_day:
                 continue
 
-            # build usage reports
+            # build log-based usage reports
             for (key, endpoint), calls in counter.items():
                 duration = self.duration_by_day[day][key][endpoint]
 
