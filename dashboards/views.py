@@ -177,6 +177,7 @@ def api_overview(request):
     key_totals = Counter()
     v1_key_totals = Counter()
     v2_key_totals = Counter()
+    v3_key_totals = Counter()
     all_keys = set()
 
     days = int(request.GET.get("days", 60))
@@ -193,6 +194,8 @@ def api_overview(request):
         key_totals[key] += report.calls
         if report.endpoint == "graphql":
             v2_key_totals[key] += report.calls
+        elif report.endpoint == "v3":
+            v3_key_totals[key] += report.calls
         else:
             v1_key_totals[key] += report.calls
         all_keys.add(key)
@@ -203,6 +206,7 @@ def api_overview(request):
         "most_common": key_totals.most_common(),
         "v1_totals": v1_key_totals,
         "v2_totals": v2_key_totals,
+        "v3_totals": v3_key_totals,
         "key_tiers": list(KEY_TIERS.values()),
         "total_keys": Profile.objects.exclude(
             api_tier__in=("inactive", "suspended")

@@ -24,6 +24,7 @@ const COLORS = {
   "v1.metadata-list": "#D46A6A",
   "v1.committees": "#804515",
   "v1.events": "#552700",
+  "v3": "#028AOF",
 };
 
 class EndpointChart extends PureComponent {
@@ -83,6 +84,7 @@ class EndpointChart extends PureComponent {
           fill={COLORS["v1.committees"]}
         />
         <Bar dataKey="v1.events" stackId="c" fill={COLORS["v1.events"]} />
+        <Bar dataKey="v3" stackId="d" fill={COLORS["v3"]} />
       </BarChart>
     );
   }
@@ -135,6 +137,7 @@ export default class APIDashboard extends React.Component {
         <td>{k[1]}</td>
         <td>{this.props.v1_totals[k[0]]}</td>
         <td>{this.props.v2_totals[k[0]]}</td>
+        <td>{this.props.v3_totals[k[0]]}</td>
       </tr>
     ));
 
@@ -203,6 +206,7 @@ export default class APIDashboard extends React.Component {
                 <th>All Calls</th>
                 <th>v1</th>
                 <th>v2</th>
+                <th>v3</th>
               </tr>
             </thead>
             <tbody>{rows}</tbody>
