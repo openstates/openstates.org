@@ -100,10 +100,15 @@ def get_key_from_request(request):
 
 
 def verify_request(request, zone):
-    ERROR_NOTE = (
-        "Login and visit https://openstates.org/account/profile/ for your API key. "
-        "contact@openstates.org to raise limits"
-    )
+    if zone == "v1":
+        ERROR_NOTE = (
+            "Please consider moving to API v2 or v3.  API v1 will be removed in 2021."
+        )
+    else:
+        ERROR_NOTE = (
+            "Login and visit https://openstates.org/account/profile/ for your API key. "
+            "contact@openstates.org to raise limits"
+        )
 
     key = get_key_from_request(request)
 
