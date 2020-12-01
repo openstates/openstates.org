@@ -8,8 +8,6 @@ django_environment:
     DATABASE_URL: "{{ lookup('aws_ssm', '/site/DATABASE_URL') }}"
     CACHE_URL: "{{ lookup('aws_ssm', '/site/CACHE_URL') }}"
     RRL_REDIS_HOST: "{{ lookup('aws_ssm', '/site/RRL_REDIS_HOST') }}"
-    STRIPE_PUBLIC_KEY: "{{ lookup('aws_ssm', '/site/STRIPE_PUBLIC_KEY') }}"
-    STRIPE_SECRET_KEY: "{{ lookup('aws_ssm', '/site/STRIPE_SECRET_KEY') }}"
     SENTRY_DSN: "{{ lookup('aws_ssm', '/site/SENTRY_DSN') }}"
     SENDGRID_API_KEY: "{{ lookup('aws_ssm', '/site/SENDGRID_API_KEY') }}"
     RECAPTCHA_PUBLIC_KEY: "{{ lookup('aws_ssm', '/site/RECAPTCHA_PUBLIC_KEY_V2') }}"

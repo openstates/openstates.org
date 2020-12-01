@@ -1,4 +1,3 @@
-from unittest import mock
 import pytest
 from graphapi.tests.utils import populate_db, populate_unicam
 
@@ -78,40 +77,3 @@ def test_search(client, django_assert_num_queries):
         resp = client.get("/search/?query=amanda")
     assert len(resp.context["bills"]) == 0
     assert len(resp.context["people"]) == 1
-
-
-@pytest.mark.django_db
-def test_donate_success(client):
-    class Retval:
-        id = "123"
-
-    with mock.patch("stripe.checkout.Session.create") as session:
-        session.return_value = Retval()
-        resp = client.post("/custom_donation/", {"dollars": 100})
-        session.assert_called_once_with(
-            payment_method_types=["card"],
-            line_items=[
-                {
-                    "price_data": {
-                        "currency": "usd",
-                        "product_data": {"name": "One-Time Donation"},
-                        "unit_amount": 10000,
-                    },
-                    "quantity": 1,
-                }
-            ],
-            mode="payment",
-            success_url="https://openstates.org/donate?success",
-            cancel_url="https://openstates.org/donate/",
-        )
-
-        assert resp.status_code == 200
-        assert resp.json() == {"session_id": "123"}
-
-
-@pytest.mark.django_db
-def test_donate_error(client):
-    resp = client.post("/custom_donation/", {"dollars": 1})
-    assert "error" in resp.json()
-    resp = client.post("/custom_donation/", {"dollars": "b"})
-    assert "error" in resp.json()

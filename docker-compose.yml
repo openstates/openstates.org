@@ -37,8 +37,6 @@ services:
       - SECRET_KEY
       - DATABASE_URL
       - CACHE_URL
-      - STRIPE_PUBLIC_KEY
-      - STRIPE_SECRET_KEY
       - RECAPTCHA_PUBLIC_KEY
       - RECAPTCHA_PRIVATE_KEY
     depends_on:
