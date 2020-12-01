@@ -43,7 +43,7 @@ def profile(request):
     subscriptions = request.user.subscriptions.filter(active=True).order_by(
         "-created_at"
     )
-    recent_usage = defaultdict(lambda: {"v1": 0, "v2": 0})
+    recent_usage = defaultdict(lambda: {"v1": 0, "v2": 0, "v3": 0})
     for r in request.user.profile.usage_reports.filter(
         date__gt=datetime.date.today() - datetime.timedelta(days=7)
     ):
@@ -51,6 +51,8 @@ def profile(request):
             recent_usage[r.date]["v1"] += r.calls
         elif r.endpoint == "graphql":
             recent_usage[r.date]["v2"] += r.calls
+        elif r.endpoint == "v3":
+            recent_usage[r.date]["v3"] += r.calls
 
     return render(
         request,

@@ -85,9 +85,9 @@
   </dl>
   {% if recent_usage %}
   <table>
-  <tr><th>Day</th><th>v1 Calls</th><th>v2 Calls</th></tr>
+  <tr><th>Day</th><th>v1 Calls</th><th>v2 Calls</th><th>v3 Calls</th></tr>
   {% for day, segment in recent_usage %}
-  <tr><td>{{ day }}</td><td>{{ segment.v1 }}</td><td>{{ segment.v2 }}</td></tr>
+  <tr><td>{{ day }}</td><td>{{ segment.v1 }}</td><td>{{ segment.v2 }}</td><td>{{segment.v3}}</td></tr>
   {% endfor %}
   </table>
   {% endif %}
