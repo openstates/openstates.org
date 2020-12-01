@@ -19,7 +19,7 @@ redirects = [
         "https://cdn.forms-content.sg-form.com/b8d934d4-7b67-11ea-a680-1a7f462d56d4",
     ),
     # old flatpages
-    ("funding/", "/donate/"),
+    ("funding/", "/about/"),
     ("contact/", "/about/"),
     ("bulk/csv/", "/data/session-csv/"),
     ("csv_downloads/", "/data/session-csv/"),
