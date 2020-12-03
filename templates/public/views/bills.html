@@ -1,5 +1,6 @@
 {% extends "../components/base.html" %}
 {% load custom_tags %}
+{% load user_agents %}
 
 {% block title %}{{ state|state_name }} Bills - Open States{% endblock %}
 {% block og_title %}{{ state|state_name }} Bills - Open States{% endblock %}
@@ -12,8 +13,14 @@
 
     <div class="grid-x grid-margin-x">
         <div class="cell medium-9">
-
-            <table class="hover">
+            {% if request|is_mobile %}
+                <div class="grid-container full">
+                    {% for bill in bills %}
+                      {% bill_card state bill %}
+                    {% endfor %}
+                </div>
+            {% else %}
+              <table class="hover">
                 <thead>
                     <tr>
                         <th>Bill Title</th>
@@ -52,6 +59,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
 
             <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>
             {% pagination bills request.GET %}</p>
@@ -114,7 +122,7 @@
                         />
                         <label for="passed-lower-chamber">Passed {{ chambers.lower }}</label>
                         <br>
-                        
+
                         <input type="checkbox" name="status" id="passed-upper-chamber" value="passed-upper-chamber"
                         {% if "passed-upper-chamber" in form.status %} checked {% endif %}
                         />

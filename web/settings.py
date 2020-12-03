@@ -124,6 +124,7 @@ INSTALLED_APPS = [
     "graphene_graphiql_explorer",
     "public",
     "graphapi",
+    "django_user_agents",
     "v1",
     "bulk",
     "profiles.apps.ProfilesConfig",
@@ -142,6 +143,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "profiles.middleware.structlog_middleware",
+    "django_user_agents.middleware.UserAgentMiddleware",
 ]
 
 ROOT_URLCONF = "web.urls"
@@ -257,3 +259,7 @@ structlog.configure(
     wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
+
+# Name of cache backend to cache user agents. If it not specified default
+# cache alias will be used. Set to `None` to disable caching.
+USER_AGENTS_CACHE = None
