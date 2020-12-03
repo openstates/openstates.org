@@ -20,8 +20,8 @@
                     {% endfor %}
                 </div>
             {% else %}
-              <table class="hover">
-                <thead>
+                <table class="hover">
+                  <thead>
                     <tr>
                         <th>Bill Title</th>
                         <th width="100">
@@ -35,8 +35,8 @@
                           </a>
                         </th>
                     </tr>
-                </thead>
-                <tbody>
+                  </thead>
+                  <tbody>
                     {% for bill in bills %}
                         <tr class="row--align-top">
                             <td>
@@ -57,8 +57,8 @@
                             </td>
                         </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                  </tbody>
+                </table>
             {% endif %}
 
             <p>Showing {{ bills.start_index }} to {{ bills.end_index }} of {{ bills.paginator.count }} bills</p>

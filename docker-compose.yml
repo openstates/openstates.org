@@ -46,7 +46,7 @@ services:
     networks:
       - openstates-network
 
-  nginx: 
+  nginx:
     build: docker/nginx
     ports:
       - "8000:80"
