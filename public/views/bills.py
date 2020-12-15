@@ -114,6 +114,10 @@ class BillList(View):
             "status": status,
         }
 
+        # decision was made in openstates/issues#193 to exclude these by default
+        # to not confuse most users
+        EXCLUDED_CLASSIFICATIONS = ["proposed bill"]
+
         bills = search_bills(
             state=state,
             query=query,
@@ -121,6 +125,7 @@ class BillList(View):
             session=session,
             sponsor=sponsor,
             classification=classification,
+            exclude_classifications=EXCLUDED_CLASSIFICATIONS,
             subjects=q_subjects,
             status=status,
             sort=sort,

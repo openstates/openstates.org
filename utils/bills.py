@@ -26,6 +26,7 @@ def search_bills(
     session=None,
     sponsor=None,
     classification=None,
+    exclude_classifications=None,
     subjects=None,
     status=None,
 ):
@@ -53,6 +54,8 @@ def search_bills(
         bills = bills.filter(sponsorships__person_id=sponsor)
     if classification:
         bills = bills.filter(classification__contains=[classification])
+    elif exclude_classifications:
+        bills = bills.exclude(classification__contains=exclude_classifications)
     if subjects:
         bills = bills.filter(subject__overlap=subjects)
 
