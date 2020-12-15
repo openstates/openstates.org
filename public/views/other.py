@@ -7,7 +7,7 @@ from django.http import Http404
 from django.shortcuts import render
 from openstates.data.models import Bill, Organization, Person
 from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
-from utils.bills import search_bills
+from utils.bills import search_bills, EXCLUDED_CLASSIFICATIONS
 from utils.people import person_as_dict
 
 
@@ -137,7 +137,12 @@ def site_search(request):
     bills = []
     people = []
     if query:
-        bills = search_bills(state=state, query=query, sort="-latest_action")
+        bills = search_bills(
+            state=state,
+            query=query,
+            sort="-latest_action",
+            exclude_classifications=EXCLUDED_CLASSIFICATIONS,
+        )
 
         # pagination
         page_num = int(request.GET.get("page", 1))

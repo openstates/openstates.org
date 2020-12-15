@@ -16,7 +16,7 @@ from openstates.data.models import (
 )
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import fix_bill_id, search_bills
+from utils.bills import fix_bill_id, search_bills, EXCLUDED_CLASSIFICATIONS
 from .fallback import fallback
 
 
@@ -113,10 +113,6 @@ class BillList(View):
             "subjects": q_subjects,
             "status": status,
         }
-
-        # decision was made in openstates/issues#193 to exclude these by default
-        # to not confuse most users
-        EXCLUDED_CLASSIFICATIONS = ["proposed bill"]
 
         bills = search_bills(
             state=state,

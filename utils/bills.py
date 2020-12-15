@@ -4,6 +4,9 @@ from openstates.data.models import Bill
 from .websearchquery import WebSearchQuery as SearchQuery
 from .common import abbr_to_jid
 
+# decision was made in openstates/issues#193 to exclude these by default to not confuse users
+EXCLUDED_CLASSIFICATIONS = ["proposed bill"]
+
 # This function has to match openstates.transformers
 _bill_id_re = re.compile(r"([A-Z]*)\s*0*([-\d]+)")
 _mi_bill_id_re = re.compile(r"(SJR|HJR)\s*([A-Z]+)")
