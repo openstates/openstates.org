@@ -20,10 +20,11 @@ KEY_TIERS = {
     "suspended": {"name": "Suspended"},
     "default": {
         "name": "Default (new user)",
-        "v1": Limit(10, 1, 2),
+        "v1": Limit(0, 1, 2),
         "v2": Limit(500, 1, 2),
     },
-    "bronze": {"name": "Bronze", "v1": Limit(500, 2, 3), "v2": Limit(3000, 2, 3)},
+    "legacy": {"name": "Legacy", "v1": Limit(1250, 2, 3), "v2": Limit(3000, 2, 3)},
+    "bronze": {"name": "Bronze", "v1": Limit(250, 2, 3), "v2": Limit(3000, 2, 3)},
     "silver": {"name": "Silver", "v1": Limit(2000, 2, 5), "v2": Limit(30000, 2, 5)},
     "unlimited": {
         "name": "Unlimited",
