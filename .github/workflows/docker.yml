@@ -16,7 +16,7 @@ jobs:
           repository: openstates/openstates.org
           dockerfile: /github/workspace/Dockerfile
           tag_with_ref: true
-          tags: latest
+          tags: latest, django-dev
       # - name: build nginx docker image
       #   uses: docker/build-push-action@v1.1.0
       #   with:
