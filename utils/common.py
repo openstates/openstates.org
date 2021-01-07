@@ -7,7 +7,7 @@ from openstates.data.models import Person
 from openstates.data.models import Bill, VoteEvent, LegislativeSession
 
 # Metadata for states that are available in the platform
-states = sorted(us.STATES + [us.states.PR], key=lambda s: s.name)
+states = sorted(us.STATES + [us.states.PR, us.states.DC], key=lambda s: s.name)
 
 
 def jid_to_abbr(j):
