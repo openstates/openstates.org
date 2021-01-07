@@ -414,7 +414,7 @@ description = "a library for doing approximate and phonetic matching of strings.
 name = "jellyfish"
 optional = false
 python-versions = "*"
-version = "0.5.6"
+version = "0.6.1"
 
 [[package]]
 category = "main"
@@ -497,10 +497,11 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "5.2.0"
+version = "5.3.0"
 
 [package.dependencies]
 Django = ">=2.2"
+PyYAML = ">=5.3.1,<6.0.0"
 attrs = ">=20.2.0,<21.0.0"
 click = ">=7.1.1,<8.0.0"
 dj_database_url = ">=0.5.0,<0.6.0"
@@ -508,6 +509,7 @@ jsonschema = ">=3.2.0,<4.0.0"
 psycopg2-binary = ">=2.8.4,<3.0.0"
 pytz = ">=2019.3,<2020.0"
 scrapelib = ">=1.2.0,<2.0.0"
+us = ">=2.0.2,<3.0.0"
 
 [[package]]
 category = "main"
@@ -751,6 +753,14 @@ version = "2019.3"
 
 [[package]]
 category = "main"
+description = "YAML parser and emitter for Python"
+name = "pyyaml"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "5.3.1"
+
+[[package]]
+category = "main"
 description = "Python client for Redis key-value store"
 name = "redis"
 optional = false
@@ -979,10 +989,10 @@ description = "US state meta information and other fun stuff"
 name = "us"
 optional = false
 python-versions = "*"
-version = "1.0.0"
+version = "2.0.2"
 
 [package.dependencies]
-jellyfish = "0.5.6"
+jellyfish = "0.6.1"
 
 [[package]]
 category = "dev"
@@ -1025,7 +1035,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [metadata]
-content-hash = "dff423e48aaf15d2afed2006d1f20e8c24e18e910577728451830e7c338a4889"
+content-hash = "000bce954f941e58ab77244b2454f817ed4b1be3f18367e242d1a79270ec9854"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1160,8 +1170,7 @@ jedi = [
     {file = "jedi-0.17.2.tar.gz", hash = "sha256:86ed7d9b750603e4ba582ea8edc678657fb4007894a12bcf6f4bb97892f31d20"},
 ]
 jellyfish = [
-    {file = "jellyfish-0.5.6-cp27-none-macosx_10_11_x86_64.whl", hash = "sha256:d0b22034df56d5faa34928457655722acf385d122da59c2cf7f4acd6bd49ea8b"},
-    {file = "jellyfish-0.5.6.tar.gz", hash = "sha256:887a9a49d0caee913a883c3e7eb185f6260ebe2137562365be422d1316bd39c9"},
+    {file = "jellyfish-0.6.1.tar.gz", hash = "sha256:5104e45a2b804b48a46a92a5e6d6e86830fe60ae83b1da32c867402c8f4c2094"},
 ]
 jmespath = [
     {file = "jmespath-0.10.0-py2.py3-none-any.whl", hash = "sha256:cdf6525904cc597730141d61b36f2e4b8ecc257c420fa2f4549bac2c2d0cb72f"},
@@ -1190,8 +1199,8 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-5.2.0-py3-none-any.whl", hash = "sha256:c036a5ce9a361bf9d6ee30d72fde79be7a20ba6dbb9b43aa421e1a455d8f8aba"},
-    {file = "openstates-5.2.0.tar.gz", hash = "sha256:02413b87da9c5aef2b3408a036f9e6a6ed20cda40d5b9febd573093a96cdf9b4"},
+    {file = "openstates-5.3.0-py3-none-any.whl", hash = "sha256:4ee9d3e13dbeb273f21adc1619bb7b63ad2538c79a8016e1b0439d3a1f33c150"},
+    {file = "openstates-5.3.0.tar.gz", hash = "sha256:7788389835e598f1787f2935d2e12a0178c628630bcbf53fa08ba69b9da1dc37"},
 ]
 packaging = [
     {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
@@ -1310,6 +1319,21 @@ pytz = [
     {file = "pytz-2019.3-py2.py3-none-any.whl", hash = "sha256:1c557d7d0e871de1f5ccd5833f60fb2550652da6be2693c1e02300743d21500d"},
     {file = "pytz-2019.3.tar.gz", hash = "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"},
 ]
+pyyaml = [
+    {file = "PyYAML-5.3.1-cp27-cp27m-win32.whl", hash = "sha256:74809a57b329d6cc0fdccee6318f44b9b8649961fa73144a98735b0aaf029f1f"},
+    {file = "PyYAML-5.3.1-cp27-cp27m-win_amd64.whl", hash = "sha256:240097ff019d7c70a4922b6869d8a86407758333f02203e0fc6ff79c5dcede76"},
+    {file = "PyYAML-5.3.1-cp35-cp35m-win32.whl", hash = "sha256:4f4b913ca1a7319b33cfb1369e91e50354d6f07a135f3b901aca02aa95940bd2"},
+    {file = "PyYAML-5.3.1-cp35-cp35m-win_amd64.whl", hash = "sha256:cc8955cfbfc7a115fa81d85284ee61147059a753344bc51098f3ccd69b0d7e0c"},
+    {file = "PyYAML-5.3.1-cp36-cp36m-win32.whl", hash = "sha256:7739fc0fa8205b3ee8808aea45e968bc90082c10aef6ea95e855e10abf4a37b2"},
+    {file = "PyYAML-5.3.1-cp36-cp36m-win_amd64.whl", hash = "sha256:69f00dca373f240f842b2931fb2c7e14ddbacd1397d57157a9b005a6a9942648"},
+    {file = "PyYAML-5.3.1-cp37-cp37m-win32.whl", hash = "sha256:d13155f591e6fcc1ec3b30685d50bf0711574e2c0dfffd7644babf8b5102ca1a"},
+    {file = "PyYAML-5.3.1-cp37-cp37m-win_amd64.whl", hash = "sha256:73f099454b799e05e5ab51423c7bcf361c58d3206fa7b0d555426b1f4d9a3eaf"},
+    {file = "PyYAML-5.3.1-cp38-cp38-win32.whl", hash = "sha256:06a0d7ba600ce0b2d2fe2e78453a470b5a6e000a985dd4a4e54e436cc36b0e97"},
+    {file = "PyYAML-5.3.1-cp38-cp38-win_amd64.whl", hash = "sha256:95f71d2af0ff4227885f7a6605c37fd53d3a106fcab511b8860ecca9fcf400ee"},
+    {file = "PyYAML-5.3.1-cp39-cp39-win32.whl", hash = "sha256:ad9c67312c84def58f3c04504727ca879cb0013b2517c85a9a253f0cb6380c0a"},
+    {file = "PyYAML-5.3.1-cp39-cp39-win_amd64.whl", hash = "sha256:6034f55dab5fea9e53f436aa68fa3ace2634918e8b5994d82f3621c04ff5ed2e"},
+    {file = "PyYAML-5.3.1.tar.gz", hash = "sha256:b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d"},
+]
 redis = [
     {file = "redis-3.5.3-py2.py3-none-any.whl", hash = "sha256:432b788c4530cfe16d8d943a09d40ca6c16149727e4afe8c2c9d5580c59d9f24"},
     {file = "redis-3.5.3.tar.gz", hash = "sha256:0e7e0cfca8660dea8b7d5cd8c4f6c5e29e11f31158c0b0ae91a397f00e5a05a2"},
@@ -1382,7 +1406,7 @@ urllib3 = [
     {file = "urllib3-1.25.11.tar.gz", hash = "sha256:8d7eaa5a82a1cac232164990f04874c594c9453ec55eef02eab885aa02fc17a2"},
 ]
 us = [
-    {file = "us-1.0.0.tar.gz", hash = "sha256:09dc9ba763e2e4399e6a042104f3e415a7de6bfa4df6f557b4f19e3ba9a22fda"},
+    {file = "us-2.0.2.tar.gz", hash = "sha256:cb11ad0d43deff3a1c3690c74f0c731cff5b862c73339df2edd91133e1496fbc"},
 ]
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
