@@ -40,7 +40,9 @@ def _preprocess_sponsors(bills):
 def home(request):
     # cache these to try to keep the homepage as cheap as possible
     cache_time = 60 * 60 * 24  # cache for a full day
-    updates = cache.get_or_set("homepage-blog-updates", _get_latest_updates, cache_time)
+    updates = cache.get_or_set(
+        "homepage-blog-updates-cb", _get_latest_updates, cache_time
+    )
 
     context = {"states": states, "blog_updates": updates}
     return render(request, "public/views/home.html", context)
