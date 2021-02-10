@@ -287,11 +287,26 @@ def upload_and_publish(state, session, filename, data_type):
     )
 
 
-def get_available_sessions(state):
-    return sorted(
-        s.identifier
-        for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
-    )
+def get_available_sessions(state, updated_since=0):
+    if updated_since:
+        sessions = [
+            b
+            for b in Bill.objects.filter(
+                legislative_session__jurisdiction_id=abbr_to_jid(state),
+                updated_at__gte=datetime.datetime.now()
+                - datetime.timedelta(days=updated_since),
+            )
+            .values_list("legislative_session__identifier", flat=True)
+            .distinct()
+        ]
+    else:
+        sessions = [
+            s.identifier
+            for s in LegislativeSession.objects.filter(
+                jurisdiction_id=abbr_to_jid(state)
+            )
+        ]
+    return sorted(sessions)
 
 
 def export_data(state, session, data_type):
@@ -316,6 +331,7 @@ class Command(BaseCommand):
         parser.add_argument("state")
         parser.add_argument("sessions", nargs="*")
         parser.add_argument("--all-sessions", action="store_true")
+        parser.add_argument("--with-updates-days", type=int, default=0)  # days
         parser.add_argument("--format")
 
     def handle(self, *args, **options):
@@ -329,9 +345,14 @@ class Command(BaseCommand):
             export_all_states(data_type)
             return
 
-        sessions = get_available_sessions(state)
+        sessions = get_available_sessions(state, options["with_updates_days"])
 
         if options["all_sessions"]:
+            options["sessions"] = sessions
+        elif options["with_updates_days"]:
+            print(
+                f"{len(sessions)} sessions with updates in last {options['with_updates_days']} days"
+            )
             options["sessions"] = sessions
         if not options["sessions"]:
             print("available sessions:")
