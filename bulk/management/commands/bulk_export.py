@@ -318,9 +318,9 @@ def export_data(state, session, data_type):
         upload_and_publish(state, session, filename, data_type)
 
 
-def export_all_states(data_type):
+def export_all_states(data_type, updates_since):
     for state in STATES_BY_NAME.values():
-        for session in get_available_sessions(state.abbr):
+        for session in get_available_sessions(state.abbr, updates_since):
             export_data(state.abbr, session, data_type)
 
 
@@ -342,7 +342,7 @@ class Command(BaseCommand):
 
         # special case
         if state == "all":
-            export_all_states(data_type)
+            export_all_states(data_type, options["with_updates_days"])
             return
 
         sessions = get_available_sessions(state, options["with_updates_days"])
