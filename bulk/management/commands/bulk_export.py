@@ -25,6 +25,7 @@ from openstates.data.models import (
     BillVersionLink,
     BillSource,
     VoteEvent,
+    Organization,
     PersonVote,
     VoteCount,
     VoteSource,
@@ -153,7 +154,7 @@ def export_session_csv(state, session):
 State: {state}
 Session: {session}
 Generated At: {ts}
-CSV Format Version: 2.0
+CSV Format Version: 2.1
 """,
     )
 
@@ -210,6 +211,9 @@ CSV Format Version: 2.0
     ):
         subobjs = Model.objects.filter(vote_event__legislative_session=sobj).values()
         export_csv(f"{state}/{session}/{state}_{session}_{fname}.csv", subobjs, zf)
+
+    orgs = Organization.objects.filter(jurisdiction_id=sobj.jurisdiction_id).values()
+    export_csv(f"{state}/{session}/{state}_{session}_organizations.csv", orgs, zf)
 
     return filename
 
