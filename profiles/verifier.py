@@ -102,7 +102,9 @@ def get_key_from_request(request):
 def verify_request(request, zone):
     if zone == "v1":
         ERROR_NOTE = (
-            "Please consider moving to API v2 or v3.  API v1 will be removed in 2021."
+            "Please consider moving to API v2 or v3.  API v1 will be removed in Summer 2021. "
+            "If you are seeing this message please email contact@openstates.org and "
+            "your v1 grace period can be extended."
         )
     else:
         ERROR_NOTE = (
