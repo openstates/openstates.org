@@ -1,9 +1,8 @@
-from enum import Enum
 from django.db import models
 from openstates.data.models import LegislativeSession, Person
 
 
-class NameStatus(Enum):
+class NameStatus:
     # not matched yet
     UNMATCHED = "U"
 
@@ -28,8 +27,8 @@ NAME_STATUS_CHOICES = (
 class UnmatchedName(models.Model):
     session = models.ForeignKey(LegislativeSession, on_delete=models.CASCADE)
     name = models.CharField(max_length=300)
-    sponsorships = models.PositiveIntegerField()
-    votes = models.PositiveIntegerField()
+    sponsorships_count = models.PositiveIntegerField()
+    votes_count = models.PositiveIntegerField()
 
     status = models.CharField(
         max_length=1, choices=NAME_STATUS_CHOICES, default=NameStatus.UNMATCHED
