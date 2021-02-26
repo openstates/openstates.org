@@ -21,4 +21,6 @@ urlpatterns = [
         r"^dq_overview/(?P<state>{})/(?P<session>[-\w ]+)/$".format(state_abbr_pattern),
         dq_overview_session,
     ),
+    # path("matcher_dashboard/", matcher_list),
+    # re_path(r"^matcher_dashboard/(?P<state>{})/$".format(state_abbr_pattern), matcher_ui),
 ]
