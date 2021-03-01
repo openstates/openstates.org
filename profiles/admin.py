@@ -6,6 +6,7 @@ from profiles.models import Profile, Subscription, Notification
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "email", "api_tier")
     search_fields = ("user__email", "api_key")
+    list_filter = ("api_tier",)
 
     def email(self, p):
         return p.user.email
