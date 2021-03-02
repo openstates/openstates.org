@@ -29,7 +29,7 @@ def check_votes(session: LegislativeSession) -> typing.Dict[str, int]:
     return {u["voter_name"]: u["count"] for u in unmatched}
 
 
-def update_unmatched(abbr: str, session: str,) -> int:
+def update_unmatched(abbr: str, session: str) -> int:
     session = LegislativeSession.objects.get(
         jurisdiction_id=abbr_to_jid(abbr), identifier=session
     )
@@ -45,11 +45,14 @@ def update_unmatched(abbr: str, session: str,) -> int:
     n = 0
 
     for name in all_names:
-        UnmatchedName.objects.create(
+        UnmatchedName.objects.update_or_create(
             session=session,
             name=name,
-            sponsorships_count=missing_sponsorships.get(name, 0),
-            votes_count=missing_votes.get(name, 0),
+            # update numbers, but don't update status/match if it is already set
+            defaults=dict(
+                sponsorships_count=missing_sponsorships.get(name, 0),
+                votes_count=missing_votes.get(name, 0),
+            ),
         )
         n += 1
     return n
