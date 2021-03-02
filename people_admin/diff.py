@@ -58,5 +58,11 @@ def apply_diff_item(obj, diff_item):
         if not isinstance(subobj, list):
             raise DiffError(f"cannot 'append' to non-list element for {diff_item}")
         subobj.append(diff_item.param)
+    elif diff_item.action == "delete":
+        subobj = get_subobj(obj, key_pieces[:-1])
+        k = key_pieces[-1]
+        if isinstance(subobj, list):
+            k = int(k)
+        subobj.pop(k)
 
     return obj

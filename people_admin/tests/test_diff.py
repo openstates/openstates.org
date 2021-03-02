@@ -40,3 +40,15 @@ def test_set_item(start, patch, output):
 )
 def test_append_item(start, patch, output):
     assert apply_diff_item(start, patch) == output
+
+
+@pytest.mark.parametrize(
+    "start,patch,output",
+    [
+        ({"a": [1, 2, 3]}, ["delete", "a", None], {}),
+        ({"a": [1, 2, 3]}, ["delete", "a.1", None], {"a": [1, 3]}),
+        ({"a": {"b": {"c": "d"}}}, ["delete", "a.b.c", None], {"a": {"b": {}}}),
+    ],
+)
+def test_delete_item(start, patch, output):
+    assert apply_diff_item(start, patch) == output
