@@ -9,7 +9,7 @@
 
 	<div class="grid-y grid-margin-y">
 
-		<div class="section">
+		<div class="cell">
 			<div class="grid-x grid-margin-x medium-up-2" style="margin-bottom: 0%;">
 				<div class="cell medium-5">
 					<h1 class="heading--large">People Matcher</h1>
@@ -17,135 +17,43 @@
 				</div>
 				<div class="cell medium-5">
 					</br>
-					<select id="session" name="session" onchange="window.location.href = '/dashboard/dq_overview/{{ state }}/' + this.value">
+					<select id="session" name="session" onchange="window.location.href = '/dashboard/people_dashboard/{{ state }}/' + this.value">
 						<option value="">All Available Sessions</option>
 						{% for session in all_sessions %}
 							<option value="{{ session.identifier }}">{{ session.name }}</option>
 						{% endfor %}
 				    </select>
-				    <button type="button" class="button"><a href="/dashboard/dq_dashboard/">Back to Listing</a></button>
+				    <button type="button" class="button"><a href="/dashboard/people_dashboard/">Back to Listing</a></button>
 				</div>
 			</div>
 		</div>
 
 		<div class="grid-x grid-margin-x medium-up-2">
 			{% for dashboard in dashboards %}
-				<div class="cell">
+				<div class="section">
+                    <table class="hover">
+				<thead>
+                    <tr>
+                    	<th>Unmatched Entity</th>
+                    	<th>Context</th>
+                    	<th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+					{% for unmatched, dqr in state_matcher.items %}
+						<tr class="row--align-top">
+	                        <td>{{ name }}</td>
+	                        <td><a href="">{{ sponsorship_count }} Bills Sponsored</a></td>
+                            <td>Match options and buttons, Source Error, or Ignore</td>
+	                    </tr>
+					{% endfor %}
+				</tbody>
+			</table>
 
-					<div class="section">
-						<h2 class="heading--medium">{{ dashboard.chamber|capfirst }}</h2>
-						<h2 class="heading--medium">Data Quality Checks:</h2>
-						<div class="grid-container full">
-							<p><strong class="heading--small u-color--{%if dashboard.total_bills_without_versions == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_bills_without_versions }} </strong> bills without versions</p>
-							<p><strong class="heading--small u-color--{%if dashboard.number_of_bills_without_subjects == 0 %}green{% else %}red{% endif %}">{{ dashboard.number_of_bills_without_subjects }}</strong> bills without subjects</p>
-							<p><strong class="heading--small u-color--{%if dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_votes_bad_counts }}</strong> votes with bad counts</p>
-							<p><strong class="heading--small u-color--{%if dashboard.total_votes_without_voters == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_votes_without_voters }}</strong> votes without voters</p>
-						</div>
-					</div>
-
-					<div class="section">
-						<h2 class="heading--medium">Bills Per Session:</h2>
-						<div class="grid-container full">
-							<p>Total Bills: <strong>{{ dashboard.total_bills }}</strong></p>
-							<p>Latest Bill Created Date: <strong>{{ dashboard.latest_bill_created_date|fdate:"%b %d %Y" }}</strong></p>
-							<p>Latest Action Date: <strong>{{ dashboard.latest_action_date|fdate:"%b %d, %Y" }}</strong></p>
-							<p>Earliest Action Date: <strong>{{ dashboard.earliest_action_date|fdate:"%b %d, %Y" }}</strong></p>
-						</div>
-					</div>
-
-					<section>
-						<h2 class="heading--medium">Source Data:</h2>
-						<div class="grid-container full">
-							<p>Total Bills No Sources: <strong class="heading--small u-color--{%if dashboard.total_bills_no_sources == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_bills_no_sources }}</strong></p>
-							<p>Total Votes No Sources: <strong class="heading--small u-color--{%if dashboard.total_votes_no_sources == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_votes_no_sources }}</strong></p>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Bill Subjects:</h2>
-						<div class="grid-container full">
-							<p>Number of Subjects in Chamber: <strong>{{ dashboard.number_of_subjects_in_chamber }}</strong></p>
-							<p>Number of Bills Without Subjects: <strong>{{ dashboard.number_of_bills_without_subjects }}</strong></p>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Bill Versions:</h2>
-						<div class="grid-container full">
-							<p>Total Bills Without Versions: <strong class="heading--small u-color--{%if dashboard.total_bills_without_versions == 0 %}green{% else %}red{% endif %}">{{ dashboard.total_bills_without_versions }}</strong></p>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Vote Data:</h2>
-						<div class="grid-container full">
-							<p>Total Votes Without Voters: <strong>{{ dashboard.total_votes_without_voters }}</strong></p>
-							<p>Total Votes Bad Counts: <strong>{{ dashboard.total_votes_bad_counts }}</strong></p>
-						</div>
-					</section>
-
-					</br>
-
-					<section>
-						<h2 class="heading--medium">Average Number Data:</h2>
-						<div class="grid-container full">
-							<div class="cell">
-									<div class="grid-x grid-margin-x medium-up-2">
-										<div class="cell">
-											<h3 class="heading--small">Sponsors Per Bill</h3>
-											<p>Average: <strong>{{ dashboard.average_sponsors_per_bill }}</strong></p>
-											<p>Min: <strong>{{ dashboard.min_sponsors_per_bill }}</strong></p>
-											<p>Max: <strong>{{ dashboard.max_sponsors_per_bill }}</strong></p>
-										</div>
-
-										<div class="cell">
-											<h3 class="heading--small">Actions Per Bill</h3>
-											<p>Average: <strong>{{ dashboard.average_actions_per_bill }}</strong></p>
-											<p>Min: <strong>{{ dashboard.min_actions_per_bill }}</strong></p>
-											<p>Max: <strong>{{ dashboard.max_actions_per_bill }}</strong></p>
-										</div>
-
-										<div class="cell">
-											<h3 class="heading--small">Votes Per Bill</h3>
-											<p>Average: <strong>{{ dashboard.average_votes_per_bill }}</strong></p>
-											<p>Min: <strong>{{ dashboard.min_votes_per_bill }}</strong></p>
-											<p>Max: <strong>{{ dashboard.max_votes_per_bill }}</strong></p>
-										</div>
-
-										<div class="cell">
-											<h3 class="heading--small">Documents Per Bill</h3>
-											<p>Average: <strong>{{ dashboard.average_documents_per_bill }}</strong></p>
-											<p>Min: <strong>{{ dashboard.min_documents_per_bill }}</strong></p>
-											<p>Max: <strong>{{ dashboard.max_documents_per_bill }}</strong></p>
-										</div>
-
-										<div class="cell">
-											<h3 class="heading--small">Versions Per Bill</h3>
-											<p>Average: <strong>{{ dashboard.average_versions_per_bill }}</strong></p>
-											<p>Min: <strong>{{ dashboard.min_versions_per_bill }}</strong></p>
-											<p>Max: <strong>{{ dashboard.max_versions_per_bill }}</strong></p>
-										</div>
-									</div>
-							</div>
-						</div>
-					</section>
 
 					</br>
 				</div>
 			{% endfor %}
-			{% if dashboards|length != chambers|length %}
-				<div class="cell">
-					<div class="section">
-						<h2 class="heading--medium u-color--red">Bills Missing From Chamber</h2>
-					</div>
-				</div>
-			{% endif %}
 		</div>
 
 	</div>

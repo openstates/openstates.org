@@ -20,45 +20,11 @@
                     </tr>
                 </thead>
                 <tbody>
-					{% for state, dqr in state_matcher.items %}
+					{% for state in state_people_data.items %}
 						<tr class="row--align-top">
-	                        <td><a href="/dashboard/matcher_dashboard/{{ state }}/">{{ dqr.state }}</a></td>
+	                        <td><a href="/dashboard/people_dashboard/{{ state }}/">{{ dqr.state }}</a></td>
 	                        <td>{{ dqr.session_name }}</td>
                             <td>{{ dqr.unmatched }}</td>
-	                        {% if dqr.lower_dashboard %}
-	                        	<!-- Total Bills -->
-                        		<td>{{ dqr.lower_dashboard.total_bills }}</td>
-                        		{% if state == "ne" or state == "dc" %}
-                        			<td>N/A</td>
-                        		{% elif dqr.upper_dashboard%}
-                        			<td>{{ dqr.upper_dashboard.total_bills }}</td>
-                        		{% else %}
-                        			<td class="u-fill--red u-color--yellow"><span class="u-color--white">Bills Not Scraped<span></td>
-                        		{% endif %}
-
-                        		<!-- Action Date -->
-                        		<td>{{ dqr.lower_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
-                        		{% if state == "ne" or state == "dc" %}
-                        			<td>N/A</td>
-                        		{% else %}
-                        			<td>{{ dqr.upper_dashboard.latest_action_date|fdate:"%b %d %Y" }}</td>
-                        		{% endif %}
-
-                        		<!-- Bad Vote Count -->
-                        		<td class="u-color--{%if dqr.lower_dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dqr.lower_dashboard.total_votes_bad_counts }}</td>
-                        		{% if state == "ne" or state == "dc" %}
-                        			<td>N/A</td>
-                        		{% else %}
-                        			<td class="u-color--{%if dqr.upper_dashboard.total_votes_bad_counts == 0 %}green{% else %}red{% endif %}">{{ dqr.upper_dashboard.total_votes_bad_counts }}</td>
-                        		{% endif %}
-	                        {% else %}
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        	<td></td>
-	                        {% endif %}
 	                    </tr>
 					{% endfor %}
 				</tbody>

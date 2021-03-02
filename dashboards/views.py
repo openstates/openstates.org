@@ -218,3 +218,42 @@ def api_overview(request):
     }
 
     return render(request, "dashboards/api.html", {"context": context})
+
+
+def people_list(request):
+    state_people_data = {}
+
+    for state in states:
+        try:
+            session = sessions_with_bills(abbr_to_jid(state.abbr))[0]
+        except KeyError:
+            continue
+
+        session_name = session.name
+
+        state_people_data[state.abbr.lower()] = {
+            "state": state.name,
+            "session_name": session_name,
+        }
+
+    return render(
+        request,
+        "dashboards/people_listing.html",
+        {"state_people_data": state_people_data},
+    )
+
+
+def people_matcher(request, state):
+    jid = abbr_to_jid(state)
+    all_sessions = sessions_with_bills(jid)
+    session = "Dashboards Not Generated Yet"
+    if all_sessions:
+        session = all_sessions[0]
+
+    context = {
+        "state": state,
+        "session": session,
+        "all_sessions": all_sessions,
+    }
+
+    return render(request, "dashboards/people_matcher.html", context)
