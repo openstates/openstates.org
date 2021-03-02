@@ -18,6 +18,10 @@ import typing
 from dataclasses import dataclass
 
 
+class DiffError(ValueError):
+    pass
+
+
 @dataclass
 class DiffItem:
     action: str
@@ -49,5 +53,10 @@ def apply_diff_item(obj, diff_item):
         if isinstance(subobj, list):
             k = int(k)
         subobj[k] = diff_item.param
+    elif diff_item.action == "append":
+        subobj = get_subobj(obj, key_pieces)
+        if not isinstance(subobj, list):
+            raise DiffError(f"cannot 'append' to non-list element for {diff_item}")
+        subobj.append(diff_item.param)
 
     return obj

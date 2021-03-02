@@ -24,3 +24,19 @@ from ..diff import apply_diff_item
 )
 def test_set_item(start, patch, output):
     assert apply_diff_item(start, patch) == output
+
+
+@pytest.mark.parametrize(
+    "start,patch,output",
+    [
+        ({"a": []}, ["append", "a", 123], {"a": [123]}),
+        ({"a": {"b": [1, 2, 3]}}, ["append", "a.b", 4], {"a": {"b": [1, 2, 3, 4]}}),
+        (
+            {"a": [{"i": 1}, {"ii": 2}, {"iii": 3}]},
+            ["append", "a", {"iv": 4}],
+            {"a": [{"i": 1}, {"ii": 2}, {"iii": 3}, {"iv": 4}]},
+        ),
+    ],
+)
+def test_append_item(start, patch, output):
+    assert apply_diff_item(start, patch) == output
