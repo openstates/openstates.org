@@ -1,6 +1,12 @@
 import pytest
-from people_admin.models import UnmatchedName, NameStatus
-from people_admin.utils import check_sponsorships, check_votes, update_unmatched
+from openstates.data.models import Person
+from people_admin.models import UnmatchedName, NameStatus, DeltaSet
+from people_admin.unmatched import (
+    check_sponsorships,
+    check_votes,
+    update_unmatched,
+    unmatched_to_deltas,
+)
 from testutils.factories import create_test_bill, create_test_vote
 
 
@@ -91,3 +97,47 @@ def test_update_unmatched_removes_matched(django_assert_num_queries, kansas):
     assert UnmatchedName.objects.count() == 1
     # Someone values are updated
     assert UnmatchedName.objects.get().votes_count == 0
+
+
+@pytest.mark.django_db
+def test_unmatched_to_deltas(kansas):
+    session = kansas.legislative_sessions.all()[0]
+    dave = Person.objects.create(name="Dave Ferguson")
+    mike = Person.objects.create(name="Mike Mitchell")
+    UnmatchedName.objects.create(
+        name="Kowalick", session=session, sponsorships_count=1, votes_count=0
+    )
+    un_f = UnmatchedName.objects.create(
+        name="Ferguson", session=session, sponsorships_count=0, votes_count=1
+    )
+    un_m = UnmatchedName.objects.create(
+        name="Mitchell", session=session, sponsorships_count=1, votes_count=1
+    )
+
+    # none matched yet
+    unmatched_to_deltas("ks")
+    assert DeltaSet.objects.count() == 0
+
+    # one matched
+    un_m.matched_person = mike
+    un_m.status = NameStatus.MATCHED_PERSON
+    un_m.save()
+
+    # one delta set
+    unmatched_to_deltas("ks")
+    delta_set = DeltaSet.objects.get()
+    assert delta_set.name == "KS legislator matching"
+    assert delta_set.person_deltas.count() == 1
+    delta = delta_set.person_deltas.get()
+    assert delta.person == mike
+    assert delta.data_changes == [["append", "other_names", {"name": "Mitchell"}]]
+
+    # two matched
+    un_f.matched_person = dave
+    un_f.status = NameStatus.MATCHED_PERSON
+    un_f.save()
+
+    # updated existing delta set
+    unmatched_to_deltas("ks")
+    delta_set = DeltaSet.objects.get()
+    assert delta_set.person_deltas.count() == 2
