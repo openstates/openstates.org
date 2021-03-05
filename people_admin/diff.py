@@ -29,9 +29,10 @@ class DiffItem:
     param: typing.Optional[str]
 
 
-def apply_diff(obj, diff):
+def apply_diffs(obj, diff):
     for item in diff:
-        obj = apply_diff_item(obj, diff)
+        obj = apply_diff_item(obj, item)
+    return obj
 
 
 def get_subobj(obj: dict, key_pieces: typing.List[str]):
@@ -64,5 +65,7 @@ def apply_diff_item(obj, diff_item):
         if isinstance(subobj, list):
             k = int(k)
         subobj.pop(k)
+    else:
+        raise ValueError(f"unknown action {diff_item.action}")
 
     return obj

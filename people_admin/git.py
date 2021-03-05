@@ -1,15 +1,32 @@
 import os
 import typing
 import github
+import base64
+import yaml
+import yamlordereddictloader
 from .models import DeltaSet
-from .diff import DiffItem
+from .diff import DiffItem, apply_diffs
 
 REPO_NAME = "openstates/people"
+_repo = None
+
+
+def load_yaml(file_obj):
+    return yaml.load(file_obj, Loader=yamlordereddictloader.SafeLoader)
+
+
+def dump_yaml(obj):
+    return yaml.dump(
+        obj, default_flow_style=False, Dumper=yamlordereddictloader.SafeDumper
+    )
 
 
 def _get_repo():
-    g = github.Github(os.environ["GITHUB_TOKEN"])
-    return g.get_repo(REPO_NAME)
+    global _repo
+    if not _repo:
+        g = github.Github(os.environ["GITHUB_TOKEN"])
+        _repo = g.get_repo(REPO_NAME)
+    return _repo
 
 
 def get_files(
@@ -31,11 +48,16 @@ def get_files(
     return files
 
 
-def patch_file(filename: str, deltas: typing.List[DiffItem]) -> typing.Dict[str, str]:
+def patch_file(
+    file: github.ContentFile.ContentFile, deltas: typing.List[DiffItem]
+) -> typing.Dict[str, str]:
     """
     returns mapping of filename to contents
     """
-    pass
+    content = base64.b64decode(file.content)
+    data = load_yaml(content)
+    data = apply_diffs(data, deltas)
+    return dump_yaml(data)
 
 
 def create_pr(branch: str, message: str, files: typing.Dict[str, str]):
@@ -58,13 +80,13 @@ def delta_set_to_pr(delta_set: DeltaSet):
     """
     person_deltas = {}
     for pd in delta_set.person_deltas.all():
-        person_deltas[pd.person_id] = [DiffItem(*d) for d in pd.data_changes]
+        person_deltas[pd.person_id] = pd.data_changes
 
     files_by_id = get_files(person_deltas.keys())
 
     new_files = {}
     for person_id in person_deltas:
-        filename = files_by_id[person_id]
-        new_files[filename] = patch_file(filename, person_deltas[person_id])
+        file = files_by_id[person_id]
+        new_files[file] = patch_file(file, person_deltas[person_id])
 
     # create_pr(f"automatic/deltas/{state}-{random_chars}", delta_set.name, new_files)
