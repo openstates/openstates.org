@@ -7,7 +7,7 @@ from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
 
-# from people_admin.models import UnmatchedName
+from people_admin.models import UnmatchedName
 
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from utils.orgs import get_chambers_from_abbr
@@ -246,14 +246,15 @@ def people_list(request):
 def people_matcher(request, state):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
-    session = "Dashboards Not Generated Yet"
     if all_sessions:
         session = all_sessions[0]
+        unmatched = UnmatchedName.objects.filter(session=session)
 
     context = {
         "state": state,
         "session": session,
         "all_sessions": all_sessions,
+        "unmatched": unmatched,
     }
 
     return render(request, "dashboards/people_matcher.html", context)
