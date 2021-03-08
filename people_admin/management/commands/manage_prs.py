@@ -41,4 +41,4 @@ class Command(BaseCommand):
                     ds.pr_status = new_status
                     ds.save()
         if nothing:
-            print("must either pass --list or --delta parameters")
+            print("must either pass --list, --update, or --delta parameters")
