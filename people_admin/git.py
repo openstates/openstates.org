@@ -67,14 +67,27 @@ def create_pr(branch: str, message: str, files: typing.Dict[str, str]):
     repo = _get_repo()
     main = repo.get_branch("main")
 
+    # check for branch already existing
+    try:
+        ref = repo.get_git_ref(f"heads/{branch}")
+    except github.GithubException:
+        ref = None
+
     updates = [
         github.InputGitTreeElement(path, mode="100644", type="blob", content=content)
         for path, content in files.items()
     ]
     new_tree = repo.create_git_tree(updates, repo.get_git_tree(main.commit.sha))
     new_commit = repo.create_git_commit(message, new_tree, [main.commit.commit])
-    repo.create_git_ref(f"refs/heads/{branch}", sha=new_commit.sha)
-    # repo.create_pull()
+    if not ref:
+        repo.create_git_ref(f"refs/heads/{branch}", sha=new_commit.sha)
+    else:
+        ref.edit(sha=new_commit.sha, force=True)
+    try:
+        pr = repo.create_pull(title=message, body=message, base="main", head=branch)
+        return pr.url
+    except github.GithubException:
+        pass
 
 
 def delta_set_to_pr(delta_set: DeltaSet):
@@ -92,6 +105,7 @@ def delta_set_to_pr(delta_set: DeltaSet):
     new_files = {}
     for person_id in person_deltas:
         file = files_by_id[person_id]
-        new_files[file] = patch_file(file, person_deltas[person_id])
+        new_files[file.path] = patch_file(file, person_deltas[person_id])
 
-    create_pr(f"people_admin_deltas/{delta_set.id}", delta_set.name, new_files)
+    url = create_pr(f"people_admin_deltas/{delta_set.id}", delta_set.name, new_files)
+    return url
