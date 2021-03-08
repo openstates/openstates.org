@@ -2,7 +2,8 @@ import datetime
 from django.core.management.base import BaseCommand
 from django import db
 from openstates.data.models import LegislativeSession, Bill, VoteEvent
-from utils.common import abbr_to_jid, states, sessions_with_bills
+from utils.cli import yield_state_sessions
+from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
 import pytz
 from statistics import mean
@@ -24,13 +25,6 @@ def vote_qs(state, session, chamber):
         legislative_session__jurisdiction_id=abbr_to_jid(state),
         legislative_session__identifier=session,
         organization=chamber,
-    )
-
-
-def get_available_sessions(state):
-    return sorted(
-        s.identifier
-        for s in LegislativeSession.objects.filter(jurisdiction_id=abbr_to_jid(state))
     )
 
 
@@ -261,24 +255,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         state = options["state"]
+        session = options["session"]
+
         # 'all' grabs the first session from every state
         # 'all_sessions' grabs every session from every state
-        if state == "all" or state == "all_sessions":
-            scrape_state = state
-            for state in states:
-                sessions = sessions_with_bills(abbr_to_jid(state.abbr))
-                if len(sessions) > 0:
-                    state = state.abbr.lower()
-                    if scrape_state == "all_sessions":
-                        for session in sessions:
-                            session = session.identifier
-                            create_dqr(state, session)
-                    else:
-                        session = sessions[0].identifier
-                        create_dqr(state, session)
-        elif options["session"]:
-            create_dqr(state, options["session"])
-        else:
-            sessions = get_available_sessions(state)
-            for session in sessions:
-                create_dqr(state, session)
+        for state, session in yield_state_sessions(state, session):
+            create_dqr(state, session)

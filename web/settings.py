@@ -126,6 +126,7 @@ INSTALLED_APPS = [
     "profiles.apps.ProfilesConfig",
     "bundles",
     "dashboards",
+    "people_admin",
 ]
 
 MIDDLEWARE = [
