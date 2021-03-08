@@ -55,7 +55,13 @@ def apply_diff_item(obj, diff_item):
             k = int(k)
         subobj[k] = diff_item.param
     elif diff_item.action == "append":
-        subobj = get_subobj(obj, key_pieces)
+        try:
+            subobj = get_subobj(obj, key_pieces)
+        except KeyError:
+            # if the key doesn't exist, try to append to a new empty list
+            subobj = get_subobj(obj, key_pieces[:-1])
+            subobj[key_pieces[-1]] = []
+            subobj = subobj[key_pieces[-1]]
         if not isinstance(subobj, list):
             raise DiffError(f"cannot 'append' to non-list element for {diff_item}")
         subobj.append(diff_item.param)

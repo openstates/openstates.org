@@ -36,6 +36,8 @@ def test_set_item(start, patch, output):
             ["append", "a", {"iv": 4}],
             {"a": [{"i": 1}, {"ii": 2}, {"iii": 3}, {"iv": 4}]},
         ),
+        # append should create list if not present
+        ({}, ["append", "a", 123], {"a": [123]}),
     ],
 )
 def test_append_item(start, patch, output):
