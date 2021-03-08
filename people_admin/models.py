@@ -26,6 +26,21 @@ NAME_STATUS_CHOICES = (
 )
 
 
+class PullStatus:
+    NOT_CREATED = "N"
+    CREATED = "C"
+    MERGED = "M"
+    REJECTED = "R"
+
+
+PULL_STATUS_CHOICES = (
+    (PullStatus.NOT_CREATED, "Not Created"),
+    (PullStatus.CREATED, "Created"),
+    (PullStatus.MERGED, "Merged"),
+    (PullStatus.REJECTED, "Rejected"),
+)
+
+
 class UnmatchedName(models.Model):
     session = models.ForeignKey(LegislativeSession, on_delete=models.CASCADE)
     name = models.CharField(max_length=300)
@@ -46,6 +61,9 @@ class DeltaSet(models.Model):
         User, on_delete=models.CASCADE, related_name="delta_sets"
     )
     pr_url = models.URLField(blank=True, default="")
+    pr_status = models.CharField(
+        max_length=1, choices=PULL_STATUS_CHOICES, default=PullStatus.NOT_CREATED
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
 
