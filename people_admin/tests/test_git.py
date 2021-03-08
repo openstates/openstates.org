@@ -13,7 +13,7 @@ CARL_FORD = "ocd-person/91615553-5509-4625-ab20-7a81896438e0"
 
 
 def test_get_files():
-    files = get_files([ABE_JONES, CARL_FORD])
+    files = get_files([ABE_JONES, CARL_FORD], states=["nc"])
     assert files[ABE_JONES].name.startswith("Abe")
     assert files[CARL_FORD].name.startswith("Carl")
 
@@ -22,11 +22,11 @@ def test_get_files_error():
     BAD_ID = "ocd-person/559521af-e5f9-43c3-a75e-000000000000"
 
     with pytest.raises(ValueError):
-        get_files([BAD_ID])
+        get_files([BAD_ID], states=["nc"])
 
 
 def test_patch_file_noop():
-    file = get_files([ABE_JONES])[ABE_JONES]
+    file = get_files([ABE_JONES], states=["nc"])[ABE_JONES]
     original_content = base64.b64decode(file.content).decode()
     new_content = patch_file(file, [])
     # useful for diff, won't be printed if equal
@@ -35,6 +35,6 @@ def test_patch_file_noop():
 
 
 def test_patch_file_set_key():
-    file = get_files([ABE_JONES])[ABE_JONES]
+    file = get_files([ABE_JONES], states=["nc"])[ABE_JONES]
     new_content = patch_file(file, [["set", "special_key", "added!"]])
     assert "special_key: added!" in new_content

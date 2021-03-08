@@ -1,9 +1,10 @@
 import os
 import typing
-import github
 import base64
+import github
 import yaml
 import yamlordereddictloader
+from utils.common import jid_to_abbr
 from .models import DeltaSet
 from .diff import DiffItem, apply_diffs
 
@@ -30,13 +31,15 @@ def _get_repo():
 
 
 def get_files(
-    ids: typing.List[str],
+    ids: typing.List[str], states: typing.List[str],
 ) -> typing.Dict[str, "github.ContentFile.ContentFile"]:
     """ turn list of ids into mapping to files """
     # TODO: needs to be expanded to other directories
     files = {}
     repo = _get_repo()
-    all_files = list(repo.get_contents("data/nc/legislature"))
+    all_files = []
+    for state in states:
+        all_files.extend(list(repo.get_contents(f"data/{state}/legislature")))
     for person_id in ids:
         uuid = person_id.split("/")[1]
         for file in all_files:
@@ -71,7 +74,7 @@ def create_pr(branch: str, message: str, files: typing.Dict[str, str]):
     new_tree = repo.create_git_tree(updates, repo.get_git_tree(main.commit.sha))
     new_commit = repo.create_git_commit(message, new_tree, [main.commit.commit])
     repo.create_git_ref(f"refs/heads/{branch}", sha=new_commit.sha)
-    repo.create_pull()
+    # repo.create_pull()
 
 
 def delta_set_to_pr(delta_set: DeltaSet):
@@ -79,14 +82,16 @@ def delta_set_to_pr(delta_set: DeltaSet):
     get a list of person IDs mapped to lists of DiffItem and generate a github PR
     """
     person_deltas = {}
+    states = set()
     for pd in delta_set.person_deltas.all():
         person_deltas[pd.person_id] = pd.data_changes
+        states.add(jid_to_abbr(pd.person.current_jurisdiction_id))
 
-    files_by_id = get_files(person_deltas.keys())
+    files_by_id = get_files(person_deltas.keys(), states=states)
 
     new_files = {}
     for person_id in person_deltas:
         file = files_by_id[person_id]
         new_files[file] = patch_file(file, person_deltas[person_id])
 
-    # create_pr(f"automatic/deltas/{state}-{random_chars}", delta_set.name, new_files)
+    create_pr(f"people_admin_deltas/{delta_set.id}", delta_set.name, new_files)
