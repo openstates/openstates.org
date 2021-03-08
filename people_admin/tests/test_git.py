@@ -1,7 +1,8 @@
 import os
 import base64
 import pytest
-from people_admin.git import get_files, patch_file
+from people_admin.git import get_files, patch_file, get_pr_status
+from people_admin.models import PullStatus
 
 # these tests are finnicky as they rely upon the outside repo, they will be skipped unless
 # the environment key is set
@@ -38,3 +39,9 @@ def test_patch_file_set_key():
     file = get_files([ABE_JONES], states=["nc"])[ABE_JONES]
     new_content = patch_file(file, [["set", "special_key", "added!"]])
     assert "special_key: added!" in new_content
+
+
+def test_pr_status():
+    # test two old PRs, no easy way to test that open status works here
+    assert get_pr_status(44) == PullStatus.MERGED
+    assert get_pr_status(46) == PullStatus.REJECTED

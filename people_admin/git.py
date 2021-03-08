@@ -5,7 +5,7 @@ import github
 import yaml
 import yamlordereddictloader
 from utils.common import jid_to_abbr
-from .models import DeltaSet
+from .models import DeltaSet, PullStatus
 from .diff import DiffItem, apply_diffs
 
 REPO_NAME = "openstates/people"
@@ -109,3 +109,14 @@ def delta_set_to_pr(delta_set: DeltaSet):
 
     url = create_pr(f"people_admin_deltas/{delta_set.id}", delta_set.name, new_files)
     return url
+
+
+def get_pr_status(pr_id: int) -> PullStatus:
+    repo = _get_repo()
+    pull = repo.get_pull(pr_id)
+    if pull.merged:
+        return PullStatus.MERGED
+    elif pull.state == "closed":
+        return PullStatus.REJECTED
+    else:
+        return PullStatus.CREATED
