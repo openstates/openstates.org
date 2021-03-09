@@ -43,11 +43,11 @@
 	                        <td>{{ entity.name }}</td>
                             <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored</td>
                             <td><select id="sponsor" name="sponsor">
-						        <option value="">All Available Sponsors</option>
-						        {% for sponsor in state_sponsors %}
-							        <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
-						        {% endfor %}
-				    </select><button type="button" class="button">Match</button></td>
+                                    <option value="">All Available Sponsors</option>
+                                    {% for sponsor in state_sponsors %}
+                                        <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
+                                    {% endfor %}
+				                </select><button type="button" class="button">Match</button></td>
                             <td><button type="button" class="button">Source Error</button><button type="button" class="button">Ignore</button></td>
 	                    </tr>
 					{% endfor %}

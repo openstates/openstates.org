@@ -226,7 +226,6 @@ def people_list(request):
     for state in states:
         state_people_data[state.abbr.lower()] = {
             "state": state.name,
-            "abbr": state.abbr.lower(),
         }
 
     return render(
