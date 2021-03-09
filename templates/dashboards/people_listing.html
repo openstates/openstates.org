@@ -8,21 +8,21 @@
 {% block content %}
 
     	<section class="section">
-		<h1>People Matching Overview</h1>
+		<h1>People Overview</h1>
 
 		<div class="grid-x grid-margin-x">
 			<table class="hover">
 				<thead>
                     <tr>
                     	<th>State</th>
-                    	<th>Session Name</th>
                     	<th>Total Unmatched Entities</th>
                     </tr>
                 </thead>
                 <tbody>
 					{% for state, spd in state_people_data.items %}
 						<tr class="row--align-top">
-                            <td><a href="/dashboard/people/{{ spd.abbr }}_matcher">{{ spd.state }}</a></td>
+                            <td>{{ spd.state }}</td>
+                            <td><a href="/dashboard/people/{{ state }}_matcher">plenty</a></td>
 	                    </tr>
 					{% endfor %}
 				</tbody>
