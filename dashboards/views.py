@@ -6,13 +6,10 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
-
-from people_admin.models import UnmatchedName
-
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from utils.orgs import get_chambers_from_abbr
 from dashboards.models import DataQualityReport
-from openstates.data.models import LegislativeSession, Person
+from openstates.data.models import LegislativeSession
 
 
 def dqr_listing(request):
@@ -218,58 +215,3 @@ def api_overview(request):
     }
 
     return render(request, "dashboards/api.html", {"context": context})
-
-
-def people_list(request):
-    state_people_data = {}
-
-    for state in states:
-        state_people_data[state.abbr.lower()] = {
-            "state": state.name,
-        }
-
-    return render(
-        request,
-        "dashboards/people_listing.html",
-        {"state_people_data": state_people_data},
-    )
-
-
-def people_matcher(request, state):
-    jid = abbr_to_jid(state)
-    all_sessions = sessions_with_bills(jid)
-    if all_sessions:
-        session = all_sessions[0]
-        unmatched = UnmatchedName.objects.filter(session_id=session)
-        state_sponsors = Person.objects.filter(current_jurisdiction_id=jid)
-
-    context = {
-        "state": state,
-        "session": session,
-        "all_sessions": all_sessions,
-        "unmatched": unmatched,
-        "state_sponsors": state_sponsors,
-    }
-
-    return render(request, "dashboards/people_matcher.html", context)
-
-
-def people_matcher_session(request, state, session):
-    jid = abbr_to_jid(state)
-    all_sessions = sessions_with_bills(jid)
-
-    session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=jid)
-
-    unmatched = UnmatchedName.objects.filter(session_id=session)
-
-    state_sponsors = Person.objects.filter(current_jurisdiction_id=jid)
-
-    context = {
-        "state": state,
-        "session": session,
-        "all_sessions": all_sessions,
-        "unmatched": unmatched,
-        "state_sponsors": state_sponsors,
-    }
-
-    return render(request, "dashboards/people_matcher.html", context)

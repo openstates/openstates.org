@@ -22,7 +22,7 @@
 					{% for state, spd in state_people_data.items %}
 						<tr class="row--align-top">
                             <td>{{ spd.state }}</td>
-                            <td><a href="/dashboard/people/{{ state }}_matcher">plenty</a></td>
+														<td><a href="{% url 'people_matcher' state %}">plenty</a></td>
 	                    </tr>
 					{% endfor %}
 				</tbody>
