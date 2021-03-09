@@ -17,44 +17,38 @@
 				</div>
 				<div class="cell medium-5">
 					</br>
-					<select id="session" name="session" onchange="window.location.href = '/dashboard/people_dashboard/{{ state }}/' + this.value">
+					<select id="session" name="session" onchange="window.location.href = '/dashboard/people/{{ state }}_matcher/' + this.value">
 						<option value="">All Available Sessions</option>
 						{% for session in all_sessions %}
 							<option value="{{ session.identifier }}">{{ session.name }}</option>
 						{% endfor %}
 				    </select>
-				    <button type="button" class="button"><a href="/dashboard/people_dashboard/">Back to Listing</a></button>
+				    <button type="button" class="button"><a href="/dashboard/people/">Back to Listing</a></button>
 				</div>
 			</div>
 		</div>
-
-		<div class="grid-x grid-margin-x medium-up-2">
-			{% for dashboard in dashboards %}
-				<div class="section">
-                    <table class="hover">
+            <div class="section">
+                <table class="hover">
 				<thead>
                     <tr>
                     	<th>Unmatched Entity</th>
                     	<th>Context</th>
-                    	<th>Action</th>
+                    	<th>Match</th>
+                        <th>Suppress</th>
                     </tr>
                 </thead>
                 <tbody>
-					{% for unmatched in state_matcher.items %}
+					{% for entity in unmatched %}
 						<tr class="row--align-top">
-	                        <td>{{ name }}</td>
-	                        <td><a href="">{{ sponsorship_count }} Bills Sponsored</a></td>
-                            <td>Match options and buttons, Source Error, or Ignore</td>
+	                        <td>{{ entity.name }}</td>
+                            <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored</td>
+                            <td>Match options <button type="button" class="button">Match</button></td>
+                            <td><button type="button" class="button">Source Error</button><button type="button" class="button">Ignore</button></td>
 	                    </tr>
 					{% endfor %}
 				</tbody>
-			</table>
-
-
-					</br>
-				</div>
-			{% endfor %}
-		</div>
+			    </table>
+            </div>
 
 	</div>
 

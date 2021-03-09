@@ -7,6 +7,7 @@ from .views import (
     dqr_listing,
     people_list,
     people_matcher,
+    people_matcher_session,
 )
 from utils.common import states
 
@@ -23,8 +24,14 @@ urlpatterns = [
         r"^dq_overview/(?P<state>{})/(?P<session>[-\w ]+)/$".format(state_abbr_pattern),
         dq_overview_session,
     ),
-    path("people_dashboard/", people_list),
+    path("people/", people_list),
     re_path(
-        r"^people_dashboard/(?P<state>{})/$".format(state_abbr_pattern), people_matcher
+        r"^people/(?P<state>{})_matcher/$".format(state_abbr_pattern), people_matcher
+    ),
+    re_path(
+        r"^people/(?P<state>{})_matcher/(?P<session>[-\w ]+)/$".format(
+            state_abbr_pattern
+        ),
+        people_matcher_session,
     ),
 ]

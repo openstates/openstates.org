@@ -224,16 +224,9 @@ def people_list(request):
     state_people_data = {}
 
     for state in states:
-        try:
-            session = sessions_with_bills(abbr_to_jid(state.abbr))[0]
-        except KeyError:
-            continue
-
-        session_name = session.name
-
         state_people_data[state.abbr.lower()] = {
             "state": state.name,
-            "session_name": session_name,
+            "abbr": state.abbr.lower(),
         }
 
     return render(
@@ -248,7 +241,25 @@ def people_matcher(request, state):
     all_sessions = sessions_with_bills(jid)
     if all_sessions:
         session = all_sessions[0]
-        unmatched = UnmatchedName.objects.filter(session=session)
+        unmatched = UnmatchedName.objects.filter(session_id=session)
+
+    context = {
+        "state": state,
+        "session": session,
+        "all_sessions": all_sessions,
+        "unmatched": unmatched,
+    }
+
+    return render(request, "dashboards/people_matcher.html", context)
+
+
+def people_matcher_session(request, state, session):
+    jid = abbr_to_jid(state)
+    all_sessions = sessions_with_bills(jid)
+
+    session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=jid)
+
+    unmatched = UnmatchedName.objects.filter(session_id=session)
 
     context = {
         "state": state,

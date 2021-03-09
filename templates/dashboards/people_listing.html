@@ -8,7 +8,7 @@
 {% block content %}
 
     	<section class="section">
-		<h1>People Matching Overview</h1>s
+		<h1>People Matching Overview</h1>
 
 		<div class="grid-x grid-margin-x">
 			<table class="hover">
@@ -20,11 +20,9 @@
                     </tr>
                 </thead>
                 <tbody>
-					{% for state in state_people_data.items %}
+					{% for state, spd in state_people_data.items %}
 						<tr class="row--align-top">
-	                        <td><a href="/dashboard/people_dashboard/{{ state }}/">{{ state.state }}</a></td>
-	                        <td>{{ state.session_name }}</td>
-                            <td>{{ state.unmatched }}</td>
+                            <td><a href="/dashboard/people/{{ spd.abbr }}_matcher">{{ spd.state }}</a></td>
 	                    </tr>
 					{% endfor %}
 				</tbody>
