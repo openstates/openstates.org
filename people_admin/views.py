@@ -57,3 +57,25 @@ def people_matcher_session(request, state, session):
     }
 
     return render(request, "people_admin/people_matcher.html", context)
+
+
+# pseudo-code for apply_match view:
+
+# @require_POST
+# def apply_match(request):
+#     button = request.POST["submit_button"]
+#     match_id = request.POST["match_id"]
+#     unmatched_id = request.POST["unmatched_id"]
+
+#     unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
+
+#     if button == "match":
+#         unmatched_name.person_id = match_id
+#     elif button == "source_error":
+#         unmatched_name.status = NameStatus.UNMATCHED
+#     else:
+#         ...
+
+#     unmatched_name.save()
+
+#     return JSONResponse({"status": "success"})
