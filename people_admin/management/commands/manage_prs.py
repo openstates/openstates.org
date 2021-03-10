@@ -36,7 +36,8 @@ class Command(BaseCommand):
                 new_status = get_pr_status(pr_id)
                 if new_status != ds.pr_status:
                     print(
-                        f"Updating {ds.id} | {ds.name} | {ds.get_pr_status} => {new_status}"
+                        f"Updating {ds.id} | {ds.name} | {ds.get_pr_status_display()} "
+                        f"=> {new_status}"
                     )
                     ds.pr_status = new_status
                     ds.save()
