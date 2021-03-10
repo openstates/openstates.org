@@ -3,7 +3,7 @@ from utils.common import states
 from .views import (
     people_list,
     people_matcher,
-    people_matcher_session,
+    # apply_match,
 )
 
 # Only allow valid state abbreviations
@@ -19,6 +19,12 @@ urlpatterns = [
     ),
     re_path(
         r"^(?P<state>{})/matcher/(?P<session>[-\w ]+)/$".format(state_abbr_pattern),
-        people_matcher_session,
+        people_matcher,
+        name="session_people_matcher",
     ),
+    # re_path(
+    #     r"^(?P<state>{})/matcher/update/".format(state_abbr_pattern),
+    #     apply_match,
+    #     name="apply_person_match",
+    # ),
 ]
