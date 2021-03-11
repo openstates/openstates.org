@@ -14,16 +14,18 @@
 				<div class="cell medium-5">
 					<h1 class="heading--large">People Matcher</h1>
 					<h2>{{ session }}</h2>
+                    <h4>Unmatched Total: {{ unmatched_total }}</h4>
 				</div>
 				<div class="cell medium-5">
 					</br>
-					<select id="session" name="session" onchange="window.location.href = '/dashboard/people/{{ state }}_matcher/' + this.value">
+					<select id="session" name="session"
+                            onchange="window.location.href = '/admin/people/{{ state }}/matcher/' + this.value">
 						<option value="">All Available Sessions</option>
 						{% for session in all_sessions %}
 							<option value="{{ session.identifier }}">{{ session.name }}</option>
 						{% endfor %}
 				    </select>
-				    <button type="button" class="button"><a href="/dashboard/people/">Back to Listing</a></button>
+				    <button type="button" class="button"><a href="/admin/people/">Back to Listing</a></button>
 				</div>
 			</div>
 		</div>
@@ -39,17 +41,26 @@
                 </thead>
                 <tbody>
 					{% for entity in unmatched %}
+                    <form action="{% url 'apply_person_match' entity.id %}" method="post">
+                        {% csrf_token %}
 						<tr class="row--align-top">
 	                        <td>{{ entity.name }}</td>
                             <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored</td>
-                            <td><select id="sponsor" name="sponsor">
+                            <td>
+                                <select name="match_id">
                                     <option value="">All Available Sponsors</option>
                                     {% for sponsor in state_sponsors %}
                                         <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
                                     {% endfor %}
-				                </select><button type="button" class="button">Match</button></td>
-                            <td><button type="button" class="button">Source Error</button><button type="button" class="button">Ignore</button></td>
+				                </select>
+                                <input type="submit" class="button" value="Match"/>
+                            </td>
+                            <td>
+                                <input type="submit" class="button" value="Source_error"/>
+                                <input type="submit" class="button" value="Ignore"/>
+                            </td>
 	                    </tr>
+                    </form>
 					{% endfor %}
 				</tbody>
 			    </table>

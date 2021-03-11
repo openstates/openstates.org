@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from openstates.data.models import LegislativeSession, Person
 from utils.common import abbr_to_jid, sessions_with_bills, states
-from people_admin.models import UnmatchedName
+from people_admin.models import UnmatchedName, NameStatus
+
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
 
 
 def people_list(request):
@@ -19,34 +22,19 @@ def people_list(request):
     )
 
 
-def people_matcher(request, state):
+def people_matcher(request, state, session=None):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
     if all_sessions:
         session = all_sessions[0]
-        unmatched = UnmatchedName.objects.filter(session_id=session)
-        state_sponsors = Person.objects.filter(current_jurisdiction_id=jid)
-
-    context = {
-        "state": state,
-        "session": session,
-        "all_sessions": all_sessions,
-        "unmatched": unmatched,
-        "state_sponsors": state_sponsors,
-    }
-
-    return render(request, "people_admin/people_matcher.html", context)
-
-
-def people_matcher_session(request, state, session):
-    jid = abbr_to_jid(state)
-    all_sessions = sessions_with_bills(jid)
-
-    session = LegislativeSession.objects.get(identifier=session, jurisdiction_id=jid)
+    else:
+        session = get_object_or_404(
+            LegislativeSession, identifier=session, jurisdiction_id=jid
+        )
 
     unmatched = UnmatchedName.objects.filter(session_id=session)
-
     state_sponsors = Person.objects.filter(current_jurisdiction_id=jid)
+    unmatched_total = unmatched.count()
 
     context = {
         "state": state,
@@ -54,28 +42,30 @@ def people_matcher_session(request, state, session):
         "all_sessions": all_sessions,
         "unmatched": unmatched,
         "state_sponsors": state_sponsors,
+        "unmatched_total": unmatched_total,
     }
 
     return render(request, "people_admin/people_matcher.html", context)
 
 
-# pseudo-code for apply_match view:
+@require_http_methods(["POST"])
+def apply_match(request, person):
+    button = request.POST.get("submit")
+    match_id = request.POST["match_id"]
+    unmatched_id = person
 
-# @require_POST
-# def apply_match(request):
-#     button = request.POST["submit_button"]
-#     match_id = request.POST["match_id"]
-#     unmatched_id = request.POST["unmatched_id"]
+    unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
 
-#     unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
+    if button == "Match":
+        unmatched_name.matched_person_id = match_id
+        unmatched_name.status = NameStatus.MATCHED_PERSON
+    elif button == "Source_error":
+        unmatched_name.status = NameStatus.SOURCE_ERROR
+    elif button == "Ignore":
+        unmatched_name.status = NameStatus.IGNORED
+    else:
+        unmatched_name.status = NameStatus.UNMATCHED
 
-#     if button == "match":
-#         unmatched_name.person_id = match_id
-#     elif button == "source_error":
-#         unmatched_name.status = NameStatus.UNMATCHED
-#     else:
-#         ...
+    unmatched_name.save()
 
-#     unmatched_name.save()
-
-#     return JSONResponse({"status": "success"})
+    return JsonResponse({"status": "success"})
