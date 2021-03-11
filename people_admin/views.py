@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Count
 from openstates.data.models import LegislativeSession, Person
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from people_admin.models import UnmatchedName, NameStatus
@@ -10,9 +11,16 @@ from django.http import JsonResponse
 def people_list(request):
     state_people_data = {}
 
+    unmatched_by_state = dict(
+        UnmatchedName.objects.values_list("session__jurisdiction__name").annotate(
+            number=Count("id")
+        )
+    )
+
     for state in states:
         state_people_data[state.abbr.lower()] = {
             "state": state.name,
+            "unmatched": unmatched_by_state.get(state.name, 0),
         }
 
     return render(

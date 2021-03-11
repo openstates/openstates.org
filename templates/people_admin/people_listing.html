@@ -7,23 +7,23 @@
 
 {% block content %}
 
-    	<section class="section">
+			<section class="section">
 		<h1>People Overview</h1>
 
 		<div class="grid-x grid-margin-x">
 			<table class="hover">
 				<thead>
                     <tr>
-                    	<th>State</th>
-                    	<th>Total Unmatched Entities</th>
+											<th>State</th>
+											<th>Total Unmatched Entities</th>
                     </tr>
                 </thead>
                 <tbody>
 					{% for state, spd in state_people_data.items %}
 						<tr class="row--align-top">
                             <td>{{ spd.state }}</td>
-														<td><a href="{% url 'people_matcher' state %}">plenty</a></td>
-	                    </tr>
+														<td><a href="{% url 'people_matcher' state %}">{{ spd.unmatched }} </a></td>
+											</tr>
 					{% endfor %}
 				</tbody>
 			</table>
