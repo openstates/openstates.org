@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from openstates.data.models import LegislativeSession, Person
 from utils.common import abbr_to_jid, sessions_with_bills, states
-from people_admin.models import UnmatchedName
+from people_admin.models import UnmatchedName, NameStatus
 
-# from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
 
 
 def people_list(request):
@@ -47,26 +48,24 @@ def people_matcher(request, state, session=None):
     return render(request, "people_admin/people_matcher.html", context)
 
 
-# pseudo-code for apply_match view:
+@require_http_methods(["POST"])
+def apply_match(request, person):
+    button = request.POST.get("submit")
+    match_id = request.POST["match_id"]
+    unmatched_id = person
 
-# @require_http_methods(["POST"])
-# def apply_match(request):
-#     button = request.POST["submit"]
-#     match_id = request.POST["match_id"]
-#     unmatched_id = request.POST["unmatched_id"]
-#
-#     unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
-#
-#     if button == "match":
-#         unmatched_name.person_id = match_id
-#         unmatched_name.status = NameStatues.MATCHED_PERSON
-#     elif button == "source_error":
-#         unmatched_name.status = NameStatus.SOURCE_ERROR
-#     elif button == "ignore":
-#         unmatched_name.status = NameStatus.IGNORED
-#     else:
-#         unmatched_name.status = NameStatus.UNMATCHED
-#
-#     unmatched_name.save()
-#
-#     return JSONResponse({"status": "success"})
+    unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
+
+    if button == "Match":
+        unmatched_name.matched_person_id = match_id
+        unmatched_name.status = NameStatus.MATCHED_PERSON
+    elif button == "Source_error":
+        unmatched_name.status = NameStatus.SOURCE_ERROR
+    elif button == "Ignore":
+        unmatched_name.status = NameStatus.IGNORED
+    else:
+        unmatched_name.status = NameStatus.UNMATCHED
+
+    unmatched_name.save()
+
+    return JsonResponse({"status": "success"})

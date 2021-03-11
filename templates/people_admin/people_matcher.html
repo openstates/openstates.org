@@ -41,18 +41,24 @@
                 </thead>
                 <tbody>
 					{% for entity in unmatched %}
-                    <form action="" method="post">
+                    <form action="{% url 'apply_person_match' entity.id %}" method="post">
                         {% csrf_token %}
 						<tr class="row--align-top">
-	                        <td>{{ entity.name }}<input type="hidden" name="unmatched_id" value="{{ entity.id }}"></td>
+	                        <td>{{ entity.name }}</td>
                             <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored</td>
-                            <td><select name="match_id">
+                            <td>
+                                <select name="match_id">
                                     <option value="">All Available Sponsors</option>
                                     {% for sponsor in state_sponsors %}
                                         <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
                                     {% endfor %}
-				                </select><button type="submit" class="button" value="match">Match</button></td>
-                            <td><button type="submit" class="button" value="source_error">Source Error</button><button type="submit" class="button" value="ignore">Ignore</button></td>
+				                </select>
+                                <input type="submit" class="button" value="Match"/>
+                            </td>
+                            <td>
+                                <input type="submit" class="button" value="Source_error"/>
+                                <input type="submit" class="button" value="Ignore"/>
+                            </td>
 	                    </tr>
                     </form>
 					{% endfor %}
