@@ -45,7 +45,8 @@
                         {% csrf_token %}
 						<tr class="row--align-top">
 	                        <td>{{ entity.name }}</td>
-                            <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored</td>
+                            <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored - {{ entity.votes_count }} Votes
+                            </td>
                             <td>
                                 <select name="match_id">
                                     <option value="">All Available Sponsors</option>
@@ -56,7 +57,7 @@
                                 <input type="submit" class="button" value="Match"/>
                             </td>
                             <td>
-                                <input type="submit" class="button" value="Source_error"/>
+                                <input type="submit" class="button" value="Source Error"/>
                                 <input type="submit" class="button" value="Ignore"/>
                             </td>
 	                    </tr>

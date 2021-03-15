@@ -40,7 +40,9 @@ def people_matcher(request, state, session=None):
             LegislativeSession, identifier=session, jurisdiction_id=jid
         )
 
-    unmatched = UnmatchedName.objects.filter(session_id=session)
+    unmatched = UnmatchedName.objects.filter(session_id=session, status="U").order_by(
+        "-sponsorships_count"
+    )
     state_sponsors = Person.objects.filter(current_jurisdiction_id=jid)
     unmatched_total = unmatched.count()
 
@@ -67,7 +69,7 @@ def apply_match(request, person):
     if button == "Match":
         unmatched_name.matched_person_id = match_id
         unmatched_name.status = NameStatus.MATCHED_PERSON
-    elif button == "Source_error":
+    elif button == "Source Error":
         unmatched_name.status = NameStatus.SOURCE_ERROR
     elif button == "Ignore":
         unmatched_name.status = NameStatus.IGNORED
