@@ -5,16 +5,18 @@ from utils.common import abbr_to_jid, sessions_with_bills, states
 from people_admin.models import UnmatchedName, NameStatus
 
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 
 
+@user_passes_test(lambda u: u.is_staff)
 def people_list(request):
     state_people_data = {}
 
     unmatched_by_state = dict(
-        UnmatchedName.objects.values_list("session__jurisdiction__name").annotate(
-            number=Count("id")
-        )
+        UnmatchedName.objects.filter(status="U")
+        .values_list("session__jurisdiction__name")
+        .annotate(number=Count("id"))
     )
 
     for state in states:
@@ -30,6 +32,7 @@ def people_list(request):
     )
 
 
+@user_passes_test(lambda u: u.is_staff)
 def people_matcher(request, state, session=None):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
@@ -58,6 +61,7 @@ def people_matcher(request, state, session=None):
     return render(request, "people_admin/people_matcher.html", context)
 
 
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(["POST"])
 def apply_match(request, person):
     button = request.POST.get("submit")
