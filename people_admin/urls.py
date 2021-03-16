@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from utils.common import states
 from .views import (
-    people_list,
+    jurisdiction_list,
     people_matcher,
     apply_match,
 )
@@ -11,7 +11,7 @@ state_abbrs = [s.abbr.lower() for s in states]
 state_abbr_pattern = r"({})".format("|".join(state_abbrs))
 
 urlpatterns = [
-    path("", people_list),
+    path("", jurisdiction_list),
     re_path(
         r"^(?P<state>{})/matcher/$".format(state_abbr_pattern),
         people_matcher,

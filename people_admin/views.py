@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 
 
-def people_list(request):
+def jurisdiction_list(request):
     state_people_data = {}
 
     unmatched_by_state = dict(
@@ -25,7 +25,7 @@ def people_list(request):
 
     return render(
         request,
-        "people_admin/people_listing.html",
+        "people_admin/jurisdiction_list.html",
         {"state_people_data": state_people_data},
     )
 
