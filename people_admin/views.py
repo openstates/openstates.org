@@ -8,6 +8,18 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 
 
+def person_data(person):
+    """ similar to utils.people.person_as_dict but customized for editable fields """
+    return {
+        "id": person.id,
+        "name": person.name,
+        "title": person.current_role["title"],
+        "district": person.current_role["district"],
+        "party": person.primary_party,
+        "image": person.image,
+    }
+
+
 def jurisdiction_list(request):
     state_people_data = {}
 
@@ -28,6 +40,22 @@ def jurisdiction_list(request):
         "people_admin/jurisdiction_list.html",
         {"state_people_data": state_people_data},
     )
+
+
+def people_list(request, state):
+    jid = abbr_to_jid(state)
+    current_people = [
+        person_data(p)
+        for p in Person.objects.filter(
+            current_jurisdiction_id=jid, current_role__isnull=False
+        ).order_by("family_name", "name")
+    ]
+
+    context = {
+        "current_people": current_people,
+    }
+
+    return render(request, "people_admin/person_list.html", {"context": context})
 
 
 def people_matcher(request, state, session=None):
