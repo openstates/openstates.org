@@ -3,6 +3,27 @@
 
 {% block scripts %}
   <script src="{% static "bundles/dashboards.js" %}"></script>
+    <script>
+        function updateEntity(entityId) {
+            console.log("hello " + entityId);
+            const url = "http://localhost:8000/admin/people/matcher/update/" + entityId;
+
+            const matchData =  {
+                'unmatchedId': entityId,
+                'button': document.forms["updateForm"]["submit"],
+            }
+
+            console.log(matchData);
+
+            fetch(url, {
+                method: 'POST',
+                body: matchData,
+            })
+            .then(response => {
+                return console.log(response.json());
+            });
+        }
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -41,10 +62,10 @@
                 </thead>
                 <tbody>
 					{% for entity in unmatched %}
-                    <form action="{% url 'apply_person_match' entity.id %}" method="post">
-                        {% csrf_token %}
+                    <form name="updateForm">
 						<tr class="row--align-top">
-	                        <td>{{ entity.name }}</td>
+	                        <td>{{ entity.name }}<input type="hidden" name="unmatched" value="{{ entity.name }}" />
+                            <input type="hidden" name="unmatched_id" value="{{ entity.id }}" /></td>
                             <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored - {{ entity.votes_count }} Votes
                             </td>
                             <td>
@@ -54,11 +75,11 @@
                                         <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
                                     {% endfor %}
 				                </select>
-                                <input type="submit" class="button" value="Match"/>
+                                <input type="submit" class="button" value="Match" onclick="return updateEntity({{ entity.id }})"/>
                             </td>
                             <td>
-                                <input type="submit" class="button" value="Source Error"/>
-                                <input type="submit" class="button" value="Ignore"/>
+                                <input type="submit" class="button" value="Source Error" onclick="updateEntity({{ entity.id }})"/>
+                                <input type="submit" class="button" value="Ignore" onclick="updateEntity({{ entity.id }})"/>
                             </td>
 	                    </tr>
                     </form>
