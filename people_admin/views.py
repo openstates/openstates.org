@@ -7,6 +7,7 @@ from people_admin.models import UnmatchedName, NameStatus
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
+import json
 
 
 @user_passes_test(lambda u: u.is_staff)
@@ -63,10 +64,13 @@ def people_matcher(request, state, session=None):
 
 @user_passes_test(lambda u: u.is_staff)
 @require_http_methods(["POST"])
-def apply_match(request, person):
-    button = request.POST.get("submit")
-    match_id = request.POST["match_id"]
-    unmatched_id = person
+def apply_match(request):
+    print(request)
+    form_data = json.load(request)["match_data"]
+    button = form_data["button"]
+    match_id = form_data["matchedId"]
+    unmatched_id = form_data["unmatchedId"]
+    print(button)
 
     unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
 

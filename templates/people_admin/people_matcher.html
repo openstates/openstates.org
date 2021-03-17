@@ -4,23 +4,48 @@
 {% block scripts %}
   <script src="{% static "bundles/dashboards.js" %}"></script>
     <script>
-        function updateEntity(entityId) {
-            console.log("hello " + entityId);
-            const url = "http://localhost:8000/admin/people/matcher/update/" + entityId;
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        function updateEntity(entityId, button) {
+            const url = "/admin/people/matcher/update/";
+            const matchedId = document.getElementById("match4_" + entityId).value;
 
             const matchData =  {
                 'unmatchedId': entityId,
-                'button': document.forms["updateForm"]["submit"],
-            }
-
+                'button': button,
+                'matchedId': matchedId,
+            };
             console.log(matchData);
 
             fetch(url, {
                 method: 'POST',
-                body: matchData,
-            })
-            .then(response => {
-                return console.log(response.json());
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({'match_data': matchData})
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                console.log(data);
+            }).catch(error => {
+                console.error(error);
             });
         }
     </script>
@@ -62,24 +87,24 @@
                 </thead>
                 <tbody>
 					{% for entity in unmatched %}
-                    <form name="updateForm">
+                    <form name="updateForm" onsubmit="return false">
 						<tr class="row--align-top">
 	                        <td>{{ entity.name }}<input type="hidden" name="unmatched" value="{{ entity.name }}" />
                             <input type="hidden" name="unmatched_id" value="{{ entity.id }}" /></td>
                             <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills Sponsored - {{ entity.votes_count }} Votes
                             </td>
                             <td>
-                                <select name="match_id">
+                                <select name="match_id" id="match4_{{ entity.id }}">
                                     <option value="">All Available Sponsors</option>
                                     {% for sponsor in state_sponsors %}
                                         <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
                                     {% endfor %}
 				                </select>
-                                <input type="submit" class="button" value="Match" onclick="return updateEntity({{ entity.id }})"/>
+                                <input type="submit" class="button" value="Match" onclick="updateEntity({{ entity.id }}, 'Match')"/>
                             </td>
                             <td>
-                                <input type="submit" class="button" value="Source Error" onclick="updateEntity({{ entity.id }})"/>
-                                <input type="submit" class="button" value="Ignore" onclick="updateEntity({{ entity.id }})"/>
+                                <input type="submit" class="button" value="Source Error" onclick="updateEntity({{ entity.id }}, 'Source Error')"/>
+                                <input type="submit" class="button" value="Ignore" onclick="updateEntity({{ entity.id }}, 'Ignore')"/>
                             </td>
 	                    </tr>
                     </form>
