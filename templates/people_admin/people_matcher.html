@@ -27,6 +27,10 @@
     const entityName = document.getElementById("entity_" + entityId).value;
     const matchedId = document.getElementById("match_" + entityId).value;
 
+    if (button == "Match" && matchedId == "") {
+      return alert("Must select person to match with.");
+    }
+
     const matchData = {
       "unmatchedId": entityId,
       "button": button,
