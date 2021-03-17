@@ -11,6 +11,7 @@ module.exports = {
     state_map: ['./js/state-map'],
     district_map: ['./js/legislator-map'],
     dashboards: ['./js/dashboards'],
+    people_admin: ['./js/admin/people'],
   },
   output: {
     path: path.resolve(output_dir),
