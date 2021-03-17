@@ -65,12 +65,10 @@ def people_matcher(request, state, session=None):
 @user_passes_test(lambda u: u.is_staff)
 @require_http_methods(["POST"])
 def apply_match(request):
-    print(request)
     form_data = json.load(request)["match_data"]
     button = form_data["button"]
     match_id = form_data["matchedId"]
     unmatched_id = form_data["unmatchedId"]
-    print(button)
 
     unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
 
