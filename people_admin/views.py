@@ -5,7 +5,9 @@ from utils.common import abbr_to_jid, sessions_with_bills, states
 from people_admin.models import UnmatchedName, NameStatus
 
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
+import json
 
 
 def person_data(person):
@@ -20,13 +22,14 @@ def person_data(person):
     }
 
 
+@user_passes_test(lambda u: u.is_staff)
 def jurisdiction_list(request):
     state_people_data = {}
 
     unmatched_by_state = dict(
-        UnmatchedName.objects.values_list("session__jurisdiction__name").annotate(
-            number=Count("id")
-        )
+        UnmatchedName.objects.filter(status="U")
+        .values_list("session__jurisdiction__name")
+        .annotate(number=Count("id"))
     )
 
     for state in states:
@@ -58,6 +61,7 @@ def people_list(request, state):
     return render(request, "people_admin/person_list.html", {"context": context})
 
 
+@user_passes_test(lambda u: u.is_staff)
 def people_matcher(request, state, session=None):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
@@ -68,7 +72,9 @@ def people_matcher(request, state, session=None):
             LegislativeSession, identifier=session, jurisdiction_id=jid
         )
 
-    unmatched = UnmatchedName.objects.filter(session_id=session)
+    unmatched = UnmatchedName.objects.filter(session_id=session, status="U").order_by(
+        "-sponsorships_count"
+    )
     state_sponsors = Person.objects.filter(current_jurisdiction_id=jid)
     unmatched_total = unmatched.count()
 
@@ -84,18 +90,20 @@ def people_matcher(request, state, session=None):
     return render(request, "people_admin/people_matcher.html", context)
 
 
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(["POST"])
-def apply_match(request, person):
-    button = request.POST.get("submit")
-    match_id = request.POST["match_id"]
-    unmatched_id = person
+def apply_match(request):
+    form_data = json.load(request)["match_data"]
+    button = form_data["button"]
+    match_id = form_data["matchedId"]
+    unmatched_id = form_data["unmatchedId"]
 
     unmatched_name = get_object_or_404(UnmatchedName, pk=unmatched_id)
 
     if button == "Match":
         unmatched_name.matched_person_id = match_id
         unmatched_name.status = NameStatus.MATCHED_PERSON
-    elif button == "Source_error":
+    elif button == "Source Error":
         unmatched_name.status = NameStatus.SOURCE_ERROR
     elif button == "Ignore":
         unmatched_name.status = NameStatus.IGNORED
