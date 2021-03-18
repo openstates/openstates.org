@@ -49,7 +49,7 @@
       return response.json();
     }).then(data => {
       // update row
-      document.getElementById("row_" + entityId).innerHTML = '<td>' + entityName + ' has been updated successfully</td>';
+      document.getElementById("row_" + entityId).innerHTML = '<td colspan=4 class="success">' + entityName + ' has been updated successfully</td>';
     }).catch(error => {
       console.error(error);
     });
