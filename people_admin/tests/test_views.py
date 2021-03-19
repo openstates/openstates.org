@@ -12,11 +12,13 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas):
     UnmatchedName.objects.create(
         id=1, session=session, name="Sam Jackson", sponsorships_count=5, votes_count=5
     )
+
+    match_data = (
+        '"{"match_data":{"unmatchedId":1,"button":"Match","matchedId":"' + p.id + '"}}"'
+    )
     with django_assert_num_queries(2):
         # client can be used to mock GET/POST/etc.
-        resp = client.post(
-            "/admin/people/matcher/update/1", {"match_id": p.id, "submit": "Match"}
-        )
+        resp = client.post("/admin/people/matcher/update/", match_data)
     assert resp.status_code == 200
     assert resp.json() == {"status": "success"}
 
@@ -29,7 +31,8 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas):
 @pytest.mark.django_db
 def test_apply_match_404(client, django_assert_num_queries):
     with django_assert_num_queries(1):
-        resp = client.post(
-            "/admin/people/matcher/update/9999", {"match_id": 1, "submit": "Match"}
+        match_data = (
+            '"{"match_data":{"unmatchedId":9999,"button":"Match","matchedId":"1"}}"'
         )
+        resp = client.post("/admin/people/matcher/update/", match_data)
     assert resp.status_code == 404
