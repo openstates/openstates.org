@@ -45,6 +45,7 @@ def jurisdiction_list(request):
     )
 
 
+@user_passes_test(lambda u: u.is_staff)
 def people_list(request, state):
     jid = abbr_to_jid(state)
     current_people = [

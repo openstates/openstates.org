@@ -14,7 +14,9 @@ state_abbr_pattern = r"({})".format("|".join(state_abbrs))
 urlpatterns = [
     path("", jurisdiction_list),
     re_path(
-        r"^(?P<state>{})/$".format(state_abbr_pattern), people_list, name="people_list",
+        r"^(?P<state>{})/$".format(state_abbr_pattern),
+        people_list,
+        name="people_admin_list",
     ),
     re_path(
         r"^(?P<state>{})/matcher/$".format(state_abbr_pattern),
