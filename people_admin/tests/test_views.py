@@ -16,7 +16,7 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas):
     match_data = (
         '"{"match_data":{"unmatchedId":1,"button":"Match","matchedId":"' + p.id + '"}}"'
     )
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(2):
         # client can be used to mock GET/POST/etc.
         resp = client.post("/admin/people/matcher/update/", match_data)
     assert resp.status_code == 200
