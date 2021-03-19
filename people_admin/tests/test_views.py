@@ -1,11 +1,17 @@
 import pytest
+from django.contrib.auth.models import User
 from openstates.data.models import Person
 from people_admin.models import UnmatchedName, NameStatus
 import json
 
 
+@pytest.fixture
+def admin_user():
+    return User.objects.create(username="admin", is_staff=True)
+
+
 @pytest.mark.django_db
-def test_apply_match_matches(client, django_assert_num_queries, kansas):
+def test_apply_match_matches(client, django_assert_num_queries, kansas, admin_user):
     p = Person.objects.create(name="Samuel L. Jackson")
 
     # kansas is a test fixture, it has some fake data attached we can use
@@ -17,8 +23,8 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas):
     apply_data = {
         "match_data": {"unmatchedId": 1, "button": "Match", "matchedId": p.id}
     }
-    with django_assert_num_queries(2):
-        # client can be used to mock GET/POST/etc.
+    client.force_login(admin_user)
+    with django_assert_num_queries(4):
         resp = client.post(
             "/admin/people/matcher/update/",
             json.dumps(apply_data),
@@ -34,14 +40,15 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_apply_match_ignore(client, django_assert_num_queries, kansas):
+def test_apply_match_ignore(client, django_assert_num_queries, kansas, admin_user):
     session = kansas.legislative_sessions.get(identifier="2020")
     UnmatchedName.objects.create(
         id=2, session=session, name="Eva Green", sponsorships_count=16, votes_count=7
     )
 
     match_data = {"match_data": {"unmatchedId": 2, "button": "Ignore", "matchedId": ""}}
-    with django_assert_num_queries(2):
+    client.force_login(admin_user)
+    with django_assert_num_queries(4):
         # client can be used to mock GET/POST/etc.
         resp = client.post(
             "/admin/people/matcher/update/",
@@ -57,7 +64,9 @@ def test_apply_match_ignore(client, django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_apply_match_source_error(client, django_assert_num_queries, kansas):
+def test_apply_match_source_error(
+    client, django_assert_num_queries, kansas, admin_user
+):
     session = kansas.legislative_sessions.get(identifier="2020")
     UnmatchedName.objects.create(
         id=3,
@@ -70,7 +79,8 @@ def test_apply_match_source_error(client, django_assert_num_queries, kansas):
     match_data = {
         "match_data": {"unmatchedId": 3, "button": "Source Error", "matchedId": ""}
     }
-    with django_assert_num_queries(2):
+    client.force_login(admin_user)
+    with django_assert_num_queries(4):
         resp = client.post(
             "/admin/people/matcher/update/",
             json.dumps(match_data),
@@ -85,8 +95,9 @@ def test_apply_match_source_error(client, django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_apply_match_404(client, django_assert_num_queries):
-    with django_assert_num_queries(1):
+def test_apply_match_404(client, django_assert_num_queries, admin_user):
+    client.force_login(admin_user)
+    with django_assert_num_queries(3):
         match_data = {
             "match_data": {"unmatchedId": 9999, "button": "Match", "matchedId": "1"}
         }
