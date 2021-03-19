@@ -1,6 +1,7 @@
 import pytest
 from openstates.data.models import Person
 from people_admin.models import UnmatchedName, NameStatus
+import json
 
 
 @pytest.mark.django_db
@@ -13,12 +14,12 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas):
         id=1, session=session, name="Sam Jackson", sponsorships_count=5, votes_count=5
     )
 
-    match_data = (
-        '"{"match_data":{"unmatchedId":1,"button":"Match","matchedId":"' + p.id + '"}}"'
-    )
+    apply_data = {
+        "match_data": {"unmatchedId": 1, "button": "Match", "matchedId": p.id}
+    }
     with django_assert_num_queries(2):
         # client can be used to mock GET/POST/etc.
-        resp = client.post("/admin/people/matcher/update/", match_data)
+        resp = client.post("/admin/people/matcher/update/", json.dumps(apply_data))
     assert resp.status_code == 200
     assert resp.json() == {"status": "success"}
 
@@ -35,10 +36,10 @@ def test_apply_match_ignore(client, django_assert_num_queries, kansas):
         id=2, session=session, name="Eva Green", sponsorships_count=16, votes_count=7
     )
 
-    match_data = '"{"match_data":{"unmatchedId":2,"button":"Ignore","matchedId":""}}"'
+    match_data = {"match_data": {"unmatchedId": 2, "button": "Ignore", "matchedId": ""}}
     with django_assert_num_queries(1):
         # client can be used to mock GET/POST/etc.
-        resp = client.post("/admin/people/matcher/update/", match_data)
+        resp = client.post("/admin/people/matcher/update/", json.dumps(match_data))
     assert resp.status_code == 200
     assert resp.json() == {"status": "success"}
 
@@ -58,11 +59,11 @@ def test_apply_match_source_error(client, django_assert_num_queries, kansas):
         votes_count=2,
     )
 
-    match_data = (
-        '"{"match_data":{"unmatchedId":3,"button":"Source Error","matchedId":""}}"'
-    )
+    match_data = {
+        "match_data": {"unmatchedId": 3, "button": "Source Error", "matchedId": ""}
+    }
     with django_assert_num_queries(1):
-        resp = client.post("/admin/people/matcher/update/", match_data)
+        resp = client.post("/admin/people/matcher/update/", json.dumps(match_data))
     assert resp.status_code == 200
     assert resp.json() == {"status": "success"}
 
