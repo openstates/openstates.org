@@ -55,7 +55,7 @@ def test_apply_match_source_error(client, django_assert_num_queries, kansas):
         session=session,
         name="David Tennant",
         sponsorships_count=10,
-        votes_count=2,
+        votes_count=2
     )
 
     match_data = (
