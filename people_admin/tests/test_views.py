@@ -19,7 +19,11 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas):
     }
     with django_assert_num_queries(2):
         # client can be used to mock GET/POST/etc.
-        resp = client.post("/admin/people/matcher/update/", json.dumps(apply_data))
+        resp = client.post(
+            "/admin/people/matcher/update/",
+            json.dumps(apply_data),
+            content_type="application/json",
+        )
     assert resp.status_code == 200
     assert resp.json() == {"status": "success"}
 
@@ -37,9 +41,13 @@ def test_apply_match_ignore(client, django_assert_num_queries, kansas):
     )
 
     match_data = {"match_data": {"unmatchedId": 2, "button": "Ignore", "matchedId": ""}}
-    with django_assert_num_queries(1):
+    with django_assert_num_queries(2):
         # client can be used to mock GET/POST/etc.
-        resp = client.post("/admin/people/matcher/update/", json.dumps(match_data))
+        resp = client.post(
+            "/admin/people/matcher/update/",
+            json.dumps(match_data),
+            content_type="application/json",
+        )
     assert resp.status_code == 200
     assert resp.json() == {"status": "success"}
 
@@ -56,14 +64,18 @@ def test_apply_match_source_error(client, django_assert_num_queries, kansas):
         session=session,
         name="David Tennant",
         sponsorships_count=10,
-        votes_count=2
+        votes_count=2,
     )
 
     match_data = {
         "match_data": {"unmatchedId": 3, "button": "Source Error", "matchedId": ""}
     }
-    with django_assert_num_queries(1):
-        resp = client.post("/admin/people/matcher/update/", json.dumps(match_data))
+    with django_assert_num_queries(2):
+        resp = client.post(
+            "/admin/people/matcher/update/",
+            json.dumps(match_data),
+            content_type="application/json",
+        )
     assert resp.status_code == 200
     assert resp.json() == {"status": "success"}
 
@@ -75,8 +87,12 @@ def test_apply_match_source_error(client, django_assert_num_queries, kansas):
 @pytest.mark.django_db
 def test_apply_match_404(client, django_assert_num_queries):
     with django_assert_num_queries(1):
-        match_data = (
-            '"{"match_data":{"unmatchedId":9999,"button":"Match","matchedId":"1"}}"'
+        match_data = {
+            "match_data": {"unmatchedId": 9999, "button": "Match", "matchedId": "1"}
+        }
+        resp = client.post(
+            "/admin/people/matcher/update/",
+            json.dumps(match_data),
+            content_type="application/json",
         )
-        resp = client.post("/admin/people/matcher/update/", match_data)
     assert resp.status_code == 404
