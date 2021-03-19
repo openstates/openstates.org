@@ -1,0 +1,125 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block scripts %}
+<script src="{% static "bundles/dashboards.js" %}"></script>
+<script>
+  // get cookie for form POST
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  const csrftoken = getCookie("csrftoken");
+
+  function updateEntity(entityId, button) {
+    const url = "/admin/people/matcher/update/";
+    const entityName = document.getElementById("entity_" + entityId).value;
+    const matchedId = document.getElementById("match_" + entityId).value;
+
+    if (button == "Match" && matchedId == "") {
+      return alert("Must select person to match with.");
+    }
+
+    const matchData = {
+      "unmatchedId": entityId,
+      "button": button,
+      "matchedId": matchedId,
+    };
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ "match_data": matchData }),
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      // update row
+      document.getElementById("row_" + entityId).innerHTML = '<td colspan=4 class="success">' + entityName + ' has been updated successfully</td>';
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="grid-y grid-margin-y">
+
+  <div class="cell">
+    <div class="grid-x grid-margin-x medium-up-2" style="margin-bottom: 0%;">
+      <div class="cell medium-5">
+        <h1 class="heading--large">People Matcher</h1>
+        <h2>{{ session }}</h2>
+        <h4>Unmatched Total: {{ unmatched_total }}</h4>
+      </div>
+      <div class="cell medium-5">
+        </br>
+        <select id="session" name="session"
+                onchange="window.location.href = '/admin/people/{{ state }}/matcher/' + this.value">
+          <option value="">All Available Sessions</option>
+          {% for session in all_sessions %}
+          <option value="{{ session.identifier }}">{{ session.name }}</option>
+          {% endfor %}
+        </select>
+        <button type="button" class="button"><a href="/admin/people/">Back to Listing</a></button>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <table class="hover">
+      <thead>
+      <tr>
+        <th>Unmatched Entity</th>
+        <th>Context</th>
+        <th>Match</th>
+        <th>Suppress</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for entity in unmatched %}
+      <form name="updateForm" onsubmit="return false">
+        <tr class="row--align-top" id="row_{{ entity.id }}">
+          <td>{{ entity.name }}<input type="hidden" id="entity_{{ entity.id }}" value="{{ entity.name }}" /></td>
+          <td><a href="/{{ state }}/bills/?sponsor_name={{ entity.name }}">{{ entity.sponsorships_count }}</a> Bills
+            Sponsored - {{ entity.votes_count }} Votes
+          </td>
+          <td>
+            <select name="match_id" id="match_{{ entity.id }}">
+              <option value="">All Available Sponsors</option>
+              {% for sponsor in state_sponsors %}
+              <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" class="button" value="Match" onclick="updateEntity({{ entity.id }}, 'Match')" />
+          </td>
+          <td>
+            <input type="submit" class="button" value="Source Error"
+                   onclick="updateEntity({{ entity.id }}, 'Source Error')" />
+            <input type="submit" class="button" value="Ignore" onclick="updateEntity({{ entity.id }}, 'Ignore')" />
+          </td>
+        </tr>
+      </form>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}
