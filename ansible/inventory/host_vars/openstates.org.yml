@@ -9,7 +9,6 @@ django_environment:
     CACHE_URL: "{{ lookup('aws_ssm', '/site/CACHE_URL') }}"
     RRL_REDIS_HOST: "{{ lookup('aws_ssm', '/site/RRL_REDIS_HOST') }}"
     SENTRY_DSN: "{{ lookup('aws_ssm', '/site/SENTRY_DSN') }}"
-    SENDGRID_API_KEY: "{{ lookup('aws_ssm', '/site/SENDGRID_API_KEY') }}"
     RECAPTCHA_PUBLIC_KEY: "{{ lookup('aws_ssm', '/site/RECAPTCHA_PUBLIC_KEY_V2') }}"
     RECAPTCHA_PRIVATE_KEY: "{{ lookup('aws_ssm', '/site/RECAPTCHA_PRIVATE_KEY_V2') }}"
     NEW_RELIC_LICENSE_KEY: "{{ lookup('aws_ssm', '/site/NEWRELIC_INI_KEY') }}"
