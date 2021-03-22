@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from allauth.socialaccount.models import SocialAccount
 from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
-
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from utils.orgs import get_chambers_from_abbr
 from dashboards.models import DataQualityReport

@@ -3,30 +3,16 @@ from django.views.generic.base import RedirectView
 
 redirects = [
     ("api/register/", "/accounts/login/"),
-    ("api/", "https://docs.openstates.org/en/latest/api/index.html"),
-    ("api/metadata/", "https://docs.openstates.org/en/latest/api/metadata.html"),
-    ("api/bills/", "https://docs.openstates.org/en/latest/api/bills.html"),
-    ("api/legislators/", "https://docs.openstates.org/en/latest/api/legislators.html"),
-    ("api/districts/", "https://docs.openstates.org/en/latest/api/districts.html"),
-    ("contributing/", "https://docs.openstates.org/en/latest/contributing/index.html"),
-    ("methodology/", "https://docs.openstates.org/en/latest/infrastructure/index.html"),
-    (
-        "categorization/",
-        "https://docs.openstates.org/en/latest/api/categorization.html",
-    ),
-    (
-        "mailing-list/",
-        "https://cdn.forms-content.sg-form.com/b8d934d4-7b67-11ea-a680-1a7f462d56d4",
-    ),
-    # old flatpages
+    ("api/", "https://docs.openstates.org/en/latest/api/v3/index.html"),
+    ("contributing/", "/about/contributing/"),
+    ("methodology/", "/about/"),
+    ("mailing-list/", "/about/"),
     ("donate/", "/about/"),
     ("funding/", "/about/"),
     ("contact/", "/about/"),
     ("bulk/csv/", "/data/session-csv/"),
     ("csv_downloads/", "/data/session-csv/"),
     ("downloads/", "/data/"),
-    # bounce to widgets
-    ("widgets/", "https://widgets.openstates.org"),
 ]
 
 urlpatterns = [

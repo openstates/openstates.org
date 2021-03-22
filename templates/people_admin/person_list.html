@@ -1,0 +1,11 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block scripts %}
+  {{ context|json_script:"context" }}
+  <script src="{% static "bundles/people_admin.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+<div data-hook="people-list"></div>
+{% endblock %}
