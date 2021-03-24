@@ -100,12 +100,12 @@
             Sponsored - {{ entity.votes_count }} Votes
           </td>
           <td>
-            <select name="match_id" id="match_{{ entity.id }}">
-              <option value="">All Available Sponsors</option>
-              {% for sponsor in state_sponsors %}
-              <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
-              {% endfor %}
-            </select>
+            <input list="sponsorMatch" id="match_{{ entity.id }}" />
+              <datalist id="sponsorMatch">
+                  {% for sponsor in state_sponsors %}
+                  <option value="{{ sponsor.id }}">{{ sponsor.name }}</option>
+                  {% endfor %}
+              </datalist>
             <input type="submit" class="button" value="Match" onclick="updateEntity({{ entity.id }}, 'Match')" />
           </td>
           <td>
