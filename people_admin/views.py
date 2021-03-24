@@ -4,7 +4,7 @@ from openstates.data.models import LegislativeSession, Person
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from people_admin.models import UnmatchedName, NameStatus
 
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, never_cache
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 import json
@@ -45,6 +45,7 @@ def jurisdiction_list(request):
     )
 
 
+@never_cache
 @user_passes_test(lambda u: u.is_staff)
 def people_list(request, state):
     jid = abbr_to_jid(state)
@@ -62,6 +63,7 @@ def people_list(request, state):
     return render(request, "people_admin/person_list.html", {"context": context})
 
 
+@never_cache
 @user_passes_test(lambda u: u.is_staff)
 def people_matcher(request, state, session=None):
     jid = abbr_to_jid(state)
