@@ -4,7 +4,8 @@ from openstates.data.models import LegislativeSession, Person
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from people_admin.models import UnmatchedName, NameStatus
 
-from django.views.decorators.http import require_http_methods, never_cache
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 import json
