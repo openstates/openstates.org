@@ -273,6 +273,7 @@ class JurisdictionNode(graphene.ObjectType):
     id = graphene.String()
     name = graphene.String()
     url = graphene.String()
+    classification = graphene.String()
     feature_flags = graphene.List(graphene.String)
     last_scraped_at = graphene.String()
 
@@ -311,7 +312,9 @@ class PersonConnection(CountableConnectionBase):
 
 
 class CoreQuery:
-    jurisdictions = DjangoConnectionField(JurisdictionConnection)
+    jurisdictions = DjangoConnectionField(
+        JurisdictionConnection, classification=graphene.String()
+    )
     jurisdiction = graphene.Field(
         JurisdictionNode, id=graphene.String(), name=graphene.String()
     )
@@ -330,10 +333,15 @@ class CoreQuery:
     organization = graphene.Field(OrganizationNode, id=graphene.ID())
 
     def resolve_jurisdictions(
-        self, info, first=None, last=None, before=None, after=None
+        self,
+        info,
+        classification="state",
+        first=None,
+        last=None,
+        before=None,
+        after=None,
     ):
-        # TODO: switch classification of jurisdictions to 'state'
-        qs = Jurisdiction.objects.exclude(classification="municipality")
+        qs = Jurisdiction.objects.filter(classification=classification)
         return optimize(
             qs,
             info,
