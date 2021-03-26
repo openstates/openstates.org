@@ -1,7 +1,7 @@
 import re
 from django.db.models import F
+from django.contrib.postgres import SearchQuery
 from openstates.data.models import Bill
-from .websearchquery import WebSearchQuery as SearchQuery
 from .common import abbr_to_jid
 
 # decision was made in openstates/issues#193 to exclude these by default to not confuse users
@@ -46,7 +46,7 @@ def search_bills(
         else:
             bills = bills.filter(
                 searchable__search_vector=SearchQuery(
-                    query, search_type="web", config="english"
+                    query, search_type="websearch", config="english"
                 )
             )
     if chamber:
