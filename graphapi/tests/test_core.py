@@ -219,7 +219,7 @@ def test_variable_people_by_member_of(django_assert_num_queries):
             }
         """
             % ak_house.id,
-            variables={"f": 3},
+            variable_values={"f": 3},
         )
     assert result.errors is None
     assert len(result.data["people"]["edges"]) == 3
