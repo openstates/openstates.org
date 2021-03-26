@@ -1,6 +1,6 @@
 import re
 from django.db.models import F
-from django.contrib.postgres import SearchQuery
+from django.contrib.postgres.search import SearchQuery
 from openstates.data.models import Bill
 from .common import abbr_to_jid
 
