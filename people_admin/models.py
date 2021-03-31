@@ -52,6 +52,11 @@ class UnmatchedName(models.Model):
     )
     matched_person = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True)
 
+    class Meta:
+        permissions = [
+            ("can_match_names", "Can use the name matching tool."),
+        ]
+
 
 class DeltaSet(models.Model):
     """ a group of changes to be applied together """

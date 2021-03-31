@@ -341,7 +341,7 @@ class CoreQuery:
         before=None,
         after=None,
     ):
-        qs = Jurisdiction.objects.filter(classification=classification)
+        qs = Jurisdiction.objects.filter(classification=classification).order_by("name")
         return optimize(
             qs,
             info,
