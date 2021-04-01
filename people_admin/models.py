@@ -83,3 +83,9 @@ class PersonDelta(models.Model):
     delta_set = models.ForeignKey(
         DeltaSet, on_delete=models.CASCADE, related_name="person_deltas"
     )
+
+    class Meta:
+        permissions = [
+            ("can_edit", "Can edit people."),
+            ("can_retire", "Can retire people."),
+        ]
