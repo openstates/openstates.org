@@ -517,7 +517,7 @@ signedtoken = ["cryptography", "pyjwt (>=1.0.0)"]
 
 [[package]]
 name = "openstates"
-version = "5.6.0"
+version = "5.8.0"
 description = "core infrastructure for the openstates project"
 category = "main"
 optional = false
@@ -1107,7 +1107,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "65994e24e0b80874688c5878b2a1705c43925a6016149b87cb9f47964df9c390"
+content-hash = "5d2bd62b8a7c725ed2fe377a196e2c0eb53d599c783d127e0c01cf0f92f8fe07"
 
 [metadata.files]
 aniso8601 = [
@@ -1324,8 +1324,8 @@ oauthlib = [
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
 ]
 openstates = [
-    {file = "openstates-5.6.0-py3-none-any.whl", hash = "sha256:33e6901eda89c4bbee800b1ea178bbf8efd5b15a57a03352ca4ecd8d5cecf5d4"},
-    {file = "openstates-5.6.0.tar.gz", hash = "sha256:581f5678e80d2c9b425337574b956725329c15ad6f39c3f03a3f384c4cc48fdd"},
+    {file = "openstates-5.8.0-py3-none-any.whl", hash = "sha256:2531da284265e88ce16e815c9f9219b1e7bdbdbbdbc613912544f341b71b481c"},
+    {file = "openstates-5.8.0.tar.gz", hash = "sha256:caf4812f8ca4662cc2ce2d05fd1b4f3b842499edcb22d1920ae39ef238c964af"},
 ]
 packaging = [
     {file = "packaging-20.9-py2.py3-none-any.whl", hash = "sha256:67714da7f7bc052e064859c05c595155bd1ee9f69f76557e21f051443c20947a"},
