@@ -1,13 +1,21 @@
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from openstates.data.models import Person
 from people_admin.models import UnmatchedName, NameStatus
+from people_admin.views import MATCHER_PERM, EDIT_PERM
 import json
 
 
 @pytest.fixture
 def admin_user():
-    return User.objects.create(username="admin", is_staff=True)
+    u = User.objects.create(username="admin")
+    user_permissions = list(
+        Permission.objects.filter(
+            codename__in=[p.split(".")[1] for p in (MATCHER_PERM, EDIT_PERM)]
+        ).values_list("id", flat=True)
+    )
+    u.user_permissions.set(user_permissions)
+    return u
 
 
 @pytest.mark.django_db
@@ -24,7 +32,7 @@ def test_apply_match_matches(client, django_assert_num_queries, kansas, admin_us
         "match_data": {"unmatchedId": 1, "button": "Match", "matchedId": p.id}
     }
     client.force_login(admin_user)
-    with django_assert_num_queries(4):
+    with django_assert_num_queries(6):
         resp = client.post(
             "/admin/people/matcher/update/",
             json.dumps(apply_data),
@@ -48,7 +56,7 @@ def test_apply_match_ignore(client, django_assert_num_queries, kansas, admin_use
 
     match_data = {"match_data": {"unmatchedId": 2, "button": "Ignore", "matchedId": ""}}
     client.force_login(admin_user)
-    with django_assert_num_queries(4):
+    with django_assert_num_queries(6):
         # client can be used to mock GET/POST/etc.
         resp = client.post(
             "/admin/people/matcher/update/",
@@ -80,7 +88,7 @@ def test_apply_match_source_error(
         "match_data": {"unmatchedId": 3, "button": "Source Error", "matchedId": ""}
     }
     client.force_login(admin_user)
-    with django_assert_num_queries(4):
+    with django_assert_num_queries(6):
         resp = client.post(
             "/admin/people/matcher/update/",
             json.dumps(match_data),
@@ -97,7 +105,7 @@ def test_apply_match_source_error(
 @pytest.mark.django_db
 def test_apply_match_404(client, django_assert_num_queries, admin_user):
     client.force_login(admin_user)
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(5):
         match_data = {
             "match_data": {"unmatchedId": 9999, "button": "Match", "matchedId": "1"}
         }

@@ -3,12 +3,16 @@ from django.db.models import Count
 from openstates.data.models import LegislativeSession, Person
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from people_admin.models import UnmatchedName, NameStatus
-
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 import json
+
+
+MATCHER_PERM = "people_admin.can_match_names"
+EDIT_PERM = "people_admin.can_edit"
+RETIRE_PERM = "people_admin.can_retire"
 
 
 def person_data(person):
@@ -23,7 +27,7 @@ def person_data(person):
     }
 
 
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.has_perm(MATCHER_PERM) or u.has_perm(EDIT_PERM))
 def jurisdiction_list(request):
     state_people_data = {}
 
@@ -47,7 +51,7 @@ def jurisdiction_list(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 def people_list(request, state):
     jid = abbr_to_jid(state)
     current_people = [
@@ -65,7 +69,7 @@ def people_list(request, state):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.has_perm(MATCHER_PERM))
 def people_matcher(request, state, session=None):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
@@ -94,7 +98,7 @@ def people_matcher(request, state, session=None):
     return render(request, "people_admin/people_matcher.html", context)
 
 
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: u.has_perm(MATCHER_PERM))
 @require_http_methods(["POST"])
 def apply_match(request):
     form_data = json.load(request)["match_data"]
