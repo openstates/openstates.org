@@ -6,7 +6,7 @@ authors = ["James Turk <james@openstates.org>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-django = "^3.0"
+django = "^3.2"
 django-cors-headers = "^3.7"
 django-allauth = "^0.42.0"
 django-recaptcha = "^2.0.6"
