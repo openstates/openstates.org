@@ -40,6 +40,7 @@ def get_files(
     all_files = []
     for state in states:
         all_files.extend(list(repo.get_contents(f"data/{state}/legislature")))
+        all_files.extend(list(repo.get_contents(f"data/{state}/retired")))
     for person_id in ids:
         uuid = person_id.split("/")[1]
         for file in all_files:
