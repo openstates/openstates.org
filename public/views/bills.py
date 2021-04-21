@@ -14,9 +14,10 @@ from openstates.data.models import (
     VoteEvent,
     Person,
 )
+from openstates.utils.transformers import fix_bill_id
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import fix_bill_id, search_bills, EXCLUDED_CLASSIFICATIONS
+from utils.bills import search_bills, EXCLUDED_CLASSIFICATIONS
 from .fallback import fallback
 
 
