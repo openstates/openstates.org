@@ -1,5 +1,4 @@
 from collections import defaultdict
-import name_tools
 from . import static
 from utils.common import jid_to_abbr
 
@@ -199,7 +198,8 @@ def convert_legislator(leg):
         last_name = leg.family_name
         suffixes = ""
     else:
-        _, first_name, last_name, suffixes = name_tools.split(leg.name)
+        last_name = leg.name
+        suffixes = first_name = ""
 
     legacy_ids = [
         oid.identifier
