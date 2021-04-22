@@ -1,5 +1,5 @@
 ---
-- name: add deadsnakes repo for Py 3.7
+- name: add deadsnakes repo for Py 3.8
   apt_repository:
     repo: ppa:deadsnakes/ppa
 - name: install system packages
@@ -17,12 +17,12 @@
       - libgdal-dev
       - certbot
       - python3-certbot-dns-route53
-      - python3.7
-      - python3.7-dev
+      - python3.8
+      - python3.8-dev
 - name: build python37 plugin
   command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python37"
   environment:
-    PYTHON: python3.7
+    PYTHON: python3.8
   args:
     creates: /usr/lib/uwsgi/plugins/python37_plugin.so
     chdir: /usr/lib/uwsgi/plugins/
@@ -89,12 +89,12 @@
     - restart django-application
   register: gitresult
 - name: create virtualenv
-  command: virtualenv -p python3.7 /home/openstates/virt{{ gitresult.after }}
+  command: virtualenv -p python3.8 /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
   notify:
     - restart django-application
 - name: add checkouts to python path
-  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.7/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
+  lineinfile: dest=/home/openstates/virt{{ gitresult.after }}/lib/python3.8/site-packages/checkouts.pth create=yes state=present line=/home/openstates/src/openstates.org
   become_user: "openstates"
 - name: install packages via poetry
   command: ~/.poetry/bin/poetry install # --deploy
