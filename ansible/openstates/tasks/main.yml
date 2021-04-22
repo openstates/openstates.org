@@ -19,12 +19,12 @@
       - python3-certbot-dns-route53
       - python3.8
       - python3.8-dev
-- name: build python37 plugin
-  command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python37"
+- name: build python38 plugin
+  command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python38"
   environment:
     PYTHON: python3.8
   args:
-    creates: /usr/lib/uwsgi/plugins/python37_plugin.so
+    creates: /usr/lib/uwsgi/plugins/python38_plugin.so
     chdir: /usr/lib/uwsgi/plugins/
 
 - name: add localhost alias
