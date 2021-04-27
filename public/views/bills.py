@@ -60,7 +60,10 @@ class BillList(View):
         if "passed-lower-chamber" in form["status"]:
             status_text.append(f"passed in the {chambers['lower']}")
         if "passed-upper-chamber" in form["status"]:
-            status_text.append(f"passed in the {chambers['upper']}")
+            if "legislature" in chambers:
+                status_text.append(f"passed in the {chambers['legislature']}")
+            else:
+                status_text.append(f"passed in the {chambers['upper']}")
         if "signed" in form["status"]:
             status_text.append("been signed into law")
 
