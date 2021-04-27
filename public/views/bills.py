@@ -46,6 +46,8 @@ class BillList(View):
             summary.append(f'{chambers[form["chamber"]]} only')
 
         if form["session"]:
+            if form["session"] not in sessions:
+                raise Http404()
             summary.append("from " + sessions[form["session"]])
         if form["query"]:
             summary.append(f"matching term '{form['query']}'")
