@@ -70,8 +70,10 @@ def document_card(document):
 
 @register.filter()
 def state_name(state_abbr):
-    if state_abbr:
-        return us.states.lookup(state_abbr).name
+    # lookup returns None if there's no such state, but can't take a None value itself
+    state = us.states.lookup(state_abbr or "")
+    if state:
+        return state.name
     return ""
 
 

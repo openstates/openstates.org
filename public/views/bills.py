@@ -46,11 +46,18 @@ class BillList(View):
             summary.append(f'{chambers[form["chamber"]]} only')
 
         if form["session"]:
+            # this is almost always bad crawlers or XSS attempts
+            if form["session"] not in sessions:
+                raise Http404()
             summary.append("from " + sessions[form["session"]])
         if form["query"]:
             summary.append(f"matching term '{form['query']}'")
         if form["sponsor"]:
-            summary.append(f"sponsored by {sponsors[form['sponsor']]}")
+            # there are ways this can happen that are legit, so just warn about it
+            if form["sponsor"] not in sponsors:
+                summary.append("invalid sponsor")
+            else:
+                summary.append(f"sponsored by {sponsors[form['sponsor']]}")
         if form["subjects"]:
             summary.append(f"including subjects {', '.join(form['subjects'])}")
 
@@ -58,7 +65,10 @@ class BillList(View):
         if "passed-lower-chamber" in form["status"]:
             status_text.append(f"passed in the {chambers['lower']}")
         if "passed-upper-chamber" in form["status"]:
-            status_text.append(f"passed in the {chambers['upper']}")
+            if "legislature" in chambers:
+                status_text.append(f"passed in the {chambers['legislature']}")
+            else:
+                status_text.append(f"passed in the {chambers['upper']}")
         if "signed" in form["status"]:
             status_text.append("been signed into law")
 

@@ -147,7 +147,10 @@ def site_search(request):
         )
 
         # pagination
-        page_num = int(request.GET.get("page", 1))
+        try:
+            page_num = int(request.GET.get("page", 1))
+        except ValueError:
+            raise Http404()
         bills_paginator = Paginator(bills, 20)
         try:
             bills = bills_paginator.page(page_num)
