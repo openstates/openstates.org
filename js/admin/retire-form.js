@@ -67,11 +67,11 @@ class RetireForm extends React.Component {
         ) : (
       <form onSubmit={this.handleSubmit}>
         <label> Retirement Date:
-          <input type="date" name="retirementDate" id="retirementDate" onChange={this.handleInputChange}/>
+          <input type="date" name="retirementDate" id="retirementDate" required onChange={this.handleInputChange}/>
         </label>
         <br />
         <label>Reason for Retirement:
-          <input type="text" id="reason" name="reason" onChange={this.handleInputChange}/>
+          <input type="text" id="reason" name="reason" required onChange={this.handleInputChange}/>
         </label>
         <br />
         <label>
