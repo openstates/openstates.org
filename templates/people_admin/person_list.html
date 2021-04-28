@@ -2,15 +2,38 @@
 {% load static %}
 
 {% block scripts %}
-    <link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-  integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
-  crossorigin="anonymous"/>
   {{ context|json_script:"context" }}
+    <meta charset="utf-8">
   <script src="{% static "bundles/people_admin.js" %}"></script>
+    <style>
+    #modal {
+      background-color: rgba(0, 0, 0, 0.9);
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #modal:empty {
+      display: none;
+    }
+
+    #modal > div {
+      background-color: white;
+      max-width: 500px;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div data-hook="people-list"></div>
+    <div id="modal"></div>
+    <div data-hook="people-list"></div>
 {% endblock %}

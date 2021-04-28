@@ -123,5 +123,7 @@ def apply_match(request):
     return JsonResponse({"status": "success"})
 
 
-# def apply_retirement(request):
-#      person = request.POST[]
+@user_passes_test(lambda u: u.has_perm(MATCHER_PERM))
+@require_http_methods(["POST"])
+def apply_retirement(request):
+    return JsonResponse({"status": "success"})

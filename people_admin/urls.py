@@ -5,6 +5,7 @@ from .views import (
     people_list,
     people_matcher,
     apply_match,
+    apply_retirement,
 )
 
 # Only allow valid state abbreviations
@@ -29,4 +30,5 @@ urlpatterns = [
         name="session_people_matcher",
     ),
     re_path(r"^matcher/update/", apply_match, name="apply_person_match",),
+    re_path(r"^retire/", apply_retirement, name="apply_retirement",),
 ]
