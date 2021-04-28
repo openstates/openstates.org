@@ -1,5 +1,5 @@
 import random
-from openstates.data.models import Organization, Bill, LegislativeSession
+from openstates.data.models import Organization, Bill, LegislativeSession, Person, Post
 
 
 def create_test_bill(
@@ -57,3 +57,22 @@ def create_test_vote(bill, *, yes_count=0, no_count=0, yes_votes=None, no_votes=
         vote.votes.create(option="yes", voter_name=name)
     for name in no_votes or []:
         vote.votes.create(option="no", voter_name=name)
+
+
+def create_test_person(name, *, org, district, party):
+    p = Person.objects.create(
+        name=name,
+        primary_party=party,
+        current_jurisdiction=org.jurisdiction,
+        current_role={
+            "org_classification": org.classification,
+            "district": district,
+            "division_id": "ocd-division/123",
+            "title": "Title",
+        },
+    )
+    post = Post.objects.create(organization=org, label=district)
+    p.memberships.create(post=post, organization=org)
+    party, _ = Organization.objects.get_or_create(name=party, classification="party")
+    p.memberships.create(organization=party)
+    return p
