@@ -14,7 +14,6 @@
     "promise-polyfill": "8.1.0",
     "randomcolor": "^0.5.4",
     "react": "^16.14.0",
-    "react-bootstrap": "^1.5.2",
     "react-dom": "^16.14.0",
     "react-mapbox-gl": "^4.8.6",
     "recharts": "^2.0.0-beta.7",
