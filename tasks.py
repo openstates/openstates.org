@@ -46,14 +46,14 @@ def runserver(c, docker_db=True):
 def deploy(c):
     # for ansible on OSX
     os.environ["OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
-    # NEWRELIC_APP_ID = c.run(
-    #     "aws ssm get-parameter --name /site/NEWRELIC_OPENSTATES_APP_ID --with-decryption | jq -r .Parameter.Value",
-    #     hide="out"
-    # ).stdout.strip()
-    # NEWRELIC_API_KEY = c.run(
-    #     "aws ssm get-parameter --name /site/NEWRELIC_API_KEY --with-decryption | jq -r .Parameter.Value",
-    #     hide="out"
-    # ).stdout.strip()
+    NEWRELIC_APP_ID = c.run(
+        "aws ssm get-parameter --name /site/NEWRELIC_OPENSTATES_APP_ID --with-decryption | jq -r .Parameter.Value",
+        hide="out",
+    ).stdout.strip()
+    NEWRELIC_API_KEY = c.run(
+        "aws ssm get-parameter --name /site/NEWRELIC_API_KEY --with-decryption | jq -r .Parameter.Value",
+        hide="out",
+    ).stdout.strip()
     SENTRY_RELEASE_ENDPOINT = c.run(
         "aws ssm get-parameter --name /site/SENTRY_RELEASE_ENDPOINT --with-decryption | jq -r .Parameter.Value",
     ).stdout.strip()
@@ -61,9 +61,19 @@ def deploy(c):
     with c.cd("ansible"):
         c.run("ansible-playbook openstates.yml -i inventory/", pty=True)
 
+    # tag the release in git and on sentry and newrelic
     next_tag = get_next_tag(c)
     c.run(
         f'curl {SENTRY_RELEASE_ENDPOINT} -X POST -H "Content-Type: application/json" -d \'{{"version": "{next_tag}"}}\''
+    )
+    c.run(
+        f"""curl -X POST \
+    "https://api.newrelic.com/v2/applications/{NEWRELIC_APP_ID}/deployments.json" \
+         -H "X-Api-Key:{NEWRELIC_API_KEY}" -i \
+         -H "Content-Type: application/json" \
+         -d \
+    '{{ "deployment": {{ "revision": "{next_tag}", "changelog": "", "description": "", "user": "" }} }}'
+  """
     )
     c.run(f"git tag {next_tag}")
     c.run("git push --tags")
