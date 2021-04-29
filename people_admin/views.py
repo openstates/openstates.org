@@ -128,3 +128,8 @@ def apply_match(request):
 def apply_retirement(request):
     # TO DO: actual logic
     return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(MATCHER_PERM))
+def new_legislator(request, state, session):
+    return "fix me"
