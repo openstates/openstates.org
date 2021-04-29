@@ -1,6 +1,7 @@
 import pytest
+from testutils.factories import create_test_person
 from django.contrib.auth.models import User, Permission
-from openstates.data.models import Person
+from openstates.data.models import Person, Organization
 from people_admin.models import UnmatchedName, NameStatus
 from people_admin.views import MATCHER_PERM, EDIT_PERM
 import json
@@ -115,3 +116,26 @@ def test_apply_match_404(client, django_assert_num_queries, admin_user):
             content_type="application/json",
         )
     assert resp.status_code == 404
+
+
+@pytest.mark.django_db
+def test_people_list(client, django_assert_num_queries, admin_user, kansas):
+    house = Organization.objects.get(name="Kansas House")
+    senate = Organization.objects.get(name="Kansas Senate")
+    sam = create_test_person("Sam Jackson", org=house, party="Democratic", district="1")
+    sam.identifiers.create(scheme="twitter", identifier="@SamuelLJackson")
+    sam.contact_details.create(
+        value="555-555-5555", type="voice", note="Capitol Office"
+    )
+    create_test_person("Bosephorous Fogg", org=house, party="Republican", district="2")
+    create_test_person("Cran Crumble", org=senate, party="Republican", district="A")
+    client.force_login(admin_user)
+    with django_assert_num_queries(7):
+        resp = client.get("/admin/people/ks/")
+    assert resp.status_code == 200
+    people = resp.context["context"]["current_people"]
+    assert len(people) == 3
+    sam_data = [p for p in people if p["name"] == "Sam Jackson"][0]
+    assert sam_data["district"] == "1"
+    assert sam_data["twitter"] == "@SamuelLJackson"
+    assert sam_data["capitol_voice"] == "555-555-5555"

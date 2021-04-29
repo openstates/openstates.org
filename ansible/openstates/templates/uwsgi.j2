@@ -13,6 +13,10 @@ harakiri = 30
 enable-threads = true
 single-interpreter = true
 module = web.wsgi:application
+{# hide uwsgi errors from sentry https://github.com/getsentry/raven-python/issues/732 #}
+ignore-sigpipe = true
+ignore-write-errors = true
+disable-write-exception = true
 {% for key, val in django_environment.items() %}
 env = {{key}}={{val}}
 {% endfor %}

@@ -667,3 +667,93 @@ def test_bills_order(django_assert_num_queries):
             result.data["ak"]["edges"][i]["node"]["updatedAt"]
             > result.data["ak"]["edges"][i + 1]["node"]["updatedAt"]
         )
+
+
+@pytest.mark.django_db
+def test_real_example_big_query(django_assert_num_queries):
+    # this is a real query that was running that had issues in production as of April 2021
+    # only variables have been changed to match test data
+    query = """
+query bills($jurisdiction: String, $session: String, $end_cursor: String, $updated_since: String) {
+  bills(jurisdiction: $jurisdiction, session: $session, first: 85, after: $end_cursor, updatedSince: $updated_since) {
+    bill_list: edges {
+      bill: node {
+        id
+        legislativeSession {
+          identifier
+          name
+          classification
+          jurisdiction { url }
+        }
+        identifier
+        fromOrganization { name classification }
+        classification
+        subject
+        bill_summary: abstracts { abstract note date }
+        otherTitles { title note }
+        otherIdentifiers { identifier scheme note }
+        actions {
+          description
+          date
+          organization { id name extras links { note url } sources { note url } }
+          classification
+          order
+          vote { id }
+          relatedEntities { name entityType }
+        }
+        title
+        relatedBills { identifier legislativeSession relationType }
+        versions { note date links { mediaType url text } }
+        sources { url note }
+        createdAt
+        updatedAt
+        sources { note url }
+        openstatesUrl
+        documents { note date links { mediaType url text } }
+        }
+    }
+    totalCount pageInfo { endCursor hasNextPage }
+  } }"""
+    variables = {
+        "jurisdiction": "Alaska",
+        "end_cursor": "",
+        "updated_since": "1900-01-01",
+    }
+    with django_assert_num_queries(16):
+        result = schema.execute(query, variables)
+    assert result.errors is None
+    assert result.data["bills"]["totalCount"] == 26
+
+
+@pytest.mark.django_db
+def test_real_example_bill_query(django_assert_num_queries):
+    # this is a real query that was running that had issues in production as of April 2021
+    # only changed to include test data
+    query = """{
+      bill(jurisdiction: "Alaska", identifier: "HB 1", session: "2018") {
+        id identifier title classification updatedAt createdAt
+        abstracts { abstract note date }
+        fromOrganization { id name classification }
+        legislativeSession { identifier jurisdiction { name } }
+        actions {
+          date description classification
+          relatedEntities { entityType name }
+          organization { id name }
+        }
+        sponsorships {
+          name
+          entityType
+          organization { id name }
+          person { id name }
+          primary
+          classification
+        }
+        documents { date note links { url } }
+        versions { date note links { url mediaType text } }
+        sources { url note }
+      }
+    }"""
+    with django_assert_num_queries(14):
+        result = schema.execute(query)
+    assert result.errors is None
+    assert result.data["bill"] is not None

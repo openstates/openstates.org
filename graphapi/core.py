@@ -120,18 +120,6 @@ class OrganizationNode(OCDBaseNode):
                 self.memberships, info, None, current=True, coming_from_person=False
             )
 
-    def resolve_identifiers(self, info):
-        return self.identifiers.all()
-
-    def resolve_other_names(self, info):
-        return self.other_names.all()
-
-    def resolve_links(self, info):
-        return self.links.all()
-
-    def resolve_sources(self, info):
-        return self.sources.all()
-
 
 class DivisionNode(OCDBaseNode):
     name = graphene.String()

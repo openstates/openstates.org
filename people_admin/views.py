@@ -17,6 +17,20 @@ RETIRE_PERM = "people_admin.can_retire"
 
 def person_data(person):
     """ similar to utils.people.person_as_dict but customized for editable fields """
+    extras = {}
+    identifier_types = ("twitter", "facebook", "instagram", "youtube")
+    for identifier in person.identifiers.all():
+        for itype in identifier_types:
+            if identifier.scheme == itype:
+                extras[itype] = identifier.identifier
+    for cd in person.contact_details.all():
+        if cd.note == "Capitol Office":
+            cd_prefix = "capitol_"
+        elif cd.note == "District Office":
+            cd_prefix = "district_"
+        else:
+            continue
+        extras[cd_prefix + cd.type] = cd.value
     return {
         "id": person.id,
         "name": person.name,
@@ -24,6 +38,7 @@ def person_data(person):
         "district": person.current_role["district"],
         "party": person.primary_party,
         "image": person.image,
+        **extras,
     }
 
 
@@ -58,7 +73,9 @@ def people_list(request, state):
         person_data(p)
         for p in Person.objects.filter(
             current_jurisdiction_id=jid, current_role__isnull=False
-        ).order_by("family_name", "name")
+        )
+        .order_by("family_name", "name")
+        .prefetch_related("identifiers", "contact_details")
     ]
 
     context = {

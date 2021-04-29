@@ -523,9 +523,9 @@ def test_organization_by_id(django_assert_num_queries):
     )
     sen = Organization.objects.get(jurisdiction__name="Wyoming", classification="upper")
 
-    # 1 query for legislature, 1 query each for children, links, sources
+    # 1 query for legislature, 1 query each for children
     # 1 query for senate w/ parent
-    with django_assert_num_queries(6):
+    with django_assert_num_queries(4):
         result = schema.execute(
             """ {
             leg: organization(id: "%s") {
