@@ -144,7 +144,7 @@ class BillNode(OCDBaseNode):
                         ),
                     )
                 ],
-                [".organization"],
+                [".organization", ".vote"],
             )
         else:
             return self.actions.all()
@@ -346,11 +346,13 @@ class LegislativeQuery:
                 ".abstracts",
                 ".otherTitles",
                 ".otherIdentifiers",
+                ".fromOrganization",
                 ".actions",
                 ".actions.organization",
                 ".actions.relatedEntities",
                 ".actions.relatedEntities.organization",
                 ".actions.relatedEntities.person",
+                ".actions.vote",
                 ".sponsorships",
                 ".documents",
                 ".versions",
