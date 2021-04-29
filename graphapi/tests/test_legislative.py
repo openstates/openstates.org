@@ -723,3 +723,37 @@ query bills($jurisdiction: String, $session: String, $end_cursor: String, $updat
         result = schema.execute(query, variables)
     assert result.errors is None
     assert result.data["bills"]["totalCount"] == 26
+
+
+@pytest.mark.django_db
+def test_real_example_bill_query(django_assert_num_queries):
+    # this is a real query that was running that had issues in production as of April 2021
+    # only changed to include test data
+    query = """{
+      bill(jurisdiction: "Alaska", identifier: "HB 1", session: "2018") {
+        id identifier title classification updatedAt createdAt
+        abstracts { abstract note date }
+        fromOrganization { id name classification }
+        legislativeSession { identifier jurisdiction { name } }
+        actions {
+          date description classification
+          relatedEntities { entityType name }
+          organization { id name }
+        }
+        sponsorships {
+          name
+          entityType
+          organization { id name }
+          person { id name }
+          primary
+          classification
+        }
+        documents { date note links { url } }
+        versions { date note links { url mediaType text } }
+        sources { url note }
+      }
+    }"""
+    with django_assert_num_queries(14):
+        result = schema.execute(query)
+    assert result.errors is None
+    assert result.data["bill"] is not None
