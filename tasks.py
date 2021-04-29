@@ -21,7 +21,7 @@ def get_next_tag(c):
     while f"{prefix}.{release_num}" <= last_tag:
         release_num += 1
 
-    return f"{prefix}.{release_num}"
+    return f"{prefix}.{release_num:02}"
 
 
 def poetry_install(c):
@@ -56,6 +56,7 @@ def deploy(c):
     ).stdout.strip()
     SENTRY_RELEASE_ENDPOINT = c.run(
         "aws ssm get-parameter --name /site/SENTRY_RELEASE_ENDPOINT --with-decryption | jq -r .Parameter.Value",
+        hide="out",
     ).stdout.strip()
 
     with c.cd("ansible"):
