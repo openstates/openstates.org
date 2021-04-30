@@ -70,6 +70,6 @@ jobs:
     - name: lint with flake8
       run: poetry run inv lint
     - name: pytest
-      run: poetry run inv test
+      run: poetry run inv test --no-docker-db
       env:
         DATABASE_URL: postgresql://test:test@localhost/test
