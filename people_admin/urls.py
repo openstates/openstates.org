@@ -28,5 +28,9 @@ urlpatterns = [
         people_matcher,
         name="session_people_matcher",
     ),
-    re_path(r"^matcher/update/", apply_match, name="apply_person_match",),
+    re_path(
+        r"^matcher/update/",
+        apply_match,
+        name="apply_person_match",
+    ),
 ]

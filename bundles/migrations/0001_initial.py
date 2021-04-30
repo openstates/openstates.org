@@ -55,7 +55,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"unique_together": {("bundle", "bill")},},
+            options={
+                "unique_together": {("bundle", "bill")},
+            },
         ),
         migrations.AddField(
             model_name="bundle",

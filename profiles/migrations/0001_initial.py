@@ -183,6 +183,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"unique_together": {("profile", "date", "endpoint")},},
+            options={
+                "unique_together": {("profile", "date", "endpoint")},
+            },
         ),
     ]

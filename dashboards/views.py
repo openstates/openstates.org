@@ -156,9 +156,9 @@ def user_overview(request):
 
 
 def _counter_to_chartdata(counter):
-    """ restructure data from a format like "date -> value -> num"
-        to "{date: date, value1: num1, value2: num2}"
-        for use in charts
+    """restructure data from a format like "date -> value -> num"
+    to "{date: date, value1: num1, value2: num2}"
+    for use in charts
     """
     ret_data = []
     for date, subcounter in counter.items():

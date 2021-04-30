@@ -38,8 +38,10 @@ def test(c, args="", docker_db=True):
 @task
 def lint(c):
     c.run(
-        "poetry run flake8 --show-source --statistics --ignore=E203,E501,W503", pty=True
+        "poetry run flake8 --show-source --statistics --ignore=E203,E501,W503 --max-line-length=120",
+        pty=True,
     )
+    c.run("black --check .", pty=True)
 
 
 @task

@@ -142,14 +142,14 @@ class BillList(View):
 
     def get(self, request, state):
         """
-            form values:
-                query
-                chamber: lower|upper
-                session
-                status: passed-lower-chamber|passed-upper-chamber|signed
-                sponsor (ocd-person ID)
-                classification
-                subjects
+        form values:
+            query
+            chamber: lower|upper
+            session
+            status: passed-lower-chamber|passed-upper-chamber|signed
+            sponsor (ocd-person ID)
+            classification
+            subjects
         """
         bills, form = self.get_bills(request, state)
 
@@ -268,14 +268,14 @@ def _document_sort_key(doc):
 
 def compute_bill_stages(actions, first_chamber, second_chamber):
     """
-        return a structure with four entries like
-            stage: Introduced
-            text: Introduced in House
-            date: 2018-01-01
-        or, if empty
-            stage: Senate
-            text: None
-            date: None
+    return a structure with four entries like
+        stage: Introduced
+        text: Introduced in House
+        date: 2018-01-01
+    or, if empty
+        stage: Senate
+        text: None
+        date: None
     """
     stages = [
         {"stage": "Introduced", "text": None, "date": None},

@@ -28,7 +28,8 @@ def structlog_middleware(get_response):
 
         if msg:
             log = log.bind(
-                status_code=response.status_code, duration=time.time() - start,
+                status_code=response.status_code,
+                duration=time.time() - start,
             )
             log.info(msg)
 
