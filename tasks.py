@@ -94,7 +94,7 @@ def deploy(c):
 
 @task
 def npm_build(c):
-    """ build node scripts """
+    """build node scripts"""
     c.run("npm run build", pty=True)
 
 

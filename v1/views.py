@@ -20,7 +20,7 @@ from profiles.verifier import verify_request
 
 
 def api_method(view_func):
-    """ check API key, log, and wrap JSONP response """
+    """check API key, log, and wrap JSONP response"""
 
     @functools.wraps(view_func)
     def new_view(request, *args, **kwargs):
