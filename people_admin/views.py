@@ -38,6 +38,7 @@ def person_data(person):
         "district": person.current_role["district"],
         "party": person.primary_party,
         "image": person.image,
+        "email": person.email,
         **extras,
     }
 
@@ -140,13 +141,13 @@ def apply_match(request):
     return JsonResponse({"status": "success"})
 
 
-@user_passes_test(lambda u: u.has_perm(MATCHER_PERM))
+@user_passes_test(lambda u: u.has_perm(RETIRE_PERM))
 @require_http_methods(["POST"])
 def apply_retirement(request):
     # TO DO: actual logic
     return JsonResponse({"status": "success"})
 
 
-@user_passes_test(lambda u: u.has_perm(MATCHER_PERM))
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 def new_legislator(request, state, session):
     return "fix me"
