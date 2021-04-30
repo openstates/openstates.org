@@ -68,8 +68,8 @@ jobs:
           npm run build
 
     - name: lint with flake8
-      run: poetry run flake8 --show-source --statistics --ignore=E203,E501,W503
+      run: poetry run inv lint
     - name: pytest
-      run: poetry run pytest --ds=web.test_settings --reuse-db -v
-      env: 
+      run: poetry run inv test
+      env:
         DATABASE_URL: postgresql://test:test@localhost/test

@@ -36,6 +36,13 @@ def test(c, args="", docker_db=True):
 
 
 @task
+def lint(c):
+    c.run(
+        "poetry run flake8 --show-source --statistics --ignore=E203,E501,W503", pty=True
+    )
+
+
+@task
 def runserver(c, docker_db=True):
     if docker_db:
         start_docker_db(c)
