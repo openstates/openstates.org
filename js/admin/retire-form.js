@@ -23,16 +23,13 @@ class RetireForm extends React.Component {
     this.setState({
       [name]: value
     });
-
-    if(this.state.isDead) {
-      this.setState({reason: 'Death'});
-    }
   }
 
   handleSubmit(event) {
     const csrftoken = Cookies.get("csrftoken");
     const url = "/admin/people/retire/";
-    const {retirementDate, reason, isDead, vacantSeat} = this.state;
+    const {retirementDate, isDead, vacantSeat} = this.state;
+    const reason =  this.state.isDead ? 'Death' : this.state.reason;
     const retireData = {
       "name": this.props.name,
       "id": this.props.id,
@@ -41,6 +38,7 @@ class RetireForm extends React.Component {
       isDead,
       vacantSeat,
     };
+    console.log(retireData);
 
     fetch(url, {
       method: "POST",
