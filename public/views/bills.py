@@ -43,6 +43,8 @@ class BillList(View):
         elif form["classification"]:
             summary.append(f'{form["classification"].title()}s only')
         elif form["chamber"]:
+            if form["chamber"] not in chambers:
+                raise Http404()
             summary.append(f'{chambers[form["chamber"]]} only')
 
         if form["session"]:
