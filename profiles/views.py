@@ -110,7 +110,7 @@ def deactivate_subscription(request):
 
 
 def activate_subscription(**kwargs):
-    """ returns True iff a subscription was created or activated """
+    """returns True iff a subscription was created or activated"""
     sub, created = Subscription.objects.get_or_create(**kwargs)
     # check if it already existed and was deactivated
     if not created and not sub.active:

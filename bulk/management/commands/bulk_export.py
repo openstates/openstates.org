@@ -283,7 +283,9 @@ def upload_and_publish(state, session, filename, data_type):
     )
     print("uploaded", s3_url)
     obj, created = DataExport.objects.update_or_create(
-        session=sobj, data_type=data_type, defaults=dict(url=s3_url),
+        session=sobj,
+        data_type=data_type,
+        defaults=dict(url=s3_url),
     )
 
 

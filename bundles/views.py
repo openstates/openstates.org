@@ -12,7 +12,9 @@ def bundle_view(request, slug):
     bills_by_state = defaultdict(list)
     total_bills = 0
 
-    for bill in bundle.bills.all().select_related("legislative_session__jurisdiction",):
+    for bill in bundle.bills.all().select_related(
+        "legislative_session__jurisdiction",
+    ):
         bills_by_state[bill.legislative_session.jurisdiction.name].append(bill)
         total_bills += 1
 
@@ -55,7 +57,9 @@ def csv_view(request, slug):
 
     for bill in (
         bundle.bills.all()
-        .select_related("legislative_session__jurisdiction",)
+        .select_related(
+            "legislative_session__jurisdiction",
+        )
         .order_by(F("first_action_date").desc(nulls_last=True))
     ):
         writer.writerow(

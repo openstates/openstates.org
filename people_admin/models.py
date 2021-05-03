@@ -59,7 +59,7 @@ class UnmatchedName(models.Model):
 
 
 class DeltaSet(models.Model):
-    """ a group of changes to be applied together """
+    """a group of changes to be applied together"""
 
     name = models.CharField(max_length=200)
     created_by = models.ForeignKey(
@@ -73,7 +73,7 @@ class DeltaSet(models.Model):
 
 
 class PersonDelta(models.Model):
-    """ a proposed change to a single Person model """
+    """a proposed change to a single Person model"""
 
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
 

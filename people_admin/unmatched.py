@@ -10,7 +10,9 @@ from .models import UnmatchedName, NameStatus, DeltaSet, PersonDelta
 def check_sponsorships(session: LegislativeSession) -> typing.Dict[str, int]:
     unmatched = (
         BillSponsorship.objects.filter(
-            bill__legislative_session=session, person=None, organization=None,
+            bill__legislative_session=session,
+            person=None,
+            organization=None,
         )
         .values("name")
         .annotate(count=Count("id"))
@@ -22,7 +24,8 @@ def check_sponsorships(session: LegislativeSession) -> typing.Dict[str, int]:
 def check_votes(session: LegislativeSession) -> typing.Dict[str, int]:
     unmatched = (
         PersonVote.objects.filter(
-            vote_event__bill__legislative_session=session, voter=None,
+            vote_event__bill__legislative_session=session,
+            voter=None,
         )
         .values("voter_name")
         .annotate(count=Count("id"))
@@ -76,7 +79,9 @@ def unmatched_to_deltas(abbr: str) -> int:
         return 0
 
     delta_set, created = DeltaSet.objects.get_or_create(
-        name=f"{abbr.upper()} legislator matching", pr_url="", created_by=bot_user,
+        name=f"{abbr.upper()} legislator matching",
+        pr_url="",
+        created_by=bot_user,
     )
     delta_set.person_deltas.all().delete()
 

@@ -23,7 +23,7 @@ from .optimization import optimize
 
 
 def _resolve_suborganizations(root_obj, field_name, classification=None):
-    """ resolve organizations by classification optionally using the prefetch cache """
+    """resolve organizations by classification optionally using the prefetch cache"""
 
     # special case filtering if organizations are prefetched
     if classification and field_name in getattr(

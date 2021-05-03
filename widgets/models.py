@@ -12,7 +12,9 @@ class WidgetConfig(models.Model):
     owner = models.ForeignKey(User, related_name="widgets", on_delete=models.CASCADE)
     name = models.TextField(max_length=50)
     widget_type = models.CharField(
-        max_length=3, choices=WidgetType.choices, default=WidgetType.STATE_LEGISLATORS,
+        max_length=3,
+        choices=WidgetType.choices,
+        default=WidgetType.STATE_LEGISLATORS,
     )
     settings = models.JSONField(blank=True, default=dict)
 
