@@ -31,9 +31,10 @@ def _get_repo():
 
 
 def get_files(
-    ids: typing.List[str], states: typing.List[str],
+    ids: typing.List[str],
+    states: typing.List[str],
 ) -> typing.Dict[str, "github.ContentFile.ContentFile"]:
-    """ turn list of ids into mapping to files """
+    """turn list of ids into mapping to files"""
     # TODO: needs to be expanded to other directories
     files = {}
     repo = _get_repo()

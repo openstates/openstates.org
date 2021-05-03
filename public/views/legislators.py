@@ -98,7 +98,8 @@ def person(request, person_id):
             person_id  # will be invalid and raise 404, but useful in logging later
         )
     person = get_object_or_404(
-        Person.objects.prefetch_related("memberships__organization"), pk=ocd_person_id,
+        Person.objects.prefetch_related("memberships__organization"),
+        pk=ocd_person_id,
     )
 
     # to display district in front of district name, or not?
@@ -127,7 +128,10 @@ def person(request, person_id):
 
     person.sponsored_bills = list(
         Bill.objects.all()
-        .select_related("legislative_session", "legislative_session__jurisdiction",)
+        .select_related(
+            "legislative_session",
+            "legislative_session__jurisdiction",
+        )
         .filter(sponsorships__person=person)
         .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
     )

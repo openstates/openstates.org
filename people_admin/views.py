@@ -16,7 +16,7 @@ RETIRE_PERM = "people_admin.can_retire"
 
 
 def person_data(person):
-    """ similar to utils.people.person_as_dict but customized for editable fields """
+    """similar to utils.people.person_as_dict but customized for editable fields"""
     extras = {}
     identifier_types = ("twitter", "facebook", "instagram", "youtube")
     for identifier in person.identifiers.all():

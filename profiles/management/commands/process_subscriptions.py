@@ -14,7 +14,7 @@ class SkipCheck(Exception):
 
 
 def process_query_sub(sub, since):
-    """ given a query subscription, return a list of bills created since then """
+    """given a query subscription, return a list of bills created since then"""
     bills = list(
         search_bills(
             query=sub.query,
@@ -31,7 +31,7 @@ def process_query_sub(sub, since):
 
 
 def process_bill_sub(sub, since):
-    """ given a bill subscription, return bill if it has had an action since then """
+    """given a bill subscription, return bill if it has had an action since then"""
     if sub.bill.latest_action_date and sub.bill.latest_action_date >= since.strftime(
         "%Y-%m-%d"
     ):

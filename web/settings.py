@@ -4,11 +4,13 @@ import structlog
 import sentry_sdk
 from corsheaders.defaults import default_headers
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import ignore_logger
 
 if "SENTRY_DSN" in os.environ:
     # particularly for graphql errors
     sentry_sdk.utils.MAX_STRING_LENGTH = 2048
     sentry_sdk.init(dsn=os.environ["SENTRY_DSN"], integrations=[DjangoIntegration()])
+    ignore_logger("graphql.execution.utils")
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

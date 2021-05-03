@@ -36,6 +36,15 @@ def test(c, args="", docker_db=True):
 
 
 @task
+def lint(c):
+    c.run(
+        "poetry run flake8 --show-source --statistics --ignore=E203,E501,W503 --max-line-length=120",
+        pty=True,
+    )
+    c.run("black --check .", pty=True)
+
+
+@task
 def runserver(c, docker_db=True):
     if docker_db:
         start_docker_db(c)
@@ -85,7 +94,7 @@ def deploy(c):
 
 @task
 def npm_build(c):
-    """ build node scripts """
+    """build node scripts"""
     c.run("npm run build", pty=True)
 
 
