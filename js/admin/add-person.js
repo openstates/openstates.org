@@ -35,6 +35,7 @@ class NewPersonForm extends React.Component {
         <p>New legislator added successfully.</p>
         ) : (
         <form onSubmit={this.handleSubmit}>
+
           <input type="submit" className="button--primary button" value="Submit" />
         </form>
         )}

@@ -21,8 +21,9 @@
 <tbody>
   {% for state, spd in state_people_data.items %}
     <tr class="row--align-top">
-      <td><a href="{% url 'people_admin_list' state %}">{{ spd.state }}</a></td>
-      <td><a href="{% url 'people_matcher' state %}">{{ spd.unmatched }} </a></td>
+        <td><a href="{% url 'people_admin_list' state %}">{{ spd.state }}</a></td>
+        <td><a href="{% url 'people_matcher' state %}">{{ spd.unmatched }} </a></td>
+        <td><a href="{% url 'new_legislator' state %}">Add new Legislator to {{ spd.state }}</a></td>
     </tr>
   {% endfor %}
 </tbody>

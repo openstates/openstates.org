@@ -7,7 +7,18 @@ const fieldOptions = {
   "Title": "title",
   "District": "district",
   "Party": "party",
+  "Image": "image",
   "Email": "email",
+  "Capitol Phone": "capitol_voice",
+  "Capitol Address": "capitol_address",
+  "Capitol Fax": "capitol_fax",
+  "District Phone": "district_voice",
+  "District Address": "district_address",
+  "District Fax": "district_fax",
+  "Twitter": "twitter",
+  "Facebook": "facebook",
+  "Instagram": "instagram",
+  "Youtube": "youtube",
 };
 
 export default class PeopleList extends React.Component {
@@ -27,7 +38,7 @@ export default class PeopleList extends React.Component {
       for (let field of props.fields) {
         tds.push(<td>{props.person[fieldOptions[field]]}</td>);
       }
-      tds.push(<td><button className="button" value={id} onClick={() => this.handleClick({id, name})}>Retire</button></td>);
+      if (!this.state.bulkEdit) tds.push(<td><button className="button" value={id} onClick={() => this.handleClick({id, name})}>Retire</button></td>);
       return (
        <tr key={id}>
         {tds}
@@ -53,7 +64,7 @@ export default class PeopleList extends React.Component {
 
   render() {
     const fields = this.state.bulkEdit ?
-      ["Name", "Title", "District", "Party", "Email"]
+      ["Name", "Image", "Capitol Phone", "Capitol Address", "District Phone", "District Address", "Twitter", "Facebook", "Instagram", "Youtube"]
       : ["Name", "Title", "District", "Party"];
     const rows = this.props.current_people.map((p) =>
       this.renderRows({person: p, fields})
@@ -70,7 +81,9 @@ export default class PeopleList extends React.Component {
             <button className="button" style={{float: 'right'}}
                     onClick={() => this.setState({bulkEdit: false})}>Cancel Edit</button>
           </div>
-          ) : <button className="button button--primary" onClick={() => this.setState({bulkEdit: true})}>Bulk Edit</button>}
+          ) :
+            <button className="button button--primary" style={{float: 'right'}} onClick={() => this.setState({bulkEdit: true})}>Bulk Edit</button>
+        }
         {showModal ? (
             <PeopleModal>
                 <div>
