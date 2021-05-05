@@ -3,6 +3,7 @@
 
 {% block scripts %}
   {{ context|json_script:"context" }}
+    <meta charset="utf-8">
   <script src="{% static "bundles/people_admin.js" %}"></script>
 {% endblock %}
 

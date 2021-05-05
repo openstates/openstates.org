@@ -31,16 +31,24 @@ urlpatterns = [
         people_matcher,
         name="session_people_matcher",
     ),
-        re_path(
+    re_path(
         r"^matcher/update/",
         apply_match,
         name="apply_person_match",
     ),
-    re_path(r"^retire/", apply_retirement, name="apply_retirement",),
+    re_path(
+        r"^retire/",
+        apply_retirement,
+        name="apply_retirement",
+    ),
     re_path(
         r"^(?P<state>{})/new_legislator/$".format(state_abbr_pattern),
         new_legislator,
         name="new_legislator",
     ),
-    re_path(r"^/new_legislator/", apply_new_legislator, name="apply_new_legislator",),
+    re_path(
+        r"^new_legislator/",
+        apply_new_legislator,
+        name="apply_new_legislator",
+    ),
 ]

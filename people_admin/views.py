@@ -150,18 +150,14 @@ def apply_retirement(request):
 
 @user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 def new_legislator(request, state):
-    jid = abbr_to_jid(state)
-    all_sessions = sessions_with_bills(jid)
-
     context = {
         "state": state,
-        "all_sessions": all_sessions,
     }
 
-    return render(request, "people_admin/new_person.html", context)
+    return render(request, "people_admin/new_person.html", {"context": context})
 
 
 @user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 @require_http_methods(["POST"])
 def apply_new_legislator(request):
-    return "get back to me"
+    return JsonResponse({"status": "success"})
