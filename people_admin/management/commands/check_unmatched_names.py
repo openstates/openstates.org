@@ -12,6 +12,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("state")
         parser.add_argument("--session", default=None)
+        parser.add_argument(
+            "--no-deltas", dest="deltas", default=True, action="store_false"
+        )
 
     def handle(self, *args, **options):
         states = set()
@@ -23,8 +26,9 @@ class Command(BaseCommand):
             # keep list of states around for delta processing
             states.add(state)
 
-        for state in sorted(states):
-            matched = unmatched_to_deltas(state)
-            print(
-                f"updating {state} legislator matching DeltaSet with {matched} people"
-            )
+        if options["deltas"]:
+            for state in sorted(states):
+                matched = unmatched_to_deltas(state)
+                print(
+                    f"updating {state} legislator matching DeltaSet with {matched} people"
+                )
