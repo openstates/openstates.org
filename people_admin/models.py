@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from openstates.data.models import LegislativeSession, Person
-from django.contrib.postgres.fields import JSONField
 
 
 class NameStatus:
@@ -78,7 +77,7 @@ class PersonDelta(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
 
     # changes will be stored as JSON
-    data_changes = JSONField()
+    data_changes = models.JSONField()
 
     delta_set = models.ForeignKey(
         DeltaSet, on_delete=models.CASCADE, related_name="person_deltas"
