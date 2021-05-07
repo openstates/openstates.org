@@ -38,7 +38,6 @@ class RetireForm extends React.Component {
       isDead,
       vacantSeat,
     };
-    console.log(retireData);
 
     fetch(url, {
       method: "POST",
