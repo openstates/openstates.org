@@ -1,6 +1,7 @@
 import React from "react";
 import PeopleModal from "./people-modal";
 import RetireForm from "./retire-form";
+import EditPerson from "./edit-person";
 
 const fieldOptions = {
   "Name": "name",
@@ -35,16 +36,41 @@ export default class PeopleList extends React.Component {
   renderRows(props) {
       let tds = [];
       const {id, name} = props.person;
-      for (let field of props.fields) {
-        tds.push(<td>{props.person[fieldOptions[field]]}</td>);
+      if (!this.state.bulkEdit) {
+        for (let field of props.fields) {
+          tds.push(<td>{props.person[fieldOptions[field]]}</td>);
+        }
+        tds.push(<td><button className="button" value={id} onClick={() => this.handleClick({id, name})}>Retire</button></td>);
+      } else {
+        tds.push(<td>{name}</td>);
+        for (let field of props.fields) {
+          if (field !== "Name") {
+            tds.push(<td><EditPerson props={props.person[fieldOptions[field]]}/></td>);
+          }
+        }
       }
-      if (!this.state.bulkEdit) tds.push(<td><button className="button" value={id} onClick={() => this.handleClick({id, name})}>Retire</button></td>);
       return (
        <tr key={id}>
         {tds}
        </tr>
       );
   }
+
+  // const editableField = ({
+  //   value: initialValue
+  // }) => {
+  //   const [value, setValue] = React.useState(initialValue);
+  //
+  //   const onChange = (e) => {
+  //     setValue(e.target.value)
+  //   }
+  //
+  //   React.useEffect(() => {
+  //     setValue(initialValue)
+  //   }, [initialValue])
+  //
+  //   return <input type="text" value={value} defaultValue={value} onChange={onChange} />
+  // }
 
   handleClick(i) {
     this.setState({
