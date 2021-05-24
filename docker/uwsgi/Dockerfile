@@ -17,6 +17,7 @@ RUN BUILD_DEPS=" \
       postgresql-client \
       uwsgi \
       uwsgi-src \
+      awscli \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS
 

@@ -19,7 +19,9 @@ class Command(BaseCommand):
                 pr_status=PullStatus.NOT_CREATED
             ).order_by("id")
             for ds in to_create:
-                print(f"{ds.id} | {ds.name} | {ds.created_by}")
+                print(
+                    f"{ds.id} | {ds.name} | {ds.created_by} | {ds.person_deltas.count()} changes"
+                )
         if options["delta"]:
             nothing = False
             ds = DeltaSet.objects.get(
