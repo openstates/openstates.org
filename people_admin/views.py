@@ -38,6 +38,7 @@ def person_data(person):
         "district": person.current_role["district"],
         "party": person.primary_party,
         "image": person.image,
+        "email": person.email,
         **extras,
     }
 
@@ -137,4 +138,26 @@ def apply_match(request):
 
     unmatched_name.save()
 
+    return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(RETIRE_PERM))
+@require_http_methods(["POST"])
+def apply_retirement(request):
+    # TO DO: actual logic
+    return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+def new_legislator(request, state):
+    context = {
+        "state": state,
+    }
+
+    return render(request, "people_admin/new_person.html", {"context": context})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+@require_http_methods(["POST"])
+def apply_new_legislator(request):
     return JsonResponse({"status": "success"})
