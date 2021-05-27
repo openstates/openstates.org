@@ -47,7 +47,7 @@ class RetireForm extends React.Component {
         "X-Requested-With": "XMLHttpRequest",
         "X-CSRFToken": csrftoken,
       },
-      body: retireData,
+      body: JSON.stringify(retireData),
     }).then(response => {
       this.setState({submitSuccess: true});
       return response.json();
