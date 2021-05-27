@@ -1,13 +1,13 @@
+import json
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
 from openstates.data.models import LegislativeSession, Person
 from utils.common import abbr_to_jid, sessions_with_bills, states
-from people_admin.models import UnmatchedName, NameStatus
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
-import json
+from people_admin.models import UnmatchedName, NameStatus, DeltaSet, PersonRetirement
 
 
 MATCHER_PERM = "people_admin.can_match_names"
@@ -38,6 +38,7 @@ def person_data(person):
         "district": person.current_role["district"],
         "party": person.primary_party,
         "image": person.image,
+        "email": person.email,
         **extras,
     }
 
@@ -137,4 +138,39 @@ def apply_match(request):
 
     unmatched_name.save()
 
+    return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(RETIRE_PERM))
+@require_http_methods(["POST"])
+def apply_retirement(request):
+    retirement = json.load(request)
+    name = retirement["name"]
+    delta = DeltaSet.objects.create(
+        name=f"retire {name}",
+        created_by=request.user,
+    )
+    PersonRetirement.objects.create(
+        delta_set=delta,
+        person_id=retirement["id"],
+        date=retirement["retirementDate"],
+        reason=retirement["reason"] or "",
+        is_dead=retirement["isDead"],
+        is_vacant=retirement["vacantSeat"],
+    )
+    return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+def new_legislator(request, state):
+    context = {
+        "state": state,
+    }
+
+    return render(request, "people_admin/new_person.html", {"context": context})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+@require_http_methods(["POST"])
+def apply_new_legislator(request):
     return JsonResponse({"status": "success"})
