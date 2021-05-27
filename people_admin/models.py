@@ -88,3 +88,17 @@ class PersonDelta(models.Model):
             ("can_edit", "Can edit people."),
             ("can_retire", "Can retire people."),
         ]
+
+
+class PersonRetirement(models.Model):
+    """a proposed retirement to a single person object"""
+
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    date = models.CharField(max_length=10)
+    is_dead = models.BooleanField()
+    is_vacant = models.BooleanField()
+    reason = models.TextField()
+
+    delta_set = models.ForeignKey(
+        DeltaSet, on_delete=models.CASCADE, related_name="person_retirements"
+    )
