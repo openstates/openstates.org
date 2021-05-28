@@ -55,9 +55,9 @@ def get_files(
 
 def patch_file(
     file: github.ContentFile.ContentFile, deltas: typing.List[DiffItem]
-) -> typing.Dict[str, str]:
+) -> str:
     """
-    returns mapping of filename to contents
+    given a github file, apply the deltas in DiffItem, returning the new YAML
     """
     content = base64.b64decode(file.content)
     data = load_yaml(content)
@@ -66,6 +66,10 @@ def patch_file(
 
 
 def create_pr(branch: str, message: str, files: typing.Dict[str, str]):
+    """
+    create a GitHub PR on {branch} containing the changes indicated in {files}
+    with commit message {message}
+    """
     repo = _get_repo()
     main = repo.get_branch("main")
 

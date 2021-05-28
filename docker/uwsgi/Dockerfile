@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.9
 LABEL maintainer="James Turk <james@openstates.org>"
 
 # global environment settings
@@ -21,7 +21,7 @@ RUN BUILD_DEPS=" \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS
 
-RUN cd /usr/lib/uwsgi/plugins && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python37"
+RUN cd /usr/lib/uwsgi/plugins && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
 
 # copy code and entrypoint in
 ADD . /code/
@@ -54,7 +54,7 @@ ENV UWSGI_MASTER=1 \
   UWSGI_BUFFER_SIZE=8096 \
   UWSGI_HARAKIRI=30 \
   UWSGI_SINGLE_INTERPRETER=1 \
-  UWSGI_PLUGIN=python37 \
+  UWSGI_PLUGIN=python39 \
   UWSGI_SOCKET=:9999
 
 ENTRYPOINT ["custom-entrypoint"]
