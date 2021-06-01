@@ -8,6 +8,7 @@ from .views import (
     apply_retirement,
     new_legislator,
     apply_new_legislator,
+    apply_bulk_edits,
 )
 
 # Only allow valid state abbreviations
@@ -50,5 +51,10 @@ urlpatterns = [
         r"^new_legislator/",
         apply_new_legislator,
         name="apply_new_legislator",
+    ),
+    re_path(
+        r"^bulk/",
+        apply_bulk_edits,
+        name="apply_bulk_edits",
     ),
 ]

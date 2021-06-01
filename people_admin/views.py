@@ -174,3 +174,9 @@ def new_legislator(request, state):
 @require_http_methods(["POST"])
 def apply_new_legislator(request):
     return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+@require_http_methods(["POST"])
+def apply_bulk_edits(request):
+    return JsonResponse({"status": "success"})
