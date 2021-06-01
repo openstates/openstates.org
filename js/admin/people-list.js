@@ -1,7 +1,6 @@
 import React from "react";
 import PeopleModal from "./people-modal";
 import RetireForm from "./retire-form";
-import EditPerson from "./edit-person";
 
 const fieldOptions = {
   "Name": "name",
@@ -30,6 +29,7 @@ export default class PeopleList extends React.Component {
       showModal: false,
       currentPerson: '',
       currentId: '',
+      updatedPeople: [],
     };
   }
 
@@ -44,8 +44,10 @@ export default class PeopleList extends React.Component {
       } else {
         tds.push(<td>{name}</td>);
         for (let field of props.fields) {
-          if (field !== "Name") {
-            tds.push(<td><EditPerson props={props.person[fieldOptions[field]]}/></td>);
+          const oldValue = props.person[fieldOptions[field]];
+          const fieldOption = fieldOptions[field];
+          if (fieldOption !== "name") {
+            tds.push(<td><input type="text" name={fieldOption} id={fieldOption} defaultValue={oldValue} onChange={this.handleChange(event, name)} /></td>);
           }
         }
       }
@@ -56,21 +58,14 @@ export default class PeopleList extends React.Component {
       );
   }
 
-  // const editableField = ({
-  //   value: initialValue
-  // }) => {
-  //   const [value, setValue] = React.useState(initialValue);
-  //
-  //   const onChange = (e) => {
-  //     setValue(e.target.value)
-  //   }
-  //
-  //   React.useEffect(() => {
-  //     setValue(initialValue)
-  //   }, [initialValue])
-  //
-  //   return <input type="text" value={value} defaultValue={value} onChange={onChange} />
-  // }
+   handleChange(event,person) {
+    const { value, name } = event.target;
+
+    console.log({
+      person,
+      [name]: value,
+    });
+  }
 
   handleClick(i) {
     this.setState({

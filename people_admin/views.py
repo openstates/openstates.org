@@ -43,7 +43,7 @@ def person_data(person):
     }
 
 
-# @user_passes_test(lambda u: u.has_perm(MATCHER_PERM) or u.has_perm(EDIT_PERM))
+@user_passes_test(lambda u: u.has_perm(MATCHER_PERM) or u.has_perm(EDIT_PERM))
 def jurisdiction_list(request):
     state_people_data = {}
 
@@ -67,7 +67,7 @@ def jurisdiction_list(request):
 
 
 @never_cache
-# @user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 def people_list(request, state):
     jid = abbr_to_jid(state)
     current_people = [
@@ -141,7 +141,7 @@ def apply_match(request):
     return JsonResponse({"status": "success"})
 
 
-# @user_passes_test(lambda u: u.has_perm(RETIRE_PERM))
+@user_passes_test(lambda u: u.has_perm(RETIRE_PERM))
 @require_http_methods(["POST"])
 def apply_retirement(request):
     retirement = json.load(request)
