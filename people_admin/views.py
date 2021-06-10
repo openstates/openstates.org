@@ -179,4 +179,16 @@ def apply_new_legislator(request):
 @user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 @require_http_methods(["POST"])
 def apply_bulk_edits(request):
+    edits = json.load(request)
+    for person in edits:
+        id = person["id"]
+        DeltaSet.objects.create(
+            name=f"edit {id}",
+            created_by=request.user,
+        )
+        # PersonDelta.objects.create(
+        #     delta_set=delta,
+        #     person_id=person["id"],
+        #       loop through key?
+        # )
     return JsonResponse({"status": "success"})
