@@ -8,7 +8,7 @@ from utils.common import states
 
 OCD_ID_PATTERN = r"[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}"
 # Only allow valid state abbreviations
-state_abbrs = [s.abbr.lower() for s in states]
+state_abbrs = [s.abbr.lower() for s in states] + ["us"]
 state_abbr_pattern = r"({})".format("|".join(state_abbrs))
 
 urlpatterns = [
