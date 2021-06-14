@@ -59,6 +59,11 @@ def jurisdiction_list(request):
             "unmatched": unmatched_by_state.get(state.name, 0),
         }
 
+    state_people_data["us"] = {
+        "state": "United States",
+        "unmatched": unmatched_by_state.get(state.name, 0),
+    }
+
     return render(
         request,
         "people_admin/jurisdiction_list.html",
