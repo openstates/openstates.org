@@ -19,6 +19,7 @@
       - python3-certbot-dns-route53
       - python3.9
       - python3.9-dev
+      - python3.9-distutils
 - name: build python39 plugin
   command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
   environment:
