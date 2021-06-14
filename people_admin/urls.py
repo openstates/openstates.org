@@ -12,7 +12,7 @@ from .views import (
 )
 
 # Only allow valid state abbreviations
-state_abbrs = [s.abbr.lower() for s in states]
+state_abbrs = [s.abbr.lower() for s in states] + ["us"]
 state_abbr_pattern = r"({})".format("|".join(state_abbrs))
 
 urlpatterns = [
