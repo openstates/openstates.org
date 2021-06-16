@@ -15,14 +15,20 @@
 <thead>
   <tr>
   <th>State</th>
-  <th>Total Unmatched Entities</th>
+  <th>Total Unmatched in Session</th>
+      <th>Missing Photo</th>
+      <th>Missing Phone</th>
+      <th>Missing Address</th>
 </tr>
 </thead>
 <tbody>
   {% for state, spd in state_people_data.items %}
     <tr class="row--align-top">
         <td><a href="{% url 'people_admin_list' state %}">{{ spd.state }}</a></td>
-        <td><a href="{% url 'people_matcher' state %}">{{ spd.unmatched }} </a></td>
+        <td><a href="{% url 'people_matcher' state %}">{{ spd.unmatched }}</a></td>
+        <td>{{ spd.missing_photo }}</td>
+        <td>{{ spd.missing_phone }}</td>
+        <td>{{ spd.missing_address }}</td>
         <td><a href="{% url 'new_legislator' state %}">Add new Legislator to {{ spd.state }}</a></td>
     </tr>
   {% endfor %}

@@ -54,14 +54,36 @@ def jurisdiction_list(request):
     )
 
     for state in states:
+        jid = abbr_to_jid(state.abbr)
+        current_people = [
+            person_data(p)
+            for p in Person.objects.filter(
+                current_jurisdiction_id=jid, current_role__isnull=False
+            ).prefetch_related("contact_details")
+        ]
+        photoless = Person.objects.filter(image="", current_jurisdiction=jid).count()
+        phoneless = 0
+        addressless = 0
+        for person in current_people:
+            if "capitol_voice" not in person and "district_voice" not in person:
+                phoneless += 1
+            elif "capitol_address" not in person and "district_address" not in person:
+                addressless += 1
+
         state_people_data[state.abbr.lower()] = {
             "state": state.name,
             "unmatched": unmatched_by_state.get(state.name, 0),
+            "missing_photo": photoless,
+            "missing_phone": phoneless,
+            "missing_address": addressless,
         }
 
     state_people_data["us"] = {
         "state": "United States",
         "unmatched": unmatched_by_state.get(state.name, 0),
+        "missing_photo": "",
+        "missing_phone": "",
+        "missing_address": "",
     }
 
     return render(
