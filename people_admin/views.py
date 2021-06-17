@@ -66,7 +66,7 @@ def jurisdiction_list(request):
         phoneless = 0
         addressless = 0
         for person in current_people:
-            if "image" not in person or person["image"] != "":
+            if "image" not in person or person["image"] == "":
                 photoless += 1
             elif "capitol_voice" not in person and "district_voice" not in person:
                 phoneless += 1
