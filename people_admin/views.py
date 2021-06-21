@@ -7,7 +7,13 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
-from people_admin.models import UnmatchedName, NameStatus, DeltaSet, PersonRetirement
+from people_admin.models import (
+    UnmatchedName,
+    NameStatus,
+    DeltaSet,
+    PersonRetirement,
+    NewPerson,
+)
 
 
 MATCHER_PERM = "people_admin.can_match_names"
@@ -178,6 +184,18 @@ def new_legislator(request, state):
 @user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 @require_http_methods(["POST"])
 def apply_new_legislator(request):
+    addition = json.load(request)
+    name = addition["name"]
+    delta = DeltaSet.objects.create(
+        name=f"add {name}",
+        created_by=request.user,
+    )
+    NewPerson.objects.create(
+        delta_set=delta,
+        state=addition["state"],
+        district=addition["district"],
+        chamber=addition["chamber"],
+    )
     return JsonResponse({"status": "success"})
 
 
