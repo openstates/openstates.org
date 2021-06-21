@@ -11,6 +11,7 @@ from people_admin.models import (
     UnmatchedName,
     NameStatus,
     DeltaSet,
+    PersonDelta,
     PersonRetirement,
     NewPerson,
 )
@@ -204,14 +205,18 @@ def apply_new_legislator(request):
 def apply_bulk_edits(request):
     edits = json.load(request)
     for person in edits:
-        id = person["id"]
-        DeltaSet.objects.create(
-            name=f"edit {id}",
+        updates = []
+        delta = DeltaSet.objects.create(
+            name=f"edit {person['id']}",
             created_by=request.user,
         )
-        # PersonDelta.objects.create(
-        #     delta_set=delta,
-        #     person_id=person["id"],
-        #       loop through key?
-        # )
+        for key in person:
+            if key != "id":
+                change = {"action": "set", "key": key, "param": person[key]}
+                updates.push(change)
+        PersonDelta.objects.create(
+            delta_set=delta,
+            person_id=person["id"],
+            data_changes=updates,
+        )
     return JsonResponse({"status": "success"})
