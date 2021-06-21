@@ -96,16 +96,18 @@ def people_list(request, state):
 def people_matcher(request, state, session=None):
     jid = abbr_to_jid(state)
     all_sessions = sessions_with_bills(jid)
-    if all_sessions:
-        session = all_sessions[0]
-    else:
+
+    if session:
         session = get_object_or_404(
             LegislativeSession, identifier=session, jurisdiction_id=jid
         )
-
-    unmatched = UnmatchedName.objects.filter(session_id=session, status="U").order_by(
-        "-sponsorships_count"
-    )
+        unmatched = UnmatchedName.objects.filter(
+            session_id=session, status="U"
+        ).order_by("-sponsorships_count")
+    else:
+        unmatched = UnmatchedName.objects.filter(
+            session__jurisdiction__id=jid, status="U"
+        ).order_by("-sponsorships_count")
     state_sponsors = Person.objects.filter(current_jurisdiction_id=jid)
     unmatched_total = unmatched.count()
 
