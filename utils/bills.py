@@ -18,6 +18,7 @@ def search_bills(
     chamber=None,
     session=None,
     sponsor=None,
+    sponsor_name=None,
     classification=None,
     exclude_classifications=None,
     subjects=None,
@@ -46,6 +47,8 @@ def search_bills(
         bills = bills.filter(legislative_session__identifier=session)
     if sponsor:
         bills = bills.filter(sponsorships__person_id=sponsor)
+    if sponsor_name:
+        bills = bills.filter(sponsorships__name=sponsor_name)
     if classification:
         bills = bills.filter(classification__contains=[classification])
     elif exclude_classifications:
