@@ -1,4 +1,5 @@
 import json
+import us
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
 from openstates.data.models import LegislativeSession, Person
@@ -53,16 +54,34 @@ def jurisdiction_list(request):
         .annotate(number=Count("id"))
     )
 
-    for state in states:
-        state_people_data[state.abbr.lower()] = {
-            "state": state.name,
-            "unmatched": unmatched_by_state.get(state.name, 0),
-        }
+    for state in states + [us.unitedstatesofamerica]:
+        jid = abbr_to_jid(state.abbr)
+        current_people = [
+            person_data(p)
+            for p in Person.objects.filter(
+                current_jurisdiction_id=jid, current_role__isnull=False
+            ).prefetch_related("contact_details")
+        ]
+        photoless = 0
+        phoneless = 0
+        addressless = 0
+        for person in current_people:
+            if "image" not in person or person["image"] == "":
+                photoless += 1
+            elif "capitol_voice" not in person and "district_voice" not in person:
+                phoneless += 1
+            elif "capitol_address" not in person and "district_address" not in person:
+                addressless += 1
 
-    state_people_data["us"] = {
-        "state": "United States",
-        "unmatched": unmatched_by_state.get(state.name, 0),
-    }
+        jurisdiction = "United States" if state.abbr == "US" else state.name
+
+        state_people_data[state.abbr.lower()] = {
+            "state": jurisdiction,
+            "unmatched": unmatched_by_state.get(state.name, 0),
+            "missing_photo": photoless,
+            "missing_phone": phoneless,
+            "missing_address": addressless,
+        }
 
     return render(
         request,
