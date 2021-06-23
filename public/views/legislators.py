@@ -47,6 +47,9 @@ def _people_from_lat_lon(lat, lon):
                 person["chamber"] = m["organization"]["classification"]
                 person["district"] = m["post"]["label"]
                 person["division_id"] = m["post"]["division"]["id"]
+        # temporarily hide congresspeople
+        if "cd:" in person["division_id"]:
+            continue
         people.append(person)
 
     return people
