@@ -214,6 +214,7 @@ export default class FindYourLegislator extends React.Component {
                   showMap: true,
                   error: null,
                 });
+                component.splitLegislators();
               });
           }
         });
@@ -291,7 +292,6 @@ export default class FindYourLegislator extends React.Component {
   }
 
   render() {
-    this.splitLegislators();
     const stateTable = this.renderLegislatorInfo(this.state.stateLegislators, "State");
     const federalTable = this.renderLegislatorInfo(this.state.federalLegislators, "Federal");
 
