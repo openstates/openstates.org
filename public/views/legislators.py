@@ -23,6 +23,7 @@ def _people_from_lat_lon(lat, lon):
               organization {
                 classification
                 name
+                jurisdictionId
               }
             }
           }
@@ -47,6 +48,13 @@ def _people_from_lat_lon(lat, lon):
                 person["chamber"] = m["organization"]["classification"]
                 person["district"] = m["post"]["label"]
                 person["division_id"] = m["post"]["division"]["id"]
+                person["jurisdiction_id"] = m["organization"]["jurisdictionId"]
+                person["level"] = (
+                    "federal"
+                    if m["organization"]["jurisdictionId"]
+                    == "ocd-jurisdiction/country:us/government"
+                    else "state"
+                )
         people.append(person)
 
     return people
