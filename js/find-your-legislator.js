@@ -280,13 +280,12 @@ export default class FindYourLegislator extends React.Component {
       );
     }
 
-
     const section = (
       <div>
         {table}
         {map}
       </div>
-    )
+    );
 
     return section;
   }
