@@ -92,7 +92,70 @@ export default class FindYourLegislator extends React.Component {
       lat: queryParams.get("lat") || 0,
       lon: queryParams.get("lon") || 0,
       stateAbbr: queryParams.get("state") || "",
-      legislators: [],
+      legislators: [
+        {
+          'name': 'Thom Tillis',
+          'id': 'ocd-person/3ad2df38-e817-50b9-924d-9dbd4bba94a8',
+          'image': 'https://theunitedstates.io/images/congress/450x550/T000476.jpg',
+          'pretty_url': '/person/thom-tillis-1mzvGmdQ5umYtpGF6z1cka/',
+          'party': 'Republican',
+          'chamber': 'upper',
+          'district': 'North Carolina',
+          'division_id': 'ocd-division/country:us/state:nc',
+          'jurisdiction_id': 'ocd-jurisdiction/country:us/government',
+          'level': 'federal'
+        },
+        {
+          'name': 'Richard Burr',
+          'id': 'ocd-person/39df75fd-67d3-5a8f-b00b-64bd3a4124f2',
+          'image': 'https://theunitedstates.io/images/congress/450x550/B001135.jpg',
+          'pretty_url': '/person/richard-burr-1lCgRQO4YvR7zJ80ci3Tda/',
+          'party': 'Republican',
+          'chamber': 'upper',
+          'district': 'North Carolina',
+          'division_id': 'ocd-division/country:us/state:nc',
+          'jurisdiction_id': 'ocd-jurisdiction/country:us/government',
+          'level': 'federal'
+        },
+        {
+          'name': 'David E. Price',
+          'id': 'ocd-person/3da2a16b-4772-5dc1-837a-87f7b3894dec',
+          'image': 'https://theunitedstates.io/images/congress/450x550/P000523.jpg',
+          'pretty_url': '/person/david-e-price-1sIqxyVSOfBtfQDG3CJqBg/',
+          'party': 'Democratic',
+          'chamber': 'lower',
+          'district': 'NC-4',
+          'division_id': 'ocd-division/country:us/state:nc/cd:4',
+          'jurisdiction_id': 'ocd-jurisdiction/country:us/government',
+          'level': 'federal'
+        },
+        {
+          'name': 'Allison A. Dahle',
+          'id': 'ocd-person/785927b3-34ca-4a2d-bc1c-df4cc8e16c47',
+          'image': 'https://www.ncleg.gov/Members/MemberImage/H/740/High',
+          'pretty_url': '/person/allison-a-dahle-3f5p2T60GXSTUrr6UwHGuV/',
+          'party': 'Democratic',
+          'chamber': 'lower',
+          'district': '11',
+          'division_id': 'ocd-division/country:us/state:nc/sldl:11',
+          'jurisdiction_id': 'ocd-jurisdiction/country:us/state:nc/government',
+          'level': 'state'
+        },
+        {
+          'name': 'Wiley Nickel',
+          'id': 'ocd-person/62cd36df-969c-4a51-b548-11740357ee79',
+          'image': 'https://www.ncleg.gov/Members/MemberImage/S/409/High',
+          'pretty_url': '/person/wiley-nickel-30R1wBB8pxXn6wfCNTG8l7/',
+          'party':' Democratic',
+          'chamber': 'upper',
+          'district': '16',
+          'division_id': 'ocd-division/country:us/state:nc/sldu:16',
+          'jurisdiction_id': 'ocd-jurisdiction/country:us/state:nc/government',
+          'level': 'state',
+        }
+      ],
+      stateLegislators:[],
+      federalLegislators:[],
       error: "",
     };
     this.handleAddressChange = this.handleAddressChange.bind(this);
@@ -218,7 +281,17 @@ export default class FindYourLegislator extends React.Component {
     }
   }
 
+  splitLegislators() {
+    this.state.legislators.map(leg => {
+      const level = leg.level;
+      if (level === 'state')
+        return this.state.stateLegislators.push(leg);
+      this.state.federalLegislators.push(leg);
+    });
+  }
+
   render() {
+    this.splitLegislators();
     const rows = this.state.legislators.map(leg => (
       <tr key={leg.name}>
         <td>
