@@ -201,7 +201,9 @@ export default class FindYourLegislator extends React.Component {
           for (var leg of json.legislators) {
             fetch(
               `https://data.openstates.org/boundaries/2018/${leg.division_id}.json`
-            )
+            ).catch(error => {
+              return;
+            })
               .then(response => response.json())
               .then(function(json) {
                 for (var stleg of component.state.legislators) {
