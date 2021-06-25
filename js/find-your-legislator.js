@@ -224,6 +224,7 @@ export default class FindYourLegislator extends React.Component {
   }
 
   splitLegislators() {
+    this.setState({ stateLegislators:[], federalLegislators:[] });
     this.state.legislators.map(leg => {
       const level = leg.level;
       if (level === 'state')
