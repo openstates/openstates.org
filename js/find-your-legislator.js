@@ -35,17 +35,28 @@ class ResultMap extends React.Component {
   render() {
     var shapes = [];
     for (var leg of this.props.legislators) {
-      if (leg.shape) {
-        const color = chamberColor(leg);
-        shapes.push(
-          <GeoJSONLayer
-            key={leg.division_id}
-            data={leg.shape}
-            linePaint={config.MAP_DISTRICTS_STROKE.paint}
-            fillPaint={{ "fill-color": color, "fill-opacity": 0.2 }}
-          />
-        );
-      }
+      const districtFilter = ["==", "ocdid", leg.division_id];
+      const color = chamberColor(leg);
+      shapes.push(
+        <Layer
+          id={config.MAP_DISTRICTS_STROKE.id + leg.division_id}
+          type={config.MAP_DISTRICTS_STROKE.type}
+          sourceId="sld"
+          sourceLayer="sld"
+          paint={config.MAP_DISTRICTS_STROKE.paint}
+          filter={districtFilter}
+        />
+      );
+      shapes.push(
+        <Layer
+          id={config.MAP_DISTRICTS_FILL.id + leg.division_id}
+          type={config.MAP_DISTRICTS_FILL.type}
+          sourceId="sld"
+          sourceLayer="sld"
+          paint={{ "fill-color": color, "fill-opacity": 0.2 }}
+          filter={districtFilter}
+        />
+      );
     }
     return (
       <div id="fyl-map-container">
@@ -196,41 +207,22 @@ export default class FindYourLegislator extends React.Component {
       fetch(llUrl + "&json=json")
         .then(response => response.json())
         .then(function(json) {
-          component.setState({ legislators: json.legislators });
-
-          for (var leg of json.legislators) {
-            fetch(
-              `https://data.openstates.org/boundaries/2018/${leg.division_id}.json`
-            ).catch(error => {
-              return;
-            })
-              .then(response => response.json())
-              .then(function(json) {
-                for (var stleg of component.state.legislators) {
-                  if (stleg.division_id === json.division_id) {
-                    stleg.shape = json.shape;
-                  }
-                }
-                component.setState({
-                  legislators: component.state.legislators,
-                  showMap: true,
-                  error: null,
-                });
-                component.splitLegislators();
-              });
-          }
+          component.setState({ legislators: json.legislators, showMap: true, error: null });
+          component.splitLegislators();
         });
     }
   }
 
   splitLegislators() {
-    this.setState({ stateLegislators:[], federalLegislators:[] });
+    let stateLegislators = [];
+    let federalLegislators = [];
     this.state.legislators.map(leg => {
       const level = leg.level;
       if (level === 'state')
-        return this.state.stateLegislators.push(leg);
-      this.state.federalLegislators.push(leg);
+        return stateLegislators.push(leg);
+      federalLegislators.push(leg);
     });
+    this.setState({ stateLegislators, federalLegislators });
   }
 
   renderLegislators(legislators) {
