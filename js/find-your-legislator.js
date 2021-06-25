@@ -35,17 +35,28 @@ class ResultMap extends React.Component {
   render() {
     var shapes = [];
     for (var leg of this.props.legislators) {
-      if (leg.shape) {
-        const color = chamberColor(leg);
-        shapes.push(
-          <GeoJSONLayer
-            key={leg.division_id}
-            data={leg.shape}
-            linePaint={config.MAP_DISTRICTS_STROKE.paint}
-            fillPaint={{ "fill-color": color, "fill-opacity": 0.2 }}
-          />
-        );
-      }
+      const districtFilter = ["==", "ocdid", leg.division_id];
+      const color = chamberColor(leg);
+      shapes.push(
+        <Layer
+          id={config.MAP_DISTRICTS_STROKE.id + leg.division_id}
+          type={config.MAP_DISTRICTS_STROKE.type}
+          sourceId="sld"
+          sourceLayer="sld"
+          paint={config.MAP_DISTRICTS_STROKE.paint}
+          filter={districtFilter}
+        />
+      );
+      shapes.push(
+        <Layer
+          id={config.MAP_DISTRICTS_FILL.id + leg.division_id}
+          type={config.MAP_DISTRICTS_FILL.type}
+          sourceId="sld"
+          sourceLayer="sld"
+          paint={{ "fill-color": color, "fill-opacity": 0.2 }}
+          filter={districtFilter}
+        />
+      );
     }
     return (
       <div id="fyl-map-container">
@@ -93,6 +104,8 @@ export default class FindYourLegislator extends React.Component {
       lon: queryParams.get("lon") || 0,
       stateAbbr: queryParams.get("state") || "",
       legislators: [],
+      stateLegislators:[],
+      federalLegislators:[],
       error: "",
     };
     this.handleAddressChange = this.handleAddressChange.bind(this);
@@ -111,7 +124,7 @@ export default class FindYourLegislator extends React.Component {
   }
 
   handleAddressChange(event) {
-    this.setState({ address: event.target.value });
+    this.setState({ address: event.target.value, stateLegislators:[], federalLegislators:[] });
   }
 
   handleDrag(event) {
@@ -186,7 +199,7 @@ export default class FindYourLegislator extends React.Component {
 
   updateLegislators() {
     if (!this.state.lat || !this.state.lon) {
-      this.setState({ legislators: [], showMap: false });
+      this.setState({ legislators: [], showMap: false, stateLegislators:[], federalLegislators:[] });
     } else {
       const component = this;
       const llUrl = `/find_your_legislator/?lat=${this.state.lat}&lon=${this.state.lon}&address=${this.state.address}&state=${this.state.stateAbbr}`;
@@ -194,32 +207,26 @@ export default class FindYourLegislator extends React.Component {
       fetch(llUrl + "&json=json")
         .then(response => response.json())
         .then(function(json) {
-          component.setState({ legislators: json.legislators });
-
-          for (var leg of json.legislators) {
-            fetch(
-              `https://data.openstates.org/boundaries/2018/${leg.division_id}.json`
-            )
-              .then(response => response.json())
-              .then(function(json) {
-                for (var stleg of component.state.legislators) {
-                  if (stleg.division_id === json.division_id) {
-                    stleg.shape = json.shape;
-                  }
-                }
-                component.setState({
-                  legislators: component.state.legislators,
-                  showMap: true,
-                  error: null,
-                });
-              });
-          }
+          component.setState({ legislators: json.legislators, showMap: true, error: null });
+          component.splitLegislators();
         });
     }
   }
 
-  render() {
-    const rows = this.state.legislators.map(leg => (
+  splitLegislators() {
+    let stateLegislators = [];
+    let federalLegislators = [];
+    this.state.legislators.map(leg => {
+      const level = leg.level;
+      if (level === 'state')
+        return stateLegislators.push(leg);
+      federalLegislators.push(leg);
+    });
+    this.setState({ stateLegislators, federalLegislators });
+  }
+
+  renderLegislators(legislators) {
+    const rows = legislators.map(leg => (
       <tr key={leg.name}>
         <td>
           <LegislatorImage id={leg.id} image={leg.image} party={leg.party} />
@@ -232,15 +239,13 @@ export default class FindYourLegislator extends React.Component {
         <td style={{ backgroundColor: chamberColor(leg) }}>{leg.chamber}</td>
       </tr>
     ));
-
-    var table = null;
-    var map = null;
-    var error = null;
+    let table;
 
     if (this.state.legislators.length) {
       // have to wrap this in a div or the grid sizing will explode the table
       table = (
         <div>
+          <h3>State</h3>
           <table id="results">
             <thead>
               <tr>
@@ -256,19 +261,74 @@ export default class FindYourLegislator extends React.Component {
         </div>
       );
     }
+    const federalTable = this.renderFederalLegislator(this.state.federalLegislators);
 
+    const section = (
+      <div>
+        {table}{federalTable}
+      </div>
+    );
+
+    return section;
+  }
+
+    renderFederalLegislator(legislators) {
+      const rows = legislators.map(leg => {
+        const office = leg.chamber == 'upper' ? 'U.S. Senate': `U.S. House ${leg.district}`;
+        return (
+        <tr key={leg.name}>
+          <td>
+            <LegislatorImage id={leg.id} image={leg.image} party={leg.party} />
+          </td>
+          <td>
+            <a href={leg.pretty_url}>{leg.name}</a>
+          </td>
+          <td>{leg.party}</td>
+          <td>{office}</td>
+        </tr>
+      )});
+      let table;
+
+      if (this.state.legislators.length) {
+        table = (
+          <div>
+            <h3>Federal</h3>
+            <table id="results">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Party</th>
+                  <th>Office</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </table>
+          </div>
+        );
+      }
+
+    return table;
+  }
+
+
+  render() {
+    const legTables = this.renderLegislators(this.state.stateLegislators);
+
+    let map;
     if (this.state.showMap) {
       map = (
         <ResultMap
           zoom={11}
           lat={this.state.lat}
           lon={this.state.lon}
-          legislators={this.state.legislators}
+          legislators={this.state.stateLegislators}
           handleDrag={this.handleDrag}
         />
       );
     }
 
+    let error;
     if (this.state.error) {
       error = <div className="fyl-error">{this.state.error}</div>;
     }
@@ -309,7 +369,7 @@ export default class FindYourLegislator extends React.Component {
         </div>
 
         {error}
-        {table}
+        {legTables}
         {map}
       </div>
     );
