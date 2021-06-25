@@ -35,14 +35,27 @@ class ResultMap extends React.Component {
   render() {
     var shapes = [];
     for (var leg of this.props.legislators) {
+      const districtFilter = ["==", "ocdid", leg.division_id];
       if (leg.shape) {
         const color = chamberColor(leg);
         shapes.push(
-          <GeoJSONLayer
-            key={leg.division_id}
-            data={leg.shape}
-            linePaint={config.MAP_DISTRICTS_STROKE.paint}
-            fillPaint={{ "fill-color": color, "fill-opacity": 0.2 }}
+          <Layer
+            id={config.MAP_DISTRICTS_STROKE.id + leg.division_id}
+            type={config.MAP_DISTRICTS_STROKE.type}
+            sourceId="sld"
+            sourceLayer="sld"
+            paint={config.MAP_DISTRICTS_STROKE.paint}
+            filter={districtFilter}
+          />
+        );
+        shapes.push(
+          <Layer
+            id={config.MAP_DISTRICTS_FILL.id + leg.division_id}
+            type={config.MAP_DISTRICTS_FILL.type}
+            sourceId="sld"
+            sourceLayer="sld"
+            paint={{ "fill-color": color, "fill-opacity": 0.2 }}
+            filter={districtFilter}
           />
         );
       }
