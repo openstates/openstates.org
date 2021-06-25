@@ -113,7 +113,7 @@ export default class FindYourLegislator extends React.Component {
   }
 
   handleAddressChange(event) {
-    this.setState({ address: event.target.value });
+    this.setState({ address: event.target.value, stateLegislators:[], federalLegislators:[] });
   }
 
   handleDrag(event) {
@@ -188,7 +188,7 @@ export default class FindYourLegislator extends React.Component {
 
   updateLegislators() {
     if (!this.state.lat || !this.state.lon) {
-      this.setState({ legislators: [], showMap: false });
+      this.setState({ legislators: [], showMap: false, stateLegislators:[], federalLegislators:[] });
     } else {
       const component = this;
       const llUrl = `/find_your_legislator/?lat=${this.state.lat}&lon=${this.state.lon}&address=${this.state.address}&state=${this.state.stateAbbr}`;
@@ -230,7 +230,7 @@ export default class FindYourLegislator extends React.Component {
     });
   }
 
-  renderLegislatorInfo(legislators, level) {
+  renderLegislators(legislators) {
     const rows = legislators.map(leg => (
       <tr key={leg.name}>
         <td>
@@ -245,13 +245,12 @@ export default class FindYourLegislator extends React.Component {
       </tr>
     ));
     let table;
-    let map;
 
     if (this.state.legislators.length) {
       // have to wrap this in a div or the grid sizing will explode the table
       table = (
         <div>
-          <h2>{level}</h2>
+          <h3>State</h3>
           <table id="results">
             <thead>
               <tr>
@@ -267,35 +266,74 @@ export default class FindYourLegislator extends React.Component {
         </div>
       );
     }
-
-    if (this.state.showMap) {
-      map = (
-        <ResultMap
-          zoom={11}
-          lat={this.state.lat}
-          lon={this.state.lon}
-          legislators={legislators}
-          handleDrag={this.handleDrag}
-        />
-      );
-    }
+    const federalTable = this.renderFederalLegislator(this.state.federalLegislators);
 
     const section = (
       <div>
-        {table}
-        {map}
+        {table}{federalTable}
       </div>
     );
 
     return section;
   }
 
+    renderFederalLegislator(legislators) {
+      const rows = legislators.map(leg => {
+        const office = leg.chamber == 'upper' ? 'U.S. Senate': `U.S. House ${leg.district}`;
+        return (
+        <tr key={leg.name}>
+          <td>
+            <LegislatorImage id={leg.id} image={leg.image} party={leg.party} />
+          </td>
+          <td>
+            <a href={leg.pretty_url}>{leg.name}</a>
+          </td>
+          <td>{leg.party}</td>
+          <td>{office}</td>
+        </tr>
+      )});
+      let table;
+
+      if (this.state.legislators.length) {
+        table = (
+          <div>
+            <h3>Federal</h3>
+            <table id="results">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Party</th>
+                  <th>Office</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </table>
+          </div>
+        );
+      }
+
+    return table;
+  }
+
+
   render() {
-    const stateTable = this.renderLegislatorInfo(this.state.stateLegislators, "State");
-    const federalTable = this.renderLegislatorInfo(this.state.federalLegislators, "Federal");
+    const legTables = this.renderLegislators(this.state.stateLegislators);
 
-    let error = null;
+    let map;
+    if (this.state.showMap) {
+      map = (
+        <ResultMap
+          zoom={11}
+          lat={this.state.lat}
+          lon={this.state.lon}
+          legislators={this.state.stateLegislators}
+          handleDrag={this.handleDrag}
+        />
+      );
+    }
 
+    let error;
     if (this.state.error) {
       error = <div className="fyl-error">{this.state.error}</div>;
     }
@@ -336,8 +374,8 @@ export default class FindYourLegislator extends React.Component {
         </div>
 
         {error}
-        {stateTable}
-        {federalTable}
+        {legTables}
+        {map}
       </div>
     );
   }
