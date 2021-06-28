@@ -60,6 +60,8 @@ class BillList(View):
                 summary.append("invalid sponsor")
             else:
                 summary.append(f"sponsored by {sponsors[form['sponsor']]}")
+        if form["sponsor_name"]:
+            summary.append(f"sponsored by {form['sponsor_name']}")
         if form["subjects"]:
             summary.append(f"including subjects {', '.join(form['subjects'])}")
 
@@ -112,6 +114,7 @@ class BillList(View):
         chamber = request.GET.get("chamber")
         session = request.GET.get("session")
         sponsor = request.GET.get("sponsor")
+        sponsor_name = request.GET.get("sponsor_name")
         classification = request.GET.get("classification")
         q_subjects = request.GET.getlist("subjects")
         status = request.GET.getlist("status")
@@ -122,6 +125,7 @@ class BillList(View):
             "chamber": chamber,
             "session": session,
             "sponsor": sponsor,
+            "sponsor_name": sponsor_name,
             "classification": classification,
             "subjects": q_subjects,
             "status": status,
@@ -133,6 +137,7 @@ class BillList(View):
             chamber=chamber,
             session=session,
             sponsor=sponsor,
+            sponsor_name=sponsor_name,
             classification=classification,
             exclude_classifications=EXCLUDED_CLASSIFICATIONS,
             subjects=q_subjects,

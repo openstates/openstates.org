@@ -93,6 +93,7 @@ class OrganizationNode(OCDBaseNode):
     classification = graphene.String()
     founding_date = graphene.String()
     dissolution_date = graphene.String()
+    jurisdiction_id = graphene.String()
 
     # self-referential relationship
     parent = graphene.Field("graphapi.core.OrganizationNode")

@@ -65,7 +65,7 @@
     <div class="grid-x grid-margin-x medium-up-2" style="margin-bottom: 0%;">
       <div class="cell medium-5">
         <h1 class="heading--large">People Matcher</h1>
-        <h2>{{ session }}</h2>
+        <h2>{{ session|default:"All Sessions" }}</h2>
         <h4>Unmatched Total: {{ unmatched_total }}</h4>
       </div>
       <div class="cell medium-5">
