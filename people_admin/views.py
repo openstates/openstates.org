@@ -225,16 +225,18 @@ def apply_new_legislator(request):
 @require_http_methods(["POST"])
 def apply_bulk_edits(request):
     edits = json.load(request)
+
+    delta = DeltaSet.objects.create(
+        name=f"edit by {request.user}",
+        created_by=request.user,
+    )
+
     for person in edits:
-        updates = []
-        delta = DeltaSet.objects.create(
-            name=f"edit {person['id']}",
-            created_by=request.user,
-        )
         for key in person:
+            updates = []
             if key != "id":
                 change = {"action": "set", "key": key, "param": person[key]}
-                updates.push(change)
+                updates.append(change)
         PersonDelta.objects.create(
             delta_set=delta,
             person_id=person["id"],
