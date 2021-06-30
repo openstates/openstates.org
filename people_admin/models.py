@@ -102,3 +102,16 @@ class PersonRetirement(models.Model):
     delta_set = models.ForeignKey(
         DeltaSet, on_delete=models.CASCADE, related_name="person_retirements"
     )
+
+
+class NewPerson(models.Model):
+    """a proposed addition single person object"""
+
+    name = models.TextField()
+    state = models.TextField()
+    district = models.TextField()
+    chamber = models.TextField()
+
+    delta_set = models.ForeignKey(
+        DeltaSet, on_delete=models.CASCADE, related_name="person_addition"
+    )

@@ -1,6 +1,7 @@
 import React from "react";
 import PeopleModal from "./people-modal";
 import RetireForm from "./retire-form";
+import Cookies from "js-cookie";
 
 const fieldOptions = {
   "Name": "name",
@@ -20,6 +21,7 @@ const fieldOptions = {
   "Instagram": "instagram",
   "Youtube": "youtube",
 };
+const updatedPeople = [];
 
 export default class PeopleList extends React.Component {
   constructor(props) {
@@ -35,15 +37,69 @@ export default class PeopleList extends React.Component {
   renderRows(props) {
       let tds = [];
       const {id, name} = props.person;
-      for (let field of props.fields) {
-        tds.push(<td>{props.person[fieldOptions[field]]}</td>);
+      if (!this.state.bulkEdit) {
+        for (let field of props.fields) {
+          tds.push(<td>{props.person[fieldOptions[field]]}</td>);
+        }
+        tds.push(<td><button className="button" value={id} onClick={() => this.handleClick({id, name})}>Retire</button></td>);
+      } else {
+        tds.push(<td>{name}</td>);
+        for (let field of props.fields) {
+          const oldValue = props.person[fieldOptions[field]];
+          const fieldOption = fieldOptions[field];
+          const fieldId = id + '.' + fieldOption;
+          if (fieldOption !== "name") {
+            tds.push(<td><input type="text" name={fieldOption} id={fieldId} defaultValue={oldValue} onBlur={this.handleInputChange} /></td>);
+          }
+        }
       }
-      if (!this.state.bulkEdit) tds.push(<td><button className="button" value={id} onClick={() => this.handleClick({id, name})}>Retire</button></td>);
       return (
        <tr key={id}>
         {tds}
        </tr>
       );
+  }
+
+   handleInputChange(event) {
+    const { value, name, id, defaultValue } = event.target;
+    // pull id for person
+    const personId = id.split('.')[0];
+
+    // add person to updated array or push new one
+    if (defaultValue !== value) {
+      const personUpdatedIndex = updatedPeople.findIndex(p => p.id === personId);
+      if (personUpdatedIndex === -1) {
+        updatedPeople.push({
+          id: personId,
+          [name]: value
+        });
+      } else {
+        updatedPeople[personUpdatedIndex][name] = value;
+      }
+    }
+  }
+
+  handleSaveEdits() {
+    const csrftoken = Cookies.get("csrftoken");
+    const url = "/admin/people/bulk/";
+    const updateData = updatedPeople;
+
+    fetch(url, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify(updateData),
+    }).then(response => {
+      this.setState({bulkEdit: false});
+      return response.json();
+    }).catch(error => {
+      console.log(error);
+    });
+    event.preventDefault();
   }
 
   handleClick(i) {
@@ -77,7 +133,7 @@ export default class PeopleList extends React.Component {
         {bulkEdit ? (
           <div>
             <button className="button button--primary"
-                    onClick={() => this.setState({bulkEdit: false})}>Save Edits</button>
+                    onClick={() => this.handleSaveEdits()}>Save Edits</button>
             <button className="button" style={{float: 'right'}}
                     onClick={() => this.setState({bulkEdit: false})}>Cancel Edit</button>
           </div>
