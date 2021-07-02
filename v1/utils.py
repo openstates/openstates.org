@@ -252,7 +252,7 @@ def convert_legislator(leg):
         "active": active,
         "roles": [
             {
-                "term": static.TERMS[state][-1]["name"],
+                "term": "current",
                 "district": district,
                 "chamber": chamber,
                 "state": state,

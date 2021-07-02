@@ -276,7 +276,7 @@ def test_legislator_detail(client, django_assert_num_queries):
             "active": True,
             "roles": [
                 {
-                    "term": "30",
+                    "term": "current",
                     "district": 1,
                     "chamber": "lower",
                     "state": "ak",
