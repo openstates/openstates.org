@@ -45,7 +45,10 @@ def get_subobj(obj: dict, key_pieces: typing.List[str]):
 
 
 def apply_diff_item(obj, diff_item):
-    diff_item = DiffItem(*diff_item)
+    if isinstance(diff_item, dict):
+        diff_item = DiffItem(**diff_item)
+    else:
+        diff_item = DiffItem(*diff_item)
     key_pieces = diff_item.key.split(".")
 
     if diff_item.action == "set":
@@ -72,6 +75,6 @@ def apply_diff_item(obj, diff_item):
             k = int(k)
         subobj.pop(k)
     else:
-        raise ValueError(f"unknown action {diff_item.action}")
+        raise ValueError(f"unknown action: {diff_item}")
 
     return obj
