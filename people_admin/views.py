@@ -232,8 +232,8 @@ def apply_bulk_edits(request):
     )
 
     for person in edits:
+        updates = []
         for key in person:
-            updates = []
             if key != "id":
                 change = {"action": "set", "key": key, "param": person[key]}
                 updates.append(change)
