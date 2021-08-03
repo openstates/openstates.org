@@ -127,7 +127,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.github",
     "openstates.data",
-    "openstates.reports",
     "graphene_django",
     "graphene_graphiql_explorer",
     "public",
