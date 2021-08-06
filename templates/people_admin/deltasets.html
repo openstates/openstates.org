@@ -1,0 +1,16 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block scripts %}
+  {{ context|json_script:"context" }}
+    <meta charset="utf-8">
+  <script src="{% static "bundles/people_admin.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+    <h3>Total updates: {{matches}}</h3>
+    {% for person in people %}
+        <p>OS ID: {{ person.person_id }} Data Changes: {{ person.data_changes }}</p>
+    {% endfor %}
+    <button type="button" class="button"><a href="{% url 'create_pr' people[1].delta_set_id %}">Create Pull Request</a></button>
+{% endblock %}

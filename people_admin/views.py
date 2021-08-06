@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
+from .unmatched import unmatched_to_deltas
 from people_admin.models import (
     UnmatchedName,
     NameStatus,
@@ -207,12 +208,15 @@ def new_legislator(request, state):
 @require_http_methods(["POST"])
 def apply_new_legislator(request):
     addition = json.load(request)
-    name = addition["name"]
+    print(addition)
+    name = addition[person_data]["name"]
+    print(name)
     delta = DeltaSet.objects.create(
         name=f"add {name}",
         created_by=request.user,
     )
     NewPerson.objects.create(
+        name=name,
         delta_set=delta,
         state=addition["state"],
         district=addition["district"],
@@ -243,3 +247,19 @@ def apply_bulk_edits(request):
             data_changes=updates,
         )
     return JsonResponse({"status": "success"})
+
+
+@never_cache
+def create_delta_sets(request, state):
+    matches = unmatched_to_deltas(state)
+    name = f"{state.upper()} legislator matching"
+    delta = DeltaSet.objects.get(name=name, pr_status="N")
+    people_deltas = PersonDelta.objects.filter(delta_set_id=delta)
+    context = {"matches": matches, "people": people_deltas}
+
+    return render(request, "people_admin/deltasets.html", context)
+
+
+@never_cache
+def create_pr(request):
+    return JsonResponse({"status": request})

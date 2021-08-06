@@ -9,6 +9,8 @@ from .views import (
     new_legislator,
     apply_new_legislator,
     apply_bulk_edits,
+    create_delta_sets,
+    create_pr,
 )
 
 # Only allow valid state abbreviations
@@ -56,5 +58,15 @@ urlpatterns = [
         r"^bulk/",
         apply_bulk_edits,
         name="apply_bulk_edits",
+    ),
+    re_path(
+        r"^(?P<state>{})/deltaSets/$".format(state_abbr_pattern),
+        create_delta_sets,
+        name="create_delta_sets",
+    ),
+    re_path(
+        r"^create_pr/",
+        create_pr,
+        name="create_pr",
     ),
 ]
