@@ -8,8 +8,8 @@ from openstates.data.models import (
     PersonContactDetail,
     Membership,
     LegislativeSession,
+    RunPlan,
 )
-from openstates.reports.models import RunPlan
 from utils.geo import coords_to_divisions
 from .common import (
     OCDBaseNode,
