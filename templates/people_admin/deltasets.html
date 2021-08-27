@@ -5,12 +5,83 @@
   {{ context|json_script:"context" }}
     <meta charset="utf-8">
   <script src="{% static "bundles/people_admin.js" %}"></script>
+    <style>
+        #modal {
+          background-color: rgba(0, 0, 0, 0.9);
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          top: 0;
+          z-index: 10;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        #modal:empty {
+          display: none;
+        }
+
+        #modal > div {
+          background-color: white;
+          max-width: 500px;
+          padding: 15px;
+          border-radius: 5px;
+          text-align: center;
+        }
+    </style>
+    <script>
+      // get cookie for form POST
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + "=")) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      const csrftoken = getCookie("csrftoken");
+
+      function updateEntity(deltaId) {
+        const url = "/admin/people/create_pr/";
+
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": csrftoken,
+          },
+          body: JSON.stringify({ "delta": deltaId }),
+        }).then(response => {
+          return response.json();
+        }).then(data => {
+          // show modal
+          document.getElementById("modal").innerHTML = '<div><h3>PR Successfully Submitted</h3><button type="button" class="button"><a href="/admin/people/">Back to People Admin</a></button></div>';
+        }).catch(error => {
+          console.error(error);
+        });
+      }
+    </script>
 {% endblock %}
 
 {% block content %}
+    <div id="modal"></div>
     <h3>Total updates: {{matches}}</h3>
-    {% for person in people %}
-        <p>OS ID: {{ person.person_id }} Data Changes: {{ person.data_changes }}</p>
-    {% endfor %}
-    <button type="button" class="button"><a href="{% url 'create_pr' people[1].delta_set_id %}">Create Pull Request</a></button>
+    <table>
+    <tr><th>Delta Set Number</th><th>OS ID</th><th>Data Change</th></tr>
+        {% for person in people %}
+            <tr><td>{{ person.delta_set_id }}</td><td>{{ person.person_id }}</td><td>{{ person.data_changes }}</td></tr>
+        {% endfor %}
+    </table>
+    <input type="submit" class="button" value="Submit PR"
+                   onclick="updateEntity({{ people.first.delta_set_id }})" />
 {% endblock %}

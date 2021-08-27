@@ -17,6 +17,7 @@ from people_admin.models import (
     PersonRetirement,
     NewPerson,
 )
+from people_admin.git import delta_set_to_pr
 
 
 MATCHER_PERM = "people_admin.can_match_names"
@@ -208,9 +209,7 @@ def new_legislator(request, state):
 @require_http_methods(["POST"])
 def apply_new_legislator(request):
     addition = json.load(request)
-    print(addition)
     name = addition[person_data]["name"]
-    print(name)
     delta = DeltaSet.objects.create(
         name=f"add {name}",
         created_by=request.user,
@@ -250,16 +249,28 @@ def apply_bulk_edits(request):
 
 
 @never_cache
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
 def create_delta_sets(request, state):
     matches = unmatched_to_deltas(state)
     name = f"{state.upper()} legislator matching"
     delta = DeltaSet.objects.get(name=name, pr_status="N")
-    people_deltas = PersonDelta.objects.filter(delta_set_id=delta)
-    context = {"matches": matches, "people": people_deltas}
+    people_deltas = PersonDelta.objects.filter(delta_set_id=delta).order_by("person_id")
+    context = {
+        "people": people_deltas,
+        "matches": matches,
+    }
 
     return render(request, "people_admin/deltasets.html", context)
 
 
 @never_cache
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+@require_http_methods(["POST"])
 def create_pr(request):
+    delta = json.load(request)["delta"]
+    ds = DeltaSet.objects.get(id=delta, pr_status="N")
+    print(f"creating {ds.id} | {ds.name} | {ds.created_by}")
+    ds.pr_url = delta_set_to_pr(ds)
+    ds.pr_status = "C"
+    ds.save()
     return JsonResponse({"status": request})
