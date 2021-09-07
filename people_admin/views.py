@@ -243,3 +243,36 @@ def apply_bulk_edits(request):
             data_changes=updates,
         )
     return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+def duplicate_sponsors(request, state):
+    jid = abbr_to_jid(state)
+    state_sponsors = [
+        person_data(p)
+        for p in Person.objects.filter(
+            current_jurisdiction_id=jid, current_role__isnull=False
+        ).order_by("family_name", "name")
+    ]
+
+    context = {"state": state, "state_sponsors": state_sponsors}
+
+    return render(request, "people_admin/duplicate_sponsors.html", {"context": context})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+def apply_duplicate_sponsors(request):
+    form_data = json.load(request)
+
+    delta = DeltaSet.objects.create(
+        name=f"duplicates by {request.user}",
+        created_by=request.user,
+    )
+
+    for match in form_data:
+        change = ["append", "other_id", {"id": match["secondSponsor"]}]
+        PersonDelta.objects.create(
+            person_id=match["firstSponsor"], delta_set=delta, data_changes=change
+        )
+
+    return JsonResponse({"status": "success"})
