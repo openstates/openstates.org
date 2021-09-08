@@ -16,14 +16,6 @@ class DuplicateSponsors extends React.Component {
     this.addNewSponsorGroup = this.addNewSponsorGroup.bind(this);
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const { value, name } = target;
-    const parent = event.target.parentElement.parentElement.id;
-    // const matchRequest = {[parent]: {[name]: value}};
-    // this.state.matchRequest.push(matchRequest);
-  }
-
   handleSubmit(event) {
     const csrftoken = Cookies.get("csrftoken");
     const url = "/admin/people/update/duplicate_sponsors/";
@@ -62,10 +54,11 @@ class DuplicateSponsors extends React.Component {
       const request = {};
       parent.childNodes.forEach(child => {
         const select = child.childNodes[1];
-        if (select) {
           const { name, value } = select;
-          request[name] = value;
-        }
+          const sponsorName = value.split(': ')[0];
+          const sponsorId = value.split(': ')[1];
+          request[`${name}Name`] = sponsorName;
+          request[`${name}Id`] = sponsorId;
       });
       requested.push({ ...request });
     });
@@ -75,17 +68,15 @@ class DuplicateSponsors extends React.Component {
   render() {
     const { submitSuccess } = this.state;
     const options = this.props.state_sponsors.map((sponsor) => {
-          return <option value={sponsor.id}>{sponsor.name}: {sponsor.id}</option>});
+          const value = `${sponsor.name }: ${sponsor.id}`;
+          return <option value={value}>{value}</option>});
     const sponsorGroups = this.state.sponsors.map((sponsor) => {
            return <div className="sponsorGroup" id={sponsor}>
               <label>First Sponsor:
-                <select className="firstSponsor" name="firstSponsor" onChange={this.handleInputChange}>{options}</select>
+                <select className="firstSponsor" name="first">{options}</select>
               </label>
               <label>Second Sponsor:
-                <select className="secondSponsor" name="secondSponsor" onChange={this.handleInputChange}>{options}</select>
-              </label>
-              <label>Reason they might be duplicates:
-                <input type="text" name="reason" onChange={this.handleInputChange}/>
+                <select className="secondSponsor" name="second">{options}</select>
               </label>
              <hr/>
             </div>
