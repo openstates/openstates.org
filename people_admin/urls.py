@@ -60,7 +60,7 @@ urlpatterns = [
         name="apply_bulk_edits",
     ),
     re_path(
-        r"^(?P<state>{})/deltaSets/$".format(state_abbr_pattern),
+        r"^(?P<state>{})/deltas/$".format(state_abbr_pattern),
         create_delta_sets,
         name="create_delta_sets",
     ),
