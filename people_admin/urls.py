@@ -11,6 +11,8 @@ from .views import (
     apply_bulk_edits,
     duplicate_sponsors,
     apply_duplicate_sponsors,
+    create_delta_sets,
+    create_pr,
 )
 
 # Only allow valid state abbreviations
@@ -68,5 +70,15 @@ urlpatterns = [
         r"^update/duplicate_sponsors/",
         apply_duplicate_sponsors,
         name="apply_duplicate_sponsors",
+    ),
+    re_path(
+        r"^(?P<state>{})/deltas/$".format(state_abbr_pattern),
+        create_delta_sets,
+        name="create_delta_sets",
+    ),
+    re_path(
+        r"^create_pr/",
+        create_pr,
+        name="create_pr",
     ),
 ]

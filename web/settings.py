@@ -6,13 +6,14 @@ from corsheaders.defaults import default_headers
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 
+
 if "SENTRY_DSN" in os.environ:
     # particularly for graphql errors
     sentry_sdk.utils.MAX_STRING_LENGTH = 2048
     sentry_sdk.init(
         dsn=os.environ["SENTRY_DSN"],
         integrations=[DjangoIntegration()],
-        traces_sample_rate=0.03,
+        traces_sample_rate=0.01,
         send_default_pii=True,
     )
     ignore_logger("graphql.execution.utils")
