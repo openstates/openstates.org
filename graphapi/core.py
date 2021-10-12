@@ -79,6 +79,14 @@ def _membership_filter(
     return qs
 
 
+class OfficeNode(graphene.ObjectType):
+    classification = graphene.String()
+    address = graphene.String()
+    voice = graphene.String()
+    fax = graphene.String()
+    display_name = graphene.String()
+
+
 class ContactDetailNode(graphene.ObjectType):
     type = graphene.String()
     value = graphene.String()
@@ -137,7 +145,6 @@ class PostNode(OCDBaseNode):
     maximum_memberships = graphene.Int()
 
     # organization excluded from this direction
-    # contact_details and links not used
 
 
 class PersonNode(OCDBaseNode):
@@ -158,6 +165,7 @@ class PersonNode(OCDBaseNode):
     links = graphene.List(LinkNode)
     sources = graphene.List(LinkNode)
     contact_details = graphene.List(ContactDetailNode)
+    offices = graphene.List(OfficeNode)
 
     # special attributes
     current_memberships = graphene.List(
@@ -190,6 +198,9 @@ class PersonNode(OCDBaseNode):
                 )
             )
         return contact_details
+
+    def resolve_offices(self, info):
+        return self.offices.all()
 
     def resolve_current_memberships(self, info, classification=None):
         if hasattr(self, "current_memberships"):
@@ -233,8 +244,6 @@ class MembershipNode(OCDBaseNode):
     role = graphene.String()
     start_date = graphene.String()
     end_date = graphene.String()
-
-    # contact_details and links not used
 
 
 class LegislativeSessionNode(graphene.ObjectType):
@@ -420,6 +429,7 @@ class CoreQuery:
                 ".links",
                 ".sources",
                 ".contactDetails",
+                ".offices",
                 (
                     ".currentMemberships",
                     Prefetch(

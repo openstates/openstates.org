@@ -221,10 +221,10 @@ def convert_legislator(leg):
 
     email = None
     offices = defaultdict(dict)
-    for cd in leg.contact_details.all():
-        offices[cd.note][cd.type] = cd.value
-        if cd.type == "email" and not email:
-            email = cd.value
+    for cd in leg.offices.all():
+        offices[cd.classification]["voice"] = cd.voice
+        offices[cd.classification]["address"] = cd.address
+        offices[cd.classification]["fax"] = cd.fax
 
     active = bool(chamber and district)
 

@@ -329,7 +329,7 @@ def test_people_by_party():
 
 @pytest.mark.django_db
 def test_people_num_queries(django_assert_num_queries):
-    with django_assert_num_queries(8):
+    with django_assert_num_queries(9):
         result = schema.execute(
             """ {
         people(first: 50) {
@@ -342,6 +342,7 @@ def test_people_num_queries(django_assert_num_queries):
                     links { url }
                     sources { url }
                     contactDetails { value label }
+                    offices { classification displayName voice fax address }
                     currentMemberships {
                         post {
                             label
@@ -450,7 +451,7 @@ def test_people_old_memberships(django_assert_num_queries):
 @pytest.mark.django_db
 def test_person_by_id(django_assert_num_queries):
     person = Person.objects.get(name="Bob Birch")
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(8):
         result = schema.execute(
             """ {
         person(id:"%s") {
@@ -463,6 +464,7 @@ def test_person_by_id(django_assert_num_queries):
             links { url }
             sources { url }
             contactDetails { value label }
+            offices { classification displayName voice fax address }
             currentMemberships {
                 post {
                     label

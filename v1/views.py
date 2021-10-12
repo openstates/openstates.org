@@ -83,7 +83,7 @@ def person_qs():
         "identifiers",
         "memberships__organization",
         "memberships__post",
-        "contact_details",
+        "offices",
         "links",
         "sources",
     )
