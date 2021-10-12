@@ -669,7 +669,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "openstates"
-version = "6.5.0"
+version = "6.6.1"
 description = "core infrastructure for the openstates project"
 category = "main"
 optional = false
@@ -1428,7 +1428,7 @@ pyyaml = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "4e50529bbf82579b78cc9e1f2ae641399ba9781d333917a84b9781213535e281"
+content-hash = "e3d620061ea40739e8b9d0e1a76f9de2bb366f86d4a369f70bc8d2285b3f5212"
 
 [metadata.files]
 aniso8601 = [
@@ -1747,8 +1747,8 @@ olefile = [
     {file = "olefile-0.46.zip", hash = "sha256:133b031eaf8fd2c9399b78b8bc5b8fcbe4c31e85295749bb17a87cba8f3c3964"},
 ]
 openstates = [
-    {file = "openstates-6.5.0-py3-none-any.whl", hash = "sha256:f5924eb2151a75e770681739cb6c8673a964c81dab2a53d6301ff9de00fcb32a"},
-    {file = "openstates-6.5.0.tar.gz", hash = "sha256:4e4ec54a2307f7e9ff1d75d789a45e6b3af9e52330bbacb07113a9595054b801"},
+    {file = "openstates-6.6.1-py3-none-any.whl", hash = "sha256:0a5d76a3152af4339783dc995410a42a060348f02def9e3642a8dd80217a619c"},
+    {file = "openstates-6.6.1.tar.gz", hash = "sha256:edc565cf194212738ab6a7277032ede67f2195e51ee88f281dc80987efd7d90a"},
 ]
 packaging = [
     {file = "packaging-21.0-py3-none-any.whl", hash = "sha256:c86254f9220d55e31cc94d69bade760f0847da8000def4dfe1c6b872fd14ff14"},
