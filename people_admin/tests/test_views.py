@@ -126,9 +126,7 @@ def test_people_list(client, django_assert_num_queries, admin_user, kansas):
     senate = Organization.objects.get(name="Kansas Senate")
     sam = create_test_person("Sam Jackson", org=house, party="Democratic", district="1")
     sam.identifiers.create(scheme="twitter", identifier="@SamuelLJackson")
-    sam.contact_details.create(
-        value="555-555-5555", type="voice", note="Capitol Office"
-    )
+    sam.offices.create(voice="555-555-5555", classification="capitol")
     create_test_person("Bosephorous Fogg", org=house, party="Republican", district="2")
     create_test_person("Cran Crumble", org=senate, party="Republican", district="A")
     client.force_login(admin_user)

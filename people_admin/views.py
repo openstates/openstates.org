@@ -33,14 +33,13 @@ def person_data(person):
         for itype in identifier_types:
             if identifier.scheme == itype:
                 extras[itype] = identifier.identifier
-    for cd in person.contact_details.all():
-        if cd.note == "Capitol Office":
-            cd_prefix = "capitol_"
-        elif cd.note == "District Office":
-            cd_prefix = "district_"
-        else:
-            continue
-        extras[cd_prefix + cd.type] = cd.value
+    for off in person.offices.all():
+        if off.fax:
+            extras[off.classification + "_fax"] = off.fax
+        if off.voice:
+            extras[off.classification + "_voice"] = off.voice
+        if off.address:
+            extras[off.classification + "_address"] = off.address
     return {
         "id": person.id,
         "name": person.name,
@@ -69,7 +68,7 @@ def jurisdiction_list(request):
             person_data(p)
             for p in Person.objects.filter(
                 current_jurisdiction_id=jid, current_role__isnull=False
-            ).prefetch_related("contact_details")
+            ).prefetch_related("offices")
         ]
         photoless = 0
         phoneless = 0
@@ -109,7 +108,7 @@ def people_list(request, state):
             current_jurisdiction_id=jid, current_role__isnull=False
         )
         .order_by("family_name", "name")
-        .prefetch_related("identifiers", "contact_details")
+        .prefetch_related("identifiers", "offices")
     ]
 
     context = {
