@@ -189,7 +189,16 @@ class PersonNode(OCDBaseNode):
         return self.sources.all()
 
     def resolve_contact_details(self, info):
-        contact_details = list(self.contact_details.all())
+        contact_details = []
+        # contact detail shim for backwards compatibility
+        for office in self.offices.all():
+            for key in ("fax", "voice", "address"):
+                if value := getattr(office, key):
+                    contact_details.append(
+                        PersonContactDetail(
+                            value=value, type=key, note=office.display_name
+                        )
+                    )
         # email shim for backwards compatibility
         if self.email:
             contact_details.append(
@@ -428,8 +437,8 @@ class CoreQuery:
                 ".otherNames",
                 ".links",
                 ".sources",
-                ".contactDetails",
                 ".offices",
+                (".contactDetails", Prefetch("offices")),
                 (
                     ".currentMemberships",
                     Prefetch(

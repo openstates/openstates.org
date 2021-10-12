@@ -329,7 +329,7 @@ def test_people_by_party():
 
 @pytest.mark.django_db
 def test_people_num_queries(django_assert_num_queries):
-    with django_assert_num_queries(9):
+    with django_assert_num_queries(8):
         result = schema.execute(
             """ {
         people(first: 50) {
@@ -451,7 +451,7 @@ def test_people_old_memberships(django_assert_num_queries):
 @pytest.mark.django_db
 def test_person_by_id(django_assert_num_queries):
     person = Person.objects.get(name="Bob Birch")
-    with django_assert_num_queries(8):
+    with django_assert_num_queries(7):
         result = schema.execute(
             """ {
         person(id:"%s") {
@@ -463,7 +463,6 @@ def test_person_by_id(django_assert_num_queries):
             otherNames { name }
             links { url }
             sources { url }
-            contactDetails { value label }
             offices { classification displayName voice fax address }
             currentMemberships {
                 post {
@@ -515,6 +514,37 @@ def test_person_email_shim(django_assert_num_queries):
         "type": "email",
         "note": "Capitol Office",
     }
+
+
+@pytest.mark.django_db
+def test_person_contact_details_shim(django_assert_num_queries):
+    # make sure contactDetails populates properly from office data
+    person = Person.objects.get(name="Bob Birch")
+    person.offices.create(
+        classification="district",
+        voice="123-456-7890",
+        address="123 Boogie Woogie Ave",
+    )
+    result = schema.execute(
+        """ {
+    person(id:"%s") {
+        name
+        email
+        contactDetails { value note type }
+    }
+    }"""
+        % person.id
+    )
+    assert result.errors is None
+    assert result.data["person"]["name"] == "Bob Birch"
+    assert result.data["person"]["contactDetails"] == [
+        {"value": "123-456-7890", "type": "voice", "note": "District Office"},
+        {
+            "value": "123 Boogie Woogie Ave",
+            "type": "address",
+            "note": "District Office",
+        },
+    ]
 
 
 @pytest.mark.django_db
