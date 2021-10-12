@@ -5,7 +5,6 @@ from openstates.data.models import (
     Jurisdiction,
     Organization,
     Person,
-    PersonContactDetail,
     Membership,
     LegislativeSession,
     RunPlan,
@@ -195,16 +194,12 @@ class PersonNode(OCDBaseNode):
             for key in ("fax", "voice", "address"):
                 if value := getattr(office, key):
                     contact_details.append(
-                        PersonContactDetail(
-                            value=value, type=key, note=office.display_name
-                        )
+                        dict(value=value, type=key, note=office.display_name)
                     )
         # email shim for backwards compatibility
         if self.email:
             contact_details.append(
-                PersonContactDetail(
-                    value=self.email, type="email", note="Capitol Office"
-                )
+                dict(value=self.email, type="email", note="Capitol Office")
             )
         return contact_details
 
