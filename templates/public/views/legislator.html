@@ -53,28 +53,24 @@
 
             </div>
             {% endif %}
-            {% if person.all_contact_details %}
-                {% regroup person.all_contact_details by note as contact_details %}
-                {% for note, cd_list in contact_details %}
+            {% if person.all_offices %}
+                {% for office in person.all_offices %}
                 <div class="overview__subsection">
                     <address class="contact">
-                        <h3 class="heading--small">{{ note }}</h3>
-                        {% for cd in cd_list %}
+                        <h3 class="heading--small">{{ office.display_name }}</h3>
                             <p>
-                            {% if cd.type == 'address' %}
-                                {{ cd.value|format_address }}
-                            {% elif cd.type == 'voice' %}
+                            {% if office.address %}
+                            <p>{{ office.address|format_address }}</p>
+                            {% endif %}
+                            {% if office.voice %}
                                 <span class="contact__label">Phone</span>
-                                <a href="tel:{{ cd.value }}">{{ cd.value }}</a>
-                            {% elif cd.type == 'fax' %}
+                                <a href="tel:{{ office.voice }}">{{ office.voice }}</a>
+                            {% endif %}
+                            {% if office.fax %}
                                 <span class="contact__label">Fax</span>
-                                {{ cd.value }}
-                            {% elif cd.type == 'email' %}
-                                <span class="contact__label">Email</span>
-                                <a href="mailto:{{ cd.value }}">{{ cd.value }}</a>
+                                {{ office.fax }}
                             {% endif %}
                             </p>
-                        {% endfor %}
                     </address>
                 </div>
                 {% endfor %}
