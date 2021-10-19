@@ -15,15 +15,6 @@ import randomColor from "randomcolor";
 
 const COLORS = {
   graphql: "#6c5bc1",
-  "v1.geo": "#55aa55",
-  "v1.bills-detail": "#669999",
-  "v1.bills-list": "#407F7F",
-  "v1.legislator-detail": "#FFD1AA",
-  "v1.legislator-list": "#D49A6A",
-  "v1.metadata-detail": "#FFAAAA",
-  "v1.metadata-list": "#D46A6A",
-  "v1.committees": "#804515",
-  "v1.events": "#552700",
   "v3": "#028AOF",
 };
 
@@ -47,43 +38,6 @@ class EndpointChart extends PureComponent {
         <Tooltip />
         <Legend />
         <Bar dataKey="graphql" stackId="a" fill={COLORS["graphql"]} />
-        <Bar dataKey="v1.geo" stackId="b" fill={COLORS["v1.geo"]} />
-        <Bar
-          dataKey="v1.bills-detail"
-          stackId="c"
-          fill={COLORS["v1.bills-detail"]}
-        />
-        <Bar
-          dataKey="v1.bills-list"
-          stackId="c"
-          fill={COLORS["v1.bills-list"]}
-        />
-        <Bar
-          dataKey="v1.legislator-detail"
-          stackId="c"
-          fill={COLORS["v1.legislator-detail"]}
-        />
-        <Bar
-          dataKey="v1.legislator-list"
-          stackId="c"
-          fill={COLORS["v1.legislator-list"]}
-        />
-        <Bar
-          dataKey="v1.metadata-detail"
-          stackId="c"
-          fill={COLORS["v1.metadata-detail"]}
-        />
-        <Bar
-          dataKey="v1.metadata-list"
-          stackId="c"
-          fill={COLORS["v1.metadata-list"]}
-        />
-        <Bar
-          dataKey="v1.committees"
-          stackId="c"
-          fill={COLORS["v1.committees"]}
-        />
-        <Bar dataKey="v1.events" stackId="c" fill={COLORS["v1.events"]} />
         <Bar dataKey="v3" stackId="d" fill={COLORS["v3"]} />
       </BarChart>
     );
@@ -135,7 +89,6 @@ export default class APIDashboard extends React.Component {
       <tr>
         <td>{k[0]}</td>
         <td>{k[1]}</td>
-        <td>{this.props.v1_totals[k[0]]}</td>
         <td>{this.props.v2_totals[k[0]]}</td>
         <td>{this.props.v3_totals[k[0]]}</td>
       </tr>
@@ -164,7 +117,6 @@ export default class APIDashboard extends React.Component {
             <thead>
               <tr>
                 <th>Tier</th>
-                <th colSpan={3}>v1 Limits</th>
                 <th colSpan={3}>v2 Limits</th>
               </tr>
             </thead>
@@ -172,9 +124,6 @@ export default class APIDashboard extends React.Component {
               {this.props.key_tiers.map(kobj => (
                 <tr key={kobj.name}>
                   <td>{kobj.name}</td>
-                  <td>{kobj.v1 ? kobj.v1[0] : 0}/day</td>
-                  <td>{kobj.v1 ? kobj.v1[1] : 0}/sec</td>
-                  <td>{kobj.v1 ? kobj.v1[2] : 0}/sec burst</td>
                   <td>{kobj.v2 ? kobj.v2[0] : 0}/day</td>
                   <td>{kobj.v2 ? kobj.v2[1] : 0}/sec</td>
                   <td>{kobj.v2 ? kobj.v2[2] : 0}/sec burst</td>
@@ -204,7 +153,6 @@ export default class APIDashboard extends React.Component {
               <tr>
                 <th>Key</th>
                 <th>All Calls</th>
-                <th>v1</th>
                 <th>v2</th>
                 <th>v3</th>
               </tr>

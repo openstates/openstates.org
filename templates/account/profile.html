@@ -79,15 +79,12 @@
     <dt>GraphQL Limits</dt>
     <dd>{{ request.user.profile.get_tier_details.v2.daily_requests }} daily requests</dd>
     <dd>{{ request.user.profile.get_tier_details.v2.requests_per_second }} requests/sec</dd>
-    <dt>API v1 Limits</dt>
-    <dd>{{ request.user.profile.get_tier_details.v1.daily_requests }} daily requests</dd>
-    <dd>{{ request.user.profile.get_tier_details.v1.requests_per_second }} requests/sec</dd>
   </dl>
   {% if recent_usage %}
   <table>
-  <tr><th>Day</th><th>v1 Calls</th><th>v2 Calls</th><th>v3 Calls</th></tr>
+  <tr><th>Day</th><th>v2 Calls</th><th>v3 Calls</th></tr>
   {% for day, segment in recent_usage %}
-  <tr><td>{{ day }}</td><td>{{ segment.v1 }}</td><td>{{ segment.v2 }}</td><td>{{segment.v3}}</td></tr>
+  <tr><td>{{ day }}</td><td>{{ segment.v2 }}</td><td>{{segment.v3}}</td></tr>
   {% endfor %}
   </table>
   {% endif %}

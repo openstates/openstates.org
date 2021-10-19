@@ -1,23 +1,9 @@
-import re
 import json
 import datetime
 from collections import defaultdict, Counter
 from django.core.management.base import BaseCommand
 from rrl import RateLimiter
 from ...models import UsageReport, Profile
-
-v1_endpoint_mapping = [
-    ("^/api/v1/legislators/geo/$", "v1.geo"),
-    ("^/api/v1/legislators/$", "v1.legislator-list"),
-    (r"^/api/v1/legislators/\w{3}\d{6}", "v1.legislator-detail"),
-    ("^/api/v1/metadata/$", "v1.metadata-list"),
-    (r"^/api/v1/metadata/\w{2}/$", "v1.metadata-detail"),
-    ("^/api/v1/bills/$", "v1.bills-list"),
-    (r"^/api/v1/bills/\w\w.+", "v1.bills-detail"),
-    ("^/api/v1/events/$", "v1.events"),
-    ("^/api/v1/districts/", "v1.districts"),
-    ("^/api/v1/committees/", "v1.committees"),
-]
 
 
 class Command(BaseCommand):
@@ -30,13 +16,6 @@ class Command(BaseCommand):
         day = line["timestamp"][:10]
         if line["event"] == "graphql":
             endpoint = "graphql"
-        elif line["event"] == "v1":
-            for regex, endpoint in v1_endpoint_mapping:
-                if re.match(regex, line["url"]):
-                    break
-            else:
-                print("unknown v1 endpoint: " + line["url"])
-                return
         self.count_by_day[day][(line["api_key"], endpoint)] += 1
         self.duration_by_day[day][line["api_key"]][endpoint] += line["duration"]
         self.lines += 1
