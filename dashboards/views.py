@@ -183,7 +183,9 @@ def api_overview(request):
     since = datetime.datetime.today() - datetime.timedelta(days=days)
 
     reports = list(
-        UsageReport.objects.filter(date__gte=since).select_related("profile__user")
+        UsageReport.objects.filter(date__gte=since, calls_gt=0).select_related(
+            "profile__user"
+        )
     )
     for report in reports:
         date = str(report.date)

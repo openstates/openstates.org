@@ -2,7 +2,7 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.contrib import admin
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from graphapi.views import KeyedGraphQLView
 from graphapi.middleware import QueryProtectionMiddleware
 from bundles.views import bundle_view
@@ -14,7 +14,6 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("accounts/profile/", include("profiles.urls")),
     path("dashboard/", include("dashboards.urls")),
-    path("api/v1/", include("v1.urls")),
     re_path(
         "^graphql/?$",
         csrf_exempt(
@@ -40,6 +39,13 @@ urlpatterns = [
     ),
     path("tos/", TemplateView.as_view(template_name="flat/tos.html")),
     path("api/registered/", TemplateView.as_view(template_name="flat/registered.html")),
+    re_path(
+        "^api/v1",
+        RedirectView.as_view(
+            url="https://docs.openstates.org/en/latest/api/v3/index.html",
+            permanent=True,
+        ),
+    ),
 ]
 
 
