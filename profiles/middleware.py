@@ -9,8 +9,6 @@ def structlog_middleware(get_response):
     def middleware(request):
         msg = None
 
-        if request.path.startswith("/api/v1/"):
-            msg = "v1"
         if request.path.startswith("/graphql"):
             msg = "graphql"
 

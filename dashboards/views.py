@@ -174,7 +174,6 @@ def api_overview(request):
     endpoint_usage = defaultdict(lambda: defaultdict(int))
     key_usage = defaultdict(lambda: defaultdict(int))
     key_totals = Counter()
-    v1_key_totals = Counter()
     v2_key_totals = Counter()
     v3_key_totals = Counter()
     all_keys = set()
@@ -183,7 +182,9 @@ def api_overview(request):
     since = datetime.datetime.today() - datetime.timedelta(days=days)
 
     reports = list(
-        UsageReport.objects.filter(date__gte=since).select_related("profile__user")
+        UsageReport.objects.filter(date__gte=since, calls__gt=0).select_related(
+            "profile__user"
+        )
     )
     for report in reports:
         date = str(report.date)
@@ -195,15 +196,12 @@ def api_overview(request):
             v2_key_totals[key] += report.calls
         elif report.endpoint == "v3":
             v3_key_totals[key] += report.calls
-        else:
-            v1_key_totals[key] += report.calls
         all_keys.add(key)
 
     context = {
         "endpoint_usage": _counter_to_chartdata(endpoint_usage),
         "key_usage": _counter_to_chartdata(key_usage),
         "most_common": key_totals.most_common(),
-        "v1_totals": v1_key_totals,
         "v2_totals": v2_key_totals,
         "v3_totals": v3_key_totals,
         "key_tiers": list(KEY_TIERS.values()),

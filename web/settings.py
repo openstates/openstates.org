@@ -132,7 +132,6 @@ INSTALLED_APPS = [
     "graphene_graphiql_explorer",
     "public",
     "graphapi",
-    "v1",
     "bulk",
     "profiles.apps.ProfilesConfig",
     "bundles",
@@ -240,7 +239,7 @@ ACCOUNT_SIGNUP_FORM_CLASS = "profiles.forms.AllauthSignupForm"
 
 # API
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r"^/(graphql|api/v1).*$"
+CORS_URLS_REGEX = r"^/(graphql).*$"
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
 CORS_ALLOW_HEADERS = default_headers + ("x-api-key",)
 
