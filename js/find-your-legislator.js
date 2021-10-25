@@ -336,14 +336,12 @@ export default class FindYourLegislator extends React.Component {
     return (
       <div className="find-your-legislator">
         <div className="input-group">
-          <label htmlFor="fyl-address" id="fyl-address-label">
-            Enter Your Address:
-          </label>
           <input
             className="input-group-field"
             type="search"
             id="fyl-address"
             name="address"
+            placeholder="Enter Your Address"
             value={this.state.address}
             onChange={this.handleAddressChange}
           />
