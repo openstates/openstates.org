@@ -19,7 +19,7 @@ RUN BUILD_DEPS=" \
       uwsgi-src \
       awscli \
     " \
-    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS
+    && apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends $BUILD_DEPS
 
 RUN cd /usr/lib/uwsgi/plugins && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
 
@@ -29,7 +29,7 @@ WORKDIR /code/
 COPY docker/uwsgi/custom-entrypoint /usr/local/bin
 RUN chmod a+x /usr/local/bin/custom-entrypoint
 
-RUN wget https://deb.nodesource.com/setup_10.x -O nodesource.sh \
+RUN wget https://deb.nodesource.com/setup_lts.x -O nodesource.sh \
     && bash nodesource.sh \
     && apt install -y nodejs \
     && npm ci \
