@@ -9,20 +9,6 @@ volumes:
     name: openstates-postgres
 
 services:
-  db:
-    image: "mdillon/postgis:11-alpine"
-    hostname: "db"
-    ports:
-      - "5405:5432"
-    environment:
-      POSTGRES_PASSWORD: openstates
-      POSTGRES_USER: openstates
-      POSTGRES_DB: openstatesorg
-    volumes:
-      - openstates-postgres:/var/lib/postgresql/data
-    networks:
-      - openstates-network
-
   django:
     build:
       context: .
@@ -39,12 +25,10 @@ services:
       - CACHE_URL
       - RECAPTCHA_PUBLIC_KEY
       - RECAPTCHA_PRIVATE_KEY
-    depends_on:
-      - db
     networks:
       - openstates-network
 
-  nginx: 
+  nginx:
     build: docker/nginx
     ports:
       - "8000:80"
