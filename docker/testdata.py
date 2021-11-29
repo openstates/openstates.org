@@ -8,6 +8,9 @@ u.profile.api_tier = "unlimited"
 u.profile.save()
 u.emailaddress_set.create(email="local@localhost", verified=True, primary=True)
 
+# fix site
+Site.objects.all().delete()
+Site.objects.get_or_create(domain="openstates.org", name="openstates.org")
 
 # fb socialapp so that login page works
 fb, _ = SocialApp.objects.get_or_create(
