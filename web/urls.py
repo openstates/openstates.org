@@ -42,7 +42,7 @@ urlpatterns = [
     re_path(
         "^api/v1",
         RedirectView.as_view(
-            url="https://docs.openstates.org/en/latest/api/v3/index.html",
+            url="https://docs.openstates.org/api-v3/",
             permanent=True,
         ),
     ),

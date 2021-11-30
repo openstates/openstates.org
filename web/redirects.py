@@ -3,7 +3,7 @@ from django.views.generic.base import RedirectView
 
 redirects = [
     ("api/register/", "/accounts/login/"),
-    ("api/", "https://docs.openstates.org/en/latest/api/v3/index.html"),
+    ("api/", "https://docs.openstates.org/api-v3/"),
     ("contributing/", "/about/contributing/"),
     ("methodology/", "/about/"),
     ("mailing-list/", "/about/"),
