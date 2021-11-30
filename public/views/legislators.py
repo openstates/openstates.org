@@ -9,7 +9,7 @@ from utils.people import person_as_dict
 
 def _people_from_lat_lon(lat, lon):
     PERSON_GEO_QUERY = """{
-      people(latitude: %s, longitude: %s, first: 10) {
+      people(latitude: %s, longitude: %s, first: 15) {
         edges {
           node {
             id
