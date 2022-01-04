@@ -35,7 +35,7 @@ def process_bill_sub(sub, since):
     if (
         sub.bill.latest_action_date
         and sub.bill.latest_action_date >= since.strftime("%Y-%m-%d")
-        and sub.bill.latest_action_date < datetime.date.today()
+        and sub.bill.latest_action_date <= datetime.date.today().strftime("%Y-%m-%d")
     ):
         return sub.bill
 
