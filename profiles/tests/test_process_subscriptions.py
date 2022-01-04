@@ -52,6 +52,24 @@ def test_process_bill_sub(user):
 
 
 @pytest.mark.django_db
+def test_process_bill_sub_future(user):
+    hb1 = Bill.objects.get(identifier="HB 1")
+    sub = Subscription(user=user, bill=hb1)
+
+    now = utcnow()
+    yesterday = now - datetime.timedelta(days=1)
+    tomorrow = now + datetime.timedelta(days=1)
+    hb1.latest_action_date = tomorrow.strftime("%Y-%m-%d")
+    hb1.save()
+
+    # no changes since now
+    assert process_bill_sub(sub, now) is None
+
+    # bill changed in last day
+    assert process_bill_sub(sub, yesterday) is None
+
+
+@pytest.mark.django_db
 def test_process_query_sub_simple(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription(user=user, query="moose")
