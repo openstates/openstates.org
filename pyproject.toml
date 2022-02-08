@@ -2,7 +2,7 @@
 name = "openstates.org"
 version = "3.4"
 description = ""
-authors = ["James Turk <james@openstates.org>"]
+authors = ["James Turk <dev@jamesturk.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
