@@ -527,7 +527,7 @@ python-versions = "*"
 
 [[package]]
 name = "ipython"
-version = "7.27.0"
+version = "7.31.1"
 description = "IPython: Productive Interactive Computing"
 category = "main"
 optional = false
@@ -1476,7 +1476,7 @@ pyyaml = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "344aaa64cfab702fd668ef2661b5116bd84c7e885855a27aa11d3e31e324b438"
+content-hash = "2200421db440357738f11237255244f140816c19761db68497d1363cb5b2abde"
 
 [metadata.files]
 aniso8601 = [
@@ -1698,8 +1698,8 @@ invoke = [
     {file = "invoke-1.6.0.tar.gz", hash = "sha256:374d1e2ecf78981da94bfaf95366216aaec27c2d6a7b7d5818d92da55aa258d3"},
 ]
 ipython = [
-    {file = "ipython-7.27.0-py3-none-any.whl", hash = "sha256:75b5e060a3417cf64f138e0bb78e58512742c57dc29db5a5058a2b1f0c10df02"},
-    {file = "ipython-7.27.0.tar.gz", hash = "sha256:58b55ebfdfa260dad10d509702dc2857cb25ad82609506b070cf2d7b7df5af13"},
+    {file = "ipython-7.31.1-py3-none-any.whl", hash = "sha256:55df3e0bd0f94e715abd968bedd89d4e8a7bce4bf498fb123fed4f5398fea874"},
+    {file = "ipython-7.31.1.tar.gz", hash = "sha256:b5548ec5329a4bcf054a5deed5099b0f9622eb9ea51aaa7104d215fece201d8c"},
 ]
 jedi = [
     {file = "jedi-0.18.0-py2.py3-none-any.whl", hash = "sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93"},
