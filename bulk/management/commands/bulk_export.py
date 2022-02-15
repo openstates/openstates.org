@@ -98,11 +98,8 @@ def _bill_to_json(b):
         "chamber": b.from_organization.classification,
         "classification": b.classification,
         "subject": b.subject,
-        "abstracts": list(b.abstracts.values("abstract", "note", "date")),
+        "abstracts": list(b.abstracts.values("abstract", "note")),
         "other_titles": list(b.other_titles.values("title", "note")),
-        "other_identifiers": list(
-            b.other_identifiers.values("note", "identifier", "scheme")
-        ),
         "actions": list(
             b.actions.values(
                 "organization__name", "description", "date", "classification", "order"
