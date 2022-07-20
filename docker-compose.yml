@@ -14,12 +14,13 @@ services:
       context: .
       dockerfile: docker/uwsgi/Dockerfile
     volumes:
-      - .:/code
+      - .:/code:z
     environment:
+      - UMASK=0000
       # dev settings to reload python files when edited
       - UWSGI_PYTHON_AUTORELOAD=3
       - UWSGI_ENABLE_THREADS=1
-      - DEBUG
+      - DEBUG=True
       - SECRET_KEY
       - DATABASE_URL
       - CACHE_URL

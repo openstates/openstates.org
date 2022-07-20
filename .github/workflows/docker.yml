@@ -26,4 +26,4 @@ jobs:
           dockerfile: /github/workspace/docker/uwsgi/Dockerfile
           tag_with_ref: true
           tags: latest, django-dev
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
