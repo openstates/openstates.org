@@ -1,6 +1,8 @@
 FROM python:3.9
 LABEL maintainer="James Turk <dev@jamesturk.net>"
 
+ARG UID=999
+
 # global environment settings
 ENV PYTHONUNBUFFERED=1 \
   PYTHONDONTWRITEBYTECODE=1 \
@@ -41,13 +43,17 @@ RUN curl https://deb.nodesource.com/setup_lts.x -SsLo nodesource.sh \
 RUN pip --no-cache-dir --disable-pip-version-check install poetry
 
 # everything after here as openstates user
-RUN useradd -Ulmr -d /home/openstates -G sudo openstates
+RUN useradd -u $UID -Ulmr -d /home/openstates openstates
 USER openstates:openstates
 
 RUN poetry install --no-dev \
     && rm -r ~/.cache/pypoetry/cache ~/.cache/pypoetry/artifacts/
 
-RUN sudo apt-get remove -y -qq build-essential \
+USER root
+RUN apt-get remove -y -qq build-essential \
+      gcc \
+      g++ \
+      make \
       python3-dev \
       git \
       libpq-dev \
@@ -55,7 +61,8 @@ RUN sudo apt-get remove -y -qq build-essential \
       libgdal-dev \
       libcap-dev \
       uwsgi-src \
-    && sudo apt-get autoremove -y
+    && apt-get autoremove -y
+USER openstates:openstates
 
 # uwsgi config
 ENV UWSGI_MASTER=1 \

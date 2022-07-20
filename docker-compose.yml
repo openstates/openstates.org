@@ -1,22 +1,15 @@
 version: "3.5"
 
-networks:
-  openstates-network:
-      name: openstates-network
-
-volumes:
-  openstates-postgres:
-    name: openstates-postgres
-
 services:
   django:
     build:
       context: .
       dockerfile: docker/uwsgi/Dockerfile
+      args:
+        UID: 1000
     volumes:
-      - .:/code:z
+      - .:/code
     environment:
-      - UMASK=0000
       # dev settings to reload python files when edited
       - UWSGI_PYTHON_AUTORELOAD=3
       - UWSGI_ENABLE_THREADS=1
@@ -26,8 +19,6 @@ services:
       - CACHE_URL
       - RECAPTCHA_PUBLIC_KEY
       - RECAPTCHA_PRIVATE_KEY
-    networks:
-      - openstates-network
 
   nginx:
     build: docker/nginx
@@ -35,8 +26,6 @@ services:
       - "8000:80"
     depends_on:
       - django
-    networks:
-      - openstates-network
 
   # webpack:
   #   build: .
