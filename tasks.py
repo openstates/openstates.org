@@ -45,7 +45,7 @@ def lint(c):
         "poetry run flake8 --show-source --statistics --ignore=E203,E501,W503 --max-line-length=120",
         pty=True,
     )
-    c.run("black --check .", pty=True)
+    c.run("black --check --diff .", pty=True)
 
 
 @task
