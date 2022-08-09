@@ -1,3 +1,3 @@
-db: docker-compose up db
+db: docker-compose --profile db up db
 backend: npm run start
 web: DATABASE_URL=postgis://openstates:openstates@localhost:5405/openstatesorg poetry run ./manage.py runserver
