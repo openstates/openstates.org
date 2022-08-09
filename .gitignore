@@ -45,3 +45,5 @@ collected_static
 
 # database dumps
 *.pgdump
+
+.idea/

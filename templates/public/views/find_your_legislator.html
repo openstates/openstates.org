@@ -6,16 +6,23 @@
 {% block og_title %}Find Your State Legislators - Open States{% endblock %}
 {% block description %}Find out who represents you in your state legislature with Open States.{% endblock %}
 {% block scripts %}
-  <script src="{% static "bundles/fyl.js" %}"></script>
+    <script src="{% static "bundles/fyl.js" %}"></script>
 {% endblock %}
 
 {% block content %}
-<h1 class="heading--large">Find Your Legislators</h1>
-<h2 class="mb2 heading--medium">Look your legislators up by address or use your current location.</h2>
+    <h1 class="heading--large">Find Your Legislators</h1>
+    <h2 class="mb2 heading--medium">Look your legislators up by address or use your current location.</h2>
+    <hr>
+    <p>Open States reflects districts for people currently in office for 2022. Legislators and district boundaries
+        will be updated to reflect redistricting before the 2023 sessions.
+    </p>
+    <hr>
 
-<div data-hook="find-your-legislator"></div>
-<noscript>This page requires JavaScript enabled.</noscript>
+    <div data-hook="find-your-legislator"></div>
+    <noscript>This page requires JavaScript enabled.</noscript>
 
-<div class="mapbox-credit">Geolocation and map view powered by <img src="{% static "images/logos/mapbox-logo-black.png" %}" alt="Mapbox" />.</div>
+    <div class="mapbox-credit">Geolocation and map view powered by <img
+        src="{% static "images/logos/mapbox-logo-black.png" %}" alt="Mapbox" />.
+    </div>
 
 {% endblock %}
