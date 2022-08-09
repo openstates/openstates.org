@@ -1,7 +1,8 @@
 name: Build and push Docker images
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - develop
     tags:
       - '*'
 jobs:
