@@ -67,7 +67,7 @@ jobs:
           npm install
           npm run build
 
-    - name: lint with flake8
+    - name: lint with flake8 and black
       run: poetry run inv lint
     - name: pytest
       run: poetry run inv test --no-docker-db
