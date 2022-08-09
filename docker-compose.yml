@@ -27,6 +27,23 @@ services:
     depends_on:
       - django
 
+  db:
+    profiles:
+      - db
+    image: postgres
+    environment:
+      POSTGRES_DATABASE: openstatesorg
+      POSTGRES_PASSWORD: openstates
+      POSTGRES_USER: openstates
+      POSTGRES_HOST_AUTH_METHOD: trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5405:5432
+
   # webpack:
   #   build: .
   #   command: ./docker/webpack-start.sh

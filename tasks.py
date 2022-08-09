@@ -1,11 +1,15 @@
 from invoke import task
 import datetime
 import os
+import shutil
 
 
 def start_docker_db(c):
     # turn on docker database if not already on
-    c.run("docker-compose up -d db")
+    if shutil.which("docker-compose"):
+        c.run("docker-compose --profile db up -d db")
+    else:
+        c.run("docker compose --profile db up -d db")
     os.environ[
         "DATABASE_URL"
     ] = "postgres://openstates:openstates@localhost:5405/openstatesorg"
