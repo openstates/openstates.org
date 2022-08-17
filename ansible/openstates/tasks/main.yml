@@ -11,7 +11,6 @@
       - git
       - libpq-dev
       - gdal-bin
-      - virtualenv
       - uwsgi
       - uwsgi-src
       - nginx
@@ -100,7 +99,7 @@
   changed_when: false
 
 - name: install poetry
-  command: python3.9 -m pip install poetry
+  command: python3.9 -m pip install --upgrade poetry virtualenv
   become_user: "openstates"
   changed_when: false
 
@@ -155,7 +154,7 @@
   register: gitresult
 
 - name: create virtualenv
-  command: virtualenv -p python3.9 /home/openstates/virt{{ gitresult.after }}
+  command: python3.9 -m virtualenv /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
   changed_when: false
   notify:
@@ -170,7 +169,7 @@
 
   become_user: "openstates"
 - name: install packages via poetry
-  command: ~/.poetry/bin/poetry install # --deploy
+  command: python3.9 -m poetry install # --deploy
   changed_when: false
   args:
     chdir: /home/openstates/src/openstates.org
