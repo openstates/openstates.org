@@ -7,7 +7,7 @@
   apt:
     update_cache: yes
     pkg:
-     - build-essential
+      - build-essential
       - git
       - libpq-dev
       - gdal-bin
@@ -21,7 +21,6 @@
       - python3.9
       - python3.9-dev
       - python3.9-distutils
-  ignore_errors: true
 
 - name: build python39 plugin
   command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
