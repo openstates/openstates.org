@@ -69,7 +69,7 @@ def deploy(c):
     ).stdout.strip()
 
     with c.cd("ansible"):
-        c.run("ansible-playbook openstates.yml -i inventory/", pty=True)
+        c.run("ansible-playbook -D openstates.yml -i inventory/", pty=True)
 
     # tag the release in git and on sentry and newrelic
     next_tag = get_next_tag(c)
