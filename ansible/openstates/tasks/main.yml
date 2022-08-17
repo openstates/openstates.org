@@ -29,6 +29,7 @@
   args:
     creates: /usr/lib/uwsgi/plugins/python39_plugin.so
     chdir: /usr/lib/uwsgi/plugins/
+  changed_when: false
 
 - name: add localhost alias
   lineinfile:
@@ -81,6 +82,8 @@
 
 - name: run nodesource script
   command: /tmp/nodesource-setup.sh
+  changed_when: false
+
 - name: install nodejs
   apt:
     pkg:
@@ -94,15 +97,19 @@
 - name: install pip
   command: python3.9 /tmp/get-pip.py
   become_user: "openstates"
+  changed_when: false
 
 - name: install poetry
   command: python3.9 -m pip install poetry
   become_user: "openstates"
+  changed_when: false
 
 # letsencrypt & cronjobs
 
 - name: add letsencrypt cert
   command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
+  changed_when: false
+
 - name: add letsencrypt renewal crontab
   cron:
     job: "letsencrypt renew"
@@ -150,6 +157,7 @@
 - name: create virtualenv
   command: virtualenv -p python3.9 /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
+  changed_when: false
   notify:
     - restart django-application
 
@@ -163,11 +171,13 @@
   become_user: "openstates"
 - name: install packages via poetry
   command: ~/.poetry/bin/poetry install # --deploy
+  changed_when: false
   args:
     chdir: /home/openstates/src/openstates.org
   environment:
     VIRTUAL_ENV: /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
+
 - name: link virtualenv
   file:
     src: "/home/openstates/virt{{ gitresult.after }}"
@@ -179,12 +189,15 @@
 # npm installation & build
 - name: npm install
   command: npm ci   # use this to ensure we only build from package-lock
+  changed_when: false
   become_user: "openstates"
   args:
     chdir: /home/openstates/src/openstates.org
+
 - name: npm run build
   command: npm run build
   become_user: "openstates"
+  changed_when: false
   args:
     chdir: /home/openstates/src/openstates.org
 
@@ -196,6 +209,7 @@
 
 - name: generate dh params
   command: openssl dhparam -out /etc/nginx/certs/dhparams.pem 2048 creates=/etc/nginx/certs/dhparams.pem
+  changed_when: false
 
 - name: remove nginx default config
   file:
@@ -219,14 +233,18 @@
 - name: collectstatic
   command: /home/openstates/virt/bin/python manage.py collectstatic --settings=web.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
+  changed_when: false
 
 - name: migrate
   command: /home/openstates/virt/bin/python manage.py migrate --settings=web.settings --noinput chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
+  changed_when: false
 
 - name: create Site
   command: echo "from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')" | /home/openstates/virt/bin/python manage.py shell --settings=web.settings chdir=/home/openstates/src/openstates.org
   environment: '{{django_environment}}'
+  changed_when: false
+
 # TODO: add run of shapefiles/download.py
 # - name: loadshapefiles
 #   command: /home/openstates/virt/bin/python manage.py loadshapefiles --settings=web.settings chdir=/home/openstates/src/openstates.org
