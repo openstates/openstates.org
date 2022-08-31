@@ -37,10 +37,9 @@ def process_query_sub(sub, since):
 
 def process_bill_sub(sub, since):
     """given a bill subscription, return bill if it has had an action since then"""
-    if (
-            sub.bill.latest_action_date
-            and since.strftime("%Y-%m-%d") <= sub.bill.latest_action_date <= datetime.date.today().strftime("%Y-%m-%d")
-    ):
+    if sub.bill.latest_action_date and since.strftime(
+        "%Y-%m-%d"
+    ) <= sub.bill.latest_action_date <= datetime.date.today().strftime("%Y-%m-%d"):
         return sub.bill
 
 
@@ -157,6 +156,7 @@ class Command(BaseCommand):
         start = utcnow()
         if options["dry_run"]:
             logger.msg("DRY RUN: will not actually send emails or update users")
+
         # Only get users with existing bill or query subscriptions
         total_subscriptions = Subscription.objects.all()
         subscribed_users = User.objects.filter(Exists(total_subscriptions))
