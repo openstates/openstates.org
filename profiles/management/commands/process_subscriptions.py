@@ -4,9 +4,15 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.db import transaction
+from django.db.models import Exists
 from ...utils import utcnow
 from ...models import DAILY, WEEKLY, Notification
 from utils.bills import search_bills
+from profiles.models import Subscription
+from structlog import get_logger
+import time
+
+logger = get_logger()
 
 
 class SkipCheck(Exception):
@@ -33,9 +39,8 @@ def process_query_sub(sub, since):
 def process_bill_sub(sub, since):
     """given a bill subscription, return bill if it has had an action since then"""
     if (
-        sub.bill.latest_action_date
-        and sub.bill.latest_action_date >= since.strftime("%Y-%m-%d")
-        and sub.bill.latest_action_date <= datetime.date.today().strftime("%Y-%m-%d")
+            sub.bill.latest_action_date
+            and since.strftime("%Y-%m-%d") <= sub.bill.latest_action_date <= datetime.date.today().strftime("%Y-%m-%d")
     ):
         return sub.bill
 
@@ -62,7 +67,7 @@ def process_subs_for_user(user):
     query_updates = []
     bill_updates = []
 
-    print(
+    logger.msg(
         f"processing {len(subscriptions)} for {user.email} "
         f"({user.profile.get_subscription_frequency_display()}, last checked {last_checked})"
     )
@@ -122,7 +127,7 @@ def send_subscription_email(user, query_updates, bill_updates, dry_run=False):
         subject = f"Open States Weekly Alert - {today}: {update_count} {updates}"
 
     if dry_run:
-        print(
+        logger.msg(
             f"""Would have sent email:
 to={verified_email}
 subject={subject}
@@ -150,14 +155,19 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", action="store_true")
 
     def handle(self, *args, **options):
+        start = time.time()
         if options["dry_run"]:
-            print("DRY RUN: will not actually send emails or update users")
-        for user in User.objects.all():
+            logger.msg("DRY RUN: will not actually send emails or update users")
+        # Only get users with existing bill or query subscriptions
+        total_subscriptions = Subscription.objects.all()
+        subscribed_users = User.objects.filter(Exists(total_subscriptions))
+        logger.info(f"total users to check: {len(subscribed_users)}")
+        for user in subscribed_users:
             try:
                 query_updates, bill_updates = process_subs_for_user(user)
                 with transaction.atomic():
                     if query_updates or bill_updates:
-                        print(
+                        logger.msg(
                             f"emailing {user.email}: {len(query_updates)} query updates, "
                             f"{len(bill_updates)} bill updates"
                         )
@@ -165,10 +175,12 @@ class Command(BaseCommand):
                             user, query_updates, bill_updates, options["dry_run"]
                         )
                     else:
-                        print(f"nothing to send for {user.email}")
+                        logger.msg(f"nothing to send for {user.email}")
                     # always update the last checked time
                     if not options["dry_run"]:
                         user.profile.subscription_last_checked = utcnow()
                         user.profile.save()
             except SkipCheck as skip:
-                print(f"skipping {user.email}: {skip}")
+                logger.msg(f"skipping {user.email}: {skip}")
+        log = logger.bind(duration=time.time() - start)
+        log.info("completed processing subscriptions")
