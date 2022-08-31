@@ -10,7 +10,6 @@ from ...models import DAILY, WEEKLY, Notification
 from utils.bills import search_bills
 from profiles.models import Subscription
 from structlog import get_logger
-import time
 
 logger = get_logger()
 
@@ -155,7 +154,7 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", action="store_true")
 
     def handle(self, *args, **options):
-        start = time.time()
+        start = utcnow()
         if options["dry_run"]:
             logger.msg("DRY RUN: will not actually send emails or update users")
         # Only get users with existing bill or query subscriptions
@@ -182,5 +181,5 @@ class Command(BaseCommand):
                         user.profile.save()
             except SkipCheck as skip:
                 logger.msg(f"skipping {user.email}: {skip}")
-        log = logger.bind(duration=time.time() - start)
+        log = logger.bind(duration=utcnow() - start)
         log.info("completed processing subscriptions")
