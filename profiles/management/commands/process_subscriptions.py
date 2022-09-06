@@ -65,7 +65,7 @@ def process_subs_for_user(user):
     query_updates = []
     bill_updates = []
 
-    logger.msg(
+    logger.info(
         f"processing {len(subscriptions)} for {user.email} "
         f"({user.profile.get_subscription_frequency_display()}, last checked {last_checked})"
     )
@@ -125,7 +125,7 @@ def send_subscription_email(user, query_updates, bill_updates, dry_run=False):
         subject = f"Open States Weekly Alert - {today}: {update_count} {updates}"
 
     if dry_run:
-        logger.msg(
+        logger.info(
             f"""Would have sent email:
 to={verified_email}
 subject={subject}
@@ -155,7 +155,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         start = utcnow()
         if options["dry_run"]:
-            logger.msg("DRY RUN: will not actually send emails or update users")
+            logger.info("DRY RUN: will not actually send emails or update users")
 
         # Only get users with existing bill or query subscriptions
         total_subscriptions = Subscription.objects.all()
@@ -166,7 +166,7 @@ class Command(BaseCommand):
                 query_updates, bill_updates = process_subs_for_user(user)
                 with transaction.atomic():
                     if query_updates or bill_updates:
-                        logger.msg(
+                        logger.info(
                             f"emailing {user.email}: {len(query_updates)} query updates, "
                             f"{len(bill_updates)} bill updates"
                         )
@@ -174,12 +174,12 @@ class Command(BaseCommand):
                             user, query_updates, bill_updates, options["dry_run"]
                         )
                     else:
-                        logger.msg(f"nothing to send for {user.email}")
+                        logger.info(f"nothing to send for {user.email}")
                     # always update the last checked time
                     if not options["dry_run"]:
                         user.profile.subscription_last_checked = utcnow()
                         user.profile.save()
             except SkipCheck as skip:
-                logger.msg(f"skipping {user.email}: {skip}")
+                logger.info(f"skipping {user.email}: {skip}")
         log = logger.bind(duration=utcnow() - start)
         log.info("completed processing subscriptions")
