@@ -4,10 +4,6 @@ networks:
   openstates-network:
       name: openstates-network
 
-volumes:
-  openstates-postgres:
-    name: openstates-postgres
-
 services:
   django:
     build:
