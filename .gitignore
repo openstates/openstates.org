@@ -45,5 +45,6 @@ collected_static
 
 # database dumps
 *.pgdump
+openstates-postgres/
 
 .idea/

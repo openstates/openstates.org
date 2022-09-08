@@ -1,11 +1,15 @@
 from invoke import task
 import datetime
 import os
+import shutil
 
 
 def start_docker_db(c):
     # turn on docker database if not already on
-    c.run("docker-compose up -d db")
+    if shutil.which("docker-compose"):
+        c.run("docker-compose --profile db up -d db")
+    else:
+        c.run("docker compose --profile db up -d db")
     os.environ[
         "DATABASE_URL"
     ] = "postgres://openstates:openstates@localhost:5405/openstatesorg"
@@ -38,10 +42,10 @@ def test(c, args="", docker_db=True):
 @task
 def lint(c):
     c.run(
-        "poetry run flake8 --show-source --statistics --ignore=E203,E501,W503 --max-line-length=120",
+        "poetry run flake8 --show-source --statistics",
         pty=True,
     )
-    c.run("black --check .", pty=True)
+    c.run("poetry run black --check --diff .", pty=True)
 
 
 @task
