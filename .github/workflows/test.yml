@@ -11,37 +11,8 @@ on:
       - develop
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: check out code
-        uses: actions/checkout@v2
-      # Python dependencies
-      - name: setup Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: install Poetry
-        uses: snok/install-poetry@v1.1.1
-      - name: cache Poetry virtualenv
-        uses: actions/cache@v2
-        id: poetry-cache
-        with:
-          path: ~/.virtualenvs/
-          key: poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            poetry-${{ hashFiles('**/poetry.lock') }}
-      - name: set poetry config path
-        run: poetry config virtualenvs.path ~/.virtualenvs
-      - name: install python dependencies
-        run: poetry install
-      - name: lint with flake8 and black
-        run: poetry run inv lint
-
   test:
     runs-on: ubuntu-latest
-    needs:
-      - lint
     services:
       postgres:
         image: postgres
@@ -77,6 +48,10 @@ jobs:
         run: poetry config virtualenvs.path ~/.virtualenvs
       - name: install python dependencies
         run: poetry install
+
+      - name: lint with flake8 and black
+        run: poetry run inv lint
+
       # node dependencies
       - name: setup Node 12
         uses: actions/setup-node@v1
