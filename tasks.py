@@ -45,7 +45,7 @@ def lint(c):
         "poetry run flake8 --show-source --statistics",
         pty=True,
     )
-    c.run("poetry run black --check --diff --exclude openstates-postgres .", pty=True)
+    c.run("poetry run black --check --diff .", pty=True)
 
 
 @task
