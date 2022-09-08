@@ -40,7 +40,7 @@ RUN curl https://deb.nodesource.com/setup_lts.x -SsLo nodesource.sh \
     && rm -rf /var/lib/apt/lists/* \
     && npm ci \
     && npm run build
-RUN pip --no-cache-dir --disable-pip-version-check install poetry
+RUN pip --no-cache-dir --disable-pip-version-check install poetry==1.1.13
 
 # everything after here as openstates user
 RUN useradd -u $UID -Ulmr -d /home/openstates openstates
