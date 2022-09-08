@@ -84,8 +84,8 @@
   <p>Nearly-complete database dump of Open States' public data.</p>
   <dl>
     <dt>Links</dt>
-    <dd><a href="https://data.openstates.org/postgres/schema/2021-01-schema.pgdump">January 2021 Schema</a></dd>
-    <dd><a href="https://data.openstates.org/postgres/monthly/2021-01-public.pgdump">January 2021 Data</a></dd>
+     <dd><a href="https://data.openstates.org/postgres/schema/{% now "Y" %}-{% now "m" %}-schema.pgdump">{% now "F" %} {% now "Y" %} Schema</a></dd>
+     <dd><a href="https://data.openstates.org/postgres/monthly/{% now "Y" %}-{% now "m" %}-public.pgdump">{% now "F" %} {% now "Y" %} Data</a></dd>
     <dt>Source</dt>
     <dd>Combined people, bill, vote, etc. data, sources vary but are recorded in database.</dd>
     <dt>Documentation</dt>
@@ -94,6 +94,8 @@
     </dd>
     <dt>Update Schedule</dt>
     <dd>This data updates regularly throughout the month, typically no more than a day or two behind what is online.</dd>
+    <dd>At the beginning of the month, the auto-generated link above may point to files that don't exist yet.</dd>
+    <dd>Download other versions of the SQL dumps by following this pattern: https://data.openstates.org/postgres/monthly/YYYY-MM-public.pgdump</dd>
   </dl>
 </section>
 
