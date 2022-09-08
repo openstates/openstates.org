@@ -29,6 +29,8 @@ jobs:
         ports:
           - 5432:5432
     steps:
+      - name: check out code
+        uses: actions/checkout@v2
       # Python dependencies
       - name: setup Python 3.9
         uses: actions/setup-python@v2
