@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.db import transaction
-from django.db.models import Exists
 from ...utils import utcnow
 from ...models import DAILY, WEEKLY, Notification
 from utils.bills import search_bills
@@ -158,8 +157,9 @@ class Command(BaseCommand):
             logger.info("DRY RUN: will not actually send emails or update users")
 
         # Only get users with existing bill or query subscriptions
-        total_subscriptions = Subscription.objects.all()
-        subscribed_users = User.objects.filter(Exists(total_subscriptions))
+        subscribed_users = User.objects.filter(
+            id__in=Subscription.objects.values("user_id")
+        )
         logger.info(f"total users to check: {len(subscribed_users)}")
         for user in subscribed_users:
             try:

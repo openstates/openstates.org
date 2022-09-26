@@ -1,48 +1,68 @@
 FROM python:3.9
 LABEL maintainer="James Turk <dev@jamesturk.net>"
 
+ARG UID=999
+
 # global environment settings
-ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING='utf-8' LANG='C.UTF-8'
+ENV PYTHONUNBUFFERED=1 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONIOENCODING='utf-8' \
+  LANG='C.UTF-8'
 STOPSIGNAL SIGINT
 
-RUN BUILD_DEPS=" \
-      python3-dev \
-      git \
-      build-essential \
-      libpq-dev \
-      libgeos-dev \
-      libgdal-dev \
-      libcap-dev \
-      wget \
-      postgresql-client \
-      uwsgi \
-      uwsgi-src \
-      awscli \
-    " \
-    && apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends $BUILD_DEPS
-
-RUN cd /usr/lib/uwsgi/plugins && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
+RUN apt-get --allow-releaseinfo-change update -qq \
+    && apt-get install -y --no-install-recommends -qq \
+        postgresql-client \
+        uwsgi \
+        libpq5 \
+        libgdal28 \
+        python3-dev \
+        git \
+        build-essential \
+        libpq-dev \
+        libgeos-dev \
+        libgdal-dev \
+        libcap-dev \
+        uwsgi-src \
+        awscli \
+    && cd /usr/lib/uwsgi/plugins \
+    && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
 
 # copy code and entrypoint in
 ADD . /code/
 WORKDIR /code/
 COPY docker/uwsgi/custom-entrypoint /usr/local/bin
-RUN chmod a+x /usr/local/bin/custom-entrypoint
 
-RUN wget https://deb.nodesource.com/setup_lts.x -O nodesource.sh \
+RUN curl https://deb.nodesource.com/setup_lts.x -SsLo nodesource.sh \
     && bash nodesource.sh \
-    && apt install -y nodejs \
+    && apt-get install -y -qq --no-install-recommends nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
     && npm ci \
     && npm run build
-RUN pip install poetry
-
+RUN pip --no-cache-dir --disable-pip-version-check install poetry==1.1.13
 
 # everything after here as openstates user
-RUN groupadd -r openstates && useradd --no-log-init -r -g openstates openstates
-RUN mkdir /home/openstates && chown openstates:openstates /home/openstates
+RUN useradd -u $UID -Ulmr -d /home/openstates openstates
 USER openstates:openstates
 
-RUN poetry install
+RUN poetry install --no-dev \
+    && rm -r ~/.cache/pypoetry/cache ~/.cache/pypoetry/artifacts/
+
+USER root
+RUN apt-get remove -y -qq build-essential \
+      gcc \
+      g++ \
+      make \
+      python3-dev \
+      git \
+      libpq-dev \
+      libgeos-dev \
+      libgdal-dev \
+      libcap-dev \
+      uwsgi-src \
+    && apt-get autoremove -y
+USER openstates:openstates
 
 # uwsgi config
 ENV UWSGI_MASTER=1 \
