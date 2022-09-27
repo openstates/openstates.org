@@ -10,7 +10,7 @@ from utils.bills import search_bills
 from profiles.models import Subscription
 from structlog import get_logger
 
-logger = get_logger()
+logger = get_logger("openstates")
 
 
 class SkipCheck(Exception):
