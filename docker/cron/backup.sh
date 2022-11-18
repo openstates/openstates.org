@@ -6,6 +6,7 @@ echo "Extracting full backup..."
 pg_dump -Fc openstatesorg | gzip > openstatesorg.pgdump.gz
 echo "Shipping full backup to s3"
 aws s3 cp openstatesorg.pgdump.gz "s3://openstates-backups/full-backup/$(date +%Y-%m-%d)-openstatesorg.pgdump.gz"
+rm -f openstatesorg.pgdump.gz
 
 
 # layered approach for public
