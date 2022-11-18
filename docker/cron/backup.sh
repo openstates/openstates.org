@@ -1,6 +1,16 @@
 #!/bin/sh
 set -e
 
+#####
+# Quick note:
+# pg_dump -Fc is single-threaded, but *is* compressed
+# Improving storage and performance could be achieved with
+# a combination of '-j' (parallel table export)
+# and piping to gzip or zstd
+# but that complicates the process for restoration
+# so we should only do it once we need to
+####
+
 # backup everything to private archive
 echo "Extracting full backup..."
 pg_dump -Fc openstatesorg > openstatesorg.pgdump
