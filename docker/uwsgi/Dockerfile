@@ -33,7 +33,7 @@ ADD . /code/
 WORKDIR /code/
 COPY docker/uwsgi/custom-entrypoint /usr/local/bin
 
-RUN curl https://deb.nodesource.com/setup_lts.x -SsLo nodesource.sh \
+RUN curl https://deb.nodesource.com/setup_16.x -SsLo nodesource.sh \
     && bash nodesource.sh \
     && apt-get install -y -qq --no-install-recommends nodejs \
     && apt-get clean \
