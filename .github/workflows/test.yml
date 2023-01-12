@@ -30,16 +30,16 @@ jobs:
           - 5432:5432
     steps:
       - name: check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       # Python dependencies
       - name: setup Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
       - name: install Poetry
-        uses: snok/install-poetry@v1.1.1
+        uses: snok/install-poetry@v1.3.3
       - name: cache Poetry virtualenv
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: poetry-cache
         with:
           path: ~/.virtualenvs/
@@ -60,7 +60,7 @@ jobs:
         with:
           node-version: '12'
       - name: cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: node-cache
         with:
           path: ./node_modules
