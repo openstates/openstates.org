@@ -19,6 +19,7 @@ aws s3 cp openstatesorg.pgdump "s3://openstates-backups/full-backup/$(date +%Y-%
 rm -f openstatesorg.pgdump
 
 
+
 # layered approach for public
 echo "Executing public schema-only backup..."
 pg_dump -Fc openstatesorg --schema-only > schema.pgdump
@@ -35,3 +36,9 @@ pg_dump -Fc openstatesorg --data-only \
 echo "Uploading public backups to s3..."
 aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/daily/$(date +%Y-%m-%d)-public.pgdump" > /dev/null
 aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/monthly/$(date +%Y-%m)-public.pgdump" > /dev/null
+
+echo "Extracting geo backup..."
+pg_dump -Fc geo > openstates-geo.pgdump
+echo "Shipping full backup to s3"
+aws s3 cp openstates-geo.pgdump "s3://data.openstates.org/postgres/geo/$(date +%Y-%m-%d)-openstates-geo.pgdump" > /dev/null
+rm -f openstates-geo.pgdump
