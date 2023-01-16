@@ -1,22 +1,36 @@
 {% extends "public/components/base.html" %}
 
 {% block title %}About Open States{% endblock %}
-{% block description %}Open States strives to improve civic engagement at the state level by providing data and tools regarding state legislatures.{% endblock %}
+{% block description %}Open States strives to improve democratic engagement by providing data and tools regarding the legislative process. We are the leading source of data from US state legilsatures.{% endblock %}
 
 {% block content %}
 <div class="flatpage">
 <h1 class="heading--large">About Open States</h1>
 
 <section>
-<p>Open States strives to improve civic engagement at the state level by providing data and tools regarding state legislatures.  We aim to serve members of the public, activist groups, journalists, and researchers with better data on what is happening in their state capital, and to provide tools to reduce barriers to participation and increase engagement.
+<p>Open States strives to improve civic engagement by providing data and tools to help you understand
+    the legislative process that creates public policy. Open states is the leading source of standardized
+    legislative data across state borders in the United States, since the project's founding in 2009.
+    We aim to serve members of the public, activist groups, journalists, and researchers with better 
+    data on policy-making, and to provide tools to reduce barriers to democratic participation.
 </p>
 
 <p>
-  Open States aggregates legislative information from all 50 states, Washington, D.C., and Puerto Rico.  This information is then standardized, cleaned, and published to the public via OpenStates.org, a powerful <a href="https://docs.openstates.org/api-v3/">API</a>, and <a href="/data/">bulk downloads</a>.  OpenStates.org enables individuals to <a href="/find_your_legislator/">find out who represents them</a>, look up information on an important bill that’s been in the news, discover how their representatives are voting, or just stay current with what is happening in their state.  Additionally, our API and bulk downloads see millions of hits every month from advocacy organizations, journalists, researchers, and many others.
+  Open States aggregates legislative information from all 50 states, Washington, D.C., Puerto Rico, and
+  US Congress. This information is then standardized, cleaned, and published to the public via 
+  OpenStates.org, a powerful <a href="https://docs.openstates.org/api-v3/">API</a>, and 
+  <a href="/data/">bulk downloads</a>.  OpenStates.org enables individuals to 
+  <a href="/find_your_legislator/">find out who represents them</a>, look up information on an important 
+  bill that’s been in the news, discover how their representatives are voting, or just stay current with
+  what is happening in their state.  Additionally, our API and bulk downloads are used every 
+  month by advocacy organizations, journalists, researchers, and many others.
 </p>
 
 <p>
-    Legislative data is collected from official sources, linked at the bottom of relevant pages.  In general bill &amp; vote data is collected multiple times a day <a href="https://github.com/openstates/openstates/">via our scrapers</a> while legislator data is <a href="https://github.com/openstates/people/">curated by our team &amp; volunteers like you</a>.
+    Legislative data is collected from official sources, linked at the bottom of relevant pages.  In 
+    general bill &amp; vote data is collected multiple times a day 
+    <a href="https://github.com/openstates/openstates-scrapers/">via our scrapers</a> while legislator 
+    data is <a href="https://github.com/openstates/people/">curated by our team &amp; volunteers like you</a>.
 </p>
 </section>
 
@@ -27,27 +41,62 @@
 <h2 class="heading--medium">The Team</h2>
 
 <p>
-    Since November 2016 Open States has been an independently run project.  We work hard to keep Open States available free of charge and rely on user support.
-
+    In 2021 Open States was adopted by <a href="https://www.civiceagle.com">Civic Eagle</a>. Civic Eagle
+    creates cutting-edge software to make it easy for public policy data to be discoverable, interpretable,
+    and collaborative. Part of what sets us apart is our commitment to an open data core: the foundational
+    layer of data about democracy that should be democratically and transparently available.
+</p>
+<p>
+    When we learned that Open States was being run by just a few people, and was looking for new options
+    to keep the lights on, we offered to adopt the project. We are proud to carry on the tradition of the
+    project by growing available data and engaging with the community. Please check out
+    the <a href="https://blog.openstates.org">Open States Blog</a> for recent updates.
 </p>
 
+
 <p>
-    As of 2020, the core team consists of:
+    As of 2023, the core team is led by <a href="https://www.civiceagle.com/about">Civic Eagle staff</a>,
+    including:
+    <ul>
+        <li>Jesse Mortenson, CTO</li>
+        <li>Rylie Johnson, Civic Data Maintainer</li>
+        <li>Ben Fossen, Lead Data Engineer</li>
+        <li>Sogo Ogundowole, Data Engineer</li>
+        <li>Sruthi Vedantham, Data Engineer</li>
+        <li>Christopher Yamas, Data Engineer</li>
+        <li>John Seekins, Infrastructure Engineer</li>
+    </ul>
+
+    <a href="https://jamesturk.net">James Turk</a> has been good enough to remain involved as Founder Emeritus.
+</p>
+
+
+<p>But that's by no means everyone that makes the project run. A special thanks to all of our 
+    <a href="https://github.com/openstates/openstates/graphs/contributors">contributors</a> and the authors
+    and maintainers of all of the libraries that we depend upon.</p>
+</section>
+
+<section>
+    <h2 class="heading--medium">History</h2>
+    <p>
+        
+        From 2016 - 2021 Open States was an independently-run project. Thank you to the people
+        who worked hard to keep Open States available free of charge during that time, including:
+
+    </p>
     <ul>
         <li><a href="https://jamesturk.net">James Turk</a></li>
         <li>Tim Showers</li>
-        <li><a href="https://twitter.com/hiteak">Dan Schneiderman</a> (emeritus)</li>
-        <li><a href="https://twitter.com/heyitsolivia">Olivia Cheng</a> (emeritus)</li>
-        <li>Miles Watkins (emeritus)</li>
-        <li>Rachel Shorey (emeritus)</li>
-        <li>Paul Tagliamonte (emeritus)</li>
-        <li>Thom Neale (emeritus)</li>
-        <li>Michael Stephens (emeritus)</li>
+        <li><a href="https://twitter.com/hiteak">Dan Schneiderman</a></li>
+        <li><a href="https://twitter.com/heyitsolivia">Olivia Cheng</a></li>
+        <li>Miles Watkins</li>
+        <li>Rachel Shorey</li>
+        <li>Paul Tagliamonte</li>
+        <li>Thom Neale</li>
+        <li>Michael Stephens</li>
     </ul>
 
-<p>But that's by no means everyone that makes the project run. A special thanks to all of our <a href="https://github.com/openstates/openstates/graphs/contributors">contributors</a> and the authors and maintainers of all of the libraries that we depend upon.</p>
-
-<p>From 2009-2016, Open States was a project of the <a href="https://sunlightfoundation.com">Sunlight Foundation</a>.  For more details see <a href="https://blog.openstates.org/post/adopting-open-states/">our announcement</a> and <a href="https://sunlightfoundation.com/2016/11/01/sunlight-labs-update-nonprofits-step-up-to-preserve-tools-for-transparency/">Sunlight's announcement</a>.
+    <p>From 2009-2016, Open States was a project of the <a href="https://sunlightfoundation.com">Sunlight Foundation</a>.  For more details see <a href="https://blog.openstates.org/post/adopting-open-states/">our announcement</a> and <a href="https://sunlightfoundation.com/2016/11/01/sunlight-labs-update-nonprofits-step-up-to-preserve-tools-for-transparency/">Sunlight's announcement</a>.
 </section>
 
 <section>
@@ -75,7 +124,7 @@
 
 <div>
 <section>
-    <h2 class="heading--medium">Funding</h2>
+    <h2 class="heading--medium">Funding History - prior to 2022</h2>
 
     <h3 class="heading--small">Partner Organizations</h3>
     <div class="partner-org">
