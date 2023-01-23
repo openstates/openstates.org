@@ -1,6 +1,6 @@
 # openstates.org
 
-This repository contains the code responsible for openstates.org, the website and APIs.
+This repository contains the code responsible for openstates.org, the website and v2 API (graphql).
 
 ## Links
 
