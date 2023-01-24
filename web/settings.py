@@ -236,6 +236,21 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_FORM_CLASS = "profiles.forms.AllauthSignupForm"
+ACCOUNT_RATE_LIMITS = {
+    # Change password view (for users already logged in)
+    "change_password": "5/m",
+    # Email management (e.g. add, remove, change primary)
+    "manage_email": "10/m",
+    # Request a password reset, global rate limit per IP
+    "reset_password": "5/m",
+    # Rate limit measured per individual email address
+    "reset_password_email": "5/m",
+    # Password reset (the view the password reset email links to).
+    "reset_password_from_key": "20/m",
+    # Signups.
+    "signup": "10/h",
+    # NOTE: Login is already protected via `ACCOUNT_LOGIN_ATTEMPTS_LIMIT`
+}
 
 # API
 CORS_ORIGIN_ALLOW_ALL = True
