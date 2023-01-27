@@ -7,7 +7,7 @@ This repository contains the code responsible for openstates.org, the website an
 Changes should be made in a local checkout of the repo. There is a bit of setup to get a working DB and environment,
 which by default will run in docker.
 
-* Branch off of the `main` branch for simplicity (we don't have a DEV environment, so `develop` is not very useful)
+* Branch off of the `develop` branch
 * Follow instructions for [working on openstates.org](https://docs.openstates.org/contributing/openstates-org/)
 from the docs.
 * Quirks I ran into:
@@ -17,6 +17,8 @@ from the docs.
     * In that shell run `poetry run python manage.py shell --settings=web.settings`
     * In THAT shell run `from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')`
     * However for me this created an entry with `SITE_ID` of `2` when `1` is the necessary value to match up with `web/settings.py`
+* Merge your feature branch into `develop` (this launches a workflow that publishes docker images)
+* Merge `develop` into `main` (this gets code into the branch that should be used for deploy)
 
 ## Deploy
 
