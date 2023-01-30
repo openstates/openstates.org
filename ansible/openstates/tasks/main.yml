@@ -75,7 +75,7 @@
 # node
 - name: download nodesource script
   get_url:
-    url: https://deb.nodesource.com/setup_10.x
+    url: https://deb.nodesource.com/setup_14.x
     dest: /tmp/nodesource-setup.sh
     mode: 0770
 
