@@ -1,5 +1,13 @@
 version: "3.5"
 
+networks:
+  openstates-network:
+      name: openstates-network
+
+volumes:
+  openstates-postgres:
+    name: openstates-postgres
+
 services:
   django:
     build:
@@ -19,6 +27,8 @@ services:
       - CACHE_URL
       - RECAPTCHA_PUBLIC_KEY
       - RECAPTCHA_PRIVATE_KEY
+    networks:
+      - openstates-network
 
   nginx:
     build: docker/nginx
@@ -26,6 +36,8 @@ services:
       - "8000:80"
     depends_on:
       - django
+    networks:
+      - openstates-network
 
   db:
     profiles:
@@ -36,8 +48,6 @@ services:
       POSTGRES_PASSWORD: openstates
       POSTGRES_USER: openstates
       POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - ./openstates-postgres/:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
