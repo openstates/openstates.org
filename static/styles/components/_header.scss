@@ -50,7 +50,7 @@
 
 .navigation {
     @include breakpoint(medium) {
-        background: linear-gradient(90deg, $color-secondary 50%, $color-gray 50%);
+        background: linear-gradient(90deg, $color-secondary 50%, #F1F6F6 50%);
     }
 }
 
@@ -69,7 +69,7 @@
 
 .navigation__menu {
     list-style-type: none;
-    background-color: $color-gray;
+    background-color: #F1F6F6;
     display: flex;
     margin: 0;
 
