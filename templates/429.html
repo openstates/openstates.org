@@ -1,0 +1,24 @@
+{% extends "public/components/base.html" %}
+
+{% block title %}Open States: Too Many Requests{% endblock %}
+
+{% block content %}
+<div class="errorpage">
+<h1 class="heading--large">Too Many Requests</h1>
+
+<p>
+    Apologies if you are a real person just trying to do a normal thing.
+</p>
+
+<p>
+    We recently have experienced a rash of spam signups and we implemented
+    rate limits to try to reduce the negative impact on other real people.
+</p>
+
+<p>
+    Please try again in an hour or so, and it should work then. Thank you
+    for your patience. If you continue to have problems, please send an
+    email to <a href="mailto:contact@openstates.org">contact@openstates.org</a>.
+</p>
+</div>
+{% endblock %}
