@@ -52,8 +52,8 @@ def make_random_bill(name):
                 result=random.choice(("failed", "passed")),
             )
         except IntegrityError:
-            # duplicate key, so just skip
-            pass
+            # duplicate key, so just skip all steps for this one
+            continue
         try:
             ve.counts.create(option="yes", value=random.randint(0, 10))
         except IntegrityError:

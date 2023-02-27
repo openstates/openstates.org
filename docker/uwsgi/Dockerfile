@@ -11,7 +11,7 @@ ENV PYTHONUNBUFFERED=1 \
 STOPSIGNAL SIGINT
 
 RUN apt-get --allow-releaseinfo-change update -qq \
-    && apt-get install -y --no-install-recommends -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends -qq \
         postgresql-client \
         uwsgi \
         libpq5 \
@@ -35,22 +35,20 @@ COPY docker/uwsgi/custom-entrypoint /usr/local/bin
 
 RUN curl https://deb.nodesource.com/setup_16.x -SsLo nodesource.sh \
     && bash nodesource.sh \
-    && apt-get install -y -qq --no-install-recommends nodejs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends nodejs \
     && npm ci \
     && npm run build
-RUN pip --no-cache-dir --disable-pip-version-check install poetry
+RUN pip --no-cache-dir --disable-pip-version-check install poetry wheel
 
 # everything after here as openstates user
 RUN useradd -u $UID -Ulmr -d /home/openstates openstates
 USER openstates:openstates
 
-RUN poetry install --no-dev \
+RUN poetry install --only=main \
     && rm -r ~/.cache/pypoetry/cache ~/.cache/pypoetry/artifacts/
 
 USER root
-RUN apt-get remove -y -qq build-essential \
+RUN DEBIAN_FRONTEND=noninteractive apt-get remove -y -qq build-essential \
       gcc \
       g++ \
       make \
@@ -61,7 +59,9 @@ RUN apt-get remove -y -qq build-essential \
       libgdal-dev \
       libcap-dev \
       uwsgi-src \
-    && apt-get autoremove -y
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 USER openstates:openstates
 
 # uwsgi config

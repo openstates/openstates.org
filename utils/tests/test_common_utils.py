@@ -1,5 +1,4 @@
 import uuid
-import pytest
 from utils.common import (
     jid_to_abbr,
     abbr_to_jid,
@@ -25,7 +24,6 @@ def test_encode_decode_uuid():
     assert decode_uuid(encode_uuid(person_id)) == person_id
 
 
-@pytest.mark.django_db
 def test_sessions_with_bills():
     jid = "ocd-jurisdiction/country:us/state:wi/government"
 
