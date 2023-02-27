@@ -3,7 +3,6 @@ from openstates.data.models import LegislativeSession
 
 
 class DataQualityReport(models.Model):
-
     chamber = models.CharField(max_length=20)
     session = models.ForeignKey(LegislativeSession, on_delete=models.CASCADE)
 

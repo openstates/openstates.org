@@ -34,10 +34,12 @@ graphene-django = "^3.0.0"
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"
 pytest-django = "^3.5"
-flake8 = "^3.7"
 ipython = "^7.31"
 invoke = "^1.5.0"
-black = "^21.4b2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+flake8 = "^6.0.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

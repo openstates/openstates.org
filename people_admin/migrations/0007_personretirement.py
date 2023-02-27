@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("data", "0035_auto_20210422_1926"),
         ("people_admin", "0006_alter_persondelta_data_changes"),

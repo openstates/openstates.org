@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("dashboards", "0002_remove_dataqualityreport_overall_number_of_subjects")
     ]
