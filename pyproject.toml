@@ -8,7 +8,6 @@ authors = ["James Turk <dev@jamesturk.net>"]
 python = "^3.9"
 django = "^4.1"
 django-cors-headers = "^3.7"
-django-allauth = "^0.48.0"
 django-recaptcha = "^3.0.0"
 django-redis-cache = "^3.0.0"
 graphene-django = "^2.15"
@@ -30,6 +29,7 @@ openstates = "^6.15"
 rrl = "^0.3.1"
 PyGithub = "^1.54.1"
 yamlordereddictloader = "^0.4.0"
+django-allauth = "^0.52.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"
