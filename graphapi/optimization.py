@@ -1,5 +1,5 @@
 import re
-from graphql.language.ast import FragmentSpread
+from graphql.language.ast import FragmentSpreadNode
 
 
 def _to_snake(word):
@@ -28,7 +28,7 @@ def _yield_field_names(selection_set, prefix, fragments):
         return
 
     for selection in selection_set.selections:
-        if isinstance(selection, FragmentSpread):
+        if isinstance(selection, FragmentSpreadNode):
             yield from _yield_field_names(
                 fragments[selection.name.value].selection_set, prefix, fragments
             )

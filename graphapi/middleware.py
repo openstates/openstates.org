@@ -1,5 +1,5 @@
 import logging
-from graphql.language.ast import FragmentSpread, Variable
+from graphql.language.ast import FragmentSpreadNode, VariableDefinitionNode
 
 
 class QueryCostException(Exception):
@@ -13,14 +13,14 @@ def _get_counts(info, fragments, variable_values):
     multiplier = 1
     inner_multiplier = 0
 
-    if isinstance(info, FragmentSpread):
+    if isinstance(info, FragmentSpreadNode):
         for selection in fragments[info.name.value].selection_set.selections:
             inner_multiplier += _get_counts(selection, fragments, variable_values)
     else:
         # the multiplier is either 1 or the number of elements returned
         for argument in info.arguments:
             if argument.name.value in ("first", "last"):
-                if isinstance(argument.value, Variable):
+                if isinstance(argument.value, VariableDefinitionNode):
                     multiplier = variable_values[argument.value.name.value]
                 else:
                     multiplier = int(argument.value.value)

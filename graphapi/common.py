@@ -1,6 +1,6 @@
 import graphene
 from collections import Iterable
-from graphql_relay.connection.arrayconnection import connection_from_list_slice
+from graphql_relay import connection_from_array_slice
 
 
 class OCDBaseNode(graphene.ObjectType):
@@ -54,7 +54,7 @@ class DjangoConnectionField(graphene.relay.ConnectionField):
             # Django QuerySet
             _len = resolved.count()
 
-        connection = connection_from_list_slice(
+        connection = connection_from_array_slice(
             list_slice=resolved,
             args=args,
             connection_type=connection_type,
