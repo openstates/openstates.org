@@ -1,13 +1,6 @@
 import pytest
-from graphapi.tests.utils import populate_db, populate_unicam
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
-@pytest.mark.django_db
 def test_state_view(client, django_assert_max_num_queries):
     # difficult to make this one exact, so settled for max of 13, fluctuates between 12-13
     # expected: organization, person, membership, organization, post,
@@ -43,9 +36,7 @@ def test_state_view(client, django_assert_max_num_queries):
     ) == 12
 
 
-@pytest.mark.django_db
 def test_state_view_unicam(client, django_assert_num_queries):
-    populate_unicam()
     resp = client.get("/ne/")
     assert resp.status_code == 200
     assert resp.context["state"] == "ne"
@@ -56,7 +47,6 @@ def test_state_view_unicam(client, django_assert_num_queries):
     assert legislature.seats == 2
 
 
-@pytest.mark.django_db
 def test_homepage(client, django_assert_num_queries):
     with django_assert_num_queries(0):
         resp = client.get("/")
@@ -65,7 +55,6 @@ def test_homepage(client, django_assert_num_queries):
     assert len(resp.context["blog_updates"])
 
 
-@pytest.mark.django_db
 def test_search(client, django_assert_num_queries):
     with django_assert_num_queries(3):
         resp = client.get("/search/?query=moose")

@@ -1,15 +1,8 @@
 import pytest
 from graphapi.schema import schema
 from openstates.data.models import Bill, Person
-from .utils import populate_db
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
-@pytest.mark.django_db
 def test_bill_by_id(django_assert_num_queries):
     with django_assert_num_queries(17):
         result = schema.execute(
@@ -112,7 +105,6 @@ def test_bill_by_id(django_assert_num_queries):
         assert False, "never found amanda"
 
 
-@pytest.mark.django_db
 def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(
@@ -128,7 +120,6 @@ def test_bill_by_jurisdiction_id_session_identifier(django_assert_num_queries):
         assert result.data["bill"]["title"] == "Moose Freedom Act"
 
 
-@pytest.mark.django_db
 def test_bill_openstates_url(django_assert_num_queries):
     with django_assert_num_queries(2):
         result = schema.execute(
@@ -147,7 +138,6 @@ def test_bill_openstates_url(django_assert_num_queries):
         )
 
 
-@pytest.mark.django_db
 def test_bill_by_openstates_url(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(
@@ -161,7 +151,6 @@ def test_bill_by_openstates_url(django_assert_num_queries):
         assert result.data["bill"]["id"] == "ocd-bill/1"
 
 
-@pytest.mark.django_db
 def test_bill_by_jurisdiction_name_session_identifier(django_assert_num_queries):
     with django_assert_num_queries(1):
         result = schema.execute(
@@ -175,7 +164,6 @@ def test_bill_by_jurisdiction_name_session_identifier(django_assert_num_queries)
         assert result.data["bill"]["title"] == "Moose Freedom Act"
 
 
-@pytest.mark.django_db
 def test_bill_by_jurisdiction_session_identifier_incomplete():
     result = schema.execute(
         """ {
@@ -188,7 +176,6 @@ def test_bill_by_jurisdiction_session_identifier_incomplete():
     assert "must either pass" in result.errors[0].message
 
 
-@pytest.mark.django_db
 def test_bill_by_jurisdiction_session_identifier_404():
     result = schema.execute(
         """ {
@@ -201,7 +188,6 @@ def test_bill_by_jurisdiction_session_identifier_404():
     assert "does not exist" in result.errors[0].message
 
 
-@pytest.mark.django_db
 def test_bills_by_jurisdiction(django_assert_num_queries):
     # 2 bills queries + 2 count queries
     with django_assert_num_queries(4):
@@ -220,7 +206,6 @@ def test_bills_by_jurisdiction(django_assert_num_queries):
     assert len(result.data["ak"]["edges"] + result.data["wy"]["edges"]) == 26
 
 
-@pytest.mark.django_db
 def test_bills_by_chamber(django_assert_num_queries):
     with django_assert_num_queries(4):
         result = schema.execute(
@@ -238,7 +223,6 @@ def test_bills_by_chamber(django_assert_num_queries):
     assert len(result.data["lower"]["edges"] + result.data["upper"]["edges"]) == 26
 
 
-@pytest.mark.django_db
 def test_bills_by_session(django_assert_num_queries):
     with django_assert_num_queries(4):
         result = schema.execute(
@@ -256,7 +240,6 @@ def test_bills_by_session(django_assert_num_queries):
     assert len(result.data["y2017"]["edges"] + result.data["y2018"]["edges"]) == 26
 
 
-@pytest.mark.django_db
 def test_bills_by_classification(django_assert_num_queries):
     with django_assert_num_queries(4):
         result = schema.execute(
@@ -276,7 +259,6 @@ def test_bills_by_classification(django_assert_num_queries):
     )
 
 
-@pytest.mark.django_db
 def test_bills_by_subject():
     result = schema.execute(
         """ {
@@ -311,7 +293,6 @@ def test_bills_by_subject():
     assert count > 0
 
 
-@pytest.mark.django_db
 def test_bills_by_updated_since():
     # set updated timestamps
     middle_date = Bill.objects.all().order_by("updated_at")[20].updated_at
@@ -337,7 +318,6 @@ def test_bills_by_updated_since():
     assert len(result.data["none"]["edges"]) == 0
 
 
-@pytest.mark.django_db
 def test_bills_queries(django_assert_num_queries):
     with django_assert_num_queries(21):
         result = schema.execute(
@@ -412,7 +392,6 @@ def test_bills_queries(django_assert_num_queries):
     assert len(result.data["bills"]["edges"]) == 26
 
 
-@pytest.mark.django_db()
 def test_bills_subfields():
     result = schema.execute(
         """{
@@ -438,7 +417,6 @@ def test_bills_subfields():
     assert len(document_urls) == 2
 
 
-@pytest.mark.django_db
 def test_bills_pagination_forward():
     bills = []
 
@@ -470,7 +448,6 @@ def test_bills_pagination_forward():
     assert len(bills) == 26
 
 
-@pytest.mark.django_db
 def test_bills_pagination_backward():
     bills = []
 
@@ -502,7 +479,6 @@ def test_bills_pagination_backward():
     assert len(bills) == 26
 
 
-@pytest.mark.django_db
 def test_bills_max_items():
     result = schema.execute(
         """{
@@ -525,7 +501,6 @@ def test_bills_max_items():
     assert "first" in result.errors[0].message
 
 
-@pytest.mark.django_db
 def test_bills_total_count(django_assert_num_queries):
     with django_assert_num_queries(2):
         result = schema.execute(
@@ -540,7 +515,6 @@ def test_bills_total_count(django_assert_num_queries):
     assert len(result.data["bills"]["edges"]) == 5
 
 
-@pytest.mark.django_db
 def test_bills_by_sponsorships():
     result = schema.execute(
         """{
@@ -578,7 +552,6 @@ def test_bills_by_sponsorships():
     assert len(bills) == 2
 
 
-@pytest.mark.django_db
 def test_bills_by_action_since():
     result = schema.execute(
         """{
@@ -602,7 +575,6 @@ def test_bills_by_action_since():
     assert len(result.data["none"]["edges"]) == 0
 
 
-@pytest.mark.django_db
 def test_votes_via_person():
     result = schema.execute(
         """{
@@ -633,7 +605,6 @@ def test_votes_via_person():
     )
 
 
-@pytest.mark.django_db
 def test_bill_fts():
     result = schema.execute(
         """{
@@ -649,7 +620,6 @@ def test_bill_fts():
     assert len(bills) == 1
 
 
-@pytest.mark.django_db
 def test_bills_order(django_assert_num_queries):
     with django_assert_num_queries(2):
         result = schema.execute(
@@ -669,7 +639,6 @@ def test_bills_order(django_assert_num_queries):
         )
 
 
-@pytest.mark.django_db
 def test_real_example_big_query(django_assert_num_queries):
     # this is a real query that was running that had issues in production as of April 2021
     # only variables have been changed to match test data
@@ -725,7 +694,6 @@ query bills($jurisdiction: String, $session: String, $end_cursor: String, $updat
     assert result.data["bills"]["totalCount"] == 26
 
 
-@pytest.mark.django_db
 def test_real_example_bill_query(django_assert_num_queries):
     # this is a real query that was running that had issues in production as of April 2021
     # only changed to include test data

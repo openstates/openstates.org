@@ -1,15 +1,8 @@
 import pytest
 from graphapi.schema import schema
 from openstates.data.models import Organization, Person
-from .utils import populate_db
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
-@pytest.mark.django_db
 def test_jurisdictions(django_assert_num_queries):
     with django_assert_num_queries(2):
         result = schema.execute(
@@ -29,7 +22,6 @@ def test_jurisdictions(django_assert_num_queries):
     assert result.data["jurisdictions"]["edges"][1]["node"]["name"] == "Wyoming"
 
 
-@pytest.mark.django_db
 def test_jurisdictions_num_queries(django_assert_num_queries):
     with django_assert_num_queries(4):
         result = schema.execute(
@@ -65,7 +57,6 @@ def test_jurisdictions_num_queries(django_assert_num_queries):
     )
 
 
-@pytest.mark.django_db
 def test_jurisdictions_num_queries_subquery(django_assert_num_queries):
     # same as test_jurisdictions_num_queries but with slightly more complex filtering on nodes
     with django_assert_num_queries(4):
@@ -102,7 +93,6 @@ def test_jurisdictions_num_queries_subquery(django_assert_num_queries):
     )
 
 
-@pytest.mark.django_db
 def test_jurisdiction_by_id(django_assert_num_queries):
     with django_assert_num_queries(5):
         result = schema.execute(
@@ -124,7 +114,6 @@ def test_jurisdiction_by_id(django_assert_num_queries):
     assert len(result.data["jurisdiction"]["organizations"]["edges"]) == 1
 
 
-@pytest.mark.django_db
 def test_jurisdiction_by_name(django_assert_num_queries):
     with django_assert_num_queries(5):
         result = schema.execute(
@@ -146,7 +135,6 @@ def test_jurisdiction_by_name(django_assert_num_queries):
     assert len(result.data["jurisdiction"]["organizations"]["edges"]) == 1
 
 
-@pytest.mark.django_db
 def test_jurisdiction_chambers_current_members(django_assert_num_queries):
     with django_assert_num_queries(5):
         result = schema.execute(
@@ -177,7 +165,6 @@ def test_jurisdiction_chambers_current_members(django_assert_num_queries):
     assert len(people) == 2
 
 
-@pytest.mark.django_db
 def test_people_by_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(
         jurisdiction__name="Alaska", classification="lower"
@@ -200,7 +187,6 @@ def test_people_by_member_of(django_assert_num_queries):
     assert len(result.data["people"]["edges"]) == 4
 
 
-@pytest.mark.django_db
 def test_variable_people_by_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(
         jurisdiction__name="Alaska", classification="lower"
@@ -225,7 +211,6 @@ def test_variable_people_by_member_of(django_assert_num_queries):
     assert len(result.data["people"]["edges"]) == 3
 
 
-@pytest.mark.django_db
 def test_people_by_ever_member_of(django_assert_num_queries):
     ak_house = Organization.objects.get(
         jurisdiction__name="Alaska", classification="lower"
@@ -249,7 +234,6 @@ def test_people_by_ever_member_of(django_assert_num_queries):
     assert len(result.data["people"]["edges"]) == 5
 
 
-@pytest.mark.django_db
 def test_people_by_district():
     ak_house = Organization.objects.get(
         jurisdiction__name="Alaska", classification="lower"
@@ -275,7 +259,6 @@ def test_people_by_district():
     assert result.data["bad"] is None
 
 
-@pytest.mark.django_db
 def test_people_by_division_id():
     # Note: uses a fake divisionId that has two reps (one retired), only one should be returned
     result = schema.execute(
@@ -289,7 +272,6 @@ def test_people_by_division_id():
     assert len(result.data["people"]["edges"]) == 1
 
 
-@pytest.mark.django_db
 def test_people_by_name():
     result = schema.execute(
         """ {
@@ -303,7 +285,6 @@ def test_people_by_name():
     assert len(result.data["people"]["edges"]) == 1
 
 
-@pytest.mark.django_db
 def test_people_by_party():
     result = schema.execute(
         """ {
@@ -327,7 +308,6 @@ def test_people_by_party():
 #     pass
 
 
-@pytest.mark.django_db
 def test_people_num_queries(django_assert_num_queries):
     with django_assert_num_queries(8):
         result = schema.execute(
@@ -365,7 +345,6 @@ def test_people_num_queries(django_assert_num_queries):
     assert total_memberships == 16  # 8 chambers + 8 parties
 
 
-@pytest.mark.django_db
 def test_people_total_count(django_assert_num_queries):
     with django_assert_num_queries(2):
         result = schema.execute(
@@ -402,7 +381,6 @@ def test_people_total_count(django_assert_num_queries):
     assert len(result.data["people"]["edges"]) == 1
 
 
-@pytest.mark.django_db
 def test_people_current_memberships_classification(django_assert_num_queries):
     with django_assert_num_queries(3):
         result = schema.execute(
@@ -425,7 +403,6 @@ def test_people_current_memberships_classification(django_assert_num_queries):
     assert total_memberships == 8  # Only the 8 parties should be returned
 
 
-@pytest.mark.django_db
 def test_people_old_memberships(django_assert_num_queries):
     with django_assert_num_queries(3):
         result = schema.execute(
@@ -448,7 +425,6 @@ def test_people_old_memberships(django_assert_num_queries):
     assert old_memberships == 3  # three old memberships in test data right now
 
 
-@pytest.mark.django_db
 def test_person_by_id(django_assert_num_queries):
     person = Person.objects.get(name="Bob Birch")
     with django_assert_num_queries(7):
@@ -490,7 +466,6 @@ def test_person_by_id(django_assert_num_queries):
     assert division["id"] == "ocd-division/country:us/state:ak/sldl:2"
 
 
-@pytest.mark.django_db
 def test_person_email_shim(django_assert_num_queries):
     # email used to be available in contact_details, make sure they can still find it there
     person = Person.objects.get(name="Bob Birch")
@@ -516,7 +491,6 @@ def test_person_email_shim(django_assert_num_queries):
     }
 
 
-@pytest.mark.django_db
 def test_person_contact_details_shim(django_assert_num_queries):
     # make sure contactDetails populates properly from office data
     person = Person.objects.get(name="Bob Birch")
@@ -547,7 +521,6 @@ def test_person_contact_details_shim(django_assert_num_queries):
     ]
 
 
-@pytest.mark.django_db
 def test_organization_by_id(django_assert_num_queries):
     # get targets
     leg = Organization.objects.get(
@@ -584,7 +557,6 @@ def test_organization_by_id(django_assert_num_queries):
     assert result.data["senate"]["parent"]["name"] == "Wyoming Legislature"
 
 
-@pytest.mark.django_db
 def test_people_by_updated_since():
     middle_date = Person.objects.all().order_by("updated_at")[2].updated_at
 
@@ -609,7 +581,6 @@ def test_people_by_updated_since():
     assert len(result.data["none"]["edges"]) == 0
 
 
-@pytest.mark.django_db
 def test_jurisdiction_fragment(django_assert_num_queries):
     with django_assert_num_queries(3):
         result = schema.execute(

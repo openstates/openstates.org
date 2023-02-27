@@ -1,6 +1,5 @@
 import pytest
 from django.contrib.auth.models import User
-from graphapi.tests.utils import populate_db
 from openstates.data.models import Person
 from profiles.models import Subscription
 
@@ -11,11 +10,6 @@ COMPLEX_STR = (
 )
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
 def _one_of_each():
     user = User.objects.create(username="testuser")
     bs = Subscription(user=user, bill_id="ocd-bill/1")
@@ -24,7 +18,6 @@ def _one_of_each():
     return bs, qs, ss
 
 
-@pytest.mark.django_db
 def test_subscription_type():
     bs, qs, ss = _one_of_each()
     assert bs.subscription_type == "bill"
@@ -32,7 +25,6 @@ def test_subscription_type():
     assert ss.subscription_type == "sponsor"
 
 
-@pytest.mark.django_db
 def test_subscription_pretty():
     bs, qs, ss = _one_of_each()
     assert bs.pretty == "Updates on HB 1 in Alaska 2018"
@@ -40,7 +32,6 @@ def test_subscription_pretty():
     assert ss.pretty == "Bills sponsored by Amanda Adams"
 
 
-@pytest.mark.django_db
 def test_complex_pretty():
     cs = Subscription(
         query="topic",
@@ -54,7 +45,6 @@ def test_complex_pretty():
     assert cs.pretty == COMPLEX_STR
 
 
-@pytest.mark.django_db
 def test_subscription_site_url():
     bs, qs, ss = _one_of_each()
     assert bs.site_url == "/ak/bills/2018/HB1/"

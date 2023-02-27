@@ -1,17 +1,11 @@
 import pytest
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
-from graphapi.tests.utils import populate_db
 from openstates.data.models import Person
 from profiles.models import Subscription, Notification
 from profiles.views import PermissionException
 from profiles.utils import utcnow
 from .test_models import COMPLEX_STR
-
-
-@pytest.mark.django_db
-def setup():
-    populate_db()
 
 
 @pytest.fixture
@@ -22,7 +16,6 @@ def user():
     return u
 
 
-@pytest.mark.django_db
 def test_add_search_subscription_no_perms(client):
     bu = User.objects.create(username="testuser")
     bu.profile.feature_subscriptions = False
@@ -35,7 +28,6 @@ def test_add_search_subscription_no_perms(client):
     assert Subscription.objects.count() == 0
 
 
-@pytest.mark.django_db
 def test_add_search_subscription_basic(client, user):
     client.force_login(user)
     resp = client.post(
@@ -51,7 +43,6 @@ def test_add_search_subscription_basic(client, user):
     assert Subscription.objects.count() == 1
 
 
-@pytest.mark.django_db
 def test_add_search_subscription_complex(client, user):
     client.force_login(user)
     search_dict = {
@@ -70,7 +61,6 @@ def test_add_search_subscription_complex(client, user):
     assert Subscription.objects.get().pretty == COMPLEX_STR
 
 
-@pytest.mark.django_db
 def test_add_search_subscription_no_query(client, user):
     client.force_login(user)
     resp = client.post(
@@ -80,7 +70,6 @@ def test_add_search_subscription_no_query(client, user):
     assert Subscription.objects.count() == 0
 
 
-@pytest.mark.django_db
 def test_add_sponsor_subscription(client, user):
     client.force_login(user)
     resp = client.post(
@@ -99,7 +88,6 @@ def test_add_sponsor_subscription(client, user):
     assert Subscription.objects.count() == 1
 
 
-@pytest.mark.django_db
 def test_deactivate_sub(client, user):
     sub = Subscription.objects.create(
         user=user, query="topic", state="ak", subjects=[], status=[]
@@ -113,7 +101,6 @@ def test_deactivate_sub(client, user):
     assert Subscription.objects.filter(active=True).count() == 0
 
 
-@pytest.mark.django_db
 def test_deactivate_subscription_other_user(client, user):
     other = User.objects.create(username="other")
 
@@ -129,7 +116,6 @@ def test_deactivate_subscription_other_user(client, user):
     assert Subscription.objects.filter(active=True).count() == 1
 
 
-@pytest.mark.django_db
 def test_reactivate_sub(client, user):
     Subscription.objects.create(
         user=user, query="topic", state="ak", subjects=[], status=[], active=False
@@ -142,7 +128,6 @@ def test_reactivate_sub(client, user):
     assert Subscription.objects.get().pretty == "Bills matching 'topic' from AK"
 
 
-@pytest.mark.django_db
 def test_bill_subscription_add(client, user):
     client.force_login(user)
     resp = client.post(
@@ -165,7 +150,6 @@ def test_bill_subscription_add(client, user):
     assert Subscription.objects.count() == 1
 
 
-@pytest.mark.django_db
 def test_bill_subscription_get(client, user):
     client.force_login(user)
 
@@ -180,7 +164,6 @@ def test_bill_subscription_get(client, user):
     assert resp.json() == {"error": "", "bill_id": "ocd-bill/1", "active": True}
 
 
-@pytest.mark.django_db
 def test_bill_subscription_delete(client, user):
     client.force_login(user)
 
@@ -208,7 +191,6 @@ def test_bill_subscription_delete(client, user):
     assert Subscription.objects.filter(active=False).count() == 1
 
 
-@pytest.mark.django_db
 def test_unsubscribe_logged_in(client, user):
     client.force_login(user)
 
@@ -224,7 +206,6 @@ def test_unsubscribe_logged_in(client, user):
     assert Subscription.objects.filter(active=False).count() == 1
 
 
-@pytest.mark.django_db
 def test_unsubscribe_email_param(client, user):
     Subscription.objects.create(user=user, bill_id="ocd-bill/1", subjects=[], status=[])
     nobj = Notification.objects.create(
@@ -242,13 +223,11 @@ def test_unsubscribe_email_param(client, user):
     assert Subscription.objects.filter(active=False).count() == 1
 
 
-@pytest.mark.django_db
 def test_unsubscribe_access_denied(client, user):
     resp = client.get("/accounts/profile/unsubscribe/")
     assert resp.status_code == 302
 
 
-@pytest.mark.django_db
 def test_request_key_success(client, user):
     client.force_login(user)
     user.emailaddress_set.create(email="test@example.com", primary=True, verified=True)
@@ -260,7 +239,6 @@ def test_request_key_success(client, user):
     assert refreshed_user.profile.api_tier == "default"
 
 
-@pytest.mark.django_db
 def test_request_key_errors(client, user):
     # not logged in
     resp = client.post("/accounts/profile/request_key/")

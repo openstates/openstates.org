@@ -1,15 +1,8 @@
 import pytest
 from graphapi.schema import schema
-from .utils import populate_db
 from ..middleware import QueryProtectionMiddleware
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
-@pytest.mark.django_db
 def test_simple_costs(django_assert_num_queries):
     result = schema.execute(
         """ {
@@ -37,7 +30,6 @@ def test_simple_costs(django_assert_num_queries):
     assert "(6)" in str(result.errors[2])
 
 
-@pytest.mark.django_db
 def test_fragment_cost(django_assert_num_queries):
     result = schema.execute(
         """

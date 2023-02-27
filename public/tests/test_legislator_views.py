@@ -1,15 +1,8 @@
 import pytest
-from graphapi.tests.utils import populate_db
 from openstates.data.models import Person
 from utils.common import pretty_url
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
-@pytest.mark.django_db
 def test_legislators_view(client, django_assert_num_queries):
     with django_assert_num_queries(5):
         resp = client.get("/ak/legislators/")
@@ -20,7 +13,6 @@ def test_legislators_view(client, django_assert_num_queries):
     assert len(resp.context["legislators"]) == 6
 
 
-@pytest.mark.django_db
 def test_person_view(client, django_assert_num_queries):
     p = Person.objects.get(name="Amanda Adams")
     with django_assert_num_queries(9):
@@ -46,7 +38,6 @@ def test_person_view(client, django_assert_num_queries):
     assert resp.context["retired"] is False
 
 
-@pytest.mark.django_db
 def test_person_view_retired(client, django_assert_num_queries):
     p = Person.objects.get(name="Rhonda Retired")
     # fewer views, we don't do the bill queries
@@ -60,7 +51,6 @@ def test_person_view_retired(client, django_assert_num_queries):
     assert resp.context["retired"] is True
 
 
-@pytest.mark.django_db
 def test_person_view_invalid_uuid(client, django_assert_num_queries):
     p = Person.objects.get(name="Rhonda Retired")
     resp = client.get(
@@ -69,7 +59,6 @@ def test_person_view_invalid_uuid(client, django_assert_num_queries):
     assert resp.status_code == 404
 
 
-@pytest.mark.django_db
 def test_canonicalize_person(client):
     p = Person.objects.get(name="Amanda Adams")
     url = pretty_url(p).replace("amanda", "xyz")

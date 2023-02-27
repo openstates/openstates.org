@@ -1,5 +1,5 @@
 import graphene
-from collections import Iterable
+from collections.abc import Iterable
 from graphql_relay import connection_from_array_slice
 
 
@@ -36,16 +36,14 @@ class DjangoConnectionField(graphene.relay.ConnectionField):
         if not isinstance(resolved, Iterable):
             raise AssertionError(
                 "Resolved value from the connection field have to be "
-                'iterable or instance of {}. Received "{}"'
-            ).format(connection_type, type(resolved))
+                f'iterable or instance of {connection_type}. Received "{type(resolved)}"'
+            )
 
         if getattr(connection_type, "max_items", None):
             total_size = args.get("first") or args.get("last")
             if not total_size or total_size > connection_type.max_items:
                 raise ValueError(
-                    "must specify a 'first' or 'last' parameter <= {}".format(
-                        connection_type.max_items
-                    )
+                    f"must specify a 'first' or 'last' parameter <= {connection_type.max_items}"
                 )
 
         if isinstance(resolved, list):

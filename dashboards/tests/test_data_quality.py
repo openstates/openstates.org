@@ -13,7 +13,7 @@ from dashboards.management.commands.data_quality import (
 from testutils.factories import create_test_bill, create_test_vote
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(True)
 def test_avg_number_data(django_assert_num_queries, kansas):
     # one bill with 0 of everything, another with 10 of everything
     create_test_bill("2020", "upper")
@@ -42,7 +42,7 @@ def test_avg_number_data(django_assert_num_queries, kansas):
     }
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(True)
 def test_vote_data(django_assert_num_queries, kansas):
     # two bills without votesr
     b = create_test_bill("2020", "upper")
@@ -59,7 +59,7 @@ def test_vote_data(django_assert_num_queries, kansas):
     assert data == {"total_votes_bad_counts": 3, "total_votes_without_voters": 2}
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(True)
 def test_bills_per_session(django_assert_num_queries, kansas):
     upper = kansas.organizations.get(classification="upper")
 
@@ -80,7 +80,7 @@ def test_bills_per_session(django_assert_num_queries, kansas):
     assert data["latest_bill_created_date"].day == datetime.date.today().day
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(True)
 def test_no_sources(django_assert_num_queries, kansas):
     create_test_bill("2020", "upper", votes=1)
     create_test_bill("2020", "upper", sources=1, votes=5)
@@ -92,7 +92,7 @@ def test_no_sources(django_assert_num_queries, kansas):
     assert data == {"total_bills_no_sources": 1, "total_votes_no_sources": 6}
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(True)
 def test_bill_subjects(django_assert_num_queries, kansas):
     create_test_bill("2020", "upper", subjects=["A", "B", "C"])
     create_test_bill("2020", "upper", subjects=["A", "B"])
@@ -108,7 +108,7 @@ def test_bill_subjects(django_assert_num_queries, kansas):
     }
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(True)
 def test_bill_versions(django_assert_num_queries, kansas):
     create_test_bill("2020", "upper", versions=1)
     create_test_bill("2020", "upper", versions=4)
@@ -121,7 +121,7 @@ def test_bill_versions(django_assert_num_queries, kansas):
     assert data == {"total_bills_without_versions": 2}
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(True)
 def test_full_command(django_assert_num_queries, kansas):
     for session in ("2019", "2020"):
         for chamber in ("upper", "lower"):

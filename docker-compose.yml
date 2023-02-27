@@ -50,7 +50,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     command: ["postgres", "-c", "log_statement=all"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U openstates -d openstatesorg"]
       interval: 10s
       timeout: 5s
       retries: 15

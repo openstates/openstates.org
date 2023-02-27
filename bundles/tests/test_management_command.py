@@ -1,15 +1,8 @@
 import pytest
 from django.core.management import call_command
-from graphapi.tests.utils import populate_db
 from bundles.models import Bundle
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
-@pytest.mark.django_db
 def test_basic_creation():
     call_command("manage_bundle", "test", name="Test Bundle", search="Moose")
 
@@ -18,7 +11,6 @@ def test_basic_creation():
     assert bundle.bills.count() == 1
 
 
-@pytest.mark.django_db
 def test_update():
     call_command("manage_bundle", "test", name="Test Bundle", search="cheese")
 

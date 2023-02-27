@@ -2,7 +2,6 @@ import pytz
 import datetime
 import pytest
 from django.contrib.auth.models import User
-from graphapi.tests.utils import populate_db
 from profiles.models import Subscription
 from openstates.data.models import Bill
 from ..models import Notification
@@ -17,11 +16,6 @@ from ..management.commands.process_subscriptions import (
 )
 
 
-@pytest.mark.django_db
-def setup():
-    populate_db()
-
-
 @pytest.fixture
 def user():
     u = User.objects.create(username="testuser")
@@ -34,7 +28,6 @@ def user():
     return u
 
 
-@pytest.mark.django_db
 def test_process_bill_sub(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription(user=user, bill=hb1)
@@ -51,7 +44,6 @@ def test_process_bill_sub(user):
     assert process_bill_sub(sub, yesterday) == hb1
 
 
-@pytest.mark.django_db
 def test_process_bill_sub_future(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription(user=user, bill=hb1)
@@ -69,7 +61,6 @@ def test_process_bill_sub_future(user):
     assert process_bill_sub(sub, yesterday) is None
 
 
-@pytest.mark.django_db
 def test_process_query_sub_simple(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription(user=user, query="moose")
@@ -84,7 +75,6 @@ def test_process_query_sub_simple(user):
     assert process_query_sub(sub, yesterday) == [hb1]
 
 
-@pytest.mark.django_db
 def test_process_subs_for_user_simple(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     hb1.latest_action_date = datetime.date.today().strftime("%Y-%m-%d")
@@ -103,7 +93,6 @@ def test_process_subs_for_user_simple(user):
         query_updates, bill_updates = process_subs_for_user(user)
 
 
-@pytest.mark.django_db
 def test_process_subs_for_user_query(user):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription.objects.create(user=user, subjects=[], status=[], query="moose")
@@ -120,7 +109,6 @@ def test_process_subs_for_user_query(user):
         query_updates, bill_updates = process_subs_for_user(user)
 
 
-@pytest.mark.django_db
 def test_send_email_simple_bill_weekly(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
     bill_updates = [hb1]
@@ -160,7 +148,6 @@ def test_send_email_simple_bill_weekly(user, mailoutbox):
     )
 
 
-@pytest.mark.django_db
 def test_send_email_simple_bill_daily_no_html(user, mailoutbox):
     # test some profile variation
     hb1 = Bill.objects.get(identifier="HB 1")
@@ -179,7 +166,6 @@ def test_send_email_simple_bill_daily_no_html(user, mailoutbox):
     assert "This is your daily automated alert from OpenStates.org." in msg.body
 
 
-@pytest.mark.django_db
 def test_send_email_from_query(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
     sub = Subscription.objects.create(user=user, subjects=[], status=[], query="moose")
@@ -207,14 +193,12 @@ def test_send_email_from_query(user, mailoutbox):
     assert nobj.email == "valid@example.com"
 
 
-@pytest.mark.django_db
 def test_send_email_simple_bill_no_updates(user, mailoutbox):
     with pytest.raises(ValueError):
         send_subscription_email(user, [], [])
     assert Notification.objects.count() == 0
 
 
-@pytest.mark.django_db
 def test_send_email_simple_bill_no_email(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
     hb1.latest_action_date = datetime.date.today().strftime("%Y-%m-%d")
@@ -231,7 +215,6 @@ def test_send_email_simple_bill_no_email(user, mailoutbox):
     assert Notification.objects.count() == 0
 
 
-@pytest.mark.django_db
 def test_send_email_simple_dry_run(user, mailoutbox):
     hb1 = Bill.objects.get(identifier="HB 1")
     hb1.latest_action_date = datetime.date.today().strftime("%Y-%m-%d")

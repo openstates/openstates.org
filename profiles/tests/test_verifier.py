@@ -76,24 +76,20 @@ def test_get_and_inc_quota_key_and_zone_independence(cb):
     assert cb.get_and_inc_quota_value("key", "zone2", "20170411") == 1
 
 
-@pytest.mark.django_db
 def test_verifier_bad_key():
     pytest.raises(VerificationError, verify, "badkey", "bronze")
 
 
-@pytest.mark.django_db
 def test_verifier_inactive_key():
     _create_key("newkey", "inactive")
     pytest.raises(VerificationError, verify, "newkey", "bronze")
 
 
-@pytest.mark.django_db
 def test_verifier_suspended_key():
     _create_key("newkey", "suspended")
     pytest.raises(VerificationError, verify, "newkey", "bronze")
 
 
-@pytest.mark.django_db
 def test_verifier_zone_access():
     _create_key("goldkey", "gold")
     _create_key("bronzekey", "bronze")
@@ -105,7 +101,6 @@ def test_verifier_zone_access():
     pytest.raises(VerificationError, verify, "bronzekey", "premium")
 
 
-@pytest.mark.django_db
 def test_verifier_rate_limit():
     _create_key("vrl", "bronze")
 
@@ -126,7 +121,6 @@ def test_verifier_rate_limit():
         pytest.raises(RateLimitError, verify, "vrl", "default")
 
 
-@pytest.mark.django_db
 def test_verifier_rate_limit_full_refill():
     _create_key("vrlfr", "gold")
 
@@ -143,7 +137,6 @@ def test_verifier_rate_limit_full_refill():
         pytest.raises(RateLimitError, verify, "vrlfr", "premium")
 
 
-@pytest.mark.django_db
 def test_verifier_rate_limit_key_dependent():
     # ensure that the rate limit is unique per-key
     _create_key("b1", "gold")
@@ -159,7 +152,6 @@ def test_verifier_rate_limit_key_dependent():
     pytest.raises(RateLimitError, verify, "b2", "premium")
 
 
-@pytest.mark.django_db
 def test_verifier_rate_limit_zone_dependent():
     # ensure that the rate limit is unique per-zone
     _create_key("zonedep", "gold")
@@ -174,7 +166,6 @@ def test_verifier_rate_limit_zone_dependent():
     pytest.raises(RateLimitError, verify, "zonedep", "premium")
 
 
-@pytest.mark.django_db
 def test_verifier_quota_day():
     _create_key("vqd", "silver")
 
@@ -195,7 +186,6 @@ def test_verifier_quota_day():
             verify("vqd", "premium")
 
 
-@pytest.mark.django_db
 def test_verifier_quota_key_dependent():
     _create_key("vqk1", "gold")
     _create_key("vqk2", "gold")
@@ -212,7 +202,6 @@ def test_verifier_quota_key_dependent():
         pytest.raises(QuotaError, verify, "vqk2", "premium")
 
 
-@pytest.mark.django_db
 def test_verifier_quota_zone_dependent():
     _create_key("qzd", "silver")
 

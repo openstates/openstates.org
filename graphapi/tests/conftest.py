@@ -1,6 +1,5 @@
 import pytest
 
-from testutils.fixtures import kansas  # noqa
 from graphapi.tests.utils import populate_db
 
 
