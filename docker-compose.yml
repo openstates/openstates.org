@@ -42,17 +42,18 @@ services:
   db:
     profiles:
       - db
-    image: postgres
+    image: "mdillon/postgis:11-alpine"
     environment:
-      POSTGRES_DATABASE: openstatesorg
       POSTGRES_PASSWORD: openstates
       POSTGRES_USER: openstates
+      POSTGRES_DB: openstatesorg
       POSTGRES_HOST_AUTH_METHOD: trust
+    command: ["postgres", "-c", "log_statement=all"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 15
     ports:
       - 5405:5432
 
