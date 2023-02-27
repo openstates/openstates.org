@@ -252,6 +252,7 @@ def test_people_by_district():
     """
         % (ak_house.id, ak_house.id)
     )
+    assert result.data is not None
     assert "'district' parameter requires" in result.errors[0].message
     assert len(result.data["ones"]["edges"]) == 1
     assert len(result.data["fives"]["edges"]) == 1
@@ -268,6 +269,7 @@ def test_people_by_division_id():
     }
     """
     )
+    assert result.data is not None
     assert len(result.data["people"]["edges"]) == 1
 
 
@@ -281,6 +283,7 @@ def test_people_by_name():
     """
     )
     assert result.errors is None
+    assert result.data is not None
     assert len(result.data["people"]["edges"]) == 1
 
 
@@ -297,6 +300,7 @@ def test_people_by_party():
     """
     )
     assert result.errors is None
+    assert result.data is not None
     assert len(result.data["dems"]["edges"]) == 3
     assert len(result.data["reps"]["edges"]) == 4
 
@@ -337,6 +341,7 @@ def test_people_num_queries(django_assert_num_queries):
         }"""
         )
     assert result.errors is None
+    assert result.data is not None
     assert len(result.data["people"]["edges"]) == 9
     total_memberships = 0
     for person in result.data["people"]["edges"]:
@@ -481,6 +486,7 @@ def test_person_email_shim(django_assert_num_queries):
         % person.id
     )
     assert result.errors is None
+    assert result.data is not None
     assert result.data["person"]["name"] == "Bob Birch"
     assert result.data["person"]["email"] == "bob@example.com"
     assert result.data["person"]["contactDetails"][0] == {
@@ -509,6 +515,7 @@ def test_person_contact_details_shim(django_assert_num_queries):
         % person.id
     )
     assert result.errors is None
+    assert result.data is not None
     assert result.data["person"]["name"] == "Bob Birch"
     assert result.data["person"]["contactDetails"] == [
         {"value": "123-456-7890", "type": "voice", "note": "District Office"},
@@ -575,6 +582,7 @@ def test_people_by_updated_since():
     )
 
     assert result.errors is None
+    assert result.data is not None
     assert len(result.data["all"]["edges"]) == 9
     assert len(result.data["some"]["edges"]) == 7
     assert len(result.data["none"]["edges"]) == 0

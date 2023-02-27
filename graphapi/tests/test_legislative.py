@@ -282,6 +282,7 @@ def test_bills_by_subject():
     }"""
     )
     assert result.errors is None
+    assert result.data is not None
 
     # some sanity checking on subject responses
     count = 0
@@ -312,6 +313,7 @@ def test_bills_by_updated_since():
     )
 
     assert result.errors is None
+    assert result.data is not None
     assert len(result.data["all"]["edges"]) == 26
     assert len(result.data["some"]["edges"]) == 6
     assert len(result.data["none"]["edges"]) == 0
@@ -403,6 +405,7 @@ def test_bills_subfields():
     }
     """
     )
+    assert result.data is not None
     version_urls = []
     document_urls = []
     for node in result.data["bills"]["edges"]:
@@ -427,6 +430,7 @@ def test_bills_pagination_forward():
         }
     }"""
     )
+    assert result.data is not None
     page = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
     bills += page
 
@@ -440,6 +444,7 @@ def test_bills_pagination_forward():
         }"""
             % result.data["bills"]["pageInfo"]["endCursor"]
         )
+        assert result.data is not None
         page = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
         bills += page
         assert len(page) <= 5
@@ -458,6 +463,7 @@ def test_bills_pagination_backward():
         }
     }"""
     )
+    assert result.data is not None
     page = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
     bills += page
 
@@ -471,6 +477,7 @@ def test_bills_pagination_backward():
         }"""
             % result.data["bills"]["pageInfo"]["startCursor"]
         )
+        assert result.data is not None
         page = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
         bills += page
         assert len(page) <= 5
@@ -522,6 +529,7 @@ def test_bills_by_sponsorships():
         }
     }"""
     )
+    assert result.data is not None
     bills = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
     assert len(bills) == 2
 
@@ -533,6 +541,7 @@ def test_bills_by_sponsorships():
         }
     }"""
     )
+    assert result.data is not None
     bills = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
     assert len(bills) == 0
 
@@ -547,6 +556,7 @@ def test_bills_by_sponsorships():
     }"""
         % person.id
     )
+    assert result.data is not None
     bills = [n["node"]["identifier"] for n in result.data["bills"]["edges"]]
     assert len(bills) == 2
 
@@ -567,6 +577,7 @@ def test_bills_by_action_since():
     )
 
     assert result.errors is None
+    assert result.data is not None
     # HB2 bill doesn't have any actions
     assert len(result.data["all"]["edges"]) == 25
     # only HB1 has data after Feb 2018
@@ -595,6 +606,7 @@ def test_votes_via_person():
         }"""
     )
     assert result.errors is None
+    assert result.data is not None
     people = [n["node"] for n in result.data["people"]["edges"]]
     assert len(people) == 1
     assert people[0]["votes"]["edges"][0]["node"]["option"] == "yes"
@@ -615,6 +627,7 @@ def test_bill_fts():
         }"""
     )
     assert result.errors is None
+    assert result.data is not None
     bills = [n["node"] for n in result.data["bills"]["edges"]]
     assert len(bills) == 1
 
