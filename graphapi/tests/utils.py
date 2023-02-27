@@ -23,7 +23,8 @@ def make_random_bill(name):
             id=f"ocd-bill/{str(uuid.uuid4())}",
             title="Bill Title",
             identifier=(
-                random.choice(("HB", "SB", "HR", "SR")) + str(random.randint(1000, 3000))
+                random.choice(("HB", "SB", "HR", "SR"))
+                + str(random.randint(1000, 3000))
             ),
             legislative_session=session,
             from_organization=org,
@@ -163,21 +164,29 @@ def populate_db():
             pass
         try:
             leg = Organization.objects.create(
-                jurisdiction=j, classification="legislature", name=f"{state} Legislature"
+                jurisdiction=j,
+                classification="legislature",
+                name=f"{state} Legislature",
             )
         except IntegrityError:
             # duplicate key, so just skip
             pass
         try:
             Organization.objects.create(
-                jurisdiction=j, parent=leg, classification="lower", name=f"{state} House"
+                jurisdiction=j,
+                parent=leg,
+                classification="lower",
+                name=f"{state} House",
             )
         except IntegrityError:
             # duplicate key, so just skip
             pass
         try:
             Organization.objects.create(
-                jurisdiction=j, parent=leg, classification="upper", name=f"{state} Senate"
+                jurisdiction=j,
+                parent=leg,
+                classification="upper",
+                name=f"{state} Senate",
             )
         except IntegrityError:
             # duplicate key, so just skip
@@ -242,7 +251,9 @@ def populate_db():
         b1.actions.create(
             description="Amended", order=20, organization=house, date="2018-02-01"
         )
-        a.related_entities.create(name="Amanda Adams", entity_type="person", person=amanda)
+        a.related_entities.create(
+            name="Amanda Adams", entity_type="person", person=amanda
+        )
         a = b1.actions.create(
             description="Passed House",
             order=30,

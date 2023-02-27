@@ -1,4 +1,3 @@
-import pytest
 from bundles.models import Bundle
 from openstates.data.models import Bill
 

@@ -1,4 +1,3 @@
-import pytest
 from openstates.data.models import Person
 from utils.common import pretty_url
 

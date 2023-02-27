@@ -1,4 +1,3 @@
-import pytest
 from graphapi.schema import schema
 from openstates.data.models import Bill, Person
 

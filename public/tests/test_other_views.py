@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_state_view(client, django_assert_max_num_queries):
     # difficult to make this one exact, so settled for max of 13, fluctuates between 12-13
     # expected: organization, person, membership, organization, post,

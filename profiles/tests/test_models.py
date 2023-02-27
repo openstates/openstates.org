@@ -1,4 +1,3 @@
-import pytest
 from django.contrib.auth.models import User
 from openstates.data.models import Person
 from profiles.models import Subscription
