@@ -6,7 +6,7 @@ authors = ["James Turk <dev@jamesturk.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-django = "^4.1"
+Django = "3.2.14"
 django-cors-headers = "^3.7"
 django-allauth = "^0.48.0"
 django-recaptcha = "^3.0.0"
