@@ -1,29 +1,12 @@
 import pytest
-from testutils.factories import create_test_person
 from django.contrib.auth.models import User, Permission
 from openstates.data.models import Person, Organization
 from people_admin.models import UnmatchedName, NameStatus, DeltaSet
 from people_admin.views import MATCHER_PERM, EDIT_PERM, RETIRE_PERM
 import json
 
-
-@pytest.fixture
-def admin_user():
-    u = User.objects.create(username="admin")
-    user_permissions = list(
-        Permission.objects.filter(
-            codename__in=[
-                p.split(".")[1] for p in (MATCHER_PERM, EDIT_PERM, RETIRE_PERM)
-            ]
-        ).values_list("id", flat=True)
-    )
-    u.user_permissions.set(user_permissions)
-    return u
-
-
 @pytest.mark.django_db
-def test_apply_match_matches(client, django_assert_num_queries, kansas, admin_user):
-    p = Person.objects.create(name="Samuel L. Jackson")
+def test_apply_match_matches(client, django_assert_num_queries):
 
     # kansas is a test fixture, it has some fake data attached we can use
     session = kansas.legislative_sessions.get(identifier="2020")

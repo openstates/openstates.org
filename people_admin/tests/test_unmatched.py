@@ -7,16 +7,16 @@ from people_admin.unmatched import (
     update_unmatched,
     unmatched_to_deltas,
 )
-from testutils.factories import create_test_bill, create_test_vote
+from openstates.data.models import (
+    Jurisdiction,
+)
 
 
 @pytest.mark.django_db
-def test_check_sponsorships(django_assert_num_queries, kansas):
+def test_check_sponsorships(django_assert_num_queries):
+    jur = Jurisdiction.objects.get(name="Kansas")
     # create two bills for the sponsor
-    create_test_bill("2020", "upper")
-    create_test_bill("2020", "upper", sponsors=1)
-    create_test_bill("2020", "upper", sponsors=1)
-    session = kansas.legislative_sessions.get(identifier="2020")
+    session = jur.legislative_sessions.get(identifier="2020")
 
     with django_assert_num_queries(1):
         missing = check_sponsorships(session)
@@ -24,14 +24,9 @@ def test_check_sponsorships(django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_check_votes(django_assert_num_queries, kansas):
-    b = create_test_bill("2020", "upper")
-    create_test_vote(b)
-    create_test_vote(b, yes_votes=["A", "Someone"], no_votes=["C"])
-    b2 = create_test_bill("2020", "upper")
-    create_test_vote(b2, no_votes=["A", "C"])
-
-    session = kansas.legislative_sessions.get(identifier="2020")
+def test_check_votes(django_assert_num_queries):
+    jur = Jurisdiction.objects.get(name="Kansas")
+    session = jur.legislative_sessions.get(identifier="2020")
 
     with django_assert_num_queries(1):
         missing = check_votes(session)
@@ -39,11 +34,8 @@ def test_check_votes(django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_update_unmatched(django_assert_num_queries, kansas):
-    b = create_test_bill("2020", "upper", sponsors=1)
-    create_test_vote(b, yes_votes=["Someone"], no_votes=["Someone Else"])
-    # Someone will have 1 vote and 1 sponsorship
-    # Someone Else will have 1 vote
+def test_update_unmatched(django_assert_num_queries):
+    jur = Jurisdiction.objects.get(name="Kansas")
 
     update_unmatched("ks", "2020")
 
@@ -59,10 +51,8 @@ def test_update_unmatched(django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_update_unmatched_idempotent(django_assert_num_queries, kansas):
-    # will create Someone & Someone Else
-    b = create_test_bill("2020", "upper", sponsors=1)
-    create_test_vote(b, yes_votes=["Someone"], no_votes=["Someone Else"])
+def test_update_unmatched_idempotent(django_assert_num_queries):
+    jur = Jurisdiction.objects.get(name="Kansas")
     update_unmatched("ks", "2020")
 
     # set statuses
@@ -82,17 +72,9 @@ def test_update_unmatched_idempotent(django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_update_unmatched_removes_matched(django_assert_num_queries, kansas):
-    # will create Someone & Someone Else
-    b = create_test_bill("2020", "upper", sponsors=1)
-    create_test_vote(b, yes_votes=["Someone"], no_votes=["Someone Else"])
+def test_update_unmatched_removes_matched(django_assert_num_queries):
     update_unmatched("ks", "2020")
 
-    # drop the vote, which will remove Someone Elses record
-    b.votes.all().delete()
-
-    # call it again
-    update_unmatched("ks", "2020")
     # Someone Else is gone
     assert UnmatchedName.objects.count() == 1
     # Someone values are updated
@@ -100,8 +82,9 @@ def test_update_unmatched_removes_matched(django_assert_num_queries, kansas):
 
 
 @pytest.mark.django_db
-def test_unmatched_to_deltas(kansas):
-    session = kansas.legislative_sessions.all()[0]
+def test_unmatched_to_deltas():
+    jur = Jurisdiction.objects.get(name="Kansas")
+    session = jur.legislative_sessions.all()[0]
     dave = Person.objects.create(name="Dave Ferguson")
     mike = Person.objects.create(name="Mike Mitchell")
     UnmatchedName.objects.create(

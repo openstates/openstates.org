@@ -1,3 +1,5 @@
+from django.db import IntegrityError
+from django.contrib.postgres.search import SearchVector
 from openstates.data.models import (
     Division,
     Jurisdiction,
@@ -20,15 +22,13 @@ def populate_db():
         )
         if isinstance(d, tuple):
             d = d[0]
-        try:
-            j = Jurisdiction.objects.create(
-                id=f"ocd-jurisdiction/country:us/state:{abbr}/government",
-                name=state,
-                division=d,
-            )
-        except IntegrityError:
-            # duplicate key, so just skip
-            pass
+        j = Jurisdiction.objects.get_or_create(
+            id=f"ocd-jurisdiction/country:us/state:{abbr}/government",
+            name=jur["name"],
+            division=d,
+        )
+        if isinstance(j, tuple):
+            j = j[0]
         for session in jur["sessions"]:
             try:
                 j.legislative_sessions.create(
@@ -37,22 +37,20 @@ def populate_db():
             except IntegrityError:
                 # duplicate key, so just skip
                 pass
-        try:
-            leg = Organization.objects.create(
-                jurisdiction=j,
-                classification="legislature",
-                name=f"{state} Legislature",
-            )
-        except IntegrityError:
-            # duplicate key, so just skip
-            pass
+        leg = Organization.objects.get_or_create(
+            jurisdiction=j,
+            classification="legislature",
+            name=f"{jur['name']} Legislature",
+        )
+        if isinstance(leg, tuple):
+            leg = leg[0]
         for chamber in jur["chambers"]:
             try:
                 Organization.objects.create(
                     jurisdiction=j,
                     parent=leg,
                     classification=chamber,
-                    name=f"{state} {'House' if chamber == 'lower' else 'Senate'}",
+                    name=f"{jur['name']} {'House' if chamber == 'lower' else 'Senate'}",
                 )
             except IntegrityError:
                 # duplicate key, so just skip
@@ -79,7 +77,8 @@ def _make_person(state, person):
     )
     jurisdiction = Jurisdiction.objects.get(name=state)
     abbr = jurisdiction.abbreviation
-    chamber_letter = chamber[0]
+    chamber_letter = person["chamber"][0]
+    district = person["district"]
     div, _ = Division.objects.get_or_create(
         id=f"ocd-division/country:us/state:{abbr}/sld{chamber_letter}:{district.lower()}",
         name=f"Division {district}",
@@ -88,7 +87,7 @@ def _make_person(state, person):
         post = org.posts.create(
             label=district,
             division=div,
-            role="Representative" if chamber == "lower" else "Senator",
+            role="Representative" if person["chamber"] == "lower" else "Senator",
         )
     except IntegrityError:
         # duplicate key, so just skip

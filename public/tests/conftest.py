@@ -12,4 +12,3 @@ def enable_db_access_for_all_tests(db):
 def django_db_setup(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
         populate_db()
-        populate_unicam()

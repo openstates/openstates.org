@@ -1,25 +1,4 @@
-import pytest
 from openstates.data.models import Person, VoteEvent
-from testutils.factories import create_test_bill
-
-
-@pytest.fixture
-def sortable_bills(kansas):
-    # A's introduced first
-    # B's latest action is first
-    # C's introduced last
-    b = create_test_bill("2020", "upper", identifier="A")
-    b.first_action_date = "2020-01-01"
-    b.latest_action_date = "2020-08-01"
-    b.save()
-    b = create_test_bill("2020", "upper", identifier="B")
-    b.first_action_date = "2020-01-02"
-    b.latest_action_date = "2020-06-01"
-    b.save()
-    b = create_test_bill("2020", "upper", identifier="C")
-    b.first_action_date = "2020-07-01"
-    b.latest_action_date = "2020-07-01"
-    b.save()
 
 
 BILLS_QUERY_COUNT = 7
