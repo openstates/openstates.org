@@ -16,7 +16,7 @@
       - nginx
       - libgdal-dev
       - certbot
-      - python3-certbot-dns-route53
+      - python3-certbot-nginx
       - python3.9
       - python3.9-dev
       - python3.9-distutils
@@ -106,7 +106,7 @@
 # letsencrypt & cronjobs
 
 - name: add letsencrypt cert
-  command: certbot certonly --dns-route53 --expand -d openstates.org -d www.openstates.org --email contact@openstates.org --agree-tos -n creates=/etc/letsencrypt/live/openstates.org/fullchain.pem
+  command: certbot run --nginx --expand -d openstates.org -d www.openstates.org -d open.pluralpolicy.com --email contact@openstates.org --agree-tos -n --keep
   changed_when: false
 
 - name: add letsencrypt renewal crontab
