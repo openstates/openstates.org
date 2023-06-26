@@ -15,7 +15,8 @@ RUN apt-get --allow-releaseinfo-change update -qq \
         postgresql-client \
         uwsgi \
         libpq5 \
-        libgdal28 \
+        libgdal32 \
+        libpcre3 \
         python3-dev \
         git \
         build-essential \
@@ -23,6 +24,7 @@ RUN apt-get --allow-releaseinfo-change update -qq \
         libgeos-dev \
         libgdal-dev \
         libcap-dev \
+        libpcre3-dev \
         uwsgi-src \
         awscli \
     && cd /usr/lib/uwsgi/plugins \
@@ -32,15 +34,16 @@ RUN apt-get --allow-releaseinfo-change update -qq \
 ADD . /code/
 WORKDIR /code/
 COPY docker/uwsgi/custom-entrypoint /usr/local/bin
+COPY docker/uwsgi/node.pin /etc/apt/preferences.d/node
 
 RUN curl https://deb.nodesource.com/setup_16.x -SsLo nodesource.sh \
     && bash nodesource.sh \
     && apt-get install -y -qq --no-install-recommends nodejs \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && npm ci \
+    && rm -rf /var/lib/apt/lists/*
+RUN npm ci \
     && npm run build
-RUN pip --no-cache-dir --disable-pip-version-check install poetry
+RUN pip --no-cache-dir --disable-pip-version-check install poetry wheel
 
 # everything after here as openstates user
 RUN useradd -u $UID -Ulmr -d /home/openstates openstates
@@ -60,6 +63,7 @@ RUN apt-get remove -y -qq build-essential \
       libgeos-dev \
       libgdal-dev \
       libcap-dev \
+      libpcre3-dev \
       uwsgi-src \
     && apt-get autoremove -y
 USER openstates:openstates
