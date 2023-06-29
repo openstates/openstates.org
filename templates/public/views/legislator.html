@@ -5,12 +5,12 @@
 {% block title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.title }} - Open States{% endblock %}
 {% block og_title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.title }} - Open States{% endblock %}
 {% block description %}Contact information and legislative record for {{ person.name }} in  {{ state|state_name }}.{% endblock %}
+{% block link %}<link rel="canonical" href="https://pluralpolicy.com/app/person/{{person.uuid}}/" />{% endblock %}
 {% block og_image %}https://data.openstates.org/images/small/{{ person.id }}{% endblock %}
 
 {% block scripts %}
   <script src="{% static "bundles/common_components.js" %}"></script>
   <script src="{% static "bundles/district_map.js" %}"></script>
-    <link rel="canonical" href="https://pluralpolicy.com/app/person/{{person.uuid}}/" />
 {% endblock %}
 
 {% block content %}
