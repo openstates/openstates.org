@@ -10,13 +10,13 @@
 {% block scripts %}
   <script src="{% static "bundles/common_components.js" %}"></script>
   <script src="{% static "bundles/district_map.js" %}"></script>
+    <link rel="canonical" href="https://pluralpolicy.com/app/person/{{person.uuid}}/" />
 {% endblock %}
 
 {% block content %}
 <section class="section">
 
     <div class="overview">
-        
         <div class="overview__header">
           <div data-hook="legislator-image" data-image="{{ person.image }}" data-person-id="{{ person.id }}" data-size="medium" data-party="{{ person.primary_party }}"> </div>
             <div>
