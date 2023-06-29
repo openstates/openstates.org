@@ -6,7 +6,7 @@
 {% block og_title %}{{ bill.identifier }} - {{ state|state_name }} {{ bill.from_organization.name }} ({{bill.legislative_session.identifier }}) - Open States{% endblock %}
 {% block description %}Details on {{ state|state_name }} {{ bill.identifier}} ({{ bill.legislative_session }}) - {{ bill.title|titlecase_caps }}{% endblock %}
 {% block link %}
-    <link rel="canonical" href="https://pluralpolicy.com/app/legislative-tracking/bill/details/state-{{ state }}-{{bill.legislative_session.identifier }}-{{ bill.identifier }}" />
+    <link rel="canonical" href="https://pluralpolicy.com/app/legislative-tracking/bill/details/state-{{ state }}-{{bill.legislative_session.identifier|dash_check }}-{{ bill.identifier|cut:" "|lower }}" />
 {% endblock %}
 
 {% block scripts %}
