@@ -5,7 +5,7 @@
 {% block title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.title }} - Open States{% endblock %}
 {% block og_title %}{{ person.name }} - {{ state|state_name }} {{ person.current_role.title }} - Open States{% endblock %}
 {% block description %}Contact information and legislative record for {{ person.name }} in  {{ state|state_name }}.{% endblock %}
-{% block link %}<link rel="canonical" href="https://pluralpolicy.com/app/person/{{person.id}}/" />{% endblock %}
+{% block link %}<link rel="canonical" href="https://pluralpolicy.com/app/person/{{person.id|format_uuid}}/" />{% endblock %}
 {% block og_image %}https://data.openstates.org/images/small/{{ person.id }}{% endblock %}
 
 {% block scripts %}

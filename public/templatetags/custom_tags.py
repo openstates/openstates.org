@@ -133,6 +133,11 @@ def dash_check(session):
 
 
 @register.filter()
+def format_uuid(person_id):
+    return person_id.split("/")[1]
+
+
+@register.filter()
 def format_address(address):
     return mark_safe(address.replace(";", "<br>"))
 
