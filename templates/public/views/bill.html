@@ -5,6 +5,9 @@
 {% block title %}{{ bill.identifier }} - {{ state|state_name }} {{ bill.from_organization.name }} ({{bill.legislative_session.identifier }}) - Open States{% endblock %}
 {% block og_title %}{{ bill.identifier }} - {{ state|state_name }} {{ bill.from_organization.name }} ({{bill.legislative_session.identifier }}) - Open States{% endblock %}
 {% block description %}Details on {{ state|state_name }} {{ bill.identifier}} ({{ bill.legislative_session }}) - {{ bill.title|titlecase_caps }}{% endblock %}
+{% block link %}
+    <link rel="canonical" href="https://pluralpolicy.com/app/legislative-tracking/bill/details/state-{{ state }}-{{bill.legislative_session.identifier|dash_check }}-{{ bill.identifier|cut:" "|lower }}" />
+{% endblock %}
 
 {% block scripts %}
   <script src="{% static "bundles/common_components.js" %}"></script>
@@ -13,7 +16,7 @@
 {% block content %}
 <section class="section">
     <div class="overview">
-        
+
         <div class="overview__header">
             <div style="width: 100%;">
                 <div class="align-justify meter-container">
@@ -70,7 +73,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="overview__section">
             {% if bill.subject %}
             <div class="mb2">
@@ -94,7 +97,7 @@
 
 
             <h3 class="heading--xsmall">Bill Sponsors ({{ sponsorships|length }})</h3>
-            
+
             <div class="grid-container full">
                 <div class="grid-x grid-margin-x medium-up-2 large-up-3">
                     {% for sponsor in sponsorships|dictsortreversed:"primary" %}
@@ -168,7 +171,7 @@
     </div>
 </section>
 
-<section>    
+<section>
     <h2 class="heading--medium">Actions</h2>
     <hr>
     <div class="timeline">

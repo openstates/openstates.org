@@ -125,6 +125,19 @@ def titlecase_caps(title):
 
 
 @register.filter()
+def dash_check(session):
+    if "-" in session:
+        return session.replace("-", "_")
+    else:
+        return session
+
+
+@register.filter()
+def format_uuid(person_id):
+    return person_id.split("/")[1]
+
+
+@register.filter()
 def format_address(address):
     return mark_safe(address.replace(";", "<br>"))
 

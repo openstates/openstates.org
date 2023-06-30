@@ -22,7 +22,8 @@
         <meta property="og:url" content="{{ request.build_absolute_uri }}">
         <meta property="og:title" content="{% block og_title %}Open States{% endblock %}">
         <meta property="og:image" content="{% block og_image %}https://{{ request.get_host }}{% static "images/openstates_icon_transparent.png" %}{% endblock %}">
-        
+        {% block link %}{% endblock %}
+
         <!-- Favicon -->
         <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png?v=20190106' %}">
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png?v=20190106' %}">
