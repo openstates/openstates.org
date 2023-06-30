@@ -106,7 +106,7 @@
 # letsencrypt & cronjobs
 
 - name: add letsencrypt cert
-  command: certbot run --nginx --expand -d openstates.org -d www.openstates.org -d open.pluralpolicy.com --email contact@openstates.org --agree-tos -n --keep
+  command: certbot run --nginx --expand -d open.pluralpolicy.com --email contact@openstates.org --agree-tos -n --keep
   changed_when: false
 
 - name: add letsencrypt renewal crontab
