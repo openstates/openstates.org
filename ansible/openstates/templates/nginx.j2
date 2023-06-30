@@ -4,8 +4,8 @@ server {
     server_name open.pluralpolicy.com;
 
     listen 443 ssl http2;
-    ssl_certificate /etc/letsencrypt/live/openstates.org/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/openstates.org/privkey.pem; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/open.pluralpolicy.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/open.pluralpolicy.com/privkey.pem; # managed by Certbot
     ssl_prefer_server_ciphers on;
     ssl_ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
     ssl_protocols TLSv1.2 TLSv1.3;
