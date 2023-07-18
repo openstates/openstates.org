@@ -18,6 +18,11 @@ echo "Shipping full backup to s3"
 aws s3 cp openstatesorg.pgdump "s3://openstates-backups/full-backup/$(date +%Y-%m-%d)-openstatesorg.pgdump" > /dev/null
 rm -f openstatesorg.pgdump
 
+echo "Extracting geo backup..."
+pg_dump -Fc geo > openstates-geo.pgdump
+echo "Shipping full backup to s3"
+aws s3 cp openstates-geo.pgdump "s3://openstates-backups/full-backup/$(date +%Y-%m-%d)-openstates-geo.pgdump" > /dev/null
+rm -f openstates-geo.pgdump
 
 # layered approach for public
 echo "Executing public schema-only backup..."
