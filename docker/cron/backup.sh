@@ -12,11 +12,12 @@ set -e
 ####
 
 # backup everything to private archive
-echo "Extracting full backup..."
-pg_dump -Fc openstatesorg > openstatesorg.pgdump
-echo "Shipping full backup to s3"
-aws s3 cp openstatesorg.pgdump "s3://openstates-backups/full-backup/$(date +%Y-%m-%d)-openstatesorg.pgdump" > /dev/null
-rm -f openstatesorg.pgdump
+# Disabled because we now rely on snapshots from RDS
+#echo "Extracting full backup..."
+#pg_dump -Fc openstatesorg > openstatesorg.pgdump
+#echo "Shipping full backup to s3"
+#aws s3 cp openstatesorg.pgdump "s3://openstates-backups/full-backup/$(date +%Y-%m-%d)-openstatesorg.pgdump" > /dev/null
+#rm -f openstatesorg.pgdump
 
 # layered approach for public
 echo "Executing public schema-only backup..."
@@ -34,9 +35,11 @@ pg_dump -Fc openstatesorg --data-only \
 
 echo "Uploading public backups to s3..."
 aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/daily/$(date +%Y-%m-%d)-public.pgdump" > /dev/null
-aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/monthly/$(date +%Y-%m)-public.pgdump" > /dev/null
+# only upload monthly dump on the first of the month
+[ "$(date +%d)" -eq 1 ] && aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/monthly/$(date +%Y-%m)-public.pgdump" > /dev/null
 rm -f public.pgdump
 
+# Currently disabled because it requires different credentials
 #echo "Extracting geo backup..."
 #pg_dump -Fc geo > openstates-geo.pgdump
 #echo "Shipping full backup to s3"
