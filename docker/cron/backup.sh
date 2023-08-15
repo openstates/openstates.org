@@ -35,7 +35,7 @@ pg_dump -Fc openstatesorg --data-only \
 echo "Uploading public backups to s3..."
 aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/daily/$(date +%Y-%m-%d)-public.pgdump" > /dev/null
 # only upload monthly dump on the first of the month
-[[ $(date +%d) -eq 1 ]] && aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/monthly/$(date +%Y-%m)-public.pgdump" > /dev/null
+[ "$(date +%d)" -eq 1 ] && aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/monthly/$(date +%Y-%m)-public.pgdump" > /dev/null
 rm -f public.pgdump
 
 #echo "Extracting geo backup..."
