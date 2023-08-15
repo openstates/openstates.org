@@ -12,6 +12,7 @@ set -e
 ####
 
 # backup everything to private archive
+# Disabled because we now rely on snapshots from RDS
 #echo "Extracting full backup..."
 #pg_dump -Fc openstatesorg > openstatesorg.pgdump
 #echo "Shipping full backup to s3"
@@ -38,6 +39,7 @@ aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/dai
 [ "$(date +%d)" -eq 1 ] && aws s3 cp --acl public-read public.pgdump "s3://data.openstates.org/postgres/monthly/$(date +%Y-%m)-public.pgdump" > /dev/null
 rm -f public.pgdump
 
+# Currently disabled because it requires different credentials
 #echo "Extracting geo backup..."
 #pg_dump -Fc geo > openstates-geo.pgdump
 #echo "Shipping full backup to s3"
