@@ -3,6 +3,7 @@ version: "3.5"
 networks:
   openstates-network:
       name: openstates-network
+      external: true
 
 volumes:
   openstates-postgres:

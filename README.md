@@ -9,22 +9,27 @@ which by default will run in docker.
 
 * Branch off of the `develop` branch
 * Follow instructions for [working on openstates.org](https://docs.openstates.org/contributing/openstates-org/)
-from the docs.
+  from the docs.
 * Quirks I ran into:
-  * `npm run start` did not actually make JS/CSS available when I hit the app at `localhost:8000`. Instead I ran `npm run build` and then rebuilt the docker containers with `docker compose build`, finally started them again.
-  * For some reason my DB ended up missing a row representing the Django Site. This resulted in something like "Site not found" error when trying to log in/register. Solution was: 
-    * Get shell on the running container `sudo docker exec -it openstatesorg-django-1 /bin/bash`
-    * In that shell run `poetry run python manage.py shell --settings=web.settings`
-    * In THAT shell run `from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')`
-    * However for me this created an entry with `SITE_ID` of `2` when `1` is the necessary value to match up with `web/settings.py`
+    * `npm run start` did not actually make JS/CSS available when I hit the app at `localhost:8000`. Instead I
+      ran `npm run build` and then rebuilt the docker containers with `docker compose build`, finally started them
+      again.
+    * For some reason my DB ended up missing a row representing the Django Site. This resulted in something like "Site
+      not found" error when trying to log in/register. Solution was:
+        * Get shell on the running container `sudo docker exec -it openstatesorg-django-1 /bin/bash`
+        * In that shell run `poetry run python manage.py shell --settings=web.settings`
+        * In THAT shell
+          run `from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')`
+        * However for me this created an entry with `SITE_ID` of `2` when `1` is the necessary value to match up
+          with `web/settings.py`
 * Merge your feature branch into `develop` (this launches a workflow that publishes docker images)
 * Merge `develop` into `main` (this gets code into the branch that should be used for deploy)
 
 ## Deploy
 
 * Check out the `main` branch of this repository to your local workstation
-* You will need permissions on the Open States AWS account to be able to interact with 
-at least the parameter store and the EC2 instance where the site is deployed
+* You will need permissions on the Open States AWS account to be able to interact with
+  at least the parameter store and the EC2 instance where the site is deployed
 * You need the SSH private key to access the EC2 instance, stored at `~/.ssh/openstates-master.pem`
 * Ensure that you have the correct python version installed via pyenv
 * Install the [aws cli tool](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
@@ -32,8 +37,13 @@ at least the parameter store and the EC2 instance where the site is deployed
 such that `ansible-playbook` command is available. (There are recent changes in the package re: `ansible-community`
 which might necessitate a change in our deploy script. For now, I just deployed a somewhat older version via
 my operating system's package manager)
+* Install the [jq utility](https://jqlang.github.io/jq/)
+    * Whichever python your system is using to execute ansible-playbook needs botocore and boto3 packages installed.
+      These are used on the system running ansible-playbook to do AWS secret/parameter lookups. Since I installed
+      ansible via my operating system's package manager, I installed via
+      `sudo apt install python3-boto3 python3-botocore`
 * In your copy of this repo, with `main` checked out, run the command, which runs a script which runs a set
-of ansible tasks:
+  of ansible tasks:
 
 ```
 poetry run inv deploy
@@ -44,9 +54,8 @@ something like the following near the end:
 
 ```
 PLAY RECAP ************************************
-openstates.org             : ok=41   changed=6 
+openstates.org             : ok=41   changed=6
 ```
-
 
 ## Links
 
