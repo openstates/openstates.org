@@ -67,19 +67,12 @@ def deploy(c):
         "aws ssm get-parameter --name /site/NEWRELIC_API_KEY --with-decryption | jq -r .Parameter.Value",
         hide="out",
     ).stdout.strip()
-    SENTRY_RELEASE_ENDPOINT = c.run(
-        "aws ssm get-parameter --name /site/SENTRY_RELEASE_ENDPOINT --with-decryption | jq -r .Parameter.Value",
-        hide="out",
-    ).stdout.strip()
 
     with c.cd("ansible"):
         c.run("ansible-playbook -D openstates.yml -i inventory/", pty=True)
 
-    # tag the release in git and on sentry and newrelic
+    # tag the release in git and newrelic
     next_tag = get_next_tag(c)
-    c.run(
-        f'curl {SENTRY_RELEASE_ENDPOINT} -X POST -H "Content-Type: application/json" -d \'{{"version": "{next_tag}"}}\''
-    )
     c.run(
         f"""curl -X POST \
     "https://api.newrelic.com/v2/applications/{NEWRELIC_APP_ID}/deployments.json" \
