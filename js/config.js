@@ -1,6 +1,6 @@
 export default {
   MAPBOX_ACCESS_TOKEN:
-    "pk.eyJ1Ijoib3BlbnN0YXRlcyIsImEiOiJjamU2NmJ2dmsxdTFzMzRycTNhejNjdTUzIn0.QHziTq0NGFutvZzo9Wmc0w",
+    "pk.eyJ1Ijoib3BlbnN0YXRlcyIsImEiOiJjbHd6eGs2MDMwY2RqMmlvNnQyMHJzM3QzIn0.EdNbg_i1mcDrKNJWMlKVsQ",
   MAP_BASE_STYLE: "mapbox://styles/mapbox/light-v9",
   MAP_SLD_SOURCE: "mapbox://openstates.sld",
 
