@@ -1,4 +1,5 @@
 export default {
+  // Using the Open-States-Legacy-App Mapbox access token
   MAPBOX_ACCESS_TOKEN:
     "pk.eyJ1Ijoib3BlbnN0YXRlcyIsImEiOiJjbHd6eGs2MDMwY2RqMmlvNnQyMHJzM3QzIn0.EdNbg_i1mcDrKNJWMlKVsQ",
   MAP_BASE_STYLE: "mapbox://styles/mapbox/light-v9",
