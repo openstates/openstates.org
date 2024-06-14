@@ -9,6 +9,8 @@ from .views import (
     new_legislator,
     apply_new_legislator,
     apply_bulk_edits,
+    duplicate_sponsors,
+    apply_duplicate_sponsors,
     create_delta_sets,
     create_pr,
 )
@@ -58,6 +60,16 @@ urlpatterns = [
         r"^bulk/",
         apply_bulk_edits,
         name="apply_bulk_edits",
+    ),
+    re_path(
+        r"^(?P<state>{})/duplicate_sponsors/$".format(state_abbr_pattern),
+        duplicate_sponsors,
+        name="duplicate_sponsors",
+    ),
+    re_path(
+        r"^update/duplicate_sponsors/",
+        apply_duplicate_sponsors,
+        name="apply_duplicate_sponsors",
     ),
     re_path(
         r"^(?P<state>{})/deltas/$".format(state_abbr_pattern),

@@ -3,6 +3,7 @@ import us
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
 from openstates.data.models import LegislativeSession, Person
+
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
@@ -244,6 +245,51 @@ def apply_bulk_edits(request):
             person_id=person["id"],
             data_changes=updates,
         )
+    return JsonResponse({"status": "success"})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+def duplicate_sponsors(request, state):
+    jid = abbr_to_jid(state)
+    state_sponsors = [
+        person_data(p)
+        for p in Person.objects.filter(
+            current_jurisdiction_id=jid, current_role__isnull=False
+        ).order_by("family_name", "name")
+    ]
+
+    context = {"state": state, "state_sponsors": state_sponsors}
+
+    return render(request, "people_admin/duplicate_sponsors.html", {"context": context})
+
+
+@user_passes_test(lambda u: u.has_perm(EDIT_PERM))
+def apply_duplicate_sponsors(request):
+    form_data = json.load(request)
+
+    delta = DeltaSet.objects.get_or_create(
+        name=f"duplicates by {request.user}",
+        created_by=request.user,
+    )
+
+    for match in form_data:
+        additional_id = [
+            "append",
+            "other_identifiers",
+            {"scheme": "openstates", "identifier": match["secondId"]},
+        ]
+        additional_name = ["append", "other_names", {"name": match["secondName"]}]
+        PersonDelta.objects.create(
+            person_id=match["firstId"],
+            delta_set=delta,
+            data_changes=[additional_id, additional_name],
+        )
+
+    ds = DeltaSet.objects.get(id=delta, pr_status="N")
+    print(f"creating {ds.id} | {ds.name} | {ds.created_by}")
+    ds.pr_url = delta_set_to_pr(ds)
+    ds.pr_status = "C"
+    ds.save()
     return JsonResponse({"status": "success"})
 
 

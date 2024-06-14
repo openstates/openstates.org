@@ -1,0 +1,12 @@
+{% extends "public/components/base.html" %}
+{% load static %}
+
+{% block scripts %}
+  {{ context|json_script:"context" }}
+    <meta charset="utf-8">
+  <script src="{% static "bundles/people_admin.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div data-hook="duplicate-sponsors"></div>
+{% endblock %}
