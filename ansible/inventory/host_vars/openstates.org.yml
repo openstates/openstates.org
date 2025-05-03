@@ -14,8 +14,8 @@ django_environment:
     NEW_RELIC_APP_NAME: "openstates.org"
 
 # postgres
-pg_password: "{{ lookup('aws_ssm', '/bobsled/backups/PGPASSWORD') }}"
-pg_host: "{{ lookup('aws_ssm', '/bobsled/backups/PGHOST') }}"
-pg_user: "{{ lookup('aws_ssm', '/bobsled/backups/PGUSER') }}"
+pg_password: "{{ lookup('aws_ssm', '/passwords/osorg_db_password') }}"
+pg_host: "openstates.cn70ucbuuwc7.us-east-1.rds.amazonaws.com"
+pg_user: os_django
 pg_port: 5432
 pg_database: openstatesorg

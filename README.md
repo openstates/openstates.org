@@ -11,6 +11,7 @@ which by default will run in docker.
 * Follow instructions for [working on openstates.org](https://docs.openstates.org/contributing/openstates-org/)
   from the docs.
 * Quirks I ran into:
+    * 2025: hit error `ERR_OSSL_EVP_UNSUPPORTED` when running `npm run build` so fixed by running `export NODE_OPTIONS=--openssl-legacy-provider`
     * `npm run start` did not actually make JS/CSS available when I hit the app at `localhost:8000`. Instead I
       ran `npm run build` and then rebuilt the docker containers with `docker compose build`, finally started them
       again.
