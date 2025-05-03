@@ -96,73 +96,11 @@ def legislators(request, state):
 
 
 def person(request, person_id):
-    SPONSORED_BILLS_TO_SHOW = 4
-    RECENT_VOTES_TO_SHOW = 3
-
     try:
         ocd_person_id = decode_uuid(person_id)
     except ValueError:
         ocd_person_id = (
             person_id  # will be invalid and raise 404, but useful in logging later
         )
-    person = get_object_or_404(
-        Person.objects.prefetch_related("memberships__organization"),
-        pk=ocd_person_id,
-    )
-
-    # to display district in front of district name, or not?
-    district_maybe = ""
-
-    # canonicalize the URL
-    canonical_url = pretty_url(person)
-    if request.path != canonical_url:
-        return redirect(canonical_url, permanent=True)
-
-    if not person.current_jurisdiction_id:
-        state = None
-        retired = True
-    elif not person.current_role:
-        #  this breaks if they held office in two states, but we don't really worry about that
-        state = jid_to_abbr(person.current_jurisdiction_id)
-        retired = True
-    else:
-        state = jid_to_abbr(person.current_jurisdiction_id)
-        retired = False
-        # does it start with a number?
-        if str(person.current_role["district"])[0] in "0123456789":
-            district_maybe = "District"
-    person.all_links = list(person.links.all())
-    person.all_offices = list(person.offices.all())
-
-    person.sponsored_bills = list(
-        Bill.objects.all()
-        .select_related(
-            "legislative_session",
-            "legislative_session__jurisdiction",
-        )
-        .filter(sponsorships__person=person)
-        .order_by("-created_at", "id")[:SPONSORED_BILLS_TO_SHOW]
-    )
-
-    votes = (
-        person.votes.all()
-        .select_related("vote_event", "vote_event__bill")
-        .order_by("-vote_event__start__date")[:RECENT_VOTES_TO_SHOW]
-    )
-    person.vote_events = []
-    for vote in votes:
-        vote_event = vote.vote_event
-        vote_event.legislator_vote = vote
-        person.vote_events.append(vote_event)
-
-    return render(
-        request,
-        "public/views/legislator.html",
-        {
-            "state": state,
-            "person": person,
-            "state_nav": "legislators",
-            "retired": retired,
-            "district_maybe": district_maybe,
-        },
-    )
+    redirect_person_id = ocd_person_id.replace("ocd-person/", "")
+    return redirect(f"https://pluralpolicy.com/app/person/{redirect_person_id}/", permanent=True)
