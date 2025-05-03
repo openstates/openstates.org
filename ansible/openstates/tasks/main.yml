@@ -169,7 +169,7 @@
 
   become_user: "openstates"
 - name: install packages via poetry
-  command: python3.9 -m poetry install # --deploy
+  command: python3.9 -m poetry install --no-root # --deploy
   changed_when: false
   args:
     chdir: /home/openstates/src/openstates.org
