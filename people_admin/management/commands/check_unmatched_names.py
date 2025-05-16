@@ -15,7 +15,9 @@ class Command(BaseCommand):
         parser.add_argument(
             "--no-deltas", dest="deltas", default=True, action="store_false"
         )
-        parser.add_argument("--active-sessions-only", dest="active", default=False, action="store_true")
+        parser.add_argument(
+            "--active-sessions-only", dest="active", default=False, action="store_true"
+        )
 
     def handle(self, *args, **options):
         states = set()

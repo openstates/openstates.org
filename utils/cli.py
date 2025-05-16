@@ -25,6 +25,9 @@ def yield_state_sessions(state: str, session: Optional[str], active_only=False):
         yield state, session
     else:
         # single state
-        sessions = sorted(s.identifier for s in sessions_with_bills(abbr_to_jid(state), active_only=active_only))
+        sessions = sorted(
+            s.identifier
+            for s in sessions_with_bills(abbr_to_jid(state), active_only=active_only)
+        )
         for session in sessions:
             yield state, session
