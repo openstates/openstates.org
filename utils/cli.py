@@ -2,7 +2,7 @@ from typing import Optional
 from utils.common import abbr_to_jid, states, sessions_with_bills
 
 
-def yield_state_sessions(state: str, session: Optional[str]):
+def yield_state_sessions(state: str, session: Optional[str], active_only=False):
     """
     parse provided options to get a list of sessions to process
     """
@@ -25,6 +25,6 @@ def yield_state_sessions(state: str, session: Optional[str]):
         yield state, session
     else:
         # single state
-        sessions = sorted(s.identifier for s in sessions_with_bills(abbr_to_jid(state)))
+        sessions = sorted(s.identifier for s in sessions_with_bills(abbr_to_jid(state), active_only=active_only))
         for session in sessions:
             yield state, session
