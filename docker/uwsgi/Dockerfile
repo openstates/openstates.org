@@ -49,7 +49,7 @@ RUN pip --no-cache-dir --disable-pip-version-check install poetry wheel
 RUN useradd -u $UID -Ulmr -d /home/openstates openstates
 USER openstates:openstates
 
-RUN poetry install --no-dev \
+RUN poetry install --no-dev --no-root \
     && rm -r ~/.cache/pypoetry/cache ~/.cache/pypoetry/artifacts/
 
 USER root
