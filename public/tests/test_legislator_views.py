@@ -1,7 +1,8 @@
 import pytest
 from graphapi.tests.utils import populate_db
-from openstates.data.models import Person
-from utils.common import pretty_url
+
+# from openstates.data.models import Person
+# from utils.common import pretty_url
 
 
 @pytest.mark.django_db
