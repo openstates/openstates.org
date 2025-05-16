@@ -46,6 +46,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: /github/workspace/docker/uwsgi/Dockerfile
+          file: docker/uwsgi/Dockerfile
           tags: "us-central1-docker.pkg.dev/civic-eagle-enview-prod/open-containers/openstates.org:latest,us-central1-docker.pkg.dev/civic-eagle-enview-prod/open-containers/openstates.org:${{ github.sha }}"
           push: true
