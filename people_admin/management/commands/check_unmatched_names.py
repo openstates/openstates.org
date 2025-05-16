@@ -15,11 +15,14 @@ class Command(BaseCommand):
         parser.add_argument(
             "--no-deltas", dest="deltas", default=True, action="store_false"
         )
+        parser.add_argument(
+            "--active-sessions-only", dest="active", default=False, action="store_true"
+        )
 
     def handle(self, *args, **options):
         states = set()
         for state, session in yield_state_sessions(
-            options["state"], options["session"]
+            options["state"], options["session"], active_only=options["active"]
         ):
             unmatched = update_unmatched(state, session)
             print(f"processed {unmatched} unmatched people for {state} {session}")
