@@ -66,6 +66,13 @@ openstates.org             : ok=41   changed=6]
 * Caching appears to happen somewhere between `nginx` and `uwsgi`. If still seeing "old" content, try restarting both
   with `systemctl`
 
+## Authentication providers
+
+Quick notes on third-party authentication providers configured through the allauth Django plugin:
+
+* Github: the [OAuth account](https://github.com/organizations/openstates/settings/applications/1197175) is owned by
+  the Open States oragniztaional account, nestled under Settings > Developer Settings > Oauth Apps
+
 ## Links
 
 * [Issues](https://github.com/openstates/issues/issues)
