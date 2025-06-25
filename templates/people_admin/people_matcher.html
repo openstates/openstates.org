@@ -68,6 +68,8 @@
         <h2>{{ session|default:"All Sessions" }}</h2>
         <h4>Unmatched Total: {{ unmatched_total }}</h4>
           <button type="button" class="button"><a href="{% url 'create_delta_sets' state %}">Create DeltaSet</a></button>
+          <p>Think you see multiple sponsors available for a match?</p>
+          <button type="button" class="button"><a href="{% url 'duplicate_sponsors' state %}">Duplicate Sponsors Available</a></button>
       </div>
       <div class="cell medium-5">
         </br>
