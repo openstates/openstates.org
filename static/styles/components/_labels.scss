@@ -15,10 +15,12 @@
 a.label {
     font-weight: $global-weight-bold;
     transition: opacity 200ms ease;
+    cursor: default;
 
-    &:hover {
-        opacity: 0.75;
-    }
+    // TODO: are tags going to be clickable?
+    // &:hover {
+    //     opacity: 0.75;
+    // }
 }
 
     .label__icon {

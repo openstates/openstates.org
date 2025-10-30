@@ -33,3 +33,8 @@ tr.row--align-top {
 .td-link, .td-link:hover, .td-link:visited {
   color: inherit;
 }
+
+.row-with-buttons {
+  display: grid;
+  grid-template-columns: 9fr 2fr;
+}
