@@ -39,13 +39,13 @@ urlpatterns = [
     ),
     path("tos/", TemplateView.as_view(template_name="flat/tos.html")),
     path("api/registered/", TemplateView.as_view(template_name="flat/registered.html")),
-    re_path(
-        "^api/v1",
-        RedirectView.as_view(
-            url="https://docs.openstates.org/api-v3/",
-            permanent=True,
-        ),
-    ),
+    # re_path(
+    #     "^api/v1",
+    #     RedirectView.as_view(
+    #         url="https://docs.openstates.org/api-v3/",
+    #         permanent=True,
+    #     ),
+    # ),
 ]
 
 
