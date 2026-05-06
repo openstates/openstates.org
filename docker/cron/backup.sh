@@ -28,6 +28,7 @@ rm -f schema.pgdump
 echo "Executing public data backup..."
 pg_dump -Fc openstatesorg --data-only \
   --table=opencivicdata* \
+  --table=openstates_personoffice \
   --table=django_migrations \
   --table=django_content_type \
   --table=django_site \
