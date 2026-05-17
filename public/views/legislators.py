@@ -30,6 +30,11 @@ def _people_from_lat_lon(lat, lon):
         }
       }
     }"""
+    # lat/lon come straight off the query string and get interpolated into a
+    # GraphQL query string below, so make sure they actually parse as floats
+    # before we hand the result to schema.execute.
+    lat = float(lat)
+    lon = float(lon)
     resp = schema.execute(PERSON_GEO_QUERY % (lat, lon))
 
     nodes = [node["node"] for node in resp.data["people"]["edges"]]
@@ -67,7 +72,12 @@ def find_your_legislator(request):
 
     if json and lat and lon:
         # got a passed lat/lon. Let's build off it.
-        people = _people_from_lat_lon(lat, lon)
+        try:
+            people = _people_from_lat_lon(lat, lon)
+        except ValueError:
+            return JsonResponse(
+                {"error": "lat and lon must be numeric"}, status=400
+            )
         return JsonResponse({"legislators": people})
 
     return render(request, "public/views/find_your_legislator.html", {})
