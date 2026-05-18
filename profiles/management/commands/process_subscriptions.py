@@ -117,7 +117,7 @@ def send_subscription_email(user, query_updates, bill_updates, dry_run=False):
 
     update_count = len(query_updates) + len(bill_updates)
     updates = "update" if update_count == 1 else "updates"
-    today = datetime.datetime.utcnow().strftime("%d %b %Y")
+    today = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None).strftime("%d %b %Y")
     if user.profile.subscription_frequency == DAILY:
         subject = f"Open States Daily Alert - {today}: {update_count} {updates}"
     else:
