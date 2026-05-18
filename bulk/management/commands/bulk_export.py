@@ -143,7 +143,7 @@ def export_session_csv(state, session):
     random = _str_uuid()
     filename = f"/tmp/{state}_{session}_csv_{random}.zip"
     zf = zipfile.ZipFile(filename, "w")
-    ts = datetime.datetime.utcnow()
+    ts = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
     zf.writestr(
         "README",
         f"""Open States Data Export
@@ -248,7 +248,7 @@ def export_session_json(state, session):
     random = _str_uuid()
     filename = f"/tmp/{state}_{session}_json_{random}.zip"
     zf = zipfile.ZipFile(filename, "w")
-    ts = datetime.datetime.utcnow()
+    ts = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
     zf.writestr(
         "README",
         f"""Open States Data Export

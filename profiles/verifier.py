@@ -84,7 +84,7 @@ def verify(key, zone):
         )
 
     # enforce daily quota
-    quota_range = datetime.datetime.utcnow().strftime("%Y%m%d")
+    quota_range = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None).strftime("%Y%m%d")
 
     if backend.get_and_inc_quota_value(key, zone, quota_range) > limit.daily_requests:
         raise QuotaError(f"quota exceeded: {limit.daily_requests}/day")
