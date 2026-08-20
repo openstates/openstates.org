@@ -19,7 +19,7 @@
 <div style="padding: .75rem 1.25rem; border: 1px solid #ffeeba; background-color: #fff3cd; margin-bottom: 1rem;">
     Open States is now Plural! The Open States website is now available at <a>open.pluralpolicy.com</a>.<br>
     You are welcome to continue using these tools while we prepare a migration process to help you adopt our new tools.<br>
-    You can try out an account using those new and improved tools now, at <a>https://pluralpolicy.com/get-started/</a>
+    Learn more about our Legislative Tracking tools at <a href="https://pluralpolicy.com/get-started/">Get Started With Plural</a>
 </div>
 <hr>
 
@@ -64,6 +64,7 @@
   <h2 class="heading">Manage Account</h2>
   <p>
     <ul>
+      <li><a href="mailto:contact@openstates.org">Request call volume increase</a> (email)</li>
       <li><a href="/accounts/email/">Manage Email Addresses</a></li>
       <li><a href="/accounts/password/change/">Change Your Password</a></li>
       <li><a href="/accounts/social/connections/">Manage Social Auth Connections</a></li>
@@ -78,12 +79,11 @@
   {% if request.user.profile.api_tier != "inactive" %}
   <dl class="apikey_details">
     <dt>API Key</dt>
-    <dd><pre class="apikey">{{ request.user.profile.api_key }}</dd>
+    <dd><pre class="apikey">{{ request.user.profile.api_key }}</pre></dd>
     <dt>Tier</dt>
     <dd>{{ request.user.profile.get_tier_details.name }} </dd>
-    <dt>GraphQL Limits</dt>
-    <dd>{{ request.user.profile.get_tier_details.v2.daily_requests }} daily requests</dd>
-    <dd>{{ request.user.profile.get_tier_details.v2.requests_per_second }} requests/sec</dd>
+    <dt>Increase</dt>
+    <dd><a href="mailto:contact@openstates.org">Request call volume increase</a> (email)</dd>
   </dl>
   {% if recent_usage %}
   <table>
@@ -94,7 +94,8 @@
   </table>
   {% endif %}
   <p>
-      To use the API check out the <a href="https://docs.openstates.org/api-v2/">GraphQL </a> or <a href="https://docs.openstates.org/api-v3/">v3</a> documentation or join our <a href="https://github.com/openstates/issues/discussions">discussion forum</a>.
+      To use the API check out the <a href="https://docs.openstates.org/api-v3/">v3</a> documentation.
+      <strong>Please note</strong>: The v2/GraphQL API is deprecated and will be shut down by 2027.
   </p>
 
   <p>
@@ -114,5 +115,11 @@
 </div>
 </div>
 
-{% include "account/_subscriptions.html" %}
+<section>
+  <p>
+    Subscriptions have been disabled, as bill tracking in this older application has been disabled.
+    Please learn more about where to find our current Legislative Tracking tools at
+    <a href="https://pluralpolicy.com/get-started/">Get Started With Plural</a>
+  </p>
+</section>
 {% endblock %}
