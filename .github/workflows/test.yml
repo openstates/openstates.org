@@ -49,7 +49,7 @@ jobs:
       - name: set poetry config path
         run: poetry config virtualenvs.path ~/.virtualenvs
       - name: install python dependencies
-        run: poetry install
+        run: poetry install --no-root
 
       - name: lint with flake8 and black
         run: poetry run inv lint

@@ -53,10 +53,19 @@ def pretty_url(obj):
         raise NotImplementedError(obj)
 
 
-def sessions_with_bills(jid):
-    return (
-        LegislativeSession.objects.filter(jurisdiction_id=jid)
-        .annotate(bill_count=Count("bills"))
-        .filter(bill_count__gt=0)
-        .order_by("-start_date", "-identifier")
-    )
+def sessions_with_bills(jid, active_only=False):
+    if active_only:
+        return (
+            LegislativeSession.objects.filter(jurisdiction_id=jid)
+            .annotate(bill_count=Count("bills"))
+            .filter(bill_count__gt=0)
+            .filter(active=True)
+            .order_by("-start_date", "-identifier")
+        )
+    else:
+        return (
+            LegislativeSession.objects.filter(jurisdiction_id=jid)
+            .annotate(bill_count=Count("bills"))
+            .filter(bill_count__gt=0)
+            .order_by("-start_date", "-identifier")
+        )

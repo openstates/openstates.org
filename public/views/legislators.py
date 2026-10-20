@@ -1,8 +1,8 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from graphapi.schema import schema
-from openstates.data.models import Person, Bill
-from utils.common import decode_uuid, jid_to_abbr, pretty_url
+from openstates.data.models import Person
+from utils.common import decode_uuid, pretty_url
 from utils.orgs import get_chambers_from_abbr
 from utils.people import person_as_dict
 
@@ -103,4 +103,6 @@ def person(request, person_id):
             person_id  # will be invalid and raise 404, but useful in logging later
         )
     redirect_person_id = ocd_person_id.replace("ocd-person/", "")
-    return redirect(f"https://pluralpolicy.com/app/person/{redirect_person_id}/", permanent=True)
+    return redirect(
+        f"https://pluralpolicy.com/app/person/{redirect_person_id}/", permanent=True
+    )

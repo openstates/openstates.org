@@ -115,12 +115,12 @@
     special_time: "daily"
     name: "renew certificate"
 
-- name: add process_subscriptions cron
-  cron:
-    job: ". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py process_subscriptions >> /tmp/subscriptions.log"
-    hour: "12"
-    minute: "30"
-    name: "process subscriptions"
+#- name: add process_subscriptions cron
+#  cron:
+#    job: ". /home/openstates/env_vars && /home/openstates/virt/bin/python /home/openstates/src/openstates.org/manage.py process_subscriptions >> /tmp/subscriptions.log"
+#    hour: "12"
+#    minute: "30"
+#    name: "process subscriptions"
 
 - name: add aggregate usage cron
   cron:

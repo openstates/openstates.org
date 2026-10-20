@@ -26,24 +26,24 @@ urlpatterns = [
     ),
     re_path(r"^person/.*\-(?P<person_id>[0-9A-Za-z]+)/$", person, name="person-detail"),
     # bills
-    re_path(
-        r"^(?P<state>{})/bills/$".format(state_abbr_pattern),
-        BillList.as_view(),
-        name="bills",
-    ),
-    # has trailing slash for consistency
-    re_path(
-        r"^(?P<state>{})/bills/feed/$".format(state_abbr_pattern),
-        BillListFeed.as_view(),
-        name="bills_feed",
-    ),
-    re_path(
-        r"^(?P<state>{})/bills/(?P<session>[-\w ]+)/(?P<bill_id>[-\w\. ]+)/$".format(
-            state_abbr_pattern
-        ),
-        bill,
-        name="bill",
-    ),
+    # re_path(
+    #     r"^(?P<state>{})/bills/$".format(state_abbr_pattern),
+    #     BillList.as_view(),
+    #     name="bills",
+    # ),
+    # # has trailing slash for consistency
+    # re_path(
+    #     r"^(?P<state>{})/bills/feed/$".format(state_abbr_pattern),
+    #     BillListFeed.as_view(),
+    #     name="bills_feed",
+    # ),
+    # re_path(
+    #     r"^(?P<state>{})/bills/(?P<session>[-\w ]+)/(?P<bill_id>[-\w\. ]+)/$".format(
+    #         state_abbr_pattern
+    #     ),
+    #     bill,
+    #     name="bill",
+    # ),
     re_path(r"^vote/(?P<vote_id>[-0-9a-f]+)/$", vote, name="vote-detail"),
     # fallbacks
     path("reportcard/", fallback),

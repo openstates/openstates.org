@@ -22,4 +22,4 @@ RUN pip install poetry
 
 ADD . /code
 WORKDIR /code
-RUN poetry install
+RUN poetry install --no-root
