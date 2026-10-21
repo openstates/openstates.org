@@ -1,8 +1,4 @@
 ---
-- name: add deadsnakes repo for Py 3.13
-  apt_repository:
-    repo: ppa:deadsnakes/ppa
-
 - name: install system packages
   apt:
     update_cache: yes
@@ -11,23 +7,10 @@
       - git
       - libpq-dev
       - gdal-bin
-      - uwsgi
-      - uwsgi-src
       - nginx
       - libgdal-dev
       - certbot
       - python3-certbot-nginx
-      - python3.13
-      - python3.13-dev
-
-- name: build python313 plugin
-  command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python313"
-  environment:
-    PYTHON: python3.13
-  args:
-    creates: /usr/lib/uwsgi/plugins/python313_plugin.so
-    chdir: /usr/lib/uwsgi/plugins/
-  changed_when: false
 
 - name: add localhost alias
   lineinfile:
@@ -152,7 +135,10 @@
   register: gitresult
 
 - name: create virtualenv
-  command: uv venv --python /usr/bin/python3.13 /home/openstates/virt{{ gitresult.after }}
+  # uv installs the Python version pinned in .python-version for this user
+  command: uv venv /home/openstates/virt{{ gitresult.after }}
+  args:
+    chdir: /home/openstates/src/openstates.org
   become_user: "openstates"
   changed_when: false
   notify:
@@ -167,7 +153,7 @@
 
   become_user: "openstates"
 - name: install packages via uv
-  command: uv sync --locked --no-dev
+  command: uv sync --locked --no-dev --group deploy
   changed_when: false
   args:
     chdir: /home/openstates/src/openstates.org
@@ -250,15 +236,53 @@
 #   command: /home/openstates/virt/bin/python manage.py loadmappings --settings=web.settings chdir=/home/openstates/src/openstates.org
 #   environment: '{{django_environment}}'
 
-# uwsgi
+# uwsgi (installed in the virtualenv from the "deploy" dependency group, so
+# it's always built against the app's Python)
+- name: make uwsgi log dir
+  file:
+    path: /var/log/uwsgi/app
+    state: directory
+    owner: openstates
+    group: openstates
+
+- name: rotate uwsgi log
+  copy:
+    src: files/logrotate-uwsgi
+    dest: /etc/logrotate.d/openstates-uwsgi
+    mode: 0644
+
 - name: write uwsgi template
   template:
     src: uwsgi.j2
-    dest: /etc/uwsgi/apps-enabled/openstates.ini
+    dest: /home/openstates/uwsgi.ini
+    owner: openstates
+    group: openstates
+    mode: 0600
   notify:
     - restart django-application
 
+- name: write uwsgi systemd unit
+  copy:
+    src: files/openstates-uwsgi.service
+    dest: /etc/systemd/system/openstates-uwsgi.service
+    mode: 0644
+  notify:
+    - restart django-application
+
+# Earlier deploys ran the app under Debian's uwsgi package with a
+# separately built Python plugin; remove it so it doesn't hold the socket.
+- name: remove distro uwsgi
+  apt:
+    pkg:
+      - uwsgi
+      - uwsgi-core
+      - uwsgi-src
+    state: absent
+    purge: yes
+
 - name: start uwsgi
-  service:
-    name: uwsgi
+  systemd:
+    name: openstates-uwsgi
     state: started
+    enabled: yes
+    daemon_reload: yes
