@@ -10,6 +10,9 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -30,7 +33,9 @@ jobs:
           - 5432:5432
     steps:
       - name: check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
+      - name: install GDAL and GEOS (needed by django.contrib.gis)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgdal-dev libgeos-dev
       # Python dependencies (Python version comes from .python-version)
       - name: install uv
         uses: astral-sh/setup-uv@v10.3.1
@@ -42,21 +47,14 @@ jobs:
       - name: lint with ruff
         run: uv run inv lint
 
-      # node dependencies
-      - name: setup Node 12
-        uses: actions/setup-node@v1
+      # node dependencies (same Node major as docker/uwsgi/Dockerfile)
+      - name: setup Node 16
+        uses: actions/setup-node@v7
         with:
-          node-version: '12'
-      - name: cache node_modules
-        uses: actions/cache@v3
-        id: node-cache
-        with:
-          path: ./node_modules
-          key: node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            node-${{ hashFiles('**/package-lock.json') }}
+          node-version: '16'
+          cache: npm
       - name: install node packages
-        run: npm install && npm run build
+        run: npm ci && npm run build
       - name: pytest
         run: uv run inv test --no-docker-db
         env:
