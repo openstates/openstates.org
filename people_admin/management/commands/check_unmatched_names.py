@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
+
 from utils.cli import yield_state_sessions
-from ...unmatched import update_unmatched, unmatched_to_deltas
+
+from ...unmatched import unmatched_to_deltas, update_unmatched
 
 # example command:
 # docker-compose run --rm django ./manage.py check_unmatched_names va

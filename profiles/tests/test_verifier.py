@@ -1,16 +1,17 @@
 import datetime
+
 import pytest
-from freezegun import freeze_time
 from django.contrib.auth.models import User
+from freezegun import freeze_time
+
 from ..models import KEY_TIERS, Limit
 from ..verifier import (
     CacheBackend,
-    verify,
-    VerificationError,
-    RateLimitError,
     QuotaError,
+    RateLimitError,
+    VerificationError,
+    verify,
 )
-
 
 KEY_TIERS.update(
     {

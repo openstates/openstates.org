@@ -1,16 +1,18 @@
 from django.urls import path, re_path
+
 from utils.common import states
+
 from .views import (
-    jurisdiction_list,
-    people_list,
-    people_matcher,
-    apply_match,
-    apply_retirement,
-    new_legislator,
-    apply_new_legislator,
     apply_bulk_edits,
+    apply_match,
+    apply_new_legislator,
+    apply_retirement,
     create_delta_sets,
     create_pr,
+    jurisdiction_list,
+    new_legislator,
+    people_list,
+    people_matcher,
 )
 
 # Only allow valid state abbreviations

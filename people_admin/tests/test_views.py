@@ -1,10 +1,12 @@
-import pytest
-from testutils.factories import create_test_person
-from django.contrib.auth.models import User, Permission
-from openstates.data.models import Person, Organization
-from people_admin.models import UnmatchedName, NameStatus, DeltaSet
-from people_admin.views import MATCHER_PERM, EDIT_PERM, RETIRE_PERM
 import json
+
+import pytest
+from django.contrib.auth.models import Permission, User
+from openstates.data.models import Organization, Person
+
+from people_admin.models import DeltaSet, NameStatus, UnmatchedName
+from people_admin.views import EDIT_PERM, MATCHER_PERM, RETIRE_PERM
+from testutils.factories import create_test_person
 
 
 @pytest.fixture

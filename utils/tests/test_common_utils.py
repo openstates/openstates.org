@@ -1,13 +1,15 @@
 import uuid
+
 import pytest
+from openstates.data.models import Bill, Division, Jurisdiction
+
 from utils.common import (
-    jid_to_abbr,
     abbr_to_jid,
-    encode_uuid,
     decode_uuid,
+    encode_uuid,
+    jid_to_abbr,
     sessions_with_bills,
 )
-from openstates.data.models import Division, Jurisdiction, Bill
 
 
 def test_jid_to_abbr():

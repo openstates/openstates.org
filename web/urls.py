@@ -1,12 +1,12 @@
-from django.urls import path, include, re_path
 from django.conf import settings
 from django.contrib import admin
+from django.urls import include, path, re_path
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from graphapi.views import KeyedGraphQLView
-from graphapi.middleware import QueryProtectionMiddleware
-from bundles.views import bundle_view
 
+from bundles.views import bundle_view
+from graphapi.middleware import QueryProtectionMiddleware
+from graphapi.views import KeyedGraphQLView
 
 urlpatterns = [
     path("djadmin/", admin.site.urls),

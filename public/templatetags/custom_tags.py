@@ -1,13 +1,13 @@
-import dateutil.parser
 import json
+
 import bleach
+import dateutil.parser
+import us
 from django import template
 from django.utils.safestring import mark_safe
-import us
 
-from utils.common import states, pretty_url
+from utils.common import pretty_url, states
 from utils.orgs import get_legislature_from_abbr
-
 
 register = template.Library()
 

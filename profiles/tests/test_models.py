@@ -1,7 +1,8 @@
 import pytest
 from django.contrib.auth.models import User
-from graphapi.tests.utils import populate_db
 from openstates.data.models import Person
+
+from graphapi.tests.utils import populate_db
 from profiles.models import Subscription
 
 COMPLEX_STR = (

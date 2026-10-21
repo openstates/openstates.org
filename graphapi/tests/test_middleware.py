@@ -1,7 +1,9 @@
 import pytest
+
 from graphapi.schema import schema
-from .utils import populate_db
+
 from ..middleware import QueryProtectionMiddleware
+from .utils import populate_db
 
 
 @pytest.mark.django_db

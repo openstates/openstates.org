@@ -1,11 +1,12 @@
 import pytest
 from openstates.data.models import Person
-from people_admin.models import UnmatchedName, NameStatus, DeltaSet
+
+from people_admin.models import DeltaSet, NameStatus, UnmatchedName
 from people_admin.unmatched import (
     check_sponsorships,
     check_votes,
-    update_unmatched,
     unmatched_to_deltas,
+    update_unmatched,
 )
 from testutils.factories import create_test_bill, create_test_vote
 

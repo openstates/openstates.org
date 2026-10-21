@@ -1,12 +1,14 @@
 from django.urls import path, re_path
+
+from utils.common import states
+
 from .views import (
-    user_overview,
     api_overview,
     dq_overview,
     dq_overview_session,
     dqr_listing,
+    user_overview,
 )
-from utils.common import states
 
 # Only allow valid state abbreviations
 state_abbrs = [s.abbr.lower() for s in states]

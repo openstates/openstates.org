@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import bundle_view, csv_view
 
 urlpatterns = [

@@ -1,4 +1,5 @@
 import logging
+
 from graphql.language.ast import FragmentSpread, Variable
 
 

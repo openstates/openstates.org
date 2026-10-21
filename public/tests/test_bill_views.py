@@ -1,7 +1,7 @@
 import pytest
-from graphapi.tests.utils import populate_db
 from openstates.data.models import VoteEvent
 
+from graphapi.tests.utils import populate_db
 
 # Bill list, bill detail, and bill feed views are disabled (see public/urls.py),
 # so their tests are commented out. The vote view is still active.

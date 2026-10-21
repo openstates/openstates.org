@@ -1,14 +1,16 @@
 import datetime
-from django.core.management.base import BaseCommand
+from statistics import mean
+
+import pytz
 from django import db
-from openstates.data.models import LegislativeSession, Bill, VoteEvent
+from django.core.management.base import BaseCommand
+from django.db.models import Count, Max, Min, Q
+from openstates.data.models import Bill, LegislativeSession, VoteEvent
+
+from dashboards.models import DataQualityReport
 from utils.cli import yield_state_sessions
 from utils.common import abbr_to_jid
 from utils.orgs import get_chambers_from_abbr
-import pytz
-from statistics import mean
-from dashboards.models import DataQualityReport
-from django.db.models import Max, Min, Count, Q
 
 
 def bill_qs(state, session, chamber):

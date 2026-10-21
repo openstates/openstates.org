@@ -1,12 +1,15 @@
+import base64
 import os
 import typing
-import base64
+
 import github
 import yaml
 import yamlordereddictloader
+
 from utils.common import jid_to_abbr
-from .models import DeltaSet, PullStatus
+
 from .diff import DiffItem, apply_diffs
+from .models import DeltaSet, PullStatus
 
 REPO_NAME = "openstates/people"
 _repo = None

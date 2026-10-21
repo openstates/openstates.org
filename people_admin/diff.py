@@ -14,6 +14,7 @@ action should be one of:
     - append: obj[key].append(param)
     - delete: obj.pop(key)      // param is not used
 """
+
 import typing
 from dataclasses import dataclass
 
