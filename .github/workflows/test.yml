@@ -39,7 +39,7 @@ jobs:
       - name: install python dependencies
         run: uv sync --locked
 
-      - name: lint with flake8 and black
+      - name: lint with ruff
         run: uv run inv lint
 
       # node dependencies

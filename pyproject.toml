@@ -38,8 +38,7 @@ dev = [
     "ipython",
     "pytest>=6.2.5,<7",
     "pytest-django>=4.5,<5",
-    "flake8>=7.0,<8",
-    "black>=22.3.0,<23",
+    "ruff",
 ]
 # installed in the production images/hosts only; builds from source
 deploy = [
@@ -49,13 +48,13 @@ deploy = [
 [tool.uv]
 package = false
 
-[tool.black]
-extend-exclude = '''
-/(
-  | openstates-postgres
-  | node_modules
-)/
-'''
+[tool.ruff]
+extend-exclude = ["*/migrations/*", "openstates-postgres"]
+
+[tool.ruff.lint]
+# explicit so ruff upgrades don't change what CI enforces
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]  # line length is left to the formatter
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "web.test_settings"

@@ -1,7 +1,8 @@
-from invoke import task
 import datetime
 import os
 import shutil
+
+from invoke import task
 
 
 def start_docker_db(c):
@@ -10,9 +11,9 @@ def start_docker_db(c):
         c.run("docker-compose --profile db up -d db")
     else:
         c.run("docker compose --profile db up -d db")
-    os.environ[
-        "DATABASE_URL"
-    ] = "postgres://openstates:openstates@localhost:5405/openstatesorg"
+    os.environ["DATABASE_URL"] = (
+        "postgres://openstates:openstates@localhost:5405/openstatesorg"
+    )
 
 
 def get_next_tag(c):
@@ -37,11 +38,8 @@ def test(c, args="", docker_db=True):
 
 @task
 def lint(c):
-    c.run(
-        "uv run flake8 --show-source --statistics",
-        pty=True,
-    )
-    c.run("uv run black --check --diff .", pty=True)
+    c.run("uv run ruff check .", pty=True)
+    c.run("uv run ruff format --check --diff .", pty=True)
 
 
 @task

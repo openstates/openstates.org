@@ -1,18 +1,19 @@
-default_language_version:
-    python: python3.13
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0  # Use the ref you want to point at
+    rev: v6.0.0
     hooks:
       - id: check-merge-conflict
       - id: debug-statements
--   repo: https://github.com/pycqa/flake8
-    rev: 5.0.4
+# use the ruff version locked in uv.lock, so pre-commit and CI always agree
+-   repo: local
     hooks:
-      - id: flake8
-        args: ['--max-line-length=120', '--ignore=E203,E501,W503']
-        exclude: scrapers/il/tests/
--   repo: https://github.com/ambv/black
-    rev: 22.6.0
-    hooks:
-      - id: black
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix --force-exclude
+        language: system
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format --force-exclude
+        language: system
+        types_or: [python, pyi]
