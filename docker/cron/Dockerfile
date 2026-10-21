@@ -1,4 +1,4 @@
-FROM python:3.9-bookworm
+FROM python:3.13-bookworm
 LABEL maintainer="James Turk <dev@jamesturk.net>"
 
 # global environment settings

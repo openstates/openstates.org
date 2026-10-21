@@ -1,5 +1,5 @@
 import graphene
-from collections import Iterable
+from collections.abc import Iterable
 from graphql_relay.connection.arrayconnection import connection_from_list_slice
 
 

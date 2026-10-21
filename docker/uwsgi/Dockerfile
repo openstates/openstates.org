@@ -1,4 +1,4 @@
-FROM python:3.9-bookworm
+FROM python:3.13-bookworm
 LABEL maintainer="James Turk <dev@jamesturk.net>"
 
 ARG UID=999
@@ -13,7 +13,6 @@ STOPSIGNAL SIGINT
 RUN apt-get --allow-releaseinfo-change update -qq \
     && apt-get install -y --no-install-recommends -qq \
         postgresql-client \
-        uwsgi \
         libpq5 \
         libgdal32 \
         libpcre3 \
@@ -25,10 +24,7 @@ RUN apt-get --allow-releaseinfo-change update -qq \
         libgdal-dev \
         libcap-dev \
         libpcre3-dev \
-        uwsgi-src \
-        awscli \
-    && cd /usr/lib/uwsgi/plugins \
-    && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
+        awscli
 
 # copy code and entrypoint in
 ADD . /code/
@@ -43,7 +39,7 @@ RUN curl https://deb.nodesource.com/setup_16.x -SsLo nodesource.sh \
     && rm -rf /var/lib/apt/lists/*
 RUN npm ci \
     && npm run build
-RUN pip --no-cache-dir --disable-pip-version-check install poetry wheel
+RUN pip --no-cache-dir --disable-pip-version-check install poetry wheel "uwsgi>=2.0.28"
 
 # everything after here as openstates user
 RUN useradd -u $UID -Ulmr -d /home/openstates openstates
@@ -64,7 +60,6 @@ RUN apt-get remove -y -qq build-essential \
       libgdal-dev \
       libcap-dev \
       libpcre3-dev \
-      uwsgi-src \
     && apt-get autoremove -y
 USER openstates:openstates
 
@@ -78,7 +73,6 @@ ENV UWSGI_MASTER=1 \
   UWSGI_BUFFER_SIZE=8096 \
   UWSGI_HARAKIRI=30 \
   UWSGI_SINGLE_INTERPRETER=1 \
-  UWSGI_PLUGIN=python39 \
   UWSGI_SOCKET=:9999
 
 ENTRYPOINT ["custom-entrypoint"]

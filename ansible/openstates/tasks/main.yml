@@ -1,5 +1,5 @@
 ---
-- name: add deadsnakes repo for Py 3.9
+- name: add deadsnakes repo for Py 3.13
   apt_repository:
     repo: ppa:deadsnakes/ppa
 
@@ -17,16 +17,15 @@
       - libgdal-dev
       - certbot
       - python3-certbot-nginx
-      - python3.9
-      - python3.9-dev
-      - python3.9-distutils
+      - python3.13
+      - python3.13-dev
 
-- name: build python39 plugin
-  command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
+- name: build python313 plugin
+  command: uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python313"
   environment:
-    PYTHON: python3.9
+    PYTHON: python3.13
   args:
-    creates: /usr/lib/uwsgi/plugins/python39_plugin.so
+    creates: /usr/lib/uwsgi/plugins/python313_plugin.so
     chdir: /usr/lib/uwsgi/plugins/
   changed_when: false
 
@@ -94,12 +93,12 @@
     dest: /tmp/get-pip.py
 
 - name: install pip
-  command: python3.9 /tmp/get-pip.py
+  command: python3.13 /tmp/get-pip.py
   become_user: "openstates"
   changed_when: false
 
 - name: install poetry
-  command: python3.9 -m pip install --upgrade poetry virtualenv
+  command: python3.13 -m pip install --upgrade poetry virtualenv
   become_user: "openstates"
   changed_when: false
 
@@ -154,7 +153,7 @@
   register: gitresult
 
 - name: create virtualenv
-  command: python3.9 -m virtualenv /home/openstates/virt{{ gitresult.after }}
+  command: python3.13 -m virtualenv /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
   changed_when: false
   notify:
@@ -162,14 +161,14 @@
 
 - name: add checkouts to python path
   lineinfile:
-    dest: "/home/openstates/virt{{ gitresult.after }}/lib/python3.9/site-packages/checkouts.pth"
+    dest: "/home/openstates/virt{{ gitresult.after }}/lib/python3.13/site-packages/checkouts.pth"
     create: yes
     state: present
     line: /home/openstates/src/openstates.org
 
   become_user: "openstates"
 - name: install packages via poetry
-  command: python3.9 -m poetry install --no-root # --deploy
+  command: python3.13 -m poetry install --no-root # --deploy
   changed_when: false
   args:
     chdir: /home/openstates/src/openstates.org
