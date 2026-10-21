@@ -31,30 +31,16 @@ jobs:
     steps:
       - name: check out code
         uses: actions/checkout@v3
-      # Python dependencies
-      - name: setup Python 3.13
-        uses: actions/setup-python@v4
+      # Python dependencies (Python version comes from .python-version)
+      - name: install uv
+        uses: astral-sh/setup-uv@v10.3.1
         with:
-          python-version: "3.13"
-      - name: install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.8.5
-      - name: cache Poetry virtualenv
-        uses: actions/cache@v3
-        id: poetry-cache
-        with:
-          path: ~/.virtualenvs/
-          key: poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            poetry-${{ hashFiles('**/poetry.lock') }}
-      - name: set poetry config path
-        run: poetry config virtualenvs.path ~/.virtualenvs
+          enable-cache: true
       - name: install python dependencies
-        run: poetry install --no-root
+        run: uv sync --locked
 
       - name: lint with flake8 and black
-        run: poetry run inv lint
+        run: uv run inv lint
 
       # node dependencies
       - name: setup Node 12
@@ -72,6 +58,6 @@ jobs:
       - name: install node packages
         run: npm install && npm run build
       - name: pytest
-        run: poetry run inv test --no-docker-db
+        run: uv run inv test --no-docker-db
         env:
           DATABASE_URL: postgresql://test:test@localhost/test

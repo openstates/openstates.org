@@ -1,45 +1,53 @@
-[tool.poetry]
+[project]
 name = "openstates.org"
 version = "3.4"
 description = ""
-authors = ["James Turk <dev@jamesturk.net>"]
+authors = [{ name = "James Turk", email = "dev@jamesturk.net" }]
+requires-python = ">=3.13,<4"
+dependencies = [
+    "Django==3.2.14",
+    "django-cors-headers>=3.7,<4",
+    "django-allauth>=0.50.0,<0.51",
+    "django-recaptcha>=3.0.0,<4",
+    "django-redis-cache>=3.0.0,<4",
+    "graphene-django>=2.15,<3",
+    "graphene-graphiql-explorer>=0.0.1,<0.0.2",
+    "dj-database-url>=0.5.0,<0.6",
+    "whitenoise>=5.2,<6",
+    "pybase62>=0.4.3,<0.5",
+    "python-dateutil>=2.8,<3",
+    "feedparser>=6.0.11,<7",
+    "boto3>=1.9,<2",
+    "newrelic>=10.0,<11",
+    "bleach>=3.1,<4",
+    "structlog>=20.1.0,<21",
+    "colorama>=0.4.3,<0.5",
+    "openstates==6.26.3",
+    "rrl>=0.3.1,<0.4",
+    "PyGithub>=1.54.1,<2",
+    "yamlordereddictloader>=0.4.0,<0.5",
+    # redis<4 (pinned by rrl and django-redis-cache) imports distutils, which
+    # Python 3.12 removed; setuptools provides the replacement
+    "setuptools",
+]
 
-[tool.poetry.dependencies]
-python = "^3.13"
-Django = "3.2.14"
-django-cors-headers = "^3.7"
-django-allauth = "^0.50.0"
-django-recaptcha = "^3.0.0"
-django-redis-cache = "^3.0.0"
-graphene-django = "^2.15"
-graphene-graphiql-explorer = "^0.0.1"
-dj-database-url = "^0.5.0"
-whitenoise = "^5.2"
-pybase62 = "^0.4.3"
-python-dateutil = "^2.8"
-feedparser = "6.0.2"
-boto3 = "^1.9"
-newrelic = "^10.0"
-bleach = "^3.1"
-structlog = "^20.1.0"
-colorama = "^0.4.3"
-freezegun = "^1.5"
-openstates = "6.26.3"
-rrl = "^0.3.1"
-PyGithub = "^1.54.1"
-yamlordereddictloader = "^0.4.0"
+[dependency-groups]
+dev = [
+    "freezegun>=1.5,<2",
+    "invoke>=2.2,<3",
+    "ipython",
+    "pytest>=6.2.5,<7",
+    "pytest-django>=4.5,<5",
+    "flake8>=7.0,<8",
+    "black>=22.3.0,<23",
+]
+# installed in the production images/hosts only; builds from source
+deploy = [
+    "uwsgi>=2.0.28",
+]
 
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-pytest-django = "^4.5"
-flake8 = "^7.0"
-ipython = "^7.31"
-invoke = "^2.2"
-black = "^22.3.0"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.uv]
+package = false
 
 [tool.black]
 extend-exclude = '''
@@ -48,3 +56,7 @@ extend-exclude = '''
   | node_modules
 )/
 '''
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "web.test_settings"
+norecursedirs = ["node_modules", ".git", "openstates-postgres"]

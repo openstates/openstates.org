@@ -87,20 +87,19 @@
     pkg:
       - nodejs
 
-- name: get pip
+- name: download uv installer
   get_url:
-    url: https://bootstrap.pypa.io/get-pip.py
-    dest: /tmp/get-pip.py
+    url: https://astral.sh/uv/0.13.4/install.sh
+    dest: /tmp/uv-install.sh
+    mode: 0755
 
-- name: install pip
-  command: python3.13 /tmp/get-pip.py
-  become_user: "openstates"
-  changed_when: false
-
-- name: install poetry
-  command: python3.13 -m pip install --upgrade poetry virtualenv
-  become_user: "openstates"
-  changed_when: false
+- name: install uv
+  command: /tmp/uv-install.sh
+  environment:
+    UV_INSTALL_DIR: /usr/local/bin
+    UV_NO_MODIFY_PATH: "1"
+  args:
+    creates: /usr/local/bin/uv
 
 # letsencrypt & cronjobs
 
@@ -153,7 +152,7 @@
   register: gitresult
 
 - name: create virtualenv
-  command: python3.13 -m virtualenv /home/openstates/virt{{ gitresult.after }}
+  command: uv venv --python /usr/bin/python3.13 /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
   changed_when: false
   notify:
@@ -167,13 +166,13 @@
     line: /home/openstates/src/openstates.org
 
   become_user: "openstates"
-- name: install packages via poetry
-  command: python3.13 -m poetry install --no-root # --deploy
+- name: install packages via uv
+  command: uv sync --locked --no-dev
   changed_when: false
   args:
     chdir: /home/openstates/src/openstates.org
   environment:
-    VIRTUAL_ENV: /home/openstates/virt{{ gitresult.after }}
+    UV_PROJECT_ENVIRONMENT: /home/openstates/virt{{ gitresult.after }}
   become_user: "openstates"
 
 - name: link virtualenv

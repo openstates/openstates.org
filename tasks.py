@@ -28,31 +28,27 @@ def get_next_tag(c):
     return f"{prefix}.{release_num:02}"
 
 
-def poetry_install(c):
-    c.run("poetry install")
-
-
 @task
 def test(c, args="", docker_db=True):
     if docker_db:
         start_docker_db(c)
-    c.run("poetry run pytest --ds web.test_settings --reuse-db " + args, pty=True)
+    c.run("uv run pytest --reuse-db " + args, pty=True)
 
 
 @task
 def lint(c):
     c.run(
-        "poetry run flake8 --show-source --statistics",
+        "uv run flake8 --show-source --statistics",
         pty=True,
     )
-    c.run("poetry run black --check --diff .", pty=True)
+    c.run("uv run black --check --diff .", pty=True)
 
 
 @task
 def runserver(c, docker_db=True):
     if docker_db:
         start_docker_db(c)
-    c.run("poetry run ./manage.py runserver", pty=True)
+    c.run("uv run ./manage.py runserver", pty=True)
 
 
 @task

@@ -245,7 +245,7 @@ def create_dqr(state, session):
 
 
 # Example command
-# docker-compose run --rm django poetry run ./manage.py data_quality VA
+# docker-compose run --rm django ./manage.py data_quality VA
 class Command(BaseCommand):
     help = "create data quality objects for dashboards"
 
