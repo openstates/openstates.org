@@ -77,6 +77,7 @@ def _docver_to_json(dv):
 
 def _vote_to_json(v):
     return {
+        "id": v.id,
         "identifier": v.identifier,
         "motion_text": v.motion_text,
         "motion_classification": v.motion_classification,
