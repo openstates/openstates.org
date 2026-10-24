@@ -73,15 +73,15 @@ def deploy(c):
 
     # tag the release in git and newrelic
     next_tag = get_next_tag(c)
-  #   c.run(
-  #       f"""curl -X POST \
-  #   "https://api.newrelic.com/v2/applications/{NEWRELIC_APP_ID}/deployments.json" \
-  #        -H "X-Api-Key:{NEWRELIC_API_KEY}" -i \
-  #        -H "Content-Type: application/json" \
-  #        -d \
-  #   '{{ "deployment": {{ "revision": "{next_tag}", "changelog": "", "description": "", "user": "" }} }}'
-  # """
-  #   )
+    #   c.run(
+    #       f"""curl -X POST \
+    #   "https://api.newrelic.com/v2/applications/{NEWRELIC_APP_ID}/deployments.json" \
+    #        -H "X-Api-Key:{NEWRELIC_API_KEY}" -i \
+    #        -H "Content-Type: application/json" \
+    #        -d \
+    #   '{{ "deployment": {{ "revision": "{next_tag}", "changelog": "", "description": "", "user": "" }} }}'
+    # """
+    #   )
     c.run(f"git tag {next_tag}")
     c.run("git push --tags")
 
