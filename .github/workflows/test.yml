@@ -38,6 +38,8 @@ jobs:
           python-version: 3.9
       - name: install Poetry
         uses: snok/install-poetry@v1
+        with:
+          version: 1.8.5
       - name: cache Poetry virtualenv
         uses: actions/cache@v3
         id: poetry-cache
