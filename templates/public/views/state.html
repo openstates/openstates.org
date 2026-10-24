@@ -53,7 +53,6 @@
                 {% endfor %}
                 </div>
             </div>
-            <a class="button" href="{% url 'bills' state %}">View more bills</a>
         </div>
 
         {% if recently_passed_bills %}
@@ -66,7 +65,6 @@
                 {% endfor %}
                 </div>
             </div>
-            <a class="button" href="{% url 'bills' state %}">View more bills</a>
         </div>
         {% endif %}
     </section>
@@ -82,8 +80,8 @@
             <tbody>
                 {% for session in all_sessions %}
                     <tr>
-                        <td><a href="{% url 'bills' state %}?session={{ session.identifier }}">{{ session.name }}</a></td>
-                        <td><a href="{% url 'bills' state %}?session={{ session.identifier }}">{{ session.bill_count }}</a></td>
+                        <td>{{ session.name }}</td>
+                        <td>{{ session.bill_count }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
