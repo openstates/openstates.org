@@ -1,14 +1,16 @@
+import datetime
 import json
 import uuid
-import datetime
 from collections import defaultdict
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.views.decorators.http import require_POST
-from django.contrib import messages
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
-from django.http import JsonResponse, HttpResponseBadRequest
-from .models import Subscription, Profile, Notification, WEEKLY
+from django.views.decorators.http import require_POST
+
+from .models import WEEKLY, Notification, Profile, Subscription
 
 
 class PermissionException(Exception):

@@ -1,14 +1,16 @@
 import datetime
+
 import pytest
 from django.core.management import call_command
+
 from dashboards.management.commands.data_quality import (
+    DataQualityReport,
     average_number_data,
-    vote_data,
-    total_bills_per_session,
-    no_sources,
     bill_subjects,
     bills_versions,
-    DataQualityReport,
+    no_sources,
+    total_bills_per_session,
+    vote_data,
 )
 from testutils.factories import create_test_bill, create_test_vote
 

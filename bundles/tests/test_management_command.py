@@ -1,7 +1,8 @@
 import pytest
 from django.core.management import call_command
-from graphapi.tests.utils import populate_db
+
 from bundles.models import Bundle
+from graphapi.tests.utils import populate_db
 
 
 @pytest.mark.django_db

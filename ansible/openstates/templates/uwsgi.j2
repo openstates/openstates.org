@@ -1,9 +1,8 @@
 [uwsgi]
-uid = openstates
-gid = openstates
 socket = /home/openstates/uwsgi.sock
 stats = /home/openstates/uwsgi-stats.sock
 virtualenv = /home/openstates/virt/
+logto = /var/log/uwsgi/app/openstates.log
 master = true
 vacuum = true
 chmod-socket = 666

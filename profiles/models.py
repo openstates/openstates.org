@@ -1,14 +1,16 @@
-import uuid
 import urllib.parse
-import base62
+import uuid
 from collections import namedtuple
-from django.db import models
+
+import base62
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
-from utils.common import pretty_url
-from openstates.data.models import Person, Bill
-from .utils import utcnow
+from django.db import models
+from openstates.data.models import Bill, Person
 
+from utils.common import pretty_url
+
+from .utils import utcnow
 
 DAILY = "d"
 WEEKLY = "w"

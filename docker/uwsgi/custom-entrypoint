@@ -4,9 +4,7 @@ set -e
 # based on https://cloudonaut.io/how-to-dockerize-your-python-django-application-for-aws-fargate/
 
 echo "running collectstatic"
-poetry run ./manage.py collectstatic --noinput
-
-export UWSGI_VIRTUALENV=$(poetry env info --path)
+./manage.py collectstatic --noinput
 
 echo "running $@"
 exec "$@"

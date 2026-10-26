@@ -1,37 +1,40 @@
-import os
 import csv
-import json
 import datetime
+import json
+import os
 import tempfile
-import zipfile
 import uuid
-import boto3
+import zipfile
+
 import base62
+import boto3
 from django.core.management.base import BaseCommand
 from django.db.models import F
-from openstates.metadata import STATES_BY_NAME
 from openstates.data.models import (
-    LegislativeSession,
     Bill,
     BillAbstract,
     BillAction,
-    BillTitle,
-    BillIdentifier,
-    RelatedBill,
-    BillSponsorship,
     BillDocument,
-    BillVersion,
     BillDocumentLink,
-    BillVersionLink,
+    BillIdentifier,
     BillSource,
-    VoteEvent,
+    BillSponsorship,
+    BillTitle,
+    BillVersion,
+    BillVersionLink,
+    LegislativeSession,
     Organization,
     PersonVote,
+    RelatedBill,
     VoteCount,
+    VoteEvent,
     VoteSource,
 )
-from ...models import DataExport
+from openstates.metadata import STATES_BY_NAME
+
 from utils.common import abbr_to_jid
+
+from ...models import DataExport
 
 
 def _str_uuid():

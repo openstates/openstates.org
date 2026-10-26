@@ -1,9 +1,11 @@
 import json
 import zipfile
+
 import pytest
 from openstates.data.models import VoteEvent
-from graphapi.tests.utils import populate_db
+
 from bulk.management.commands.bulk_export import export_session_json
+from graphapi.tests.utils import populate_db
 
 
 @pytest.mark.django_db

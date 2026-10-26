@@ -1,5 +1,6 @@
-from .common import abbr_to_jid, pretty_url
 from openstates.data.models import Organization
+
+from .common import abbr_to_jid, pretty_url
 
 
 def get_chambers_from_abbr(abbr):

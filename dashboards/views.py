@@ -1,15 +1,17 @@
 import datetime
-from collections import defaultdict, Counter
-from django.contrib.auth.decorators import user_passes_test
-from django.db.models import Count, F
-from django.contrib.auth.models import User
-from django.shortcuts import render
+from collections import Counter, defaultdict
+
 from allauth.socialaccount.models import SocialAccount
-from profiles.models import Subscription, Notification, UsageReport, Profile, KEY_TIERS
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
+from django.db.models import Count, F
+from django.shortcuts import render
+from openstates.data.models import LegislativeSession
+
+from dashboards.models import DataQualityReport
+from profiles.models import KEY_TIERS, Notification, Profile, Subscription, UsageReport
 from utils.common import abbr_to_jid, sessions_with_bills, states
 from utils.orgs import get_chambers_from_abbr
-from dashboards.models import DataQualityReport
-from openstates.data.models import LegislativeSession
 
 
 def dqr_listing(request):

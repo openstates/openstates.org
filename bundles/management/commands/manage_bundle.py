@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
-from ...models import Bundle
+
 from utils.bills import search_bills
+
+from ...models import Bundle
 
 
 class Command(BaseCommand):

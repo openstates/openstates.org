@@ -1,4 +1,4 @@
-FROM python:3.9-bookworm
+FROM python:3.13-bookworm
 LABEL maintainer="James Turk <dev@jamesturk.net>"
 
 ARG UID=999
@@ -10,10 +10,17 @@ ENV PYTHONUNBUFFERED=1 \
   LANG='C.UTF-8'
 STOPSIGNAL SIGINT
 
+COPY --from=ghcr.io/astral-sh/uv:0.13.4 /uv /uvx /bin/
+# venv lives outside /code so the dev bind mount (.:/code) doesn't hide it
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
+  UV_PYTHON_DOWNLOADS=never \
+  UV_COMPILE_BYTECODE=1 \
+  UV_LINK_MODE=copy \
+  PATH=/opt/venv/bin:$PATH
+
 RUN apt-get --allow-releaseinfo-change update -qq \
     && apt-get install -y --no-install-recommends -qq \
         postgresql-client \
-        uwsgi \
         libpq5 \
         libgdal32 \
         libpcre3 \
@@ -25,10 +32,7 @@ RUN apt-get --allow-releaseinfo-change update -qq \
         libgdal-dev \
         libcap-dev \
         libpcre3-dev \
-        uwsgi-src \
-        awscli \
-    && cd /usr/lib/uwsgi/plugins \
-    && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python39"
+        awscli
 
 # copy code and entrypoint in
 ADD . /code/
@@ -43,14 +47,13 @@ RUN curl https://deb.nodesource.com/setup_16.x -SsLo nodesource.sh \
     && rm -rf /var/lib/apt/lists/*
 RUN npm ci \
     && npm run build
-RUN pip --no-cache-dir --disable-pip-version-check install poetry wheel
 
 # everything after here as openstates user
-RUN useradd -u $UID -Ulmr -d /home/openstates openstates
+RUN useradd -u $UID -Ulmr -d /home/openstates openstates \
+    && install -d -o openstates -g openstates /opt/venv /code/collected_static
 USER openstates:openstates
 
-RUN poetry install --without dev --no-root \
-    && rm -r ~/.cache/pypoetry/cache ~/.cache/pypoetry/artifacts/
+RUN uv sync --locked --no-dev --group deploy --no-cache
 
 USER root
 RUN apt-get remove -y -qq build-essential \
@@ -64,7 +67,6 @@ RUN apt-get remove -y -qq build-essential \
       libgdal-dev \
       libcap-dev \
       libpcre3-dev \
-      uwsgi-src \
     && apt-get autoremove -y
 USER openstates:openstates
 
@@ -78,8 +80,8 @@ ENV UWSGI_MASTER=1 \
   UWSGI_BUFFER_SIZE=8096 \
   UWSGI_HARAKIRI=30 \
   UWSGI_SINGLE_INTERPRETER=1 \
-  UWSGI_PLUGIN=python39 \
-  UWSGI_SOCKET=:9999
+  UWSGI_SOCKET=:9999 \
+  UWSGI_VIRTUALENV=/opt/venv
 
 ENTRYPOINT ["custom-entrypoint"]
 CMD ["uwsgi", "--show-config"]

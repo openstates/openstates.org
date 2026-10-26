@@ -1,4 +1,5 @@
 import pytest
+
 from ..diff import apply_diff_item
 
 

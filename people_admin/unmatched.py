@@ -1,10 +1,13 @@
 import typing
 from collections import defaultdict
-from django.db.models import Count
+
 from django.contrib.auth.models import User
+from django.db.models import Count
 from openstates.data.models import BillSponsorship, LegislativeSession, PersonVote
+
 from utils.common import abbr_to_jid
-from .models import UnmatchedName, NameStatus, DeltaSet, PersonDelta
+
+from .models import DeltaSet, NameStatus, PersonDelta, UnmatchedName
 
 
 def check_sponsorships(session: LegislativeSession) -> typing.Dict[str, int]:

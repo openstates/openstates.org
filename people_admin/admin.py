@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import UnmatchedName, DeltaSet
+
+from .models import DeltaSet, UnmatchedName
 
 
 @admin.register(UnmatchedName)
