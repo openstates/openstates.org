@@ -1,5 +1,5 @@
 FROM python:3.13-bookworm
-LABEL maintainer="James Turk <dev@jamesturk.net>"
+LABEL maintainer="Jesse Mortenson <jesse.mortenson@sai360.com>"
 
 ARG UID=999
 

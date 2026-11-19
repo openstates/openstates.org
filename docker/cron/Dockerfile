@@ -1,5 +1,5 @@
 FROM python:3.13-bookworm
-LABEL maintainer="James Turk <dev@jamesturk.net>"
+LABEL maintainer="Jesse Mortenson <jesse.mortenson@sai360.com>"
 
 # global environment settings
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING='utf-8' LANG='C.UTF-8'

@@ -40,7 +40,7 @@ elif os.environ.get("DEBUG", "true").lower() == "false":
     # non-debug settings
     DEBUG = False
     ALLOWED_HOSTS = ["*"]
-    ADMINS = [("James Turk", "dev@jamesturk.net")]
+    ADMINS = [("Jesse Mortenson", "jesse.mortenson@sai360.com")]
     # DOMAIN = ''
     SECRET_KEY = os.environ["SECRET_KEY"]
     EMAIL_HOST = os.environ["EMAIL_HOST"]

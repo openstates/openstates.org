@@ -2,7 +2,7 @@
 name = "openstates.org"
 version = "3.4"
 description = ""
-authors = [{ name = "James Turk", email = "dev@jamesturk.net" }]
+authors = [{ name = "Jesse Mortenson", email = "jesse.mortenson@sai360.com" }]
 requires-python = ">=3.13,<4"
 dependencies = [
     "Django==3.2.14",
