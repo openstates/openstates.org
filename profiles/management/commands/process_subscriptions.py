@@ -1,14 +1,17 @@
 import datetime
-from django.core.management.base import BaseCommand
+
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from django.core.management.base import BaseCommand
 from django.db import transaction
-from ...utils import utcnow
-from ...models import DAILY, WEEKLY, Notification
-from utils.bills import search_bills
-from profiles.models import Subscription
+from django.template.loader import render_to_string
 from structlog import get_logger
+
+from profiles.models import Subscription
+from utils.bills import search_bills
+
+from ...models import DAILY, WEEKLY, Notification
+from ...utils import utcnow
 
 logger = get_logger("openstates")
 

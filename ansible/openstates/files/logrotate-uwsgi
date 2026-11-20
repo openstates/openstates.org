@@ -1,0 +1,10 @@
+# delaycompress keeps openstates.log.1 uncompressed for the aggregate usage cron
+/var/log/uwsgi/app/openstates.log {
+    daily
+    rotate 5
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}

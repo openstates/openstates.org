@@ -1,24 +1,26 @@
 import json
+
 import us
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Count
-from openstates.data.models import LegislativeSession, Person
-from utils.common import abbr_to_jid, sessions_with_bills, states
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Count
 from django.http import JsonResponse
-from .unmatched import unmatched_to_deltas
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_http_methods
+from openstates.data.models import LegislativeSession, Person
+
+from people_admin.git import delta_set_to_pr
 from people_admin.models import (
-    UnmatchedName,
-    NameStatus,
     DeltaSet,
+    NameStatus,
+    NewPerson,
     PersonDelta,
     PersonRetirement,
-    NewPerson,
+    UnmatchedName,
 )
-from people_admin.git import delta_set_to_pr
+from utils.common import abbr_to_jid, sessions_with_bills, states
 
+from .unmatched import unmatched_to_deltas
 
 MATCHER_PERM = "people_admin.can_match_names"
 EDIT_PERM = "people_admin.can_edit"

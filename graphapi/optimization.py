@@ -1,4 +1,5 @@
 import re
+
 from graphql.language.ast import FragmentSpread
 
 

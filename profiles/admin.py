@@ -1,5 +1,6 @@
 from django.contrib import admin
-from profiles.models import Profile, Subscription, Notification
+
+from profiles.models import Notification, Profile, Subscription
 
 
 @admin.register(Profile)

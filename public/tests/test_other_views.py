@@ -1,4 +1,5 @@
 import pytest
+
 from graphapi.tests.utils import populate_db, populate_unicam
 
 

@@ -1,5 +1,7 @@
 import time
+
 from structlog import get_logger
+
 from profiles.verifier import get_key_from_request
 
 logger = get_logger("openstates")

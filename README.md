@@ -18,7 +18,7 @@ which by default will run in docker.
     * For some reason my DB ended up missing a row representing the Django Site. This resulted in something like "Site
       not found" error when trying to log in/register. Solution was:
         * Get shell on the running container `sudo docker exec -it openstatesorg-django-1 /bin/bash`
-        * In that shell run `poetry run python manage.py shell --settings=web.settings`
+        * In that shell run `python manage.py shell --settings=web.settings`
         * In THAT shell
           run `from django.contrib.sites.models import Site;Site.objects.get_or_create(domain='openstates.org', name='openstates.org')`
         * However for me this created an entry with `SITE_ID` of `2` when `1` is the necessary value to match up
@@ -32,7 +32,7 @@ which by default will run in docker.
 * You will need permissions on the Open States AWS account to be able to interact with
   at least the parameter store and the EC2 instance where the site is deployed
 * You need the SSH private key to access the EC2 instance, stored at `~/.ssh/openstates-master.pem`
-* Ensure that you have the correct python version installed via pyenv
+* Install [uv](https://docs.astral.sh/uv/getting-started/installation/); it reads `.python-version` and installs the right Python
 * Install the [aws cli tool](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 * Install [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible),
 such that `ansible-playbook` command is available. (There are recent changes in the package re: `ansible-community`
@@ -47,7 +47,7 @@ my operating system's package manager)
   of ansible tasks:
 
 ```
-poetry run inv deploy
+uv run inv deploy
 ```
 
 All the steps should be OK. It's normal to see a lot of output of things changing. You should get to

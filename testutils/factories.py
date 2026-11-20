@@ -1,5 +1,6 @@
 import random
-from openstates.data.models import Organization, Bill, LegislativeSession, Person, Post
+
+from openstates.data.models import Bill, LegislativeSession, Organization, Person, Post
 
 
 def create_test_bill(

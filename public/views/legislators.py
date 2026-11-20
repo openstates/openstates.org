@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from graphapi.schema import schema
+from django.shortcuts import redirect, render
 from openstates.data.models import Person
+
+from graphapi.schema import schema
 from utils.common import decode_uuid, pretty_url
 from utils.orgs import get_chambers_from_abbr
 from utils.people import person_as_dict

@@ -1,0 +1,16 @@
+[Unit]
+Description=openstates.org uWSGI
+After=network.target
+
+[Service]
+User=openstates
+Group=openstates
+WorkingDirectory=/home/openstates/src/openstates.org
+ExecStart=/home/openstates/virt/bin/uwsgi --ini /home/openstates/uwsgi.ini
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target

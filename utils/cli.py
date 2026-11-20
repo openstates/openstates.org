@@ -1,5 +1,6 @@
 from typing import Optional
-from utils.common import abbr_to_jid, states, sessions_with_bills
+
+from utils.common import abbr_to_jid, sessions_with_bills, states
 
 
 def yield_state_sessions(state: str, session: Optional[str], active_only=False):

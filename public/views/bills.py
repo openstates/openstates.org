@@ -1,23 +1,26 @@
 from collections import defaultdict
-from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Func, Prefetch
-from django.http import HttpResponse, Http404
-from django.shortcuts import get_object_or_404, render, reverse, redirect
-from django.utils.feedgenerator import Rss201rev2Feed
-from django.views import View
-from django.utils.safestring import mark_safe
+
 from django.contrib import messages
+from django.core.paginator import EmptyPage, Paginator
+from django.db.models import Func, Prefetch
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.utils.feedgenerator import Rss201rev2Feed
+from django.utils.safestring import mark_safe
+from django.views import View
 from openstates.data.models import (
-    Membership,
     Bill,
     BillActionRelatedEntity,
-    VoteEvent,
+    Membership,
     Person,
+    VoteEvent,
 )
 from openstates.utils.transformers import fix_bill_id
+
+from utils.bills import EXCLUDED_CLASSIFICATIONS, search_bills
 from utils.common import abbr_to_jid, jid_to_abbr, pretty_url, sessions_with_bills
 from utils.orgs import get_chambers_from_abbr
-from utils.bills import search_bills, EXCLUDED_CLASSIFICATIONS
+
 from .fallback import fallback
 
 
@@ -38,14 +41,14 @@ class BillList(View):
 
         if form["classification"] and form["chamber"]:
             summary.append(
-                f'{chambers[form["chamber"]]} {form["classification"].title()}s only'
+                f"{chambers[form['chamber']]} {form['classification'].title()}s only"
             )
         elif form["classification"]:
-            summary.append(f'{form["classification"].title()}s only')
+            summary.append(f"{form['classification'].title()}s only")
         elif form["chamber"]:
             if form["chamber"] not in chambers:
                 raise Http404()
-            summary.append(f'{chambers[form["chamber"]]} only')
+            summary.append(f"{chambers[form['chamber']]} only")
 
         if form["session"]:
             # this is almost always bad crawlers or XSS attempts

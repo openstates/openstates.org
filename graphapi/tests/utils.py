@@ -1,14 +1,15 @@
-import uuid
 import random
+import uuid
+
 from django.contrib.postgres.search import SearchVector
 from openstates.data.models import (
+    Bill,
     Division,
     Jurisdiction,
     Organization,
     Person,
-    Bill,
-    VoteEvent,
     SearchableBill,
+    VoteEvent,
 )
 from openstates.importers.computed_fields import update_bill_fields
 

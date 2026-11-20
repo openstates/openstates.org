@@ -1,12 +1,13 @@
 from django.urls import path
+
 from .views import (
+    add_search_subscription,
+    add_sponsor_subscription,
+    bill_subscription,
+    deactivate_subscription,
     profile,
     request_key,
     unsubscribe,
-    bill_subscription,
-    add_search_subscription,
-    add_sponsor_subscription,
-    deactivate_subscription,
 )
 
 urlpatterns = [

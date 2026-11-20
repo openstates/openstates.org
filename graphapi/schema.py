@@ -1,6 +1,7 @@
 import graphene
-from .legislative import LegislativeQuery
+
 from .core import CoreQuery
+from .legislative import LegislativeQuery
 
 
 class Query(LegislativeQuery, CoreQuery, graphene.ObjectType):

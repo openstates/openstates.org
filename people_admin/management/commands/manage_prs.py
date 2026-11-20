@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
-from people_admin.models import DeltaSet, PullStatus
+
 from people_admin.git import delta_set_to_pr, get_pr_status
+from people_admin.models import DeltaSet, PullStatus
 
 
 class Command(BaseCommand):

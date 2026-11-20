@@ -1,9 +1,11 @@
-import json
 import datetime
-from collections import defaultdict, Counter
+import json
+from collections import Counter, defaultdict
+
 from django.core.management.base import BaseCommand
 from rrl import RateLimiter
-from ...models import UsageReport, Profile
+
+from ...models import Profile, UsageReport
 
 
 class Command(BaseCommand):

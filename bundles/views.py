@@ -1,9 +1,12 @@
 import csv
 from collections import defaultdict
-from django.shortcuts import render
-from django.http import HttpResponse
+
 from django.db.models import F
+from django.http import HttpResponse
+from django.shortcuts import render
+
 from utils.common import pretty_url
+
 from .models import Bundle
 
 

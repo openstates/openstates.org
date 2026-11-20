@@ -1,20 +1,23 @@
-import pytz
 import datetime
+
 import pytest
+import pytz
 from django.contrib.auth.models import User
+from openstates.data.models import Bill
+
 from graphapi.tests.utils import populate_db
 from profiles.models import Subscription
-from openstates.data.models import Bill
-from ..models import Notification
-from ..utils import utcnow
+
 from ..management.commands.process_subscriptions import (
+    DAILY,
+    SkipCheck,
     process_bill_sub,
     process_query_sub,
     process_subs_for_user,
     send_subscription_email,
-    DAILY,
-    SkipCheck,
 )
+from ..models import Notification
+from ..utils import utcnow
 
 
 @pytest.mark.django_db

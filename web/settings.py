@@ -1,8 +1,8 @@
 import os
+
 import dj_database_url
 import structlog
 from corsheaders.defaults import default_headers
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,7 +40,7 @@ elif os.environ.get("DEBUG", "true").lower() == "false":
     # non-debug settings
     DEBUG = False
     ALLOWED_HOSTS = ["*"]
-    ADMINS = [("James Turk", "dev@jamesturk.net")]
+    ADMINS = [("Jesse Mortenson", "jesse.mortenson@sai360.com")]
     # DOMAIN = ''
     SECRET_KEY = os.environ["SECRET_KEY"]
     EMAIL_HOST = os.environ["EMAIL_HOST"]
@@ -48,9 +48,9 @@ elif os.environ.get("DEBUG", "true").lower() == "false":
     EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
     EMAIL_PORT = "587"
     EMAIL_USE_TLS = True
-    REGISTRATION_DEFAULT_FROM_EMAIL = (
-        DEFAULT_FROM_EMAIL
-    ) = SERVER_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "contact@openstates.org")
+    REGISTRATION_DEFAULT_FROM_EMAIL = DEFAULT_FROM_EMAIL = SERVER_EMAIL = (
+        os.environ.get("DEFAULT_FROM_EMAIL", "contact@openstates.org")
+    )
     RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
     RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
     RECAPTCHA_USE_SSL = True

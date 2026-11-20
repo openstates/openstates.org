@@ -1,13 +1,15 @@
-import feedparser
 from collections import Counter
+
+import feedparser
 from django.core.cache import cache
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Sum
 from django.http import Http404
 from django.shortcuts import render
 from openstates.data.models import Bill, Organization, Person
-from utils.common import abbr_to_jid, states, sessions_with_bills, jid_to_abbr
-from utils.bills import search_bills, EXCLUDED_CLASSIFICATIONS
+
+from utils.bills import EXCLUDED_CLASSIFICATIONS, search_bills
+from utils.common import abbr_to_jid, jid_to_abbr, sessions_with_bills, states
 from utils.people import person_as_dict
 
 

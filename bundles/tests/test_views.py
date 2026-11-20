@@ -1,7 +1,8 @@
 import pytest
-from graphapi.tests.utils import populate_db
-from bundles.models import Bundle
 from openstates.data.models import Bill
+
+from bundles.models import Bundle
+from graphapi.tests.utils import populate_db
 
 
 @pytest.mark.django_db

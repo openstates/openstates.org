@@ -1,8 +1,9 @@
-from django.http import Http404, HttpResponse
-from django.shortcuts import redirect
 import boto3
 from botocore.errorfactory import ClientError
+from django.http import Http404, HttpResponse
+from django.shortcuts import redirect
 from openstates.data.models import Person
+
 from utils.common import pretty_url
 
 

@@ -1,8 +1,10 @@
 import re
-from django.db.models import F
+
 from django.contrib.postgres.search import SearchQuery
+from django.db.models import F
 from openstates.data.models import Bill
 from openstates.utils.transformers import fix_bill_id
+
 from .common import abbr_to_jid
 
 # decision was made in openstates/issues#193 to exclude these by default to not confuse users

@@ -1,11 +1,13 @@
 import pytest
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
-from graphapi.tests.utils import populate_db
 from openstates.data.models import Person
-from profiles.models import Subscription, Notification
-from profiles.views import PermissionException
+
+from graphapi.tests.utils import populate_db
+from profiles.models import Notification, Subscription
 from profiles.utils import utcnow
+from profiles.views import PermissionException
+
 from .test_models import COMPLEX_STR
 
 

@@ -1,7 +1,9 @@
-import os
 import base64
+import os
+
 import pytest
-from people_admin.git import get_files, patch_file, get_pr_status
+
+from people_admin.git import get_files, get_pr_status, patch_file
 from people_admin.models import PullStatus
 
 # these tests are finnicky as they rely upon the outside repo, they will be skipped unless

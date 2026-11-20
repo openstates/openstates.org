@@ -1,6 +1,7 @@
 import pytest
+from openstates.data.models import Bill, Division, Jurisdiction
+
 from utils.cli import yield_state_sessions
-from openstates.data.models import Division, Jurisdiction, Bill
 
 
 @pytest.fixture

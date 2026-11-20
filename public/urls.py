@@ -1,10 +1,11 @@
 from django.urls import path, re_path
-from .views.other import styleguide, home, state, site_search
-from .views.legislators import legislators, person, find_your_legislator
-from .views.bills import vote
-from .views.fallback import fallback, legislator_fallback
+
 from utils.common import states
 
+from .views.bills import vote
+from .views.fallback import fallback, legislator_fallback
+from .views.legislators import find_your_legislator, legislators, person
+from .views.other import home, site_search, state, styleguide
 
 OCD_ID_PATTERN = r"[a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}"
 # Only allow valid state abbreviations

@@ -1,20 +1,23 @@
-import graphene
 import re
+from urllib.parse import urlparse
+
+import graphene
 from django.db.models import Prefetch
 from openstates.data.models import Bill, BillActionRelatedEntity, PersonVote
 from openstates.utils.transformers import fix_bill_id
-from .common import OCDBaseNode, DjangoConnectionField, CountableConnectionBase
+
+from utils.bills import search_bills
+from utils.common import abbr_to_jid
+
+from .common import CountableConnectionBase, DjangoConnectionField, OCDBaseNode
 from .core import (
-    LegislativeSessionNode,
-    OrganizationNode,
     IdentifierNode,
-    PersonNode,
+    LegislativeSessionNode,
     LinkNode,
+    OrganizationNode,
+    PersonNode,
 )
 from .optimization import optimize
-from urllib.parse import urlparse
-from utils.common import abbr_to_jid
-from utils.bills import search_bills
 
 
 def jurisdiction_query(jurisdiction):
@@ -369,7 +372,7 @@ class LegislativeQuery:
                     ),
                 ),
             ],
-            [".legislativeSession" ".legislativeSession.jurisdiction"],
+            [".legislativeSession.legislativeSession.jurisdiction"],
         )
 
         return bills

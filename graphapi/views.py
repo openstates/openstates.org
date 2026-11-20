@@ -1,4 +1,5 @@
 from graphene_django.views import GraphQLView
+
 from profiles.verifier import verify_request
 
 GraphQLView.graphiql_template = "graphene_graphiql_explorer/graphiql.html"

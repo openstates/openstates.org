@@ -1,3 +1,3 @@
 #!/bin/sh
 
-poetry run ./manage.py process_subscriptions
+./manage.py process_subscriptions

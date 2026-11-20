@@ -1,22 +1,25 @@
 import datetime
+
 import graphene
-from django.db.models import Q, Prefetch
+from django.db.models import Prefetch, Q
 from openstates.data.models import (
     Jurisdiction,
+    LegislativeSession,
+    Membership,
     Organization,
     Person,
-    Membership,
-    LegislativeSession,
     RunPlan,
 )
+
 from utils.geo import coords_to_divisions
+
 from .common import (
-    OCDBaseNode,
-    IdentifierNode,
-    NameNode,
-    LinkNode,
-    DjangoConnectionField,
     CountableConnectionBase,
+    DjangoConnectionField,
+    IdentifierNode,
+    LinkNode,
+    NameNode,
+    OCDBaseNode,
 )
 from .optimization import optimize
 

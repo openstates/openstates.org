@@ -1,12 +1,13 @@
 import json
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import ensure_csrf_cookie
-from .models import WidgetConfig, WidgetType
-from rrl import RateLimiter, Tier, RateLimitExceeded
+from rrl import RateLimiter, RateLimitExceeded, Tier
 
+from .models import WidgetConfig, WidgetType
 
 limiter = RateLimiter(
     prefix="widgets",
@@ -74,7 +75,7 @@ def widget_view(request, uuid):
     combined_config = dict(
         **config.settings,
         openstates_api_key=settings.OPENSTATES_API_KEY,
-        mapbox_access_token=settings.MAPBOX_ACCESS_TOKEN
+        mapbox_access_token=settings.MAPBOX_ACCESS_TOKEN,
     )
 
     if config.widget_type == WidgetType.STATE_LEGISLATORS:

@@ -1,6 +1,6 @@
+from allauth.socialaccount.models import SocialApp
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from allauth.socialaccount.models import SocialApp
 
 u = User.objects.create_superuser("local", password="password", email="local@localhost")
 u.profile.api_key = "testkey"
